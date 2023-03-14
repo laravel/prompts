@@ -1,0 +1,16 @@
+{
+    "name": "laravel/prompts",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Laravel\\Prompts\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "require": {
+        "illuminate/collections": "^10.3"
+    }
+}
