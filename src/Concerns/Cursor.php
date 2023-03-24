@@ -4,16 +4,6 @@ namespace Laravel\Prompts\Concerns;
 
 trait Cursor
 {
-    const CSI = "\e[";
-
-    const UP = 'A';
-
-    const DOWN = 'B';
-
-    const RIGHT = 'C';
-
-    const LEFT = 'D';
-
     /**
      * Hide the cursor.
      *
@@ -21,7 +11,7 @@ trait Cursor
      */
     public function hideCursor()
     {
-        fwrite(STDOUT, static::CSI . "?25l");
+        fwrite(STDOUT, "\e[?25l");
     }
 
     /**
@@ -31,7 +21,7 @@ trait Cursor
      */
     public function showCursor()
     {
-        fwrite(STDOUT, static::CSI . "?25h");
+        fwrite(STDOUT, "\e[?25h");
     }
 
     /**
@@ -46,15 +36,15 @@ trait Cursor
         $sequence = '';
 
         if ($x < 0) {
-            $sequence .= static::CSI . abs($x) . static::LEFT;
+            $sequence .= "\e[".abs($x).'D'; // Left
         } else if ($x > 0) {
-            $sequence .= static::CSI . $x . static::RIGHT;
+            $sequence .= "\e[{$x}C"; // Right
         }
 
         if ($y < 0) {
-            $sequence .= static::CSI . abs($y) . static::UP;
+            $sequence .= "\e[".abs($y).'A'; // Up
         } else if ($y > 0) {
-            $sequence .= static::CSI . $y . static::DOWN;
+            $sequence .= "\e[{$y}B"; // Down
         }
 
         fwrite(STDOUT, $sequence);
