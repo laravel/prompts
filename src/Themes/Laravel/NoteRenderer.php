@@ -25,16 +25,11 @@ class NoteRenderer
 
                         return " {$this->bgCyan($this->black($line))}";
                     })
-                    ->implode(PHP_EOL) . PHP_EOL . PHP_EOL;
+                    ->implode(PHP_EOL) . str_repeat(PHP_EOL, $note->type === 'intro' ? '1' : '2');
 
             default:
                 return PHP_EOL . $lines
-                    ->map(fn ($line, $i) => ' ' . $this->gray(match (true) {
-                        count($lines) === 1 => ' ',
-                        $i === 0 => '┌',
-                        $i === count($lines) - 1 => '└',
-                        default => '│',
-                    }) . "  {$line}")
+                    ->map(fn ($line) => " {$line}")
                     ->implode(PHP_EOL) . PHP_EOL;
         }
     }

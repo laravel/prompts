@@ -8,33 +8,34 @@ use Laravel\Prompts\TextPrompt;
 class TextPromptRenderer
 {
     use Colors;
+    use Concerns\DrawsBoxes;
 
     public function __invoke(TextPrompt $prompt)
     {
         return match ($prompt->state) {
             'error' => <<<EOT
-                {$this->yellow(' ┏')}  {$prompt->message}
-                {$this->yellow(' ┗')}  {$prompt->valueWithCursor()}
-                {$this->yellow(' ⚠')}  {$this->yellow($prompt->error)}
+
+                {$this->box($prompt->message, $prompt->valueWithCursor(), 'yellow')}
+                {$this->yellow("  ⚠ {$prompt->error}")}
 
                 EOT,
 
             'submit' => <<<EOT
-                {$this->gray(' ┌')}  {$prompt->message}
-                {$this->gray(' └')}  {$this->dim($prompt->value())}
+
+                {$this->box($this->dim($prompt->message), $this->dim($prompt->value()))}
 
                 EOT,
 
             'cancel' => <<<EOT
-                {$this->red(' ┌')}  {$prompt->message}
-                {$this->red(' └')}  {$this->strikethrough($this->dim($prompt->value() ?? $prompt->placeholder))}
-                {$this->red(' ⚠')}  {$this->red('Cancelled.')}
+
+                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->value() ?? $prompt->placeholder)), 'red')}
+                {$this->red('  ⚠ Cancelled.')}
 
                 EOT,
 
             default => <<<EOT
-                {$this->gray(' ┏')}  {$prompt->message}
-                {$this->gray(' ┗')}  {$prompt->valueWithCursor()}
+
+                {$this->box($this->cyan($prompt->message), $prompt->valueWithCursor())}
 
 
                 EOT,

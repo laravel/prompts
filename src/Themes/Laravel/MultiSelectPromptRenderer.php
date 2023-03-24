@@ -8,37 +8,34 @@ use Laravel\Prompts\MultiSelectPrompt;
 class MultiSelectPromptRenderer
 {
     use Colors;
+    use Concerns\DrawsBoxes;
 
     public function __invoke(MultiSelectPrompt $prompt)
     {
         return match ($prompt->state) {
             'submit' => <<<EOT
 
-                {$this->gray(' ┌')}  {$prompt->message}
-                {$this->gray(' └')}  {$this->dim($this->selected($prompt))}
+                {$this->box($this->dim($prompt->message), $this->dim($this->selected($prompt)))}
 
                 EOT,
 
             'cancel' => <<<EOT
 
-                {$this->red(' ┌')}  {$prompt->message}
-                {$this->red(' └')}  {$this->strikethrough($this->dim($this->selected($prompt)))}
-                {$this->red(' ⚠')}  {$this->red('Operation cancelled. ')}
+                {$this->box($prompt->message, $this->strikethrough($this->dim($this->selected($prompt))), 'red')}
+                {$this->red('  ⚠ Cancelled.')}
 
                 EOT,
 
             'error' => <<<EOT
 
-                {$this->yellow(' ┏')}  {$prompt->message}
-                {$this->renderOptions($prompt, 'yellow')}
-                {$this->yellow(' ⚠')}  {$this->yellow($prompt->error)}
+                {$this->box($prompt->message, $this->renderOptions($prompt), 'yellow')}
+                {$this->yellow("  ⚠ {$prompt->error}")}
 
                 EOT,
 
             default => <<<EOT
 
-                {$this->gray(' ┏')}  {$prompt->message}
-                {$this->renderOptions($prompt, 'gray')}
+                {$this->box($this->cyan($prompt->message), $this->renderOptions($prompt))}
 
 
                 EOT,
@@ -52,21 +49,19 @@ class MultiSelectPromptRenderer
             ->implode(', ');
     }
 
-    protected function renderOptions($prompt, $borderColor)
+    protected function renderOptions($prompt)
     {
         return collect($prompt->options)
             ->values()
-            ->map(function ($label, $i) use ($prompt, $borderColor) {
+            ->map(function ($label, $i) use ($prompt) {
                 $selected = in_array(array_keys($prompt->options)[$i], $prompt->value());
                 $active = $prompt->highlighted === $i;
 
-                $border = $this->{$borderColor}($i === count($prompt->options) - 1 ? '┗' : '┃');
-
                 return match (true) {
-                    $active && $selected => " {$border}  {$this->green('◼')} {$label}",
-                    $active => " {$border}  {$this->cyan('◻')} {$label}",
-                    $selected => " {$border}  {$this->green('◼')} {$this->dim($label)}",
-                    default => " {$border}  {$this->dim('◻')} {$this->dim($label)}",
+                    $active && $selected => " {$this->green('◼')} {$label}",
+                    $active => " {$this->cyan('◻')} {$label}",
+                    $selected => " {$this->green('◼')} {$this->dim($label)}",
+                    default => " {$this->dim('◻')} {$this->dim($label)}",
                 };
             })
             ->implode(PHP_EOL);

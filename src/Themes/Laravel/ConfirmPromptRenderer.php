@@ -8,29 +8,27 @@ use Laravel\Prompts\ConfirmPrompt;
 class ConfirmPromptRenderer
 {
     use Colors;
+    use Concerns\DrawsBoxes;
 
     public function __invoke(ConfirmPrompt $prompt)
     {
         return match ($prompt->state) {
             'submit' => <<<EOT
 
-                {$this->gray(' ┌')}  {$prompt->message}
-                {$this->gray(' └')}  {$this->dim($prompt->confirmed ? 'Yes' : 'No')}
+                {$this->box($this->dim($prompt->message), $this->dim($prompt->confirmed ? 'Yes' : 'No'))}
 
                 EOT,
 
             'cancel' => <<<EOT
 
-                {$this->red(' ┌')}  {$prompt->message}
-                {$this->red(' └')}  {$this->strikethrough($this->dim($prompt->confirmed ? 'Yes' : 'No'))}
-                {$this->red(' ⚠')}  {$this->red('Operation cancelled. ')}
+                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->confirmed ? 'Yes' : 'No')), 'red')}
+                {$this->red('  ⚠ Cancelled.')}
 
                 EOT,
 
             default => <<<EOT
 
-                {$this->gray(' ┏')}  {$prompt->message}
-                {$this->gray(' ┗')}  {$this->renderOptions($prompt)}
+                {$this->box($this->cyan($prompt->message), $this->renderOptions($prompt))}
 
 
                 EOT,

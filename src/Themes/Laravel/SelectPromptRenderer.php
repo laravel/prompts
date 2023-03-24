@@ -8,29 +8,27 @@ use Laravel\Prompts\SelectPrompt;
 class SelectPromptRenderer
 {
     use Colors;
+    use Concerns\DrawsBoxes;
 
     public function __invoke(SelectPrompt $prompt)
     {
         return match ($prompt->state) {
             'submit' => <<<EOT
 
-                {$this->gray(' ┌')}  {$prompt->message}
-                {$this->gray(' └')}  {$this->dim($prompt->label())}
+                {$this->box($this->dim($prompt->message), $this->dim($prompt->label()))}
 
                 EOT,
 
             'cancel' => <<<EOT
 
-                {$this->red(' ┌')}  {$prompt->message}
-                {$this->red(' └')}  {$this->strikethrough($this->dim($prompt->label()))}
-                {$this->red(' ⚠')}  {$this->red('Operation cancelled. ')}
+                {$this->box($prompt->message, $this->renderOptions($prompt), 'red')}
+                {$this->red('  ⚠ Cancelled.')}
 
                 EOT,
 
             default => <<<EOT
 
-                {$this->gray(' ┏')}  {$prompt->message}
-                {$this->renderOptions($prompt)}
+                {$this->box($this->cyan($prompt->message), $this->renderOptions($prompt))}
 
 
                 EOT,
@@ -42,8 +40,8 @@ class SelectPromptRenderer
         return collect($prompt->options)
             ->values()
             ->map(fn ($label, $i) => $prompt->highlighted === $i
-                ? " {$this->gray($i === count($prompt->options) - 1 ? '┗' : '┃')}  {$this->green('●')} {$label}"
-                : " {$this->gray($i === count($prompt->options) - 1 ? '┗' : '┃')}  {$this->dim('○')} {$this->dim($label)}"
+                ? " {$this->green('●')} {$label}"
+                : " {$this->dim('○')} {$this->dim($label)}"
             )
             ->implode(PHP_EOL);
     }
