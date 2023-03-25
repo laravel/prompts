@@ -107,10 +107,6 @@ abstract class Prompt
             $this->state = 'active';
         }
 
-        if (in_array($key, [Key::UP, Key::DOWN, Key::LEFT, Key::RIGHT])) {
-            $this->emit('cursor', $key);
-        }
-
         if ($key) {
             $this->emit('key', $key);
         }

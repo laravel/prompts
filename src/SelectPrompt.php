@@ -32,9 +32,9 @@ class SelectPrompt extends Prompt
             }
         }
 
-        $this->on('cursor', fn ($cursor) => match ($cursor) {
-            Key::UP, Key::LEFT => $this->highlightPrevious(),
-            Key::DOWN, Key::RIGHT => $this->highlightNext(),
+        $this->on('key', fn ($key) => match ($key) {
+            Key::UP, Key::LEFT, 'k', 'h' => $this->highlightPrevious(),
+            Key::DOWN, Key::RIGHT, 'j', 'l' => $this->highlightNext(),
             default => null,
         });
     }

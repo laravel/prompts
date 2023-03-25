@@ -24,13 +24,12 @@ class ConfirmPrompt extends Prompt
     ) {
         $this->confirmed = $default;
 
-        $this->on('key', fn ($key) => match (strtolower($key)) {
+        $this->on('key', fn ($key) => match ($key) {
             'y' => $this->confirmed = true,
             'n' => $this->confirmed = false,
+            Key::UP, Key::DOWN, Key::LEFT, Key::RIGHT, 'h', 'j', 'k', 'l' => $this->confirmed = ! $this->confirmed,
             default => null,
         });
-
-        $this->on('cursor', fn () => $this->confirmed = ! $this->confirmed);
     }
 
     /**
