@@ -40,8 +40,8 @@ class SelectPromptRenderer
         return collect($prompt->options)
             ->values()
             ->map(fn ($label, $i) => $prompt->highlighted === $i
-                ? " {$this->green('●')} {$label}"
-                : " {$this->dim('○')} {$this->dim($label)}"
+                ? "› {$this->green('●')} {$label}"
+                : "  {$this->dim('○')} {$this->dim($label)}"
             )
             ->implode(PHP_EOL);
     }

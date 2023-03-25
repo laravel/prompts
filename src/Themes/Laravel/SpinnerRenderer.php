@@ -13,7 +13,7 @@ class SpinnerRenderer
     {
         return <<<EOT
 
-             {$this->magenta($spinner->frame)}  {$spinner->message}
+             {$this->magenta($spinner->frame)} {$spinner->message}
 
             EOT;
     }

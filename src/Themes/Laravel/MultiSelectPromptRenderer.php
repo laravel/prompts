@@ -58,10 +58,10 @@ class MultiSelectPromptRenderer
                 $active = $prompt->highlighted === $i;
 
                 return match (true) {
-                    $active && $selected => " {$this->green('◼')} {$label}",
-                    $active => " {$this->cyan('◻')} {$label}",
-                    $selected => " {$this->green('◼')} {$this->dim($label)}",
-                    default => " {$this->dim('◻')} {$this->dim($label)}",
+                    $active && $selected => "› {$this->green('◼')} {$label} ",
+                    $active => "› ◻ {$label} ",
+                    $selected => "  {$this->green('◼')} {$this->dim($label)} ",
+                    default => "  {$this->dim('◻')} {$this->dim($label)}",
                 };
             })
             ->implode(PHP_EOL);
