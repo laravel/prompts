@@ -7,24 +7,32 @@ use RuntimeException;
 class Spinner extends Prompt
 {
     /**
-     * The current frame of the spinner.
+     * How long to wait between rendering each frame.
      *
-     * @var string
+     * @var int
      */
-    public $frame;
+    public $interval = 100;
+
+    /**
+     * The number of times the spinner has been rendered.
+     *
+     * @var int
+     */
+    public $count = 0;
+
+    /**
+     * Whether the spinner can only be rendered once.
+     *
+     * @var bool
+     */
+    public $static = false;
 
     /**
      * Create a new Spinner instance.
      *
      * @param  string  $message
-     * @param  array<int, string>  $frames
-     * @param  int  $interval
      */
-    public function __construct(
-        public $message = '',
-        protected $frames = ['◒', '◐', '◓', '◑'],
-        protected $interval = 100,
-    ) {
+    public function __construct(public $message = '') {
         //
     }
 
@@ -37,31 +45,29 @@ class Spinner extends Prompt
     public function spin($callback)
     {
         if (! function_exists('pcntl_fork')) {
-            $this->renderStatic();
-
-            return $callback();
+            $this->renderStatically($callback);
         }
 
         $this->hideCursor();
 
         $originalAsync = pcntl_async_signals(true);
+
         pcntl_signal(SIGINT, function () {
             $this->showCursor();
             exit();
         });
 
         try {
-            $this->frame = $this->frames[0];
             $this->render();
 
             $pid = pcntl_fork();
 
             if ($pid === 0) {
-                $i = 0;
                 while (true) {
-                    $this->frame = $this->frames[$i];
                     $this->render();
-                    $i = ($i + 1) % count($this->frames);
+
+                    $this->count++;
+
                     usleep($this->interval * 1000);
                 }
             } else {
@@ -88,13 +94,16 @@ class Spinner extends Prompt
     /**
      * Render a static version of the spinner.
      *
-     * @return void
+     * @param  \Closure  $callback
+     * @return mixed
      */
-    protected function renderStatic()
+    protected function renderStatically($callback)
     {
-        $this->frame = '○';
+        $this->static = true;
 
         $this->render();
+
+        return $callback();
     }
 
     /**

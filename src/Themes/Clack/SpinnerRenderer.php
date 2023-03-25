@@ -9,11 +9,19 @@ class SpinnerRenderer
 {
     use Colors;
 
+    protected $frames = ['◐', '◓', '◑', '◒'];
+
+    protected $interval = 100;
+
     public function __invoke(Spinner $spinner)
     {
+        $spinner->interval = $this->interval;
+
+        $frame = $this->frames[$spinner->count % count($this->frames)];
+
         return <<<EOT
             {$this->gray('│')}
-            {$this->cyan($spinner->frame)}  {$spinner->message}
+            {$this->magenta($frame)}  {$spinner->message}
 
             EOT;
     }

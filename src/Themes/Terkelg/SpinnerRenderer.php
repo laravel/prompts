@@ -9,10 +9,18 @@ class SpinnerRenderer
 {
     use Colors;
 
+    protected $frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+
+    protected $interval = 100;
+
     public function __invoke(Spinner $spinner)
     {
+        $spinner->interval = $this->interval;
+
+        $frame = $this->frames[$spinner->count % count($this->frames)];
+
         return <<<EOT
-            {$this->cyan($spinner->frame)} {$spinner->message}
+            {$this->cyan($frame)} {$spinner->message}
 
             EOT;
     }
