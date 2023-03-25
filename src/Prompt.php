@@ -61,28 +61,23 @@ abstract class Prompt
      */
     public function prompt()
     {
-        $this->setTty('-icanon -isig -echo');
-
         try {
+            $this->setTty('-icanon -isig -echo');
             $this->hideCursor();
             $this->render();
 
             while ($key = fread(STDIN, 1024)) {
-                if ($key === Key::CTRL_C) {
-                    $this->state = 'cancel';
-                    $this->emit('cancel');
-                    $this->render();
+                $continue = $this->handleKeyPress($key);
+
+                $this->render();
+
+                if ($continue === false || $key === Key::CTRL_C) {
                     $this->showCursor();
                     $this->restoreTty();
 
-                    exit(1);
-                }
-
-                $ret = $this->onKeypress($key);
-
-                if ($ret === false) {
-                    $this->showCursor();
-                    $this->restoreTty();
+                    if ($key === Key::CTRL_C) {
+                        exit(1);
+                    }
 
                     return $this->value();
                 }
@@ -96,50 +91,55 @@ abstract class Prompt
     }
 
     /**
-     * Handle key presses.
+     * Handle a key press.
      *
      * @param  string  $key
-     * @return void
+     * @return bool|null
      */
-    protected function onKeypress(string $key)
+    protected function handleKeyPress(string $key)
     {
         if ($this->state === 'error') {
             $this->state = 'active';
         }
 
-        if ($key) {
-            $this->emit('key', $key);
-        }
+        $this->emit('key', $key);
 
-        if ($key === Key::ENTER) {
-            if ($this->validate) {
-                $error = ($this->validate)($this->value());
-                $this->validated = true;
-                if ($error) {
-                    $this->error = $error;
-                    $this->state = 'error';
-                }
-            }
-            if ($this->state !== 'error') {
+        if ($key === Key::ENTER || $this->validated) {
+            $this->error = $this->validate();
+            $this->validated = true;
+
+            if ($this->error) {
+                $this->state = 'error';
+            } elseif ($key === Key::ENTER) {
                 $this->state = 'submit';
             }
-        } elseif ($this->validated) {
-            $error = ($this->validate)($this->value());
-            $this->validated = true;
-            if ($error) {
-                $this->error = $error;
-                $this->state = 'error';
-            }
-        }
-        if ($key === Key::CTRL_C) {
+        } elseif ($key === Key::CTRL_C) {
             $this->state = 'cancel';
         }
-
-        $this->render();
 
         if ($this->state === 'submit' || $this->state === 'cancel') {
             return false;
         }
+    }
+
+    /**
+     * Validate the input.
+     *
+     * @return string
+     */
+    protected function validate()
+    {
+        if (!$this->validate) {
+            return;
+        }
+
+        $error = ($this->validate)($this->value());
+
+        if (! is_string($error) && ! is_null($error)) {
+            throw new \RuntimeException('The validator must return a string or null.');
+        }
+
+        return $error ?? '';
     }
 
     /**
@@ -156,40 +156,32 @@ abstract class Prompt
         }
 
         if ($this->state === 'initial') {
-            //
-        } else {
-            $diff = $this->diffLines($this->prevFrame, $frame);
-            $this->restoreCursor();
+            fwrite(STDOUT, $frame);
 
-            // If a single line has changed, only update that line
-            if (count($diff) === 1) {
-                $diffLine = $diff[0];
-                $this->moveCursor(0, $diffLine);
-                $this->eraseLines(1);
-                $lines = explode(PHP_EOL, $frame);
-                fwrite(STDOUT, $lines[$diffLine]);
-                $this->prevFrame = $frame;
-                $this->moveCursor(0, count($lines) - $diffLine - 1);
-                return;
-            } else if (count($diff) > 1) {
-                // If many lines have changed, rerender everything past the first line
-                $diffLine = $diff[0];
-                $this->moveCursor(0, $diffLine);
-                $this->eraseDown();
-                $lines = explode(PHP_EOL, $frame);
-                $newLines = array_slice($lines, $diffLine);
-                fwrite(STDOUT, implode(PHP_EOL, $newLines));
-                $this->prevFrame = $frame;
-                return;
-            }
+            $this->state = 'active';
+            $this->prevFrame = $frame;
 
-            $this->eraseDown();
+            return;
         }
 
-        fwrite(STDOUT, $frame);
+        $this->restoreCursor();
 
-        if ($this->state === 'initial') {
-            $this->state = 'active';
+        $diff = $this->diffLines($this->prevFrame, $frame);
+
+        if (count($diff) === 1) { // Update the single line that changed.
+            $diffLine = $diff[0];
+            $this->moveCursor(0, $diffLine);
+            $this->eraseLines(1);
+            $lines = explode(PHP_EOL, $frame);
+            fwrite(STDOUT, $lines[$diffLine]);
+            $this->moveCursor(0, count($lines) - $diffLine - 1);
+        } else if (count($diff) > 1) { // Re-render everything past the first change
+            $diffLine = $diff[0];
+            $this->moveCursor(0, $diffLine);
+            $this->eraseDown();
+            $lines = explode(PHP_EOL, $frame);
+            $newLines = array_slice($lines, $diffLine);
+            fwrite(STDOUT, implode(PHP_EOL, $newLines));
         }
 
         $this->prevFrame = $frame;

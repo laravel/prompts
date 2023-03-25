@@ -45,7 +45,7 @@ trait TypedValue
             } elseif ($key === key::BACKSPACE) {
                 $this->value = substr($this->value, 0, $this->cursorPosition - 1) . substr($this->value, $this->cursorPosition);
                 $this->cursorPosition = max(0, $this->cursorPosition - 1);
-            } elseif ($key !== key::ENTER) {
+            } elseif ($key !== key::ENTER && $key !== key::CTRL_C) {
                 $this->value = substr($this->value, 0, $this->cursorPosition) . $key . substr($this->value, $this->cursorPosition);
                 $this->cursorPosition++;
             }
