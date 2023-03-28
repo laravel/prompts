@@ -29,7 +29,7 @@ class PasswordPrompt extends Prompt
      * @return string
      */
     public function masked() {
-        return $this->value ? str_repeat($this->mask, strlen($this->value)) : '';
+        return $this->value() ? str_repeat($this->mask, strlen($this->value())) : '';
     }
 
     /**

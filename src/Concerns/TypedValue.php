@@ -11,7 +11,7 @@ trait TypedValue
      *
      * @var string|null
      */
-    protected $value;
+    protected $typedValue;
 
     /**
      * The position of the virtual cursor.
@@ -28,25 +28,25 @@ trait TypedValue
      */
     protected function trackTypedValue($default = null)
     {
-        $this->value = $default;
+        $this->typedValue = $default;
 
-        if ($this->value) {
-            $this->cursorPosition = strlen($this->value);
+        if ($this->typedValue) {
+            $this->cursorPosition = strlen($this->typedValue);
         }
 
         $this->on('key', function ($key) {
             if ($key[0] === "\e") {
                 match ($key) {
                     Key::LEFT => $this->cursorPosition = max(0, $this->cursorPosition - 1),
-                    Key::RIGHT => $this->cursorPosition = min(strlen($this->value), $this->cursorPosition + 1),
-                    Key::DELETE => $this->value = substr($this->value, 0, $this->cursorPosition) . substr($this->value, $this->cursorPosition + 1),
+                    Key::RIGHT => $this->cursorPosition = min(strlen($this->typedValue), $this->cursorPosition + 1),
+                    Key::DELETE => $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition) . substr($this->typedValue, $this->cursorPosition + 1),
                     default => null,
                 };
             } elseif ($key === key::BACKSPACE) {
-                $this->value = substr($this->value, 0, $this->cursorPosition - 1) . substr($this->value, $this->cursorPosition);
+                $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition - 1) . substr($this->typedValue, $this->cursorPosition);
                 $this->cursorPosition = max(0, $this->cursorPosition - 1);
             } elseif ($key !== key::ENTER && $key !== key::CTRL_C) {
-                $this->value = substr($this->value, 0, $this->cursorPosition) . $key . substr($this->value, $this->cursorPosition);
+                $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition) . $key . substr($this->typedValue, $this->cursorPosition);
                 $this->cursorPosition++;
             }
         });
@@ -59,6 +59,6 @@ trait TypedValue
      */
     public function value()
     {
-        return $this->value;
+        return $this->typedValue;
     }
 }
