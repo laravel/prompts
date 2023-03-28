@@ -12,7 +12,7 @@ class Key
 
     const LEFT = "\e[D";
 
-    const DELETE = "\e[3";
+    const DELETE = "\e[3~";
 
     const BACKSPACE = "\177";
 
