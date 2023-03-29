@@ -16,7 +16,7 @@ class MultiSelectPrompt extends Prompt
      *
      * @var array<string>
      */
-    public array $values = [];
+    protected array $values = [];
 
     /**
      * Create a new SelectPrompt instance.
@@ -51,6 +51,40 @@ class MultiSelectPrompt extends Prompt
     }
 
     /**
+     * Get the selected labels.
+     *
+     * @return array<string>
+     */
+    public function labels(): array
+    {
+        if (array_is_list($this->options)) {
+            return $this->options;
+        }
+
+        return array_values(array_intersect_key($this->options, array_flip($this->values)));
+    }
+
+    /**
+     * Check whether the value is currently highlighted.
+     */
+    public function isHighlighted(string $value): bool
+    {
+        if (array_is_list($this->options)) {
+            return $this->options[$this->highlighted] === $value;
+        }
+
+        return array_keys($this->options)[$this->highlighted] === $value;
+    }
+
+    /**
+     * Check whether the value is currently selected.
+     */
+    public function isSelected(string $value): bool
+    {
+        return in_array($value, $this->values);
+    }
+
+    /**
      * Highlight the previous entry, or wrap around to the last entry.
      */
     protected function highlightPrevious(): void
@@ -71,7 +105,9 @@ class MultiSelectPrompt extends Prompt
      */
     protected function toggleHighlighted(): void
     {
-        $value = array_keys($this->options)[$this->highlighted];
+        $value = array_is_list($this->options)
+            ? $this->options[$this->highlighted]
+            : array_keys($this->options)[$this->highlighted];
 
         if (in_array($value, $this->values)) {
             $this->values = array_filter($this->values, fn ($v) => $v !== $value);

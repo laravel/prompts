@@ -10,8 +10,8 @@ abstract class Prompt
     use Concerns\Cursor;
     use Concerns\Erase;
     use Concerns\Events;
+    use Concerns\FakesInputOutput;
     use Concerns\Themes;
-    use Concerns\Tty;
 
     /**
      * The current state of the prompt.
@@ -39,6 +39,11 @@ abstract class Prompt
     protected bool $validated = false;
 
     /**
+     * The terminal instance.
+     */
+    protected static Terminal $terminal;
+
+    /**
      * Get the value of the prompt.
      */
     abstract public function value(): mixed;
@@ -49,21 +54,21 @@ abstract class Prompt
     public function prompt(): mixed
     {
         try {
-            $this->setTty('-icanon -isig -echo');
+            $this->terminal()->setTty('-icanon -isig -echo');
             $this->hideCursor();
             $this->render();
 
-            while ($key = fread(STDIN, 1024)) {
+            while ($key = $this->terminal()->read()) {
                 $continue = $this->handleKeyPress($key);
 
                 $this->render();
 
                 if ($continue === false || $key === Key::CTRL_C) {
                     $this->showCursor();
-                    $this->restoreTty();
+                    $this->terminal()->restoreTty();
 
                     if ($key === Key::CTRL_C) {
-                        exit(1);
+                        $this->terminal()->exit();
                     }
 
                     return $this->value();
@@ -71,10 +76,24 @@ abstract class Prompt
             }
         } catch (Throwable $e) {
             $this->showCursor();
-            $this->restoreTty();
+            $this->terminal()->restoreTty();
 
             throw $e;
         }
+
+        return $this->value();
+    }
+
+    /**
+     * Set or get the terminal instance.
+     */
+    protected static function terminal(Terminal $terminal = null): Terminal
+    {
+        if ($terminal) {
+            return static::$terminal = $terminal;
+        }
+
+        return static::$terminal ??= new Terminal();
     }
 
     /**
@@ -138,7 +157,7 @@ abstract class Prompt
         }
 
         if ($this->state === 'initial') {
-            fwrite(STDOUT, $frame);
+            $this->terminal()->write($frame);
 
             $this->state = 'active';
             $this->prevFrame = $frame;
@@ -155,7 +174,7 @@ abstract class Prompt
             $this->moveCursor(0, $diffLine);
             $this->eraseLines(1);
             $lines = explode(PHP_EOL, $frame);
-            fwrite(STDOUT, $lines[$diffLine]);
+            $this->terminal()->write($lines[$diffLine]);
             $this->moveCursor(0, count($lines) - $diffLine - 1);
         } elseif (count($diff) > 1) { // Re-render everything past the first change
             $diffLine = $diff[0];
@@ -163,7 +182,7 @@ abstract class Prompt
             $this->eraseDown();
             $lines = explode(PHP_EOL, $frame);
             $newLines = array_slice($lines, $diffLine);
-            fwrite(STDOUT, implode(PHP_EOL, $newLines));
+            $this->terminal()->write(implode(PHP_EOL, $newLines));
         }
 
         $this->prevFrame = $frame;

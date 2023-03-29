@@ -9,7 +9,7 @@ trait Cursor
      */
     public function hideCursor(): void
     {
-        fwrite(STDOUT, "\e[?25l");
+        $this->terminal()->write("\e[?25l");
     }
 
     /**
@@ -17,7 +17,7 @@ trait Cursor
      */
     public function showCursor(): void
     {
-        fwrite(STDOUT, "\e[?25h");
+        $this->terminal()->write("\e[?25h");
     }
 
     /**
@@ -39,6 +39,6 @@ trait Cursor
             $sequence .= "\e[{$y}B"; // Down
         }
 
-        fwrite(STDOUT, $sequence);
+        $this->terminal()->write($sequence);
     }
 }

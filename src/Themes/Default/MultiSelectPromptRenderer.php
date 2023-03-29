@@ -51,10 +51,9 @@ class MultiSelectPromptRenderer
     protected function renderOptions(MultiSelectPrompt $prompt): string
     {
         return collect($prompt->options)
-            ->values()
-            ->map(function ($label, $i) use ($prompt) {
-                $selected = in_array(array_keys($prompt->options)[$i], $prompt->value());
-                $active = $prompt->highlighted === $i;
+            ->map(function ($label, $key) use ($prompt) {
+                $active = $prompt->isHighlighted(array_is_list($prompt->options) ? $label : $key);
+                $selected = $prompt->isselected(array_is_list($prompt->options) ? $label : $key);
 
                 return match (true) {
                     $active && $selected => "› {$this->green('◼')} {$label} ",
@@ -71,8 +70,6 @@ class MultiSelectPromptRenderer
      */
     protected function renderSelectedOptions(MultiSelectPrompt $prompt): string
     {
-        return collect($prompt->options)
-            ->filter(fn ($label, $key) => in_array($key, $prompt->values))
-            ->implode(', ');
+        return implode(', ', $prompt->labels());
     }
 }

@@ -17,15 +17,17 @@ class Note extends Prompt
      */
     public function display(): void
     {
-        fwrite(STDOUT, $this->renderTheme());
+        $this->terminal()->write($this->renderTheme());
     }
 
     /**
      * Display the note.
      */
-    public function prompt(): void
+    public function prompt(): null
     {
         $this->display();
+
+        return null;
     }
 
     /**

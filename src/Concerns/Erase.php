@@ -18,7 +18,7 @@ trait Erase
             $clear .= "\e[G";
         }
 
-        fwrite(STDOUT, $clear);
+        $this->terminal()->write($clear);
     }
 
     /**
@@ -26,6 +26,6 @@ trait Erase
      */
     public function eraseDown(): void
     {
-        fwrite(STDOUT, "\e[J");
+        $this->terminal()->write("\e[J");
     }
 }
