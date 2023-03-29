@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Prompts\Themes\Laravel\Concerns;
+namespace Laravel\Prompts\Themes\Default\Concerns;
 
 trait DrawsBoxes
 {

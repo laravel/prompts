@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Prompts\Themes\Laravel;
+namespace Laravel\Prompts\Themes\Default;
 
 use Laravel\Prompts\Concerns\Colors;
 use Laravel\Prompts\Note;
