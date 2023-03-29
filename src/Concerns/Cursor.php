@@ -29,13 +29,13 @@ trait Cursor
 
         if ($x < 0) {
             $sequence .= "\e[".abs($x).'D'; // Left
-        } else if ($x > 0) {
+        } elseif ($x > 0) {
             $sequence .= "\e[{$x}C"; // Right
         }
 
         if ($y < 0) {
             $sequence .= "\e[".abs($y).'A'; // Up
-        } else if ($y > 0) {
+        } elseif ($y > 0) {
             $sequence .= "\e[{$y}B"; // Down
         }
 

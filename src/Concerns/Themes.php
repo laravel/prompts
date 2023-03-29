@@ -39,7 +39,7 @@ trait Themes
             ConfirmPrompt::class => ConfirmPromptRenderer::class,
             Spinner::class => SpinnerRenderer::class,
             Note::class => NoteRenderer::class,
-        ]
+        ],
     ];
 
     /**

@@ -161,7 +161,7 @@ abstract class Prompt
             $lines = explode(PHP_EOL, $frame);
             fwrite(STDOUT, $lines[$diffLine]);
             $this->moveCursor(0, count($lines) - $diffLine - 1);
-        } else if (count($diff) > 1) { // Re-render everything past the first change
+        } elseif (count($diff) > 1) { // Re-render everything past the first change
             $diffLine = $diff[0];
             $this->moveCursor(0, $diffLine);
             $this->eraseDown();
@@ -199,7 +199,7 @@ abstract class Prompt
         $diff = [];
 
         for ($i = 0; $i < max(count($aLines), count($bLines)); $i++) {
-            if (!isset($aLines[$i]) || !isset($bLines[$i]) || $aLines[$i] !== $bLines[$i]) {
+            if (! isset($aLines[$i]) || ! isset($bLines[$i]) || $aLines[$i] !== $bLines[$i]) {
                 $diff[] = $i;
             }
         }

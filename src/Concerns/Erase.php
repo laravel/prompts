@@ -11,7 +11,7 @@ trait Erase
     {
         $clear = '';
         for ($i = 0; $i < $count; $i++) {
-            $clear .= "\e[2K" . ($i < $count - 1 ? "\e[{$count}A" : '');
+            $clear .= "\e[2K".($i < $count - 1 ? "\e[{$count}A" : '');
         }
 
         if ($count) {

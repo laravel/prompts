@@ -10,7 +10,7 @@ use function Laravel\Prompts\select;
 use function Laravel\Prompts\spin;
 use function Laravel\Prompts\text;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 // Laravel\Prompts\Prompt::theme('Clack');
 // Laravel\Prompts\Prompt::theme('Terkelg');
@@ -22,15 +22,23 @@ $result = [
         message: 'Where should we create your project?',
         placeholder: './laravel',
         validate: function ($value) {
-            if (!$value) return 'Please enter a path';
-            if ($value[0] !== '.') return 'Please enter a relative path';
+            if (! $value) {
+                return 'Please enter a path';
+            }
+            if ($value[0] !== '.') {
+                return 'Please enter a relative path';
+            }
         }
     ),
     'password' => password(
         message: 'Provide a password',
         validate: function ($value) {
-            if (!$value) return 'Please enter a password.';
-            if (strlen($value) < 5) return 'Password should have at least 5 characters.';
+            if (! $value) {
+                return 'Please enter a password.';
+            }
+            if (strlen($value) < 5) {
+                return 'Password should have at least 5 characters.';
+            }
         }
     ),
     'type' => select(
@@ -50,7 +58,9 @@ $result = [
             'prettier' => 'Prettier',
         ],
         validate: function ($values) {
-            if (count($values) === 0) return 'Please select at least one tool.';
+            if (count($values) === 0) {
+                return 'Please select at least one tool.';
+            }
         }
     ),
     'install' => confirm(

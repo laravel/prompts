@@ -32,14 +32,14 @@ trait TypedValue
                 match ($key) {
                     Key::LEFT => $this->cursorPosition = max(0, $this->cursorPosition - 1),
                     Key::RIGHT => $this->cursorPosition = min(strlen($this->typedValue), $this->cursorPosition + 1),
-                    Key::DELETE => $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition) . substr($this->typedValue, $this->cursorPosition + 1),
+                    Key::DELETE => $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition).substr($this->typedValue, $this->cursorPosition + 1),
                     default => null,
                 };
             } elseif ($key === key::BACKSPACE) {
-                $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition - 1) . substr($this->typedValue, $this->cursorPosition);
+                $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition - 1).substr($this->typedValue, $this->cursorPosition);
                 $this->cursorPosition = max(0, $this->cursorPosition - 1);
             } elseif ($key !== key::ENTER && $key !== key::CTRL_C) {
-                $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition) . $key . substr($this->typedValue, $this->cursorPosition);
+                $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition).$key.substr($this->typedValue, $this->cursorPosition);
                 $this->cursorPosition++;
             }
         });

@@ -21,8 +21,8 @@ class MultiSelectPrompt extends Prompt
     /**
      * Create a new SelectPrompt instance.
      *
-     * @param array<int|string, string>  $options
-     * @param array<string>  $default
+     * @param  array<int|string, string>  $options
+     * @param  array<string>  $default
      */
     public function __construct(
         public string $message,

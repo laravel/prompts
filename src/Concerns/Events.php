@@ -24,7 +24,8 @@ trait Events
     /**
      * Emit an event.
      */
-    public function emit(string $event, mixed ...$data): void {
+    public function emit(string $event, mixed ...$data): void
+    {
         foreach ($this->listeners[$event] ?? [] as $listener) {
             $listener(...$data);
         }

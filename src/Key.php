@@ -18,7 +18,7 @@ class Key
 
     const ENTER = "\n";
 
-    const SPACE = " ";
+    const SPACE = ' ';
 
     const CTRL_C = "\x03";
 }

@@ -25,7 +25,8 @@ class Spinner extends Prompt
     /**
      * Create a new Spinner instance.
      */
-    public function __construct(public string $message = '') {
+    public function __construct(public string $message = '')
+    {
         //
     }
 
