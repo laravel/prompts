@@ -24,6 +24,9 @@
         "mockery/mockery": "^1.5",
         "phpstan/phpstan-mockery": "^1.1"
     },
+    "suggest": {
+        "ext-pcntl": "Required for the spinner to be animated.",
+    },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
