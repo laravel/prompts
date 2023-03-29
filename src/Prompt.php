@@ -40,17 +40,13 @@ abstract class Prompt
 
     /**
      * Get the value of the prompt.
-     *
-     * @return mixed
      */
-    abstract public function value();
+    abstract public function value(): mixed;
 
     /**
      * Render the prompt and listen for input.
-     *
-     * @return mixed
      */
-    public function prompt()
+    public function prompt(): mixed
     {
         try {
             $this->setTty('-icanon -isig -echo');
