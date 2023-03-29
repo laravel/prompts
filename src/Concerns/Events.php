@@ -11,28 +11,20 @@ trait Events
      *
      * @var array<string, array<int, Closure>>
      */
-    protected $listeners = [];
+    protected array $listeners = [];
 
     /**
      * Register an event listener.
-     *
-     * @param  string  $event
-     * @param  \Closure  $callback
-     * @return void
      */
-    public function on($event, $callback)
+    public function on(string $event, Closure $callback): void
     {
         $this->listeners[$event][] = $callback;
     }
 
     /**
      * Emit an event.
-     *
-     * @param  string  $event
-     * @param  mixed  ...$data
-     * @return void
      */
-    public function emit($event, ...$data) {
+    public function emit(string $event, mixed ...$data): void {
         foreach ($this->listeners[$event] ?? [] as $listener) {
             $listener(...$data);
         }

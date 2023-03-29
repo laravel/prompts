@@ -2,6 +2,8 @@
 
 namespace Laravel\Prompts;
 
+use Closure;
+
 class TextPrompt extends Prompt
 {
     use Concerns\Colors;
@@ -9,28 +11,20 @@ class TextPrompt extends Prompt
 
     /**
      * Create a new TextPrompt instance.
-     *
-     * @param  string  $message
-     * @param  string|null  $placeholder
-     * @param  string  $default
-     * @param  \Closure|null  $validate
-     * @return void
      */
     public function __construct(
-        public $message,
-        public $placeholder = null,
-        $default = '',
-        protected $validate = null,
+        public string $message,
+        public string $placeholder = '',
+        string $default = '',
+        protected ?Closure $validate = null,
     ) {
         $this->trackTypedValue($default);
     }
 
     /**
      * Get the entered value with a virtual cursor.
-     *
-     * @return string
      */
-    public function valueWithCursor()
+    public function valueWithCursor(): string
     {
         if (! $this->value() && $this->placeholder) {
             return $this->inverse(substr($this->placeholder, 0, 1)) . $this->dim(substr($this->placeholder, 1));

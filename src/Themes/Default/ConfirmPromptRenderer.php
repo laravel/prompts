@@ -10,7 +10,10 @@ class ConfirmPromptRenderer
     use Colors;
     use Concerns\DrawsBoxes;
 
-    public function __invoke(ConfirmPrompt $prompt)
+    /**
+     * Render the confirm prompt.
+     */
+    public function __invoke(ConfirmPrompt $prompt): string
     {
         return match ($prompt->state) {
             'submit' => <<<EOT
@@ -35,7 +38,10 @@ class ConfirmPromptRenderer
         };
     }
 
-    protected function renderOptions($prompt)
+    /**
+     * Render the confirm prompt options.
+     */
+    protected function renderOptions(ConfirmPrompt $prompt): string
     {
         return $prompt->confirmed
             ? "{$this->green('●')} Yes {$this->dim('/ ○ No')}"

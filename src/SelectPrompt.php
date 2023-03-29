@@ -6,23 +6,18 @@ class SelectPrompt extends Prompt
 {
     /**
      * The index of the highlighted option.
-     *
-     * @var int
      */
-    public $highlighted = 0;
+    public int $highlighted = 0;
 
     /**
      * Create a new SelectPrompt instance.
      *
-     * @param  string  $message
      * @param  array<int|string, string>  $options
-     * @param  int|string  $default
-     * @return void
      */
     public function __construct(
-        public $message,
-        public $options,
-        protected $default = null,
+        public string $message,
+        public array $options,
+        protected int|string|null $default = null,
     ) {
         if ($this->default) {
             if (array_is_list($this->options)) {
@@ -41,10 +36,8 @@ class SelectPrompt extends Prompt
 
     /**
      * Get the selected value.
-     *
-     * @return string
      */
-    public function value()
+    public function value(): string
     {
         if (array_is_list($this->options)) {
             return $this->options[$this->highlighted] ?? null;
@@ -55,10 +48,8 @@ class SelectPrompt extends Prompt
 
     /**
      * Get the selected label.
-     *
-     * @return string|int
      */
-    public function label()
+    public function label(): string
     {
         if (array_is_list($this->options)) {
             return $this->options[$this->highlighted] ?? null;
@@ -69,20 +60,16 @@ class SelectPrompt extends Prompt
 
     /**
      * Highlight the previous entry, or wrap around to the last entry.
-     *
-     * @return void
      */
-    protected function highlightPrevious()
+    protected function highlightPrevious(): void
     {
         $this->highlighted = $this->highlighted === 0 ? count($this->options) - 1 : $this->highlighted - 1;
     }
 
     /**
      * Highlight the next entry, or wrap around to the first entry.
-     *
-     * @return void
      */
-    protected function highlightNext()
+    protected function highlightNext(): void
     {
         $this->highlighted = $this->highlighted === count($this->options) - 1 ? 0 : $this->highlighted + 1;
     }

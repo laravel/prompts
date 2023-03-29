@@ -10,7 +10,10 @@ class SelectPromptRenderer
     use Colors;
     use Concerns\DrawsBoxes;
 
-    public function __invoke(SelectPrompt $prompt)
+    /**
+     * Render the select prompt.
+     */
+    public function __invoke(SelectPrompt $prompt): string
     {
         return match ($prompt->state) {
             'submit' => <<<EOT
@@ -35,7 +38,10 @@ class SelectPromptRenderer
         };
     }
 
-    protected function renderOptions($prompt)
+    /**
+     * Render the options.
+     */
+    protected function renderOptions(SelectPrompt $prompt): string
     {
         return collect($prompt->options)
             ->values()

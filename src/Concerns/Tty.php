@@ -6,18 +6,13 @@ trait Tty
 {
     /**
      * The initial TTY mode.
-     *
-     * @var string|null
      */
-    protected $initialTtyMode;
+    protected string $initialTtyMode;
 
     /**
      * Set the TTY mode.
-     *
-     * @param  string  $mode
-     * @return void
      */
-    protected function setTty($mode)
+    protected function setTty(string $mode): void
     {
         $this->initialTtyMode ??= shell_exec('stty -g');
 
@@ -26,10 +21,8 @@ trait Tty
 
     /**
      * Restore the initial TTY mode.
-     *
-     * @return void
      */
-    protected function restoreTty()
+    protected function restoreTty(): void
     {
         if ($this->initialTtyMode) {
             shell_exec("stty {$this->initialTtyMode}");

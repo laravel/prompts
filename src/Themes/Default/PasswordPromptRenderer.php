@@ -10,7 +10,10 @@ class PasswordPromptRenderer
     use Colors;
     use Concerns\DrawsBoxes;
 
-    public function __invoke(PasswordPrompt $prompt)
+    /**
+     * Render the password prompt.
+     */
+    public function __invoke(PasswordPrompt $prompt): string
     {
         return match ($prompt->state) {
             'error' => <<<EOT

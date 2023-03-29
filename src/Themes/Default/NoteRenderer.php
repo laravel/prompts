@@ -9,7 +9,10 @@ class NoteRenderer
 {
     use Colors;
 
-    public function __invoke(Note $note)
+    /**
+     * Render the note.
+     */
+    public function __invoke(Note $note): string
     {
         $lines = collect(explode(PHP_EOL, $note->message));
 
@@ -25,7 +28,7 @@ class NoteRenderer
 
                         return " {$this->bgCyan($this->black($line))}";
                     })
-                    ->implode(PHP_EOL) . str_repeat(PHP_EOL, $note->type === 'intro' ? '1' : '2');
+                    ->implode(PHP_EOL) . str_repeat(PHP_EOL, $note->type === 'intro' ? 1 : 2);
 
             default:
                 return PHP_EOL . $lines

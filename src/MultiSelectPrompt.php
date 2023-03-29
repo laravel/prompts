@@ -2,43 +2,40 @@
 
 namespace Laravel\Prompts;
 
+use Closure;
+
 class MultiSelectPrompt extends Prompt
 {
     /**
      * The index of the highlighted option.
-     *
-     * @var int
      */
-    public $highlighted = 0;
+    public int $highlighted = 0;
 
     /**
      * The selected values.
      *
-     * @var array<int, string>
+     * @var array<string>
      */
-    public $values = [];
+    public array $values = [];
 
     /**
      * Create a new SelectPrompt instance.
      *
-     * @param  string  $message
-     * @param  array<int|string, string>  $options
-     * @param  array<int, string>  $default
-     * @param  Closure|null  $validate
-     * @return void
+     * @param array<int|string, string>  $options
+     * @param array<string>  $default
      */
     public function __construct(
-        public $message,
-        public $options,
-        protected $default = [],
-        protected $validate = null,
+        public string $message,
+        public array $options,
+        protected array $default = [],
+        protected ?Closure $validate = null,
     ) {
         $this->values = $this->default;
 
         $this->on('key', fn ($key) => match ($key) {
-            KEY::UP, KEY::LEFT, 'k', 'h' => $this->highlightPrevious(),
-            KEY::DOWN, KEY::RIGHT, 'j', 'l' => $this->highlightNext(),
-            KEY::SPACE => $this->toggleHighlighted(),
+            Key::UP, Key::LEFT, 'k', 'h' => $this->highlightPrevious(),
+            Key::DOWN, Key::RIGHT, 'j', 'l' => $this->highlightNext(),
+            Key::SPACE => $this->toggleHighlighted(),
             default => null,
         });
     }
@@ -46,39 +43,33 @@ class MultiSelectPrompt extends Prompt
     /**
      * Get the selected values.
      *
-     * @return array<int, string>
+     * @return array<string>
      */
-    public function value()
+    public function value(): array
     {
         return $this->values;
     }
 
     /**
      * Highlight the previous entry, or wrap around to the last entry.
-     *
-     * @return void
      */
-    protected function highlightPrevious()
+    protected function highlightPrevious(): void
     {
         $this->highlighted = $this->highlighted === 0 ? count($this->options) - 1 : $this->highlighted - 1;
     }
 
     /**
      * Highlight the next entry, or wrap around to the first entry.
-     *
-     * @return void
      */
-    protected function highlightNext()
+    protected function highlightNext(): void
     {
         $this->highlighted = $this->highlighted === count($this->options) - 1 ? 0 : $this->highlighted + 1;
     }
 
     /**
      * Toggle the highlighted entry.
-     *
-     * @return void
      */
-    protected function toggleHighlighted()
+    protected function toggleHighlighted(): void
     {
         $value = array_keys($this->options)[$this->highlighted];
 

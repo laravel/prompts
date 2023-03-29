@@ -8,25 +8,18 @@ trait TypedValue
 {
     /**
      * The value that has been typed.
-     *
-     * @var string|null
      */
-    protected $typedValue;
+    protected string $typedValue = '';
 
     /**
      * The position of the virtual cursor.
-     *
-     * @var int
      */
-    protected $cursorPosition = 0;
+    protected int $cursorPosition = 0;
 
     /**
      * Track the value as the user types.
-     *
-     * @param  string|null  $default
-     * @return void
      */
-    protected function trackTypedValue($default = null)
+    protected function trackTypedValue(string $default = ''): void
     {
         $this->typedValue = $default;
 
@@ -54,10 +47,8 @@ trait TypedValue
 
     /**
      * Get the value of the prompt.
-     *
-     * @return string|null
      */
-    public function value()
+    public function value(): string
     {
         return $this->typedValue;
     }

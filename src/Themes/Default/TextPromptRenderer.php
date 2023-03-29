@@ -10,7 +10,10 @@ class TextPromptRenderer
     use Colors;
     use Concerns\DrawsBoxes;
 
-    public function __invoke(TextPrompt $prompt)
+    /**
+     * Render the text prompt.
+     */
+    public function __invoke(TextPrompt $prompt): string
     {
         return match ($prompt->state) {
             'error' => <<<EOT
@@ -28,7 +31,7 @@ class TextPromptRenderer
 
             'cancel' => <<<EOT
 
-                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->value() ?? $prompt->placeholder)), 'red')}
+                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->value() ?: $prompt->placeholder)), 'red')}
                 {$this->red('  ⚠ Cancelled.')}
 
                 EOT,

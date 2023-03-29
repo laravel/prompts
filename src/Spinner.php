@@ -2,47 +2,42 @@
 
 namespace Laravel\Prompts;
 
+use Closure;
 use RuntimeException;
 
 class Spinner extends Prompt
 {
     /**
      * How long to wait between rendering each frame.
-     *
-     * @var int
      */
-    public $interval = 100;
+    public int $interval = 100;
 
     /**
      * The number of times the spinner has been rendered.
-     *
-     * @var int
      */
-    public $count = 0;
+    public int $count = 0;
 
     /**
      * Whether the spinner can only be rendered once.
-     *
-     * @var bool
      */
-    public $static = false;
+    public bool $static = false;
 
     /**
      * Create a new Spinner instance.
-     *
-     * @param  string  $message
      */
-    public function __construct(public $message = '') {
+    public function __construct(public string $message = '') {
         //
     }
 
     /**
      * Render the spinner and execute the callback.
      *
-     * @param  \Closure  $callback
-     * @return mixed
+     * @template TReturn of mixed
+     *
+     * @param  \Closure(): TReturn  $callback
+     * @return TReturn
      */
-    public function spin($callback)
+    public function spin(Closure $callback): mixed
     {
         if (! function_exists('pcntl_fork')) {
             $this->renderStatically($callback);
@@ -63,7 +58,7 @@ class Spinner extends Prompt
             $pid = pcntl_fork();
 
             if ($pid === 0) {
-                while (true) {
+                while (true) { // @phpstan-ignore-line
                     $this->render();
 
                     $this->count++;
@@ -94,10 +89,12 @@ class Spinner extends Prompt
     /**
      * Render a static version of the spinner.
      *
-     * @param  \Closure  $callback
-     * @return mixed
+     * @template TReturn of mixed
+     *
+     * @param  \Closure(): TReturn  $callback
+     * @return TReturn
      */
-    protected function renderStatically($callback)
+    protected function renderStatically(Closure $callback): mixed
     {
         $this->static = true;
 
@@ -109,19 +106,17 @@ class Spinner extends Prompt
     /**
      * Disable prompting for input.
      *
-     * @return void
+     * @throws \RuntimeException
      */
-    public function prompt()
+    public function prompt(): never
     {
         throw new RuntimeException('Spinner cannot be prompted.');
     }
 
     /**
      * Get the current value of the prompt.
-     *
-     * @return mixed
      */
-    public function value()
+    public function value(): null
     {
         return null;
     }

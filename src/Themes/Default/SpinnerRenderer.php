@@ -9,13 +9,27 @@ class SpinnerRenderer
 {
     use Colors;
 
-    protected $frames = ['⠂', '⠒', '⠐', '⠰', '⠠', '⠤', '⠄', '⠆'];
+    /**
+     * The frames of the spinner.
+     *
+     * @var array<string>
+     */
+    protected array $frames = ['⠂', '⠒', '⠐', '⠰', '⠠', '⠤', '⠄', '⠆'];
 
-    protected $staticFrame = '⠶';
+    /**
+     * The frame to render when the spinner is static.
+     */
+    protected string $staticFrame = '⠶';
 
-    protected $interval = 75;
+    /**
+     * The interval between frames.
+     */
+    protected int $interval = 75;
 
-    public function __invoke(Spinner $spinner)
+    /**
+     * Render the spinner.
+     */
+    public function __invoke(Spinner $spinner): string
     {
         if ($spinner->static) {
             return <<<EOT

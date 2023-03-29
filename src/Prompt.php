@@ -2,6 +2,7 @@
 
 namespace Laravel\Prompts;
 
+use Closure;
 use Throwable;
 
 abstract class Prompt
@@ -14,38 +15,28 @@ abstract class Prompt
 
     /**
      * The current state of the prompt.
-     *
-     * @var string
      */
-    public $state = 'initial';
+    public string $state = 'initial';
 
     /**
      * The error message from the validator.
-     *
-     * @var string
      */
-    public $error = '';
+    public string $error = '';
 
     /**
      * The previously rendered frame.
-     *
-     * @var string
      */
     protected string $prevFrame = '';
 
     /**
      * The validator callback.
-     *
-     * @var \Closure|null
      */
-    protected $validate;
+    protected ?Closure $validate;
 
     /**
      * Indicates if the prompt has been validated.
-     *
-     * @var bool
      */
-    protected $validated = false;
+    protected bool $validated = false;
 
     /**
      * Get the value of the prompt.
@@ -92,11 +83,8 @@ abstract class Prompt
 
     /**
      * Handle a key press.
-     *
-     * @param  string  $key
-     * @return bool|null
      */
-    protected function handleKeyPress(string $key)
+    protected function handleKeyPress(string $key): ?bool
     {
         if ($this->state === 'error') {
             $this->state = 'active';
@@ -120,17 +108,17 @@ abstract class Prompt
         if ($this->state === 'submit' || $this->state === 'cancel') {
             return false;
         }
+
+        return null;
     }
 
     /**
      * Validate the input.
-     *
-     * @return string
      */
-    protected function validate()
+    protected function validate(): string
     {
-        if (!$this->validate) {
-            return;
+        if (! isset($this->validate)) {
+            return '';
         }
 
         $error = ($this->validate)($this->value());
@@ -144,10 +132,8 @@ abstract class Prompt
 
     /**
      * Render the prompt.
-     *
-     * @return void
      */
-    protected function render()
+    protected function render(): void
     {
         $frame = $this->renderTheme();
 
@@ -189,10 +175,9 @@ abstract class Prompt
 
     /**
      * Restore the cursor position.
-     *
-     * @return void
      */
-    private function restoreCursor() {
+    private function restoreCursor(): void
+    {
         $lines = count(explode(PHP_EOL, $this->prevFrame)) - 1;
 
         $this->moveCursor(-999, $lines * -1);
@@ -201,12 +186,13 @@ abstract class Prompt
     /**
      * Get the difference between two strings.
      *
-     * @param  string  $a
-     * @param  string  $b
-     * @return array
+     * @return array<int>
      */
-    protected function diffLines(string $a, string $b): array {
-        if ($a === $b) return [];
+    protected function diffLines(string $a, string $b): array
+    {
+        if ($a === $b) {
+            return [];
+        }
 
         $aLines = explode(PHP_EOL, $a);
         $bLines = explode(PHP_EOL, $b);

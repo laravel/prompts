@@ -10,18 +10,21 @@ class MultiSelectPromptRenderer
     use Colors;
     use Concerns\DrawsBoxes;
 
-    public function __invoke(MultiSelectPrompt $prompt)
+    /**
+     * Render the multiselect prompt.
+     */
+    public function __invoke(MultiSelectPrompt $prompt): string
     {
         return match ($prompt->state) {
             'submit' => <<<EOT
 
-                {$this->box($this->dim($prompt->message), $this->dim($this->selected($prompt)))}
+                {$this->box($this->dim($prompt->message), $this->dim($this->renderSelectedOptions($prompt)))}
 
                 EOT,
 
             'cancel' => <<<EOT
 
-                {$this->box($prompt->message, $this->strikethrough($this->dim($this->selected($prompt))), 'red')}
+                {$this->box($prompt->message, $this->strikethrough($this->dim($this->renderSelectedOptions($prompt))), 'red')}
                 {$this->red('  ⚠ Cancelled.')}
 
                 EOT,
@@ -42,14 +45,10 @@ class MultiSelectPromptRenderer
         };
     }
 
-    protected function selected($prompt)
-    {
-        return collect($prompt->options)
-            ->filter(fn ($label, $key) => in_array($key, $prompt->values))
-            ->implode(', ');
-    }
-
-    protected function renderOptions($prompt)
+    /**
+     * Render the options.
+     */
+    protected function renderOptions(MultiSelectPrompt $prompt): string
     {
         return collect($prompt->options)
             ->values()
@@ -65,5 +64,15 @@ class MultiSelectPromptRenderer
                 };
             })
             ->implode(PHP_EOL);
+    }
+
+    /**
+     * Render the selected options.
+     */
+    protected function renderSelectedOptions(MultiSelectPrompt $prompt): string
+    {
+        return collect($prompt->options)
+            ->filter(fn ($label, $key) => in_array($key, $prompt->values))
+            ->implode(', ');
     }
 }

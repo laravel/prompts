@@ -2,6 +2,8 @@
 
 namespace Laravel\Prompts;
 
+use Closure;
+
 class PasswordPrompt extends Prompt
 {
     use Concerns\Colors;
@@ -9,35 +11,26 @@ class PasswordPrompt extends Prompt
 
     /**
      * Create a new PasswordPrompt instance.
-     *
-     * @param  string  $message
-     * @param  \Closure|null  $validate
-     * @param  string  $mask
-     * @return void
      */
     public function __construct(
-        public $message,
-        protected $validate = null,
-        public $mask = '•',
+        public string $message,
+        protected ?Closure $validate = null,
+        public string $mask = '•',
     ) {
         $this->trackTypedValue();
     }
 
     /**
      * Get a masked version of the entered value.
-     *
-     * @return string
      */
-    public function masked() {
+    public function masked(): string {
         return $this->value() ? str_repeat($this->mask, strlen($this->value())) : '';
     }
 
     /**
      * Get the masked value with a virtual cursor.
-     *
-     * @return string
      */
-    public function maskedWithCursor()
+    public function maskedWithCursor(): string
     {
         if ($this->cursorPosition >= strlen($this->value())) {
             return $this->masked() . $this->inverse($this->hidden('_'));

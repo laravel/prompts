@@ -6,11 +6,8 @@ trait Erase
 {
     /**
      * Erase the given number of lines downwards from the cursor position.
-     *
-     * @param  int  $count
-     * @return void
      */
-    public function eraseLines($count)
+    public function eraseLines(int $count): void
     {
         $clear = '';
         for ($i = 0; $i < $count; $i++) {
@@ -26,10 +23,8 @@ trait Erase
 
     /**
      * Erase from cursor until end of screen.
-     *
-     * @return void
      */
-    public function eraseDown()
+    public function eraseDown(): void
     {
         fwrite(STDOUT, "\e[J");
     }

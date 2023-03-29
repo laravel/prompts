@@ -6,13 +6,8 @@ trait DrawsBoxes
 {
     /**
      * Draw a box.
-     *
-     * @param  string  $title
-     * @param  string  $body
-     * @param  string  $borderColor
-     * @return string
      */
-    protected function box($title, $body, $borderColor = 'gray', $minWidth = 60)
+    protected function box(string $title, string $body, string $borderColor = 'gray', int $minWidth = 60): string
     {
         $lines = collect(explode(PHP_EOL, $body));
         $longestLineLength = $lines->map(fn ($line) => mb_strlen($this->stripEscapeSequences($line)))->max();
@@ -34,11 +29,8 @@ trait DrawsBoxes
 
     /**
      * Strip ANSI escape sequences from the given text.
-     *
-     * @param  string  $text
-     * @return string
      */
-    protected function stripEscapeSequences($text)
+    protected function stripEscapeSequences(string $text): string
     {
         return preg_replace('/\x1b[^m]*m/', '', $text);
     }

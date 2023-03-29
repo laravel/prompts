@@ -6,42 +6,32 @@ class Note extends Prompt
 {
     /**
      * Create a new Note instance.
-     *
-     * @param  string  $message
-     * @param  string|null  $type
-     * @return void
      */
-    public function __construct(public $message, public $type = null)
+    public function __construct(public string $message, public ?string $type = null)
     {
         //
     }
 
     /**
      * Display the note.
-     *
-     * @return void
      */
-    public function display()
+    public function display(): void
     {
         fwrite(STDOUT, $this->renderTheme());
     }
 
     /**
      * Display the note.
-     *
-     * @return void
      */
-    public function prompt()
+    public function prompt(): void
     {
-        return $this->display();
+        $this->display();
     }
 
     /**
      * Get the value of the prompt.
-     *
-     * @return void
      */
-    public function value()
+    public function value(): null
     {
         return null;
     }

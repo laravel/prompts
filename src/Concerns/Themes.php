@@ -22,17 +22,15 @@ trait Themes
 {
     /**
      * The name of the active theme.
-     *
-     * @var string
      */
-    protected static $theme = 'default';
+    protected static string $theme = 'default';
 
     /**
      * The available themes.
      *
-     * @var array<string, array<class-string, class-string>>
+     * @var array<string, array<class-string<\Laravel\Prompts\Prompt>, class-string<object&callable>>>
      */
-    protected static $themes = [
+    protected static array $themes = [
         'default' => [
             TextPrompt::class => TextPromptRenderer::class,
             PasswordPrompt::class => PasswordPromptRenderer::class,
@@ -47,10 +45,9 @@ trait Themes
     /**
      * Get or set the active theme.
      *
-     * @param  string|null  $name
-     * @return string|null
+     * @throws \InvalidArgumentException
      */
-    public static function theme($name = null)
+    public static function theme(?string $name = null): string
     {
         if ($name === null) {
             return static::$theme;
@@ -60,17 +57,15 @@ trait Themes
             throw new InvalidArgumentException("Prompt theme [{$name}] not found.");
         }
 
-        static::$theme = $name;
+        return static::$theme = $name;
     }
 
     /**
      * Add a new theme.
      *
-     * @param  string  $name
-     * @param  array<class-string, class-string>  $renderers
-     * @return void
+     * @param  array<class-string<\Laravel\Prompts\Prompt>, class-string<object&callable>>  $renderers
      */
-    public static function addTheme($name, $renderers)
+    public static function addTheme(string $name, array $renderers): void
     {
         if ($name === 'default') {
             throw new InvalidArgumentException('The default theme cannot be overridden.');
@@ -81,10 +76,8 @@ trait Themes
 
     /**
      * Get the renderer for the current prompt.
-     *
-     * @return callable
      */
-    protected function getRenderer()
+    protected function getRenderer(): callable
     {
         $class = get_class($this);
 
@@ -93,10 +86,8 @@ trait Themes
 
     /**
      * Render the prompt using the active theme.
-     *
-     * @return string
      */
-    protected function renderTheme()
+    protected function renderTheme(): string
     {
         $renderer = $this->getRenderer();
 

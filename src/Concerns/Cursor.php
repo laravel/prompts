@@ -6,32 +6,24 @@ trait Cursor
 {
     /**
      * Hide the cursor.
-     *
-     * @return void
      */
-    public function hideCursor()
+    public function hideCursor(): void
     {
         fwrite(STDOUT, "\e[?25l");
     }
 
     /**
      * Show the cursor.
-     *
-     * @return void
      */
-    public function showCursor()
+    public function showCursor(): void
     {
         fwrite(STDOUT, "\e[?25h");
     }
 
     /**
      * Move the cursor.
-     *
-     * @param  int  $x
-     * @param  int  $y
-     * @return void
      */
-    public function moveCursor($x, $y = 0)
+    public function moveCursor(int $x, int $y = 0): void
     {
         $sequence = '';
 

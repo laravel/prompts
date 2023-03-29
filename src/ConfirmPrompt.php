@@ -6,21 +6,15 @@ class ConfirmPrompt extends Prompt
 {
     /**
      * Whether the prompt has been confirmed.
-     *
-     * @var bool
      */
-    public $confirmed;
+    public bool $confirmed;
 
     /**
      * Create a new ConfirmPrompt instance.
-     *
-     * @param  string  $message
-     * @param  bool  $default
-     * @return void
      */
     public function __construct(
-        public $message,
-        $default = true
+        public string $message,
+        bool $default = true
     ) {
         $this->confirmed = $default;
 
@@ -34,10 +28,8 @@ class ConfirmPrompt extends Prompt
 
     /**
      * Get the value of the prompt.
-     *
-     * @return bool
      */
-    public function value()
+    public function value(): bool
     {
         return $this->confirmed;
     }
