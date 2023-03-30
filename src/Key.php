@@ -20,5 +20,7 @@ class Key
 
     const SPACE = ' ';
 
+    const TAB = "\t";
+
     const CTRL_C = "\x03";
 }
