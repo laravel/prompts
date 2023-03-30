@@ -142,11 +142,43 @@ $permissions = multiselect(
 
 ### Spinner
 
-TODO
+```php
+use function Laravel\Prompts\spin;
+
+$result = spin(function () {
+    // Do something...
+}, 'Doing something...');
+```
+
+> **Note** The spinner requires the `ext-pcntl` PHP extension to animate the spinner.
 
 ### Notes
 
-TODO: note, error, warning, intro, outro
+There are several different note styles that can be rendered.
+
+```php
+use function Laravel\Prompts\note;
+
+note('The command was successful.');
+```
+
+```php
+use function Laravel\Prompts\error;
+
+error('Something went wrong!');
+```
+
+```php
+use function Laravel\Prompts\intro;
+
+intro('Welcome');
+```
+
+```php
+use function Laravel\Prompts\outro;
+
+outro('Happy Coding!');
+```
 
 ## Compatibility with Laravel's existing prompt methods
 
@@ -174,3 +206,33 @@ class GreetingCommand extends Command
 ```
 
 > **Note** Some features are not available via the existing method API, such as placeholders and validation.
+
+## Themes
+
+Laravel Prompts comes with a beautiful default theme, but you are welcome to add your own.
+
+Themes can be registered using the `addTheme` method on the `Prompt` class:
+
+```php
+use Laravel\Promts\Prompt;
+
+Prompt::addTheme('clack', [
+    \Laravel\Prompts\TextPrompt::class => \App\Console\Prompts\Themes\Clack\TextPromptRenderer::class,
+    \Laravel\Prompts\PasswordPrompt::class => \App\Console\Prompts\Themes\Clack\PasswordPromptRenderer::class,
+    \Laravel\Prompts\SelectPrompt::class => \App\Console\Prompts\Themes\Clack\SelectPromptRenderer::class,
+    \Laravel\Prompts\MultiSelectPrompt::class => \App\Console\Prompts\Themes\Clack\MultiSelectPromptRenderer::class,
+    \Laravel\Prompts\ConfirmPrompt::class => \App\Console\Prompts\Themes\Clack\ConfirmPromptRenderer::class,
+    \Laravel\Prompts\Spinner::class => \App\Console\Prompts\Themes\Clack\SpinnerRenderer::class,
+    \Laravel\Prompts\Note::class => \App\Console\Prompts\Themes\Clack\NoteRenderer::class,
+]);
+```
+
+Take a look at the default theme provided by Laravel Prompts to see how it works.
+
+The active theme can be changed using the `theme` method:
+
+```php
+use Laravel\Promts\Prompt;
+
+Prompt::theme('clack');
+```
