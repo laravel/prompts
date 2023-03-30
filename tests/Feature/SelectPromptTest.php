@@ -12,7 +12,7 @@ it('accepts an array of labels', function () {
         options: [
             'Red',
             'Green',
-            'Blue'
+            'Blue',
         ]
     );
 
@@ -27,7 +27,7 @@ it('accepts an array of keys and labels', function () {
         options: [
             'red' => 'Red',
             'green' => 'Green',
-            'blue' => 'Blue'
+            'blue' => 'Blue',
         ]
     );
 
@@ -42,7 +42,7 @@ it('accepts default values when the options are labels', function () {
         options: [
             'Red',
             'Green',
-            'Blue'
+            'Blue',
         ],
         default: 'Green'
     );
@@ -58,7 +58,7 @@ it('accepts default values when the options are keys with labels', function () {
         options: [
             'red' => 'Red',
             'green' => 'Green',
-            'blue' => 'Blue'
+            'blue' => 'Blue',
         ],
         default: 'green'
     );

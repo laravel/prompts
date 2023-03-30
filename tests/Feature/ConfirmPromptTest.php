@@ -1,8 +1,8 @@
 <?php
 
+use function Laravel\Prompts\confirm;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
-use function Laravel\Prompts\confirm;
 
 it('confirms', function () {
     Prompt::fake([Key::ENTER]);

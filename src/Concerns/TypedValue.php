@@ -35,10 +35,10 @@ trait TypedValue
                     Key::DELETE => $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition).substr($this->typedValue, $this->cursorPosition + 1),
                     default => null,
                 };
-            } elseif ($key === key::BACKSPACE) {
+            } elseif ($key === Key::BACKSPACE) {
                 $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition - 1).substr($this->typedValue, $this->cursorPosition);
                 $this->cursorPosition = max(0, $this->cursorPosition - 1);
-            } elseif ($key !== key::ENTER && $key !== key::CTRL_C) {
+            } elseif ($key !== Key::ENTER && $key !== Key::CTRL_C) {
                 $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition).$key.substr($this->typedValue, $this->cursorPosition);
                 $this->cursorPosition++;
             }
