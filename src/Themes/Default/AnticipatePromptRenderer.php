@@ -50,7 +50,7 @@ class AnticipatePromptRenderer
      */
     protected function renderOptions(AnticipatePrompt $prompt): string
     {
-        $lines = collect($prompt->matches())->map(fn ($match, $i) => $prompt->highlighted === $i
+        $lines = collect($prompt->scrolledMatches())->map(fn ($match, $i) => $prompt->highlighted === $i
             ? " {$match} "
             : " {$match} "
         );
@@ -62,9 +62,15 @@ class AnticipatePromptRenderer
         $width = $this->longest($lines->toArray());
 
         return $lines
+            ->map(fn ($label) => $this->pad($label, $width))
+            ->map(fn ($label, $i) => match (true) {
+                $i === $lines->keys()->first() && $prompt->hasMatchesAbove() => preg_replace('/\s\s$/', '↑ ', $label),
+                $i === $lines->keys()->last() && $prompt->hasMatchesBelow() => preg_replace('/\s\s$/', '↓ ', $label),
+                default => $label,
+            })
             ->map(fn ($label, $i) => $prompt->highlighted === $i
-                ? $this->inverse($this->pad($label, $width))
-                : $this->dim($this->pad($label, $width))
+                ? $this->inverse($label)
+                : $this->dim($label)
             )
             ->implode(PHP_EOL);
     }

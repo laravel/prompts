@@ -15,6 +15,11 @@ class AnticipatePrompt extends Prompt
     public int|null $highlighted = null;
 
     /**
+     * The number of matches to show before scrolling.
+     */
+    public int $scroll = 5;
+
+    /**
      * Create a new AnticipatePrompt instance.
      *
      * @param  array<string>|Closure(string): array<string>  $options
@@ -72,6 +77,52 @@ class AnticipatePrompt extends Prompt
         return array_values(array_filter($this->options, function ($option) {
             return str_starts_with(strtolower($option), strtolower($this->value()));
         }));
+    }
+
+    /**
+     * Get a scrolled version of the options that match the input.
+     *
+     * @return array<string>
+     */
+    public function scrolledMatches(): array
+    {
+        $count = count($this->matches());
+
+        if ($count <= $this->scroll) {
+            return $this->matches();
+        }
+
+        if ($this->highlighted === null) {
+            return array_slice($this->matches(), 0, $this->scroll, true);
+        }
+
+        if ($this->highlighted < $this->scroll) {
+            return array_slice($this->matches(), 0, $this->scroll, true);
+        }
+
+        return array_slice($this->matches(), $this->highlighted - $this->scroll + 1, $this->scroll, true);
+    }
+
+    /**
+     * Return whether there are matches above the current scroll position.
+     */
+    public function hasMatchesAbove(): bool
+    {
+        return $this->highlighted !== null && $this->highlighted > $this->scroll - 1;
+    }
+
+    /**
+     * Return whether there are matches below the current scroll position.
+     */
+    public function hasMatchesBelow(): bool
+    {
+        $count = count($this->matches());
+
+        if ($count <= $this->scroll) {
+            return false;
+        }
+
+        return $this->highlighted < $count - 1;
     }
 
     /**
