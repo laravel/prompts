@@ -159,6 +159,30 @@ trait Prompts
     }
 
     /**
+     * Write a string as comment output.
+     *
+     * @param  string  $string
+     * @param  int|string|null  $verbosity
+     * @return void
+     */
+    public function comment($string, $verbosity = null)
+    {
+        return note($string);
+    }
+
+    /**
+     * Write a string as question output.
+     *
+     * @param  string  $string
+     * @param  int|string|null  $verbosity
+     * @return void
+     */
+    public function question($string, $verbosity = null)
+    {
+        return note($string);
+    }
+
+    /**
      * Write an introductory string.
      *
      * @param  string  $string
