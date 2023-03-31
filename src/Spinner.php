@@ -117,8 +117,8 @@ class Spinner extends Prompt
     /**
      * Get the current value of the prompt.
      */
-    public function value(): null
+    public function value(): bool
     {
-        return null;
+        return true;
     }
 }
