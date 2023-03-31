@@ -1,7 +1,7 @@
 <?php
 
-use function Laravel\Prompts\spin;
 use Laravel\Prompts\Prompt;
+use function Laravel\Prompts\spin;
 
 it('renders a spinner while executing a callback and then returns the value', function () {
     Prompt::fake([])
