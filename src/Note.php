@@ -23,11 +23,11 @@ class Note extends Prompt
     /**
      * Display the note.
      */
-    public function prompt(): null
+    public function prompt(): bool
     {
         $this->display();
 
-        return null;
+        return true;
     }
 
     /**
