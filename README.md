@@ -169,6 +169,18 @@ error('Something went wrong!');
 ```
 
 ```php
+use function Laravel\Prompts\warning;
+
+warning('Something went wrong!');
+```
+
+```php
+use function Laravel\Prompts\alert;
+
+alert('Something went wrong!');
+```
+
+```php
 use function Laravel\Prompts\intro;
 
 intro('Welcome');

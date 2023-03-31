@@ -83,6 +83,22 @@ function error(string $message): void
 }
 
 /**
+ * Display a warning.
+ */
+function warning(string $message): void
+{
+    (new Note($message, 'warning'))->display();
+}
+
+/**
+ * Display an alert.
+ */
+function alert(string $message): void
+{
+    (new Note($message, 'alert'))->display();
+}
+
+/**
  * Display an introduction.
  */
 function intro(string $message): void

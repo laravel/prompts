@@ -30,6 +30,21 @@ class NoteRenderer
                     })
                     ->implode(PHP_EOL).str_repeat(PHP_EOL, $note->type === 'intro' ? 1 : 2);
 
+            case 'warning':
+                return PHP_EOL.$lines
+                    ->map(fn ($line) => $this->yellow(" {$line}"))
+                    ->implode(PHP_EOL).PHP_EOL;
+
+            case 'error':
+                return PHP_EOL.$lines
+                    ->map(fn ($line) => $this->red(" {$line}"))
+                    ->implode(PHP_EOL).PHP_EOL;
+
+            case 'alert':
+                return PHP_EOL.$lines
+                    ->map(fn ($line) => ' '.$this->bgRed($this->white(" {$line} ")))
+                    ->implode(PHP_EOL).PHP_EOL;
+
             default:
                 return PHP_EOL.$lines
                     ->map(fn ($line) => " {$line}")
