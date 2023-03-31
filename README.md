@@ -4,13 +4,24 @@ A PHP library for creating beautiful and user-friendly prompts for your command-
 
 ## Installation
 
-```sh
+> **Note** These are pre-release instructions
+
+In the parent directory of your application:
+
+```
+git clone git@github.com:laravel-labs/prompts.git
+cd <your-application>
+composer config minimum-stability dev
+composer config repositories.prompts '{"type": "path", "url": "../prompts"}'
+
 composer require laravel/prompts
 ```
 
 ## Usage
 
 ### Text
+
+<img src="https://user-images.githubusercontent.com/4977161/229037808-98b247cc-e862-4f97-a581-5a16ffbabc65.gif" width="800" />
 
 ```php
 use function Laravel\Prompts\text;
@@ -37,7 +48,10 @@ $name = text(
 
 ### Password
 
+<img src="https://user-images.githubusercontent.com/4977161/229038919-626d2a14-36b5-4f28-9957-e4c861edb436.gif" width="800" />
+
 ```php
+
 use function Laravel\Prompts\password;
 
 $password = password('What is the password?');
@@ -60,6 +74,8 @@ $password = password(
 
 ### Confirm
 
+<img src="https://user-images.githubusercontent.com/4977161/229039659-fdece306-7a56-4142-9c5b-6574282c291d.gif" width="800" />
+
 ```php
 use function Laravel\Prompts\confirm;
 
@@ -78,6 +94,8 @@ $confirmed = confirm(
 ```
 
 ### Select
+
+<img src="https://user-images.githubusercontent.com/4977161/229040185-dcf6e1ee-f9e0-414a-9771-cf52d378eb2c.gif" width="800" />
 
 ```php
 use function Laravel\Prompts\select;
@@ -106,6 +124,8 @@ $role = select(
 ```
 
 ### Multi-select
+
+<img src="https://user-images.githubusercontent.com/4977161/229041010-5174786c-6301-4a05-b296-aca7fd489b5f.gif" width="800" />
 
 ```php
 use function Laravel\Prompts\multiselect;
@@ -141,6 +161,8 @@ $permissions = multiselect(
 ```
 
 ### Auto-completion
+
+<img src="https://user-images.githubusercontent.com/4977161/229041595-808bc3f2-2d23-4ffd-8104-f99574c5aa8f.gif" width="800" />
 
 ```php
 use function Laravel\Prompts\anticipate;
@@ -194,17 +216,23 @@ $color = anticipate(
 
 ### Spinner
 
+<img src="https://user-images.githubusercontent.com/4977161/229042721-926b09ee-2784-4aed-9f66-f09114004bb0.gif" width="800" />
+
 ```php
 use function Laravel\Prompts\spin;
 
 $result = spin(function () {
-    // Do something...
+    sleep(3);
+    
+    return 'Result';
 }, 'Doing something...');
 ```
 
 > **Note** The spinner requires the `ext-pcntl` PHP extension to animate the spinner.
 
 ### Notes
+
+<img src="https://user-images.githubusercontent.com/4977161/229043322-e27e9cff-a79d-482a-8d84-859eefa3334d.gif" width="800" />
 
 There are several different note styles that can be rendered.
 
