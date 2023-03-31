@@ -234,7 +234,7 @@ $result = spin(function () {
 
 ### Notes
 
-<img src="https://user-images.githubusercontent.com/4977161/229043322-e27e9cff-a79d-482a-8d84-859eefa3334d.gif" width="800" />
+<img src="https://user-images.githubusercontent.com/4977161/229044919-584fcbfe-5346-4a92-9e95-4b7e9ca31e86.gif" width="800" />
 
 There are several different note styles that can be rendered.
 
