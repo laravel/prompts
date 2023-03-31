@@ -218,17 +218,19 @@ $color = anticipate(
 
 <img src="https://user-images.githubusercontent.com/4977161/229042721-926b09ee-2784-4aed-9f66-f09114004bb0.gif" width="800" />
 
+The spinner will render while the provided callback runs.
+
+> **Note** The spinner requires the `ext-pcntl` PHP extension to animate the spinner, otherwise a static version will be rendered instead.
+
 ```php
 use function Laravel\Prompts\spin;
 
 $result = spin(function () {
     sleep(3);
-    
+
     return 'Result';
 }, 'Doing something...');
 ```
-
-> **Note** The spinner requires the `ext-pcntl` PHP extension to animate the spinner.
 
 ### Notes
 
