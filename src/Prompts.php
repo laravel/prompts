@@ -90,7 +90,7 @@ trait Prompts
      */
     public function anticipate($question, $choices, $default = null)
     {
-        return $this->askWithCompletion($question, $choices, $default);
+        return $this->askWithCompletion($question, $choices, $default ?? '');
     }
 
     /**
