@@ -25,7 +25,7 @@
         "phpstan/phpstan-mockery": "^1.1"
     },
     "suggest": {
-        "ext-pcntl": "Required for the spinner to be animated.",
+        "ext-pcntl": "Required for the spinner to be animated."
     },
     "config": {
         "allow-plugins": {
