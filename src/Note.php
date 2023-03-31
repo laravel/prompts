@@ -33,8 +33,8 @@ class Note extends Prompt
     /**
      * Get the value of the prompt.
      */
-    public function value(): null
+    public function value(): bool
     {
-        return null;
+        return true;
     }
 }
