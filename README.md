@@ -140,6 +140,58 @@ $permissions = multiselect(
 );
 ```
 
+### Auto-completion
+
+```php
+use function Laravel\Prompts\anticipate;
+
+$color = anticipate('What is your favorite color', [
+    'Red',
+    'Green',
+    'Blue',
+]);
+```
+
+You may also provide keys a placeholder, default value, and a validation callback:
+
+```php
+use function Laravel\Prompts\anticipate;
+
+$color = anticipate(
+    message: 'What is your favorite color?',
+    placeholder: 'Enter any color your like!',
+    options: [
+        'Red',
+        'Green',
+        'Blue',
+    ]
+    default: 'Red'
+    validate: function ($value) {
+        if (strlen($value) < 1) {
+            return 'Please enter a color';
+        }
+    },
+);
+```
+
+By default, options are matched based on whether they start with the users input in a case insensitive manner. You may provide a callback function to control what matches are provided:
+
+```php
+use function Laravel\Prompts\anticipate;
+
+$color = anticipate(
+    message: 'What is your favorite color?',
+    options: fn (string $value) => array_filter(
+        [
+            'Red',
+            'Green',
+            'Blue',
+        ],
+        fn ($option) => str_contains(strtolower($option), strtolower($value)),
+    ),
+);
+```
+
 ### Spinner
 
 ```php

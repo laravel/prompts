@@ -54,6 +54,16 @@ function confirm(string $message, bool $default = true): bool
 }
 
 /**
+ * Prompt the user for text input with auto-completion.
+ *
+ * @param  array<string>|Closure(string): array<string>  $options
+ */
+function anticipate(string $message, array|Closure $options, string $placeholder = '', string $default = '', ?Closure $validate = null): string
+{
+    return (new AnticipatePrompt($message, $options, $placeholder, $default, $validate))->prompt();
+}
+
+/**
  * Render a spinner while the given callback is executing.
  *
  * @template TReturn of mixed
