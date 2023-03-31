@@ -1,6 +1,9 @@
 <?php
 
+use function Laravel\Prompts\alert;
+use function Laravel\Prompts\anticipate;
 use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\error;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\note;
@@ -9,37 +12,48 @@ use function Laravel\Prompts\password;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\spin;
 use function Laravel\Prompts\text;
+use function Laravel\Prompts\warning;
 
 require __DIR__.'/../vendor/autoload.php';
-
-// Laravel\Prompts\Prompt::theme('Clack');
-// Laravel\Prompts\Prompt::theme('Terkelg');
 
 intro('Welcome to Laravel');
 
 $result = [
+    'name' => anticipate(
+        message: 'What is your name?',
+        placeholder: 'E.g. Taylor Otwell',
+        options: [
+            'Dries Vints',
+            'Guus Leeuw',
+            'James Brooks',
+            'Jess Archer',
+            'Joe Dixon',
+            'Mior Muhammad Zaki Mior Khairuddin',
+            'Nuno Maduro',
+            'Taylor Otwell',
+            'Tim MacDonald',
+        ],
+        validate: fn ($value) => match (true) {
+            ! $value => 'Please enter your name.',
+            default => null,
+        },
+    ),
     'path' => text(
         message: 'Where should we create your project?',
-        placeholder: './laravel',
-        validate: function ($value) {
-            if (! $value) {
-                return 'Please enter a path';
-            }
-            if ($value[0] !== '.') {
-                return 'Please enter a relative path';
-            }
-        }
+        placeholder: 'E.g. ./laravel',
+        validate: fn ($value) => match (true) {
+            ! $value => 'Please enter a path',
+            $value[0] !== '.' => 'Please enter a relative path',
+            default => null,
+        },
     ),
     'password' => password(
         message: 'Provide a password',
-        validate: function ($value) {
-            if (! $value) {
-                return 'Please enter a password.';
-            }
-            if (strlen($value) < 5) {
-                return 'Password should have at least 5 characters.';
-            }
-        }
+        validate: fn ($value) => match (true) {
+            ! $value => 'Please enter a password.',
+            strlen($value) < 5 => 'Password should have at least 5 characters.',
+            default => null,
+        },
     ),
     'type' => select(
         message: 'Pick a project type',
@@ -65,13 +79,16 @@ $result = [
     ),
     'install' => confirm(
         message: 'Install dependencies?',
-        default: false,
     ),
 ];
 
 if ($result['install']) {
     spin(fn () => sleep(3), 'Installing dependencies...');
 }
+
+error('Error');
+warning('Warning');
+alert('Alert');
 
 note(<<<EOT
     Installation complete!
@@ -84,4 +101,4 @@ note(<<<EOT
 
 outro('Happy coding!');
 
-// var_dump($result);
+var_dump($result);
