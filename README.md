@@ -311,13 +311,14 @@ Themes can be registered using the `addTheme` method on the `Prompt` class:
 use Laravel\Promts\Prompt;
 
 Prompt::addTheme('clack', [
-    \Laravel\Prompts\TextPrompt::class => \App\Console\Prompts\Themes\Clack\TextPromptRenderer::class,
+    \Laravel\Prompts\AnticipatePrompt::class => \App\Console\Prompts\Themes\Clack\AnticipatePromptRenderer::class,
+    \Laravel\Prompts\ConfirmPrompt::class => \App\Console\Prompts\Themes\Clack\ConfirmPromptRenderer::class,
+    \Laravel\Prompts\MultiSelectPrompt::class => \App\Console\Prompts\Themes\Clack\MultiSelectPromptRenderer::class,
+    \Laravel\Prompts\Note::class => \App\Console\Prompts\Themes\Clack\NoteRenderer::class,
     \Laravel\Prompts\PasswordPrompt::class => \App\Console\Prompts\Themes\Clack\PasswordPromptRenderer::class,
     \Laravel\Prompts\SelectPrompt::class => \App\Console\Prompts\Themes\Clack\SelectPromptRenderer::class,
-    \Laravel\Prompts\MultiSelectPrompt::class => \App\Console\Prompts\Themes\Clack\MultiSelectPromptRenderer::class,
-    \Laravel\Prompts\ConfirmPrompt::class => \App\Console\Prompts\Themes\Clack\ConfirmPromptRenderer::class,
     \Laravel\Prompts\Spinner::class => \App\Console\Prompts\Themes\Clack\SpinnerRenderer::class,
-    \Laravel\Prompts\Note::class => \App\Console\Prompts\Themes\Clack\NoteRenderer::class,
+    \Laravel\Prompts\TextPrompt::class => \App\Console\Prompts\Themes\Clack\TextPromptRenderer::class,
 ]);
 ```
 
