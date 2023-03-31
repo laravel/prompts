@@ -12,14 +12,14 @@ trait FakesInputOutput
      *
      * @param  array<string>  $keys
      */
-    public static function fake(array $keys): MockInterface
+    public static function fake(array $keys = []): MockInterface
     {
         $mock = \Mockery::mock(Terminal::class);
 
         $mock->shouldReceive('write')->byDefault();
         $mock->shouldReceive('exit')->byDefault();
-        $mock->expects('setTty')->byDefault();
-        $mock->expects('restoreTty')->byDefault();
+        $mock->shouldReceive('setTty')->byDefault();
+        $mock->shouldReceive('restoreTty')->byDefault();
 
         foreach ($keys as $key) {
             $mock->shouldReceive('read')->once()->andReturn($key);
