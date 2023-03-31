@@ -24,7 +24,7 @@ class SelectPromptRenderer
 
             'cancel' => <<<EOT
 
-                {$this->box($prompt->message, $this->renderOptions($prompt), 'red')}
+                {$this->box($prompt->message, $this->renderOptions($prompt), color: 'red')}
                 {$this->red('  ⚠ Cancelled.')}
 
                 EOT,

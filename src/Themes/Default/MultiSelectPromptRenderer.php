@@ -24,14 +24,14 @@ class MultiSelectPromptRenderer
 
             'cancel' => <<<EOT
 
-                {$this->box($prompt->message, $this->strikethrough($this->dim($this->renderSelectedOptions($prompt))), 'red')}
+                {$this->box($prompt->message, $this->strikethrough($this->dim($this->renderSelectedOptions($prompt))), color: 'red')}
                 {$this->red('  ⚠ Cancelled.')}
 
                 EOT,
 
             'error' => <<<EOT
 
-                {$this->box($prompt->message, $this->renderOptions($prompt), 'yellow')}
+                {$this->box($prompt->message, $this->renderOptions($prompt), color: 'yellow')}
                 {$this->yellow("  ⚠ {$prompt->error}")}
 
                 EOT,

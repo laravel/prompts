@@ -18,7 +18,7 @@ class TextPromptRenderer
         return match ($prompt->state) {
             'error' => <<<EOT
 
-                {$this->box($prompt->message, $prompt->valueWithCursor(), 'yellow')}
+                {$this->box($prompt->message, $prompt->valueWithCursor(), color: 'yellow')}
                 {$this->yellow("  ⚠ {$prompt->error}")}
 
                 EOT,
@@ -31,7 +31,7 @@ class TextPromptRenderer
 
             'cancel' => <<<EOT
 
-                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->value() ?: $prompt->placeholder)), 'red')}
+                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->value() ?: $prompt->placeholder)), color: 'red')}
                 {$this->red('  ⚠ Cancelled.')}
 
                 EOT,

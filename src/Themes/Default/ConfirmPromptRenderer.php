@@ -24,7 +24,7 @@ class ConfirmPromptRenderer
 
             'cancel' => <<<EOT
 
-                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->confirmed ? 'Yes' : 'No')), 'red')}
+                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->confirmed ? 'Yes' : 'No')), color: 'red')}
                 {$this->red('  ⚠ Cancelled.')}
 
                 EOT,
