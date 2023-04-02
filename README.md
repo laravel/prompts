@@ -23,6 +23,8 @@ composer require laravel/prompts
 
 <img src="https://user-images.githubusercontent.com/4977161/229037808-98b247cc-e862-4f97-a581-5a16ffbabc65.gif" width="830" />
 
+Prompt the user for text with an optional placeholder, default value, and validation.
+
 ```php
 use function Laravel\Prompts\text;
 
@@ -50,6 +52,8 @@ $name = text(
 
 <img src="https://user-images.githubusercontent.com/4977161/229038919-626d2a14-36b5-4f28-9957-e4c861edb436.gif" width="830" />
 
+Prompt the user for text while masking their input.
+
 ```php
 
 use function Laravel\Prompts\password;
@@ -76,6 +80,8 @@ $password = password(
 
 <img src="https://user-images.githubusercontent.com/4977161/229039659-fdece306-7a56-4142-9c5b-6574282c291d.gif" width="830" />
 
+Prompt the user for a yes or no answer.
+
 ```php
 use function Laravel\Prompts\confirm;
 
@@ -96,6 +102,8 @@ $confirmed = confirm(
 ### Select
 
 <img src="https://user-images.githubusercontent.com/4977161/229040185-dcf6e1ee-f9e0-414a-9771-cf52d378eb2c.gif" width="830" />
+
+Prompt the user to select an option.
 
 ```php
 use function Laravel\Prompts\select;
@@ -126,6 +134,8 @@ $role = select(
 ### Multi-select
 
 <img src="https://user-images.githubusercontent.com/4977161/229041010-5174786c-6301-4a05-b296-aca7fd489b5f.gif" width="830" />
+
+Prompt the user to select multiple options.
 
 ```php
 use function Laravel\Prompts\multiselect;
@@ -163,6 +173,8 @@ $permissions = multiselect(
 ### Auto-completion
 
 <img src="https://user-images.githubusercontent.com/4977161/229041595-808bc3f2-2d23-4ffd-8104-f99574c5aa8f.gif" width="830" />
+
+Prompt the user for text with a list of suggested options that can be scrolled through or tab completed.
 
 ```php
 use function Laravel\Prompts\anticipate;
@@ -218,7 +230,7 @@ $color = anticipate(
 
 <img src="https://user-images.githubusercontent.com/4977161/229042721-926b09ee-2784-4aed-9f66-f09114004bb0.gif" width="830" />
 
-The spinner will render while the provided callback runs.
+Render a spinner while the provided callback runs.
 
 > **Note** The spinner requires the `ext-pcntl` PHP extension to animate the spinner, otherwise a static version will be rendered instead.
 
