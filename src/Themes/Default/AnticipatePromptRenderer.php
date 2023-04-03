@@ -54,7 +54,7 @@ class AnticipatePromptRenderer
         return preg_replace(
             '/\s$/',
             $this->cyan('↓'),
-            $this->pad($prompt->valueWithCursor(). '  ', $this->longest($prompt->matches(), padding: 2))
+            $this->pad($prompt->valueWithCursor().'  ', $this->longest($prompt->matches(), padding: 2))
         );
     }
 
