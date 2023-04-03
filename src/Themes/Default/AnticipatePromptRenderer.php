@@ -38,11 +38,36 @@ class AnticipatePromptRenderer
 
             default => <<<EOT
 
-                {$this->box($this->cyan($prompt->message), $prompt->valueWithCursor(), $this->renderOptions($prompt))}
-
+                {$this->box($this->cyan($prompt->message), $this->valueWithCursorAndArrow($prompt), $this->renderOptions($prompt))}
+                {$this->spacer($prompt)}
 
                 EOT,
         };
+    }
+
+    protected function valueWithCursorAndArrow(AnticipatePrompt $prompt): string
+    {
+        if ($prompt->highlighted !== null || $prompt->value() !== '') {
+            return $prompt->valueWithCursor();
+        }
+
+        return preg_replace(
+            '/\s$/',
+            $this->cyan('↓'),
+            $this->pad($prompt->valueWithCursor(). '  ', $this->longest($prompt->matches(), padding: 2))
+        );
+    }
+
+    /**
+     * Render a spacer to prevent jumping when the suggestions are displayed.
+     */
+    protected function spacer(AnticipatePrompt $prompt): string
+    {
+        if ($prompt->value() === '' && $prompt->highlighted === null) {
+            return str_repeat(PHP_EOL, $prompt->scroll() + 1);
+        }
+
+        return '';
     }
 
     /**
@@ -54,7 +79,7 @@ class AnticipatePromptRenderer
 
         $lines = collect($prompt->scrolledMatches());
 
-        if ($lines->isEmpty()) {
+        if ($lines->isEmpty() || ($prompt->value() === '' && $prompt->highlighted === null)) {
             return '';
         }
 
