@@ -115,7 +115,7 @@ $role = select('What role should the user have?', [
 ]);
 ```
 
-You may also provide keys for each option, and a default value:
+You may also provide keys for each option, a default value, and configure scrolling:
 
 ```php
 use function Laravel\Prompts\select;
@@ -128,6 +128,7 @@ $role = select(
         'owner' => 'Owner',
     ]
     default: 'member',
+    scroll: 10
 );
 ```
 
@@ -148,7 +149,7 @@ $permissions = multiselect('What permissions should the user have?', [
 ]);
 ```
 
-You may also provide keys for each option, a default value, and a validation callback:
+You may also provide keys for each option, a default value, scroll configuration, and a validation callback:
 
 ```php
 use function Laravel\Prompts\multiselect;
@@ -162,6 +163,7 @@ $permissions = multiselect(
         'delete' => 'Delete',
     ]
     default: ['read'],
+    scroll: 10,
     validate: function ($values) {
         if (count($values) < 1) {
             return 'Please select at least 1 option.';
@@ -186,7 +188,7 @@ $color = anticipate('What is your favorite color', [
 ]);
 ```
 
-You may also provide keys a placeholder, default value, and a validation callback:
+You may also provide keys a placeholder, default value, scroll configuration, and a validation callback:
 
 ```php
 use function Laravel\Prompts\anticipate;
@@ -200,6 +202,7 @@ $color = anticipate(
         'Blue',
     ]
     default: 'Red'
+    scroll: 10,
     validate: function ($value) {
         if (strlen($value) < 1) {
             return 'Please enter a color';

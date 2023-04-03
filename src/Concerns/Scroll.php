@@ -7,7 +7,14 @@ trait Scroll
     /**
      * The number of items to show before scrolling.
      */
-    public int $scroll = 5;
+    public function scroll(): int|false
+    {
+        if (! isset($this->scroll) || $this->scroll === true) {
+            return 5;
+        }
+
+        return $this->scroll;
+    }
 
     /**
      * Get a scrolled version of the items.
@@ -17,21 +24,27 @@ trait Scroll
      */
     public function scrolled(array $items, int|null $highlighted): array
     {
+        $scroll = $this->scroll();
+
+        if ($scroll === false) {
+            return $items;
+        }
+
         $count = count($items);
 
-        if ($count <= $this->scroll) {
+        if ($count <= $scroll) {
             return $items;
         }
 
         if ($highlighted === null) {
-            return array_slice($items, 0, $this->scroll, true);
+            return array_slice($items, 0, $scroll, true);
         }
 
-        if ($highlighted < $this->scroll) {
-            return array_slice($items, 0, $this->scroll, true);
+        if ($highlighted < $scroll) {
+            return array_slice($items, 0, $scroll, true);
         }
 
-        return array_slice($items, $highlighted - $this->scroll + 1, $this->scroll, true);
+        return array_slice($items, $highlighted - $scroll + 1, $scroll, true);
     }
 
     /**
@@ -41,7 +54,13 @@ trait Scroll
      */
     public function hasItemsAbove(array $items, int|null $highlighted): bool
     {
-        return $highlighted !== null && $highlighted > $this->scroll - 1;
+        $scroll = $this->scroll();
+
+        if ($scroll === false) {
+            return false;
+        }
+
+        return $highlighted !== null && $highlighted > $scroll - 1;
     }
 
     /**
@@ -51,9 +70,15 @@ trait Scroll
      */
     public function hasItemsBelow(array $items, int|null $highlighted): bool
     {
+        $scroll = $this->scroll();
+
+        if ($scroll === false) {
+            return false;
+        }
+
         $count = count($items);
 
-        if ($count <= $this->scroll) {
+        if ($count <= $scroll) {
             return false;
         }
 

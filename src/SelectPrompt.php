@@ -20,6 +20,7 @@ class SelectPrompt extends Prompt
         public string $message,
         public array $options,
         protected int|string|null $default = null,
+        public int|bool $scroll = 5,
     ) {
         if ($this->default) {
             if (array_is_list($this->options)) {

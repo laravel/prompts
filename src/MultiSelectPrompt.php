@@ -30,6 +30,7 @@ class MultiSelectPrompt extends Prompt
         public string $message,
         public array $options,
         protected array $default = [],
+        public int|bool $scroll = 5,
         protected ?Closure $validate = null,
     ) {
         $this->values = $this->default;
