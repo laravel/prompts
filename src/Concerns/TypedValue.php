@@ -17,6 +17,18 @@ trait TypedValue
     protected int $cursorPosition = 0;
 
     /**
+     * Keys to ignore
+     *
+     * @var array<string>
+     */
+    protected array $ignore = [
+        Key::ENTER,
+        Key::TAB,
+        Key::CTRL_C,
+        Key::CTRL_D,
+    ];
+
+    /**
      * Track the value as the user types.
      */
     protected function trackTypedValue(string $default = ''): void
@@ -38,7 +50,7 @@ trait TypedValue
             } elseif ($key === Key::BACKSPACE) {
                 $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition - 1).substr($this->typedValue, $this->cursorPosition);
                 $this->cursorPosition = max(0, $this->cursorPosition - 1);
-            } elseif ($key !== Key::ENTER && $key !== Key::CTRL_C && $key !== Key::TAB) {
+            } elseif (!in_array($key, $this->ignore)) {
                 $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition).$key.substr($this->typedValue, $this->cursorPosition);
                 $this->cursorPosition++;
             }
