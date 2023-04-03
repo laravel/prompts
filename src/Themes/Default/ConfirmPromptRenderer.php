@@ -18,13 +18,13 @@ class ConfirmPromptRenderer
         return match ($prompt->state) {
             'submit' => <<<EOT
 
-                {$this->box($this->dim($prompt->message), $this->dim($prompt->confirmed ? 'Yes' : 'No'))}
+                {$this->box($this->dim($prompt->message), $this->dim($prompt->label()))}
 
                 EOT,
 
             'cancel' => <<<EOT
 
-                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->confirmed ? 'Yes' : 'No')), color: 'red')}
+                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->label())), color: 'red')}
                 {$this->red('  ⚠ Cancelled.')}
 
                 EOT,
@@ -44,7 +44,7 @@ class ConfirmPromptRenderer
     protected function renderOptions(ConfirmPrompt $prompt): string
     {
         return $prompt->confirmed
-            ? "{$this->green('●')} Yes {$this->dim('/ ○ No')}"
-            : "{$this->dim('○ Yes /')} {$this->green('●')} No";
+            ? "{$this->green('●')} {$prompt->yes} {$this->dim('/ ○ '.$prompt->no)}"
+            : "{$this->dim('○ '.$prompt->yes.' /')} {$this->green('●')} {$prompt->no}";
     }
 }

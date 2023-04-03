@@ -46,3 +46,17 @@ it('accepts a default value', function () {
 
     expect($result)->toBeFalse();
 });
+
+it('allows the labels to be changed', function () {
+    Prompt::fake([Key::ENTER])
+        ->expects('write')
+        ->with(Mockery::on(fn ($output) => str_contains($output, 'Sí, por favor') && str_contains($output, 'No, gracias')));
+
+    $result = confirm(
+        message: '¿Estás seguro?',
+        yes: 'Sí, por favor',
+        no: 'No, gracias'
+    );
+
+    expect($result)->toBeTrue();
+});

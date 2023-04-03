@@ -45,11 +45,13 @@ function multiselect(string $message, array $options, array $default = [], ?Clos
 /**
  * Prompt the user to confirm an action.
  */
-function confirm(string $message, bool $default = true): bool
+function confirm(string $message, bool $default = true, string $yes = 'Yes', string $no = 'No'): bool
 {
     return (new ConfirmPrompt(
         $message,
         $default,
+        $yes,
+        $no,
     ))->prompt();
 }
 

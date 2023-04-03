@@ -14,7 +14,9 @@ class ConfirmPrompt extends Prompt
      */
     public function __construct(
         public string $message,
-        bool $default = true
+        bool $default = true,
+        public string $yes = 'Yes',
+        public string $no = 'No',
     ) {
         $this->confirmed = $default;
 
@@ -32,5 +34,13 @@ class ConfirmPrompt extends Prompt
     public function value(): bool
     {
         return $this->confirmed;
+    }
+
+    /**
+     * Get the label of the selected option.
+     */
+    public function label(): string
+    {
+        return $this->confirmed ? $this->yes : $this->no;
     }
 }
