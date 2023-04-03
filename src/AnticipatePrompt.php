@@ -8,16 +8,12 @@ class AnticipatePrompt extends Prompt
 {
     use Concerns\Colors;
     use Concerns\TypedValue;
+    use Concerns\Scroll;
 
     /**
      * The index of the highlighted option.
      */
     public int|null $highlighted = null;
-
-    /**
-     * The number of matches to show before scrolling.
-     */
-    public int $scroll = 5;
 
     /**
      * Create a new AnticipatePrompt instance.
@@ -86,21 +82,7 @@ class AnticipatePrompt extends Prompt
      */
     public function scrolledMatches(): array
     {
-        $count = count($this->matches());
-
-        if ($count <= $this->scroll) {
-            return $this->matches();
-        }
-
-        if ($this->highlighted === null) {
-            return array_slice($this->matches(), 0, $this->scroll, true);
-        }
-
-        if ($this->highlighted < $this->scroll) {
-            return array_slice($this->matches(), 0, $this->scroll, true);
-        }
-
-        return array_slice($this->matches(), $this->highlighted - $this->scroll + 1, $this->scroll, true);
+        return $this->scrolled($this->matches(), $this->highlighted);
     }
 
     /**
@@ -108,7 +90,7 @@ class AnticipatePrompt extends Prompt
      */
     public function hasMatchesAbove(): bool
     {
-        return $this->highlighted !== null && $this->highlighted > $this->scroll - 1;
+        return $this->hasItemsAbove($this->matches(), $this->highlighted);
     }
 
     /**
@@ -116,13 +98,7 @@ class AnticipatePrompt extends Prompt
      */
     public function hasMatchesBelow(): bool
     {
-        $count = count($this->matches());
-
-        if ($count <= $this->scroll) {
-            return false;
-        }
-
-        return $this->highlighted < $count - 1;
+        return $this->hasItemsBelow($this->matches(), $this->highlighted);
     }
 
     /**

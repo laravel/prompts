@@ -50,17 +50,27 @@ class MultiSelectPromptRenderer
      */
     protected function renderOptions(MultiSelectPrompt $prompt): string
     {
-        return collect($prompt->options)
+        $width = $this->longest($prompt->options, padding: 6);
+
+        $lines = collect($prompt->scrolledLabels());
+
+        return $lines
             ->map(function ($label, $key) use ($prompt) {
                 $active = $prompt->isHighlighted(array_is_list($prompt->options) ? $label : $key);
-                $selected = $prompt->isselected(array_is_list($prompt->options) ? $label : $key);
+                $selected = $prompt->isSelected(array_is_list($prompt->options) ? $label : $key);
 
                 return match (true) {
-                    $active && $selected => "› {$this->green('◼')} {$label} ",
-                    $active => "› ◻ {$label} ",
-                    $selected => "  {$this->green('◼')} {$this->dim($label)} ",
-                    default => "  {$this->dim('◻')} {$this->dim($label)}",
+                    $active && $selected => "{$this->cyan('› ◼')} {$label}  ",
+                    $active => "{$this->cyan('›')} ◻ {$label}  ",
+                    $selected => "  {$this->cyan('◼')} {$this->dim($label)}  ",
+                    default => "  {$this->dim('◻')} {$this->dim($label)}  ",
                 };
+            })
+            ->map(fn ($label) => $this->pad($label, $width))
+            ->map(fn ($label, $key) => match (true) {
+                $key === $lines->keys()->first() && $prompt->hasLabelsAbove() => preg_replace('/\s$/', $this->cyan('↑'), $label),
+                $key === $lines->keys()->last() && $prompt->hasLabelsBelow() => preg_replace('/\s$/', $this->cyan('↓'), $label),
+                default => $label,
             })
             ->implode(PHP_EOL);
     }

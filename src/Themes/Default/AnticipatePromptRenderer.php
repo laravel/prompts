@@ -50,28 +50,25 @@ class AnticipatePromptRenderer
      */
     protected function renderOptions(AnticipatePrompt $prompt): string
     {
-        $lines = collect($prompt->scrolledMatches())->map(fn ($match, $i) => $prompt->highlighted === $i
-            ? " {$match} "
-            : " {$match} "
-        );
+        $width = $this->longest($prompt->matches(), padding: 4);
+
+        $lines = collect($prompt->scrolledMatches());
 
         if ($lines->isEmpty()) {
             return '';
         }
 
-        $width = $this->longest($lines->toArray());
-
         return $lines
+            ->map(fn ($label, $i) => $prompt->highlighted === $i
+                ? "{$this->cyan('›')} {$label}  "
+                : "  {$this->dim($label)}  "
+            )
             ->map(fn ($label) => $this->pad($label, $width))
             ->map(fn ($label, $i) => match (true) {
-                $i === $lines->keys()->first() && $prompt->hasMatchesAbove() => preg_replace('/\s\s$/', '↑ ', $label),
-                $i === $lines->keys()->last() && $prompt->hasMatchesBelow() => preg_replace('/\s\s$/', '↓ ', $label),
+                $i === $lines->keys()->first() && $prompt->hasMatchesAbove() => preg_replace('/\s$/', $this->cyan('↑'), $label),
+                $i === $lines->keys()->last() && $prompt->hasMatchesBelow() => preg_replace('/\s$/', $this->cyan('↓'), $label),
                 default => $label,
             })
-            ->map(fn ($label, $i) => $prompt->highlighted === $i
-                ? $this->inverse($label)
-                : $this->dim($label)
-            )
             ->implode(PHP_EOL);
     }
 }

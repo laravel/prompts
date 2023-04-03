@@ -43,12 +43,21 @@ class SelectPromptRenderer
      */
     protected function renderOptions(SelectPrompt $prompt): string
     {
-        return collect($prompt->options)
-            ->values()
+        $width = $this->longest($prompt->options, padding: 6);
+
+        $lines = collect($prompt->scrolledLabels());
+
+        return $lines
             ->map(fn ($label, $i) => $prompt->highlighted === $i
-                ? "› {$this->green('●')} {$label}"
-                : "  {$this->dim('○')} {$this->dim($label)}"
+                ? "{$this->cyan('›')} {$this->cyan('●')} {$label}  "
+                : "  {$this->dim('○')} {$this->dim($label)}  "
             )
+            ->map(fn ($label) => $this->pad($label, $width))
+            ->map(fn ($label, $i) => match (true) {
+                $i === $lines->keys()->first() && $prompt->hasLabelsAbove() => preg_replace('/\s$/', $this->cyan('↑'), $label),
+                $i === $lines->keys()->last() && $prompt->hasLabelsBelow() => preg_replace('/\s$/', $this->cyan('↓'), $label),
+                default => $label,
+            })
             ->implode(PHP_EOL);
     }
 }

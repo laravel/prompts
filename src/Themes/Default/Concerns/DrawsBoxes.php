@@ -49,12 +49,12 @@ trait DrawsBoxes
      *
      * @param  array<string>  $lines
      */
-    protected function longest(array $lines): int
+    protected function longest(array $lines, int $padding = 0): int
     {
         return max(
             $this->minWidth,
             collect($lines)
-                ->map(fn ($line) => mb_strlen($this->stripEscapeSequences($line)))
+                ->map(fn ($line) => mb_strlen($this->stripEscapeSequences($line)) + $padding)
                 ->max()
         );
     }
