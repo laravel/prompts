@@ -36,8 +36,8 @@ class MultiSelectPrompt extends Prompt
         $this->values = $this->default;
 
         $this->on('key', fn ($key) => match ($key) {
-            Key::UP, Key::LEFT, 'k', 'h' => $this->highlightPrevious(),
-            Key::DOWN, Key::RIGHT, 'j', 'l' => $this->highlightNext(),
+            Key::UP, Key::LEFT, Key::SHIFT_TAB, 'k', 'h' => $this->highlightPrevious(),
+            Key::DOWN, Key::RIGHT, Key::TAB, 'j', 'l' => $this->highlightNext(),
             Key::SPACE => $this->toggleHighlighted(),
             default => null,
         });
