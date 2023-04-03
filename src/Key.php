@@ -22,5 +22,7 @@ class Key
 
     const TAB = "\t";
 
+    const SHIFT_TAB = "\e[Z";
+
     const CTRL_C = "\x03";
 }

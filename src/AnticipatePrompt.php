@@ -31,7 +31,7 @@ class AnticipatePrompt extends Prompt
         $this->trackTypedValue($default);
 
         $this->on('key', fn ($key) => match ($key) {
-            Key::UP => $this->highlightPrevious(),
+            Key::UP, Key::SHIFT_TAB => $this->highlightPrevious(),
             Key::DOWN, Key::TAB => $this->highlightNext(),
             Key::ENTER => $this->selectHighlighted(),
             default => $this->highlighted = null,
