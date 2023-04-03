@@ -25,7 +25,7 @@ function password(string $message, ?Closure $validate = null): string
  *
  * @param  array<int|string, string>  $options
  */
-function select(string $message, array $options, ?string $default = null, int|bool $scroll = true): string
+function select(string $message, array $options, ?string $default = null, int $scroll = 5): string
 {
     return (new SelectPrompt($message, $options, $default, $scroll))->prompt();
 }
@@ -37,7 +37,7 @@ function select(string $message, array $options, ?string $default = null, int|bo
  * @param  array<string>  $default
  * @return array<string>
  */
-function multiselect(string $message, array $options, array $default = [], int|bool $scroll = true, ?Closure $validate = null): array
+function multiselect(string $message, array $options, array $default = [], int $scroll = 5, ?Closure $validate = null): array
 {
     return (new MultiSelectPrompt($message, $options, $default, $scroll, $validate))->prompt();
 }
@@ -60,7 +60,7 @@ function confirm(string $message, bool $default = true, string $yes = 'Yes', str
  *
  * @param  array<string>|Closure(string): array<string>  $options
  */
-function anticipate(string $message, array|Closure $options, string $placeholder = '', string $default = '', int|bool $scroll = true, ?Closure $validate = null): string
+function anticipate(string $message, array|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, ?Closure $validate = null): string
 {
     return (new AnticipatePrompt($message, $options, $placeholder, $default, $scroll, $validate))->prompt();
 }

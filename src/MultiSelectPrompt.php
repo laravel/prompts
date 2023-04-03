@@ -6,8 +6,6 @@ use Closure;
 
 class MultiSelectPrompt extends Prompt
 {
-    use Concerns\Scroll;
-
     /**
      * The index of the highlighted option.
      */
@@ -30,7 +28,7 @@ class MultiSelectPrompt extends Prompt
         public string $message,
         public array $options,
         protected array $default = [],
-        public int|bool $scroll = 5,
+        public int $scroll = 5,
         protected ?Closure $validate = null,
     ) {
         $this->values = $this->default;
@@ -117,31 +115,5 @@ class MultiSelectPrompt extends Prompt
         } else {
             $this->values[] = $value;
         }
-    }
-
-    /**
-     * Get a scrolled version of the labels.
-     *
-     * @return array<string>
-     */
-    public function scrolledLabels(): array
-    {
-        return $this->scrolled(array_values($this->options), $this->highlighted);
-    }
-
-    /**
-     * Return whether there are labels above the current scroll position.
-     */
-    public function hasLabelsAbove(): bool
-    {
-        return $this->hasItemsAbove($this->options, $this->highlighted);
-    }
-
-    /**
-     * Return whether there are labels below the current scroll position.
-     */
-    public function hasLabelsBelow(): bool
-    {
-        return $this->hasItemsBelow($this->options, $this->highlighted);
     }
 }

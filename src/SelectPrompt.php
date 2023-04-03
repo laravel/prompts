@@ -4,8 +4,6 @@ namespace Laravel\Prompts;
 
 class SelectPrompt extends Prompt
 {
-    use Concerns\Scroll;
-
     /**
      * The index of the highlighted option.
      */
@@ -20,7 +18,7 @@ class SelectPrompt extends Prompt
         public string $message,
         public array $options,
         protected int|string|null $default = null,
-        public int|bool $scroll = 5,
+        public int $scroll = 5,
     ) {
         if ($this->default) {
             if (array_is_list($this->options)) {
@@ -75,31 +73,5 @@ class SelectPrompt extends Prompt
     protected function highlightNext(): void
     {
         $this->highlighted = $this->highlighted === count($this->options) - 1 ? 0 : $this->highlighted + 1;
-    }
-
-    /**
-     * Get a scrolled version of the labels.
-     *
-     * @return array<string>
-     */
-    public function scrolledLabels(): array
-    {
-        return $this->scrolled(array_values($this->options), $this->highlighted);
-    }
-
-    /**
-     * Return whether there are labels above the current scroll position.
-     */
-    public function hasLabelsAbove(): bool
-    {
-        return $this->hasItemsAbove($this->options, $this->highlighted);
-    }
-
-    /**
-     * Return whether there are labels below the current scroll position.
-     */
-    public function hasLabelsBelow(): bool
-    {
-        return $this->hasItemsBelow($this->options, $this->highlighted);
     }
 }

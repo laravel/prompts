@@ -9,6 +9,7 @@ class MultiSelectPromptRenderer
 {
     use Colors;
     use Concerns\DrawsBoxes;
+    use Concerns\DrawsScrollbars;
 
     /**
      * Render the multiselect prompt.
@@ -50,58 +51,29 @@ class MultiSelectPromptRenderer
      */
     protected function renderOptions(MultiSelectPrompt $prompt): string
     {
-        $width = $this->longest($prompt->options, padding: 6);
+        return $this->scroll(
+            collect($prompt->options)
+                ->values()
+                ->map(function ($label, $index) use ($prompt) {
+                    $active = $index === $prompt->highlighted;
+                    if (array_is_list($prompt->options)) {
+                        $value = $prompt->options[$index];
+                    } else {
+                        $value = array_keys($prompt->options)[$index];
+                    }
+                    $selected = in_array($value, $prompt->value());
 
-        $lines = collect($prompt->scrolledLabels());
-
-        return $lines
-            ->map(function ($label, $index) use ($prompt) {
-                $active = $index === $prompt->highlighted;
-                if (array_is_list($prompt->options)) {
-                    $value = $prompt->options[$index];
-                } else {
-                    $value = array_keys($prompt->options)[$index];
-                }
-                $selected = in_array($value, $prompt->value());
-
-                return match (true) {
-                    $active && $selected => "{$this->cyan('› ◼')} {$label}  ",
-                    $active => "{$this->cyan('›')} ◻ {$label}  ",
-                    $selected => "  {$this->cyan('◼')} {$this->dim($label)}  ",
-                    default => "  {$this->dim('◻')} {$this->dim($label)}  ",
-                };
-            })
-            ->map(fn ($label) => $this->pad($label, $width))
-            ->when(
-                count($prompt->options) > $prompt->scroll(),
-                fn ($lines) => $lines->map(fn ($label, $i) => match (true) {
-                    $i === $this->scrollPosition($prompt) => preg_replace('/\s$/', $this->cyan('┃'), $label),
-                    default => preg_replace('/\s$/', $this->gray('│'), $label),
-                })
-            )
-            ->implode(PHP_EOL);
-    }
-
-    protected function scrollPosition(MultiSelectPrompt $prompt)
-    {
-        $highlighted = $prompt->highlighted;
-
-        if ($highlighted < $prompt->scroll()) {
-            return 0;
-        }
-
-        if ($highlighted === count($prompt->options) - 1) {
-            return count($prompt->options) - 1;
-        }
-
-        $count = count($prompt->options);
-
-        $percent = ($highlighted + 1 - $prompt->scroll()) / ($count - $prompt->scroll());
-
-        $keys = array_keys(array_slice($prompt->scrolledLabels(), 1, -1, true));
-        $position = (int) ceil($percent * count($keys) - 1);
-
-        return $keys[$position];
+                    return match (true) {
+                        $active && $selected => "{$this->cyan('› ◼')} {$label}  ",
+                        $active => "{$this->cyan('›')} ◻ {$label}  ",
+                        $selected => "  {$this->cyan('◼')} {$this->dim($label)}  ",
+                        default => "  {$this->dim('◻')} {$this->dim($label)}  ",
+                    };
+                }),
+            $prompt->highlighted,
+            $prompt->scroll,
+            $this->longest($prompt->options, padding: 6)
+        )->implode(PHP_EOL);
     }
 
     /**

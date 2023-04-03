@@ -9,6 +9,7 @@ class SelectPromptRenderer
 {
     use Colors;
     use Concerns\DrawsBoxes;
+    use Concerns\DrawsScrollbars;
 
     /**
      * Render the select prompt.
@@ -43,45 +44,16 @@ class SelectPromptRenderer
      */
     protected function renderOptions(SelectPrompt $prompt): string
     {
-        $width = $this->longest($prompt->options, padding: 6);
-
-        $lines = collect($prompt->scrolledLabels());
-
-        return $lines
-            ->map(fn ($label, $i) => $prompt->highlighted === $i
-                ? "{$this->cyan('›')} {$this->cyan('●')} {$label}  "
-                : "  {$this->dim('○')} {$this->dim($label)}  "
-            )
-            ->map(fn ($label) => $this->pad($label, $width))
-            ->when(
-                count($prompt->options) > $prompt->scroll(),
-                fn ($lines) => $lines->map(fn ($label, $i) => match (true) {
-                    $i === $this->scrollPosition($prompt) => preg_replace('/\s$/', $this->cyan('┃'), $label),
-                    default => preg_replace('/\s$/', $this->gray('│'), $label),
-                })
-            )
-            ->implode(PHP_EOL);
-    }
-
-    protected function scrollPosition(SelectPrompt $prompt)
-    {
-        $highlighted = $prompt->highlighted;
-
-        if ($highlighted < $prompt->scroll()) {
-            return 0;
-        }
-
-        if ($highlighted === count($prompt->options) - 1) {
-            return count($prompt->options) - 1;
-        }
-
-        $count = count($prompt->options);
-
-        $percent = ($highlighted + 1 - $prompt->scroll()) / ($count - $prompt->scroll());
-
-        $keys = array_keys(array_slice($prompt->scrolledLabels(), 1, -1, true));
-        $position = (int) ceil($percent * count($keys) - 1);
-
-        return $keys[$position];
+        return $this->scroll(
+            collect($prompt->options)
+                ->values()
+                ->map(fn ($label, $i) => $prompt->highlighted === $i
+                    ? "{$this->cyan('›')} {$this->cyan('●')} {$label}  "
+                    : "  {$this->dim('○')} {$this->dim($label)}  "
+                ),
+            $prompt->highlighted,
+            $prompt->scroll,
+            $this->longest($prompt->options, padding: 6)
+        )->implode(PHP_EOL);
     }
 }

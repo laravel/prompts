@@ -8,7 +8,6 @@ class AnticipatePrompt extends Prompt
 {
     use Concerns\Colors;
     use Concerns\TypedValue;
-    use Concerns\Scroll;
 
     /**
      * The index of the highlighted option.
@@ -25,7 +24,7 @@ class AnticipatePrompt extends Prompt
         public array|Closure $options,
         public string $placeholder = '',
         string $default = '',
-        public int|bool $scroll = 5,
+        public int $scroll = 5,
         protected ?Closure $validate = null,
     ) {
         $this->trackTypedValue($default);
@@ -74,32 +73,6 @@ class AnticipatePrompt extends Prompt
         return array_values(array_filter($this->options, function ($option) {
             return str_starts_with(strtolower($option), strtolower($this->value()));
         }));
-    }
-
-    /**
-     * Get a scrolled version of the options that match the input.
-     *
-     * @return array<string>
-     */
-    public function scrolledMatches(): array
-    {
-        return $this->scrolled($this->matches(), $this->highlighted);
-    }
-
-    /**
-     * Return whether there are matches above the current scroll position.
-     */
-    public function hasMatchesAbove(): bool
-    {
-        return $this->hasItemsAbove($this->matches(), $this->highlighted);
-    }
-
-    /**
-     * Return whether there are matches below the current scroll position.
-     */
-    public function hasMatchesBelow(): bool
-    {
-        return $this->hasItemsBelow($this->matches(), $this->highlighted);
     }
 
     /**

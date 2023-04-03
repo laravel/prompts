@@ -9,6 +9,7 @@ class AnticipatePromptRenderer
 {
     use Colors;
     use Concerns\DrawsBoxes;
+    use Concerns\DrawsScrollbars;
 
     /**
      * Render the anticipate prompt.
@@ -64,7 +65,7 @@ class AnticipatePromptRenderer
     protected function spacer(AnticipatePrompt $prompt): string
     {
         if ($prompt->value() === '' && $prompt->highlighted === null) {
-            return str_repeat(PHP_EOL, $prompt->scroll() + 1);
+            return str_repeat(PHP_EOL, $prompt->scroll + 1);
         }
 
         return '';
@@ -75,49 +76,19 @@ class AnticipatePromptRenderer
      */
     protected function renderOptions(AnticipatePrompt $prompt): string
     {
-        $width = $this->longest($prompt->matches(), padding: 4);
-
-        $lines = collect($prompt->scrolledMatches());
-
-        if ($lines->isEmpty() || ($prompt->value() === '' && $prompt->highlighted === null)) {
+        if (empty($prompt->matches()) || ($prompt->value() === '' && $prompt->highlighted === null)) {
             return '';
         }
 
-        return $lines
-            ->map(fn ($label, $i) => $prompt->highlighted === $i
-                ? "{$this->cyan('›')} {$label}  "
-                : "  {$this->dim($label)}  "
-            )
-            ->map(fn ($label) => $this->pad($label, $width))
-            ->when(
-                count($prompt->matches()) > $prompt->scroll(),
-                fn ($lines) => $lines->map(fn ($label, $i) => match (true) {
-                    $i === $this->scrollPosition($prompt) => preg_replace('/\s$/', $this->cyan('┃'), $label),
-                    default => preg_replace('/\s$/', $this->gray('│'), $label),
-                })
-            )
-            ->implode(PHP_EOL);
-    }
-
-    protected function scrollPosition(AnticipatePrompt $prompt)
-    {
-        $highlighted = $prompt->highlighted;
-
-        if ($highlighted < $prompt->scroll()) {
-            return 0;
-        }
-
-        if ($highlighted === count($prompt->matches()) - 1) {
-            return count($prompt->matches()) - 1;
-        }
-
-        $count = count($prompt->matches());
-
-        $percent = ($highlighted + 1 - $prompt->scroll()) / ($count - $prompt->scroll());
-
-        $keys = array_keys(array_slice($prompt->scrolledMatches(), 1, -1, true));
-        $position = (int) ceil($percent * count($keys) - 1);
-
-        return $keys[$position];
+        return $this->scroll(
+            collect($prompt->matches())
+                ->map(fn ($label, $i) => $prompt->highlighted === $i
+                    ? "{$this->cyan('›')} {$label}  "
+                    : "  {$this->dim($label)}  "
+                ),
+            $prompt->highlighted,
+            $prompt->scroll,
+            $this->longest($prompt->matches(), padding: 4)
+        )->implode(PHP_EOL);
     }
 }
