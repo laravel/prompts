@@ -53,11 +53,35 @@ class SelectPromptRenderer
                 : "  {$this->dim('○')} {$this->dim($label)}  "
             )
             ->map(fn ($label) => $this->pad($label, $width))
-            ->map(fn ($label, $i) => match (true) {
-                $i === $lines->keys()->first() && $prompt->hasLabelsAbove() => preg_replace('/\s$/', $this->cyan('↑'), $label),
-                $i === $lines->keys()->last() && $prompt->hasLabelsBelow() => preg_replace('/\s$/', $this->cyan('↓'), $label),
-                default => $label,
-            })
+            ->when(
+                count($prompt->options) > $prompt->scroll(),
+                fn ($lines) => $lines->map(fn ($label, $i) => match (true) {
+                    $i === $this->scrollPosition($prompt) => preg_replace('/\s$/', $this->cyan('┃'), $label),
+                    default => preg_replace('/\s$/', $this->gray('│'), $label),
+                })
+            )
             ->implode(PHP_EOL);
+    }
+
+    protected function scrollPosition(SelectPrompt $prompt)
+    {
+        $highlighted = $prompt->highlighted;
+
+        if ($highlighted < $prompt->scroll()) {
+            return 0;
+        }
+
+        if ($highlighted === count($prompt->options) - 1) {
+            return count($prompt->options) - 1;
+        }
+
+        $count = count($prompt->options);
+
+        $percent = ($highlighted + 1 - $prompt->scroll()) / ($count - $prompt->scroll());
+
+        $keys = array_keys(array_slice($prompt->scrolledLabels(), 1, -1, true));
+        $position = (int) ceil($percent * count($keys) - 1);
+
+        return $keys[$position];
     }
 }

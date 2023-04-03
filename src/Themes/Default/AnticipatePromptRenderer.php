@@ -53,7 +53,7 @@ class AnticipatePromptRenderer
 
         return preg_replace(
             '/\s$/',
-            $this->cyan('↓'),
+            $this->cyan('⌄'),
             $this->pad($prompt->valueWithCursor().'  ', $this->longest($prompt->matches(), padding: 2))
         );
     }
@@ -89,11 +89,35 @@ class AnticipatePromptRenderer
                 : "  {$this->dim($label)}  "
             )
             ->map(fn ($label) => $this->pad($label, $width))
-            ->map(fn ($label, $i) => match (true) {
-                $i === $lines->keys()->first() && $prompt->hasMatchesAbove() => preg_replace('/\s$/', $this->cyan('↑'), $label),
-                $i === $lines->keys()->last() && $prompt->hasMatchesBelow() => preg_replace('/\s$/', $this->cyan('↓'), $label),
-                default => $label,
-            })
+            ->when(
+                count($prompt->matches()) > $prompt->scroll(),
+                fn ($lines) => $lines->map(fn ($label, $i) => match (true) {
+                    $i === $this->scrollPosition($prompt) => preg_replace('/\s$/', $this->cyan('┃'), $label),
+                    default => preg_replace('/\s$/', $this->gray('│'), $label),
+                })
+            )
             ->implode(PHP_EOL);
+    }
+
+    protected function scrollPosition(AnticipatePrompt $prompt)
+    {
+        $highlighted = $prompt->highlighted;
+
+        if ($highlighted < $prompt->scroll()) {
+            return 0;
+        }
+
+        if ($highlighted === count($prompt->matches()) - 1) {
+            return count($prompt->matches()) - 1;
+        }
+
+        $count = count($prompt->matches());
+
+        $percent = ($highlighted + 1 - $prompt->scroll()) / ($count - $prompt->scroll());
+
+        $keys = array_keys(array_slice($prompt->scrolledMatches(), 1, -1, true));
+        $position = (int) ceil($percent * count($keys) - 1);
+
+        return $keys[$position];
     }
 }

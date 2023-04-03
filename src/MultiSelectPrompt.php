@@ -126,7 +126,7 @@ class MultiSelectPrompt extends Prompt
      */
     public function scrolledLabels(): array
     {
-        return $this->scrolled($this->options, $this->highlighted);
+        return $this->scrolled(array_values($this->options), $this->highlighted);
     }
 
     /**
