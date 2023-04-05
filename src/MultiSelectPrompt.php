@@ -59,7 +59,7 @@ class MultiSelectPrompt extends Prompt
     public function labels(): array
     {
         if (array_is_list($this->options)) {
-            return $this->options;
+            return array_values(array_intersect_key($this->options, $this->values));
         }
 
         return array_values(array_intersect_key($this->options, array_flip($this->values)));
