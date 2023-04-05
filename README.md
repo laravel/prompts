@@ -21,7 +21,7 @@ composer require laravel/prompts
 
 ### Text
 
-<img src="https://user-images.githubusercontent.com/4977161/229037808-98b247cc-e862-4f97-a581-5a16ffbabc65.gif" width="830" />
+<img src="https://user-images.githubusercontent.com/4977161/229967783-61e76980-0136-4741-981e-cbd76ebb2d0d.gif" width="830" />
 
 Prompt the user for text with an optional placeholder, default value, and validation.
 
@@ -50,7 +50,7 @@ $name = text(
 
 ### Password
 
-<img src="https://user-images.githubusercontent.com/4977161/229038919-626d2a14-36b5-4f28-9957-e4c861edb436.gif" width="830" />
+<img src="https://user-images.githubusercontent.com/4977161/229968130-3509a96b-8f8a-4703-b6b5-09c487fc1ef0.gif" width="830" />
 
 Prompt the user for text while masking their input.
 
@@ -78,7 +78,7 @@ $password = password(
 
 ### Confirm
 
-<img src="https://user-images.githubusercontent.com/4977161/229039659-fdece306-7a56-4142-9c5b-6574282c291d.gif" width="830" />
+<img src="https://user-images.githubusercontent.com/4977161/229968418-7ad624d1-4bb4-44bc-b61b-e70f9c5461c6.gif" width="830" />
 
 Prompt the user for a yes or no answer.
 
@@ -101,7 +101,7 @@ $confirmed = confirm(
 
 ### Select
 
-<img src="https://user-images.githubusercontent.com/4977161/229040185-dcf6e1ee-f9e0-414a-9771-cf52d378eb2c.gif" width="830" />
+<img src="https://user-images.githubusercontent.com/4977161/229968732-d40172f4-cf8e-47e2-8d54-54cc3a5015fc.gif" width="830" />
 
 Prompt the user to select an option.
 
@@ -134,7 +134,7 @@ $role = select(
 
 ### Multi-select
 
-<img src="https://user-images.githubusercontent.com/4977161/229041010-5174786c-6301-4a05-b296-aca7fd489b5f.gif" width="830" />
+<img src="https://user-images.githubusercontent.com/4977161/229969042-f84d8709-a98c-46f1-ac34-2f7c3c6f72fd.gif" width="830" />
 
 Prompt the user to select multiple options.
 
@@ -174,7 +174,7 @@ $permissions = multiselect(
 
 ### Auto-completion
 
-<img src="https://user-images.githubusercontent.com/4977161/229041595-808bc3f2-2d23-4ffd-8104-f99574c5aa8f.gif" width="830" />
+<img src="https://user-images.githubusercontent.com/4977161/229969640-d397f75f-286f-41d9-aab6-bcd381b262bc.gif" width="830" />
 
 Prompt the user for text with a list of suggested options that can be scrolled through or tab completed.
 
@@ -231,9 +231,9 @@ $color = anticipate(
 
 ### Spinner
 
-<img src="https://user-images.githubusercontent.com/4977161/229042721-926b09ee-2784-4aed-9f66-f09114004bb0.gif" width="830" />
+<img src="https://user-images.githubusercontent.com/4977161/229970548-0c3a931c-a7e7-4432-9930-08cebbf80b7a.gif" width="830" />
 
-Render a spinner while the provided callback runs.
+Render a spinner while a callback runs.
 
 > **Note** The spinner requires the `ext-pcntl` PHP extension to animate the spinner, otherwise a static version will be rendered instead.
 
@@ -249,7 +249,7 @@ $result = spin(function () {
 
 ### Notes
 
-<img src="https://user-images.githubusercontent.com/4977161/229044919-584fcbfe-5346-4a92-9e95-4b7e9ca31e86.gif" width="830" />
+<img src="https://user-images.githubusercontent.com/4977161/229971106-9cc05dff-1d2b-4114-a9c1-702424ff9aee.gif" width="830" />
 
 There are several different note styles that can be rendered.
 
