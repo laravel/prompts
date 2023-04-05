@@ -3,7 +3,6 @@
 namespace Laravel\Prompts;
 
 use Closure;
-use Throwable;
 
 abstract class Prompt
 {
