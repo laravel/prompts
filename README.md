@@ -28,7 +28,7 @@ Prompt the user for text with an optional placeholder, default value, and valida
 ```php
 use function Laravel\Prompts\text;
 
-$name = text('What is your name?');
+$name = text('What is your email address?');
 ```
 
 You may also provide a placeholder, default value, and validation callback:
@@ -37,14 +37,14 @@ You may also provide a placeholder, default value, and validation callback:
 use function Laravel\Prompts\text;
 
 $name = text(
-    message: 'What is your name?',
-    placeholder: 'E.g. Taylor Otwell',
-    default: $user->name,
-    validate: function ($value) {
-        if (! $value) {
-            return 'Please enter your name.';
-        }
-    }
+    message: 'What is your email address?',
+    placeholder: 'E.g. taylor@laravel.com',
+    default: $user->email,
+    validate: fn ($value) => match (true) {
+        strlen($value) === 0 => 'Please enter an email address.',
+        ! filter_var($value, FILTER_VALIDATE_EMAIL) => 'Please enter a valid email address.',
+        default => null,
+    },
 );
 ```
 
@@ -58,7 +58,7 @@ Prompt the user for text while masking their input.
 
 use function Laravel\Prompts\password;
 
-$password = password('What is the password?');
+$password = password('Please provide a password');
 ```
 
 You may also provide a validation callback:
@@ -67,7 +67,7 @@ You may also provide a validation callback:
 use function Laravel\Prompts\password;
 
 $password = password(
-    message: 'What is the password?',
+    message: 'Please provide a password',
     validate: function ($value) {
         if (strlen($value) < 8) {
             return 'Password must have at least 8 characters.';
@@ -85,17 +85,19 @@ Prompt the user for a yes or no answer.
 ```php
 use function Laravel\Prompts\confirm;
 
-$confirmed = confirm('Do you wish to continue');
+$confirmed = confirm('Would you like to install dependencies?');
 ```
 
-You may also provide a default value:
+You may also provide a default value and alternative labels for 'Yes' and 'No':
 
 ```php
 use function Laravel\Prompts\confirm;
 
 $confirmed = confirm(
-    message: 'Do you wish to continue',
+    message: 'Would you like to install dependencies?',
     default: false,
+    yes: 'Yes, please',
+    no: 'No, thank you',
 );
 ```
 
@@ -110,7 +112,7 @@ use function Laravel\Prompts\select;
 
 $role = select('What role should the user have?', [
     'Member',
-    'Administrator',
+    'Contributor',
     'Owner',
 ]);
 ```
@@ -124,11 +126,11 @@ $role = select(
     message: 'What role should the user have?',
     options: [
         'member' => 'Member',
-        'admin' => 'Administrator',
+        'contributor' => 'Contributor',
         'owner' => 'Owner',
-    ]
+    ],
     default: 'member',
-    scroll: 10
+    scroll: 10,
 );
 ```
 
@@ -142,8 +144,8 @@ Prompt the user to select multiple options.
 use function Laravel\Prompts\multiselect;
 
 $permissions = multiselect('What permissions should the user have?', [
+    'View',
     'Create',
-    'Read',
     'Update',
     'Delete',
 ]);
@@ -157,8 +159,8 @@ use function Laravel\Prompts\multiselect;
 $permissions = multiselect(
     message: 'What permissions should the user have?',
     options: [
+        'view' => 'View',
         'create' => 'Create',
-        'read' => 'Read',
         'update' => 'Update',
         'delete' => 'Delete',
     ]
@@ -181,10 +183,10 @@ Prompt the user for text with a list of suggested options that can be scrolled t
 ```php
 use function Laravel\Prompts\anticipate;
 
-$color = anticipate('What is your favorite color', [
-    'Red',
-    'Green',
-    'Blue',
+$model = anticipate('What model should the policy apply to?', [
+    'Article',
+    'Destination',
+    'Flight',
 ]);
 ```
 
@@ -194,18 +196,18 @@ You may also provide keys a placeholder, default value, scroll configuration, an
 use function Laravel\Prompts\anticipate;
 
 $color = anticipate(
-    message: 'What is your favorite color?',
-    placeholder: 'Enter any color your like!',
+    message: 'What model should the policy apply to?',
+    placeholder: 'E.g. User',
     options: [
-        'Red',
-        'Green',
-        'Blue',
+        'Article',
+        'Destination',
+        'Flight',
     ]
-    default: 'Red'
+    default: 'Article'
     scroll: 10,
     validate: function ($value) {
         if (strlen($value) < 1) {
-            return 'Please enter a color';
+            return 'Please enter a model name.';
         }
     },
 );
@@ -217,12 +219,12 @@ By default, options are matched based on whether they start with the users input
 use function Laravel\Prompts\anticipate;
 
 $color = anticipate(
-    message: 'What is your favorite color?',
+    message: 'What model should the policy apply to?',
     options: fn (string $value) => array_filter(
         [
-            'Red',
-            'Green',
-            'Blue',
+            'Article',
+            'Destination',
+            'Flight',
         ],
         fn ($option) => str_contains(strtolower($option), strtolower($value)),
     ),
@@ -244,7 +246,7 @@ $result = spin(function () {
     sleep(3);
 
     return 'Result';
-}, 'Doing something...');
+}, 'Installing dependencies...');
 ```
 
 ### Notes
