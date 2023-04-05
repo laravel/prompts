@@ -5,11 +5,18 @@ namespace Laravel\Prompts\Concerns;
 trait Cursor
 {
     /**
+     * Indicates if the cursor has been hidden.
+     */
+    protected static bool $cursorHidden = false;
+
+    /**
      * Hide the cursor.
      */
     public function hideCursor(): void
     {
         $this->terminal()->write("\e[?25l");
+
+        static::$cursorHidden = true;
     }
 
     /**
@@ -18,6 +25,18 @@ trait Cursor
     public function showCursor(): void
     {
         $this->terminal()->write("\e[?25h");
+
+        static::$cursorHidden = false;
+    }
+
+    /**
+     * Restore the cursor if it was hidden.
+     */
+    public function restoreCursor(): void
+    {
+        if (static::$cursorHidden) {
+            $this->showCursor();
+        }
     }
 
     /**

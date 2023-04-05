@@ -53,32 +53,30 @@ abstract class Prompt
      */
     public function prompt(): mixed
     {
-        try {
-            $this->terminal()->setTty('-icanon -isig -echo');
-            $this->hideCursor();
+        register_shutdown_function(function () {
+            $this->restoreCursor();
+            $this->terminal()->restoreTty();
+        });
+
+        $this->terminal()->setTty('-icanon -isig -echo');
+        $this->hideCursor();
+        $this->render();
+
+        while ($key = $this->terminal()->read()) {
+            $continue = $this->handleKeyPress($key);
+
             $this->render();
 
-            while ($key = $this->terminal()->read()) {
-                $continue = $this->handleKeyPress($key);
+            if ($continue === false || $key === Key::CTRL_C) {
+                $this->restoreCursor();
+                $this->terminal()->restoreTty();
 
-                $this->render();
-
-                if ($continue === false || $key === Key::CTRL_C) {
-                    $this->showCursor();
-                    $this->terminal()->restoreTty();
-
-                    if ($key === Key::CTRL_C) {
-                        $this->terminal()->exit();
-                    }
-
-                    return $this->value();
+                if ($key === Key::CTRL_C) {
+                    $this->terminal()->exit();
                 }
-            }
-        } catch (Throwable $e) {
-            $this->showCursor();
-            $this->terminal()->restoreTty();
 
-            throw $e;
+                return $this->value();
+            }
         }
 
         return $this->value();
@@ -165,7 +163,7 @@ abstract class Prompt
             return;
         }
 
-        $this->restoreCursor();
+        $this->restoreCursorPosition();
 
         $diff = $this->diffLines($this->prevFrame, $frame);
 
@@ -191,7 +189,7 @@ abstract class Prompt
     /**
      * Restore the cursor position.
      */
-    private function restoreCursor(): void
+    private function restoreCursorPosition(): void
     {
         $lines = count(explode(PHP_EOL, $this->prevFrame)) - 1;
 

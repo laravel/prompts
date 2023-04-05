@@ -42,6 +42,8 @@ class Terminal
     {
         if ($this->initialTtyMode) {
             shell_exec("stty {$this->initialTtyMode}");
+
+            $this->initialTtyMode = '';
         }
     }
 
