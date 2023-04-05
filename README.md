@@ -72,7 +72,7 @@ $password = password(
         if (strlen($value) < 8) {
             return 'Password must have at least 8 characters.';
         }
-    }
+    },
 );
 ```
 
@@ -163,7 +163,7 @@ $permissions = multiselect(
         'create' => 'Create',
         'update' => 'Update',
         'delete' => 'Delete',
-    ]
+    ],
     default: ['read'],
     scroll: 10,
     validate: function ($values) {
@@ -202,8 +202,8 @@ $color = anticipate(
         'Article',
         'Destination',
         'Flight',
-    ]
-    default: 'Article'
+    ],
+    default: 'Article',
     scroll: 10,
     validate: function ($value) {
         if (strlen($value) < 1) {
