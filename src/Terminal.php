@@ -7,7 +7,7 @@ class Terminal
     /**
      * The initial TTY mode.
      */
-    protected string $initialTtyMode;
+    protected string|null $initialTtyMode;
 
     /**
      * Read a line from the terminal.
@@ -43,7 +43,7 @@ class Terminal
         if ($this->initialTtyMode) {
             shell_exec("stty {$this->initialTtyMode}");
 
-            $this->initialTtyMode = '';
+            $this->initialTtyMode = null;
         }
     }
 
