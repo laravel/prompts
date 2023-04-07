@@ -81,6 +81,10 @@ class MultiSelectPromptRenderer
      */
     protected function renderSelectedOptions(MultiSelectPrompt $prompt): string
     {
+        if (count($prompt->labels()) === 0) {
+            return $this->gray('None');
+        }
+
         return implode(', ', $prompt->labels());
     }
 }
