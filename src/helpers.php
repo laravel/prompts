@@ -25,9 +25,9 @@ function password(string $label, ?Closure $validate = null): string
  *
  * @param  array<int|string, string>  $options
  */
-function select(string $label, array $options, ?string $default = null, int $scroll = 5): string
+function select(string $label, array $options, ?string $default = null, int $scroll = 5, ?Closure $validate = null): string
 {
-    return (new SelectPrompt($label, $options, $default, $scroll))->prompt();
+    return (new SelectPrompt($label, $options, $default, $scroll, $validate))->prompt();
 }
 
 /**
@@ -45,14 +45,9 @@ function multiselect(string $label, array $options, array $default = [], int $sc
 /**
  * Prompt the user to confirm an action.
  */
-function confirm(string $label, bool $default = true, string $yes = 'Yes', string $no = 'No'): bool
+function confirm(string $label, bool $default = true, string $yes = 'Yes', string $no = 'No', ?Closure $validate = null): bool
 {
-    return (new ConfirmPrompt(
-        $label,
-        $default,
-        $yes,
-        $no,
-    ))->prompt();
+    return (new ConfirmPrompt($label, $default, $yes, $no, $validate))->prompt();
 }
 
 /**

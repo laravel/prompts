@@ -67,6 +67,24 @@ it('accepts default values when the options are keys with labels', function () {
     expect($result)->toBe(['green']);
 });
 
+it('validates', function () {
+    Prompt::fake([Key::ENTER, Key::SPACE, Key::ENTER])
+        ->shouldReceive('write')
+        ->with(Mockery::on(fn ($value) => str_contains($value, 'You must select at least one color.')));
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+        validate: fn ($values) => count($values) === 0 ? 'You must select at least one color.' : null
+    );
+
+    expect($result)->toBe(['red']);
+});
+
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
 

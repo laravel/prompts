@@ -62,6 +62,20 @@ it('allows the labels to be changed', function () {
     expect($result)->toBeTrue();
 });
 
+it('validates', function () {
+    Prompt::fake([Key::ENTER, 'y', Key::ENTER])
+        ->shouldReceive('write')
+        ->with(Mockery::on(fn ($value) => str_contains($value, 'Invalid name.')));
+
+    $result = confirm(
+        label: 'Would you like to continue?',
+        default: false,
+        validate: fn ($value) => $value === false ? 'You must choose yes.' : null,
+    );
+
+    expect($result)->toBeTrue();
+});
+
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
 

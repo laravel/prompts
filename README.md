@@ -88,7 +88,7 @@ use function Laravel\Prompts\confirm;
 $confirmed = confirm('Would you like to install dependencies?');
 ```
 
-You may also provide a default value and alternative labels for 'Yes' and 'No':
+You may also provide a default value, alternative labels for 'Yes' and 'No', and a validation callback:
 
 ```php
 use function Laravel\Prompts\confirm;
@@ -98,6 +98,7 @@ $confirmed = confirm(
     default: false,
     yes: 'Yes, please',
     no: 'No, thank you',
+    validate: fn ($value) => $value !== true ? 'You must select yes.' : null,
 );
 ```
 
@@ -117,7 +118,7 @@ $role = select('What role should the user have?', [
 ]);
 ```
 
-You may also provide keys for each option, a default value, and configure scrolling:
+You may also provide keys for each option, a default value, scroll configuration, and a validation callback:
 
 ```php
 use function Laravel\Prompts\select;
@@ -131,6 +132,7 @@ $role = select(
     ],
     default: 'member',
     scroll: 10,
+    validate: fn ($value) => $value === 'owner' ? 'There are too many owners already.' : null,
 );
 ```
 

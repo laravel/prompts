@@ -60,6 +60,20 @@ it('accepts a callback', function () {
     expect($result)->toBe('Green');
 });
 
+it('validates', function () {
+    Prompt::fake([Key::ENTER, 'X', Key::ENTER])
+        ->shouldReceive('write')
+        ->with(Mockery::on(fn ($value) => str_contains($value, 'Please enter a name.')));
+
+    $result = suggest(
+        label: 'What is your name?',
+        options: ['Taylor'],
+        validate: fn ($value) => empty($value) ? 'Please enter name.' : null,
+    );
+
+    expect($result)->toBe('X');
+});
+
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
 

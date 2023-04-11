@@ -2,6 +2,8 @@
 
 namespace Laravel\Prompts;
 
+use Closure;
+
 class SelectPrompt extends Prompt
 {
     /**
@@ -19,6 +21,7 @@ class SelectPrompt extends Prompt
         public array $options,
         public int|string|null $default = null,
         public int $scroll = 5,
+        public ?Closure $validate = null,
     ) {
         if ($this->default) {
             if (array_is_list($this->options)) {
