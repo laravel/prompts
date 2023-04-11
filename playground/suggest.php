@@ -1,10 +1,10 @@
 <?php
 
-use function Laravel\Prompts\anticipate;
+use function Laravel\Prompts\suggest;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$model = anticipate(
+$model = suggest(
     label: 'What model should the policy apply to?',
     placeholder: 'E.g. User',
     options: [

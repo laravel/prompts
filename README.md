@@ -181,9 +181,9 @@ $permissions = multiselect(
 Prompt the user for text with a list of suggested options that can be scrolled through or tab completed.
 
 ```php
-use function Laravel\Prompts\anticipate;
+use function Laravel\Prompts\suggest;
 
-$model = anticipate('What model should the policy apply to?', [
+$model = suggest('What model should the policy apply to?', [
     'Article',
     'Destination',
     'Flight',
@@ -193,9 +193,9 @@ $model = anticipate('What model should the policy apply to?', [
 You may also provide keys a placeholder, default value, scroll configuration, and a validation callback:
 
 ```php
-use function Laravel\Prompts\anticipate;
+use function Laravel\Prompts\suggest;
 
-$color = anticipate(
+$color = suggest(
     label: 'What model should the policy apply to?',
     placeholder: 'E.g. User',
     options: [
@@ -216,9 +216,9 @@ $color = anticipate(
 By default, options are matched based on whether they start with the users input in a case insensitive manner. You may provide a callback function to control what matches are provided:
 
 ```php
-use function Laravel\Prompts\anticipate;
+use function Laravel\Prompts\suggest;
 
-$color = anticipate(
+$color = suggest(
     label: 'What model should the policy apply to?',
     options: fn (string $value) => array_filter(
         [
@@ -328,13 +328,13 @@ Themes can be registered using the `addTheme` method on the `Prompt` class:
 use Laravel\Promts\Prompt;
 
 Prompt::addTheme('clack', [
-    \Laravel\Prompts\AnticipatePrompt::class => \App\Console\Prompts\Themes\Clack\AnticipatePromptRenderer::class,
     \Laravel\Prompts\ConfirmPrompt::class => \App\Console\Prompts\Themes\Clack\ConfirmPromptRenderer::class,
     \Laravel\Prompts\MultiSelectPrompt::class => \App\Console\Prompts\Themes\Clack\MultiSelectPromptRenderer::class,
     \Laravel\Prompts\Note::class => \App\Console\Prompts\Themes\Clack\NoteRenderer::class,
     \Laravel\Prompts\PasswordPrompt::class => \App\Console\Prompts\Themes\Clack\PasswordPromptRenderer::class,
     \Laravel\Prompts\SelectPrompt::class => \App\Console\Prompts\Themes\Clack\SelectPromptRenderer::class,
     \Laravel\Prompts\Spinner::class => \App\Console\Prompts\Themes\Clack\SpinnerRenderer::class,
+    \Laravel\Prompts\SuggestPrompt::class => \App\Console\Prompts\Themes\Clack\SuggestPromptRenderer::class,
     \Laravel\Prompts\TextPrompt::class => \App\Console\Prompts\Themes\Clack\TextPromptRenderer::class,
 ]);
 ```

@@ -4,7 +4,7 @@ namespace Laravel\Prompts;
 
 use Closure;
 
-class AnticipatePrompt extends Prompt
+class SuggestPrompt extends Prompt
 {
     use Concerns\Colors;
     use Concerns\TypedValue;
@@ -15,7 +15,7 @@ class AnticipatePrompt extends Prompt
     public int|null $highlighted = null;
 
     /**
-     * Create a new AnticipatePrompt instance.
+     * Create a new SuggestPrompt instance.
      *
      * @param  array<string>|Closure(string): array<string>  $options
      */

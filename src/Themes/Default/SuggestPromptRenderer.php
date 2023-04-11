@@ -2,19 +2,19 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use Laravel\Prompts\AnticipatePrompt;
 use Laravel\Prompts\Concerns\Colors;
+use Laravel\Prompts\SuggestPrompt;
 
-class AnticipatePromptRenderer
+class SuggestPromptRenderer
 {
     use Colors;
     use Concerns\DrawsBoxes;
     use Concerns\DrawsScrollbars;
 
     /**
-     * Render the anticipate prompt.
+     * Render the suggest prompt.
      */
-    public function __invoke(AnticipatePrompt $prompt): string
+    public function __invoke(SuggestPrompt $prompt): string
     {
         return match ($prompt->state) {
             'error' => <<<EOT
@@ -46,7 +46,7 @@ class AnticipatePromptRenderer
         };
     }
 
-    protected function valueWithCursorAndArrow(AnticipatePrompt $prompt): string
+    protected function valueWithCursorAndArrow(SuggestPrompt $prompt): string
     {
         if ($prompt->highlighted !== null || $prompt->value() !== '') {
             return $prompt->valueWithCursor();
@@ -62,7 +62,7 @@ class AnticipatePromptRenderer
     /**
      * Render a spacer to prevent jumping when the suggestions are displayed.
      */
-    protected function spacer(AnticipatePrompt $prompt): string
+    protected function spacer(SuggestPrompt $prompt): string
     {
         if ($prompt->value() === '' && $prompt->highlighted === null) {
             return str_repeat(PHP_EOL, $prompt->scroll + 1);
@@ -74,7 +74,7 @@ class AnticipatePromptRenderer
     /**
      * Render the options.
      */
-    protected function renderOptions(AnticipatePrompt $prompt): string
+    protected function renderOptions(SuggestPrompt $prompt): string
     {
         if (empty($prompt->matches()) || ($prompt->value() === '' && $prompt->highlighted === null)) {
             return '';

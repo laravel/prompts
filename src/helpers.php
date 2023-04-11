@@ -60,9 +60,9 @@ function confirm(string $label, bool $default = true, string $yes = 'Yes', strin
  *
  * @param  array<string>|Closure(string): array<string>  $options
  */
-function anticipate(string $label, array|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, ?Closure $validate = null): string
+function suggest(string $label, array|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, ?Closure $validate = null): string
 {
-    return (new AnticipatePrompt($label, $options, $placeholder, $default, $scroll, $validate))->prompt();
+    return (new SuggestPrompt($label, $options, $placeholder, $default, $scroll, $validate))->prompt();
 }
 
 /**

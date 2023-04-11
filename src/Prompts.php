@@ -88,7 +88,7 @@ trait Prompts
      * @param  string|null  $default
      * @return mixed
      */
-    public function anticipate($question, $choices, $default = null)
+    public function suggest($question, $choices, $default = null)
     {
         return $this->askWithCompletion($question, $choices, $default ?? '');
     }
@@ -103,7 +103,7 @@ trait Prompts
      */
     public function askWithCompletion($question, $choices, $default = null)
     {
-        return anticipate(
+        return suggest(
             label: $question,
             options: $choices,
             default: $default,

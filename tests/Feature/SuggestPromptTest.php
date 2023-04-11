@@ -1,14 +1,14 @@
 <?php
 
-use function Laravel\Prompts\anticipate;
-use Laravel\Prompts\AnticipatePrompt;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
+use function Laravel\Prompts\suggest;
+use Laravel\Prompts\SuggestPrompt;
 
 it('accepts any input', function () {
     Prompt::fake(['B', 'l', 'a', 'c', 'k', Key::ENTER]);
 
-    $result = anticipate('What is your favorite color?', [
+    $result = suggest('What is your favorite color?', [
         'Red',
         'Green',
         'Blue',
@@ -20,7 +20,7 @@ it('accepts any input', function () {
 it('completes the input using the tab key', function () {
     Prompt::fake(['b', Key::TAB, Key::ENTER]);
 
-    $result = anticipate('What is your favorite color?', [
+    $result = suggest('What is your favorite color?', [
         'Red',
         'Green',
         'Blue',
@@ -32,7 +32,7 @@ it('completes the input using the tab key', function () {
 it('completes the input using the arrow keys', function () {
     Prompt::fake(['b', Key::DOWN, Key::DOWN, Key::DOWN, Key::UP, Key::ENTER]);
 
-    $result = anticipate('What is your favorite color?', [
+    $result = suggest('What is your favorite color?', [
         'Red',
         'Blue',
         'Black',
@@ -45,7 +45,7 @@ it('completes the input using the arrow keys', function () {
 it('accepts a callback', function () {
     Prompt::fake(['e', 'e', Key::DOWN, Key::ENTER]);
 
-    $result = anticipate(
+    $result = suggest(
         label: 'What is your favorite color?',
         options: fn (string $value) => array_filter(
             [
@@ -63,13 +63,13 @@ it('accepts a callback', function () {
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
 
-    AnticipatePrompt::fallbackUsing(function (AnticipatePrompt $prompt) {
+    SuggestPrompt::fallbackUsing(function (SuggestPrompt $prompt) {
         expect($prompt->label)->toBe('What is your favorite color?');
 
         return 'result';
     });
 
-    $result = anticipate('What is your favorite color?', [
+    $result = suggest('What is your favorite color?', [
         'Red',
         'Green',
         'Blue',

@@ -3,21 +3,21 @@
 namespace Laravel\Prompts\Concerns;
 
 use InvalidArgumentException;
-use Laravel\Prompts\AnticipatePrompt;
 use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Note;
 use Laravel\Prompts\PasswordPrompt;
 use Laravel\Prompts\SelectPrompt;
 use Laravel\Prompts\Spinner;
+use Laravel\Prompts\SuggestPrompt;
 use Laravel\Prompts\TextPrompt;
-use Laravel\Prompts\Themes\Default\AnticipatePromptRenderer;
 use Laravel\Prompts\Themes\Default\ConfirmPromptRenderer;
 use Laravel\Prompts\Themes\Default\MultiSelectPromptRenderer;
 use Laravel\Prompts\Themes\Default\NoteRenderer;
 use Laravel\Prompts\Themes\Default\PasswordPromptRenderer;
 use Laravel\Prompts\Themes\Default\SelectPromptRenderer;
 use Laravel\Prompts\Themes\Default\SpinnerRenderer;
+use Laravel\Prompts\Themes\Default\SuggestPromptRenderer;
 use Laravel\Prompts\Themes\Default\TextPromptRenderer;
 
 trait Themes
@@ -39,7 +39,7 @@ trait Themes
             SelectPrompt::class => SelectPromptRenderer::class,
             MultiSelectPrompt::class => MultiSelectPromptRenderer::class,
             ConfirmPrompt::class => ConfirmPromptRenderer::class,
-            AnticipatePrompt::class => AnticipatePromptRenderer::class,
+            SuggestPrompt::class => SuggestPromptRenderer::class,
             Spinner::class => SpinnerRenderer::class,
             Note::class => NoteRenderer::class,
         ],

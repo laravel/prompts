@@ -1,7 +1,6 @@
 <?php
 
 use function Laravel\Prompts\alert;
-use function Laravel\Prompts\anticipate;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\intro;
@@ -11,6 +10,7 @@ use function Laravel\Prompts\outro;
 use function Laravel\Prompts\password;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\spin;
+use function Laravel\Prompts\suggest;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\warning;
 
@@ -18,7 +18,7 @@ require __DIR__.'/../vendor/autoload.php';
 
 intro('Welcome to Laravel');
 
-$name = anticipate(
+$name = suggest(
     label: 'What is your name?',
     placeholder: 'E.g. Taylor Otwell',
     options: [
