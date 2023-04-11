@@ -14,7 +14,7 @@ class PasswordPrompt extends Prompt
      */
     public function __construct(
         public string $label,
-        protected ?Closure $validate = null,
+        public ?Closure $validate = null,
         public string $mask = '•',
     ) {
         $this->trackTypedValue();

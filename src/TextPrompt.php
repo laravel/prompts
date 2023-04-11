@@ -15,8 +15,8 @@ class TextPrompt extends Prompt
     public function __construct(
         public string $label,
         public string $placeholder = '',
-        string $default = '',
-        protected ?Closure $validate = null,
+        public string $default = '',
+        public ?Closure $validate = null,
     ) {
         $this->trackTypedValue($default);
     }

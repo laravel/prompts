@@ -17,7 +17,7 @@ class SelectPrompt extends Prompt
     public function __construct(
         public string $label,
         public array $options,
-        protected int|string|null $default = null,
+        public int|string|null $default = null,
         public int $scroll = 5,
     ) {
         if ($this->default) {

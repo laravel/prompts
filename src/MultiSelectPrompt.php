@@ -27,9 +27,9 @@ class MultiSelectPrompt extends Prompt
     public function __construct(
         public string $label,
         public array $options,
-        protected array $default = [],
+        public array $default = [],
         public int $scroll = 5,
-        protected ?Closure $validate = null,
+        public ?Closure $validate = null,
     ) {
         $this->values = $this->default;
 

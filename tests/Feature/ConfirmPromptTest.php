@@ -1,6 +1,7 @@
 <?php
 
 use function Laravel\Prompts\confirm;
+use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
@@ -57,6 +58,20 @@ it('allows the labels to be changed', function () {
         yes: 'Sí, por favor',
         no: 'No, gracias'
     );
+
+    expect($result)->toBeTrue();
+});
+
+it('can fall back', function () {
+    Prompt::fallbackWhen(true);
+
+    ConfirmPrompt::fallbackUsing(function (ConfirmPrompt $prompt) {
+        expect($prompt->label)->toBe('Would you like to continue?');
+
+        return true;
+    });
+
+    $result = confirm('Would you like to continue?', false);
 
     expect($result)->toBeTrue();
 });

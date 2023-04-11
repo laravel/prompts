@@ -10,6 +10,7 @@ abstract class Prompt
     use Concerns\Erase;
     use Concerns\Events;
     use Concerns\FakesInputOutput;
+    use Concerns\Fallback;
     use Concerns\Themes;
 
     /**
@@ -52,6 +53,10 @@ abstract class Prompt
      */
     public function prompt(): mixed
     {
+        if ($this->shouldFallback()) {
+            return $this->fallback();
+        }
+
         register_shutdown_function(function () {
             $this->restoreCursor();
             $this->terminal()->restoreTty();

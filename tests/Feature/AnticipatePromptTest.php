@@ -1,6 +1,7 @@
 <?php
 
 use function Laravel\Prompts\anticipate;
+use Laravel\Prompts\AnticipatePrompt;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
@@ -57,4 +58,22 @@ it('accepts a callback', function () {
     );
 
     expect($result)->toBe('Green');
+});
+
+it('can fall back', function () {
+    Prompt::fallbackWhen(true);
+
+    AnticipatePrompt::fallbackUsing(function (AnticipatePrompt $prompt) {
+        expect($prompt->label)->toBe('What is your favorite color?');
+
+        return 'result';
+    });
+
+    $result = anticipate('What is your favorite color?', [
+        'Red',
+        'Green',
+        'Blue',
+    ]);
+
+    expect($result)->toBe('result');
 });

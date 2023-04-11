@@ -14,7 +14,7 @@ class ConfirmPrompt extends Prompt
      */
     public function __construct(
         public string $label,
-        bool $default = true,
+        public bool $default = true,
         public string $yes = 'Yes',
         public string $no = 'No',
     ) {

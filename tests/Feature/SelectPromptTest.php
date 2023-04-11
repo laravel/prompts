@@ -3,6 +3,7 @@
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 use function Laravel\Prompts\select;
+use Laravel\Prompts\SelectPrompt;
 
 it('accepts an array of labels', function () {
     Prompt::fake([Key::DOWN, Key::ENTER]);
@@ -64,4 +65,22 @@ it('accepts default values when the options are keys with labels', function () {
     );
 
     expect($result)->toBe('green');
+});
+
+it('can fall back', function () {
+    Prompt::fallbackWhen(true);
+
+    SelectPrompt::fallbackUsing(function (SelectPrompt $prompt) {
+        expect($prompt->label)->toBe('What is your favorite color?');
+
+        return 'Blue';
+    });
+
+    $result = select('What is your favorite color?', [
+        'Red',
+        'Green',
+        'Blue',
+    ]);
+
+    expect($result)->toBe('Blue');
 });

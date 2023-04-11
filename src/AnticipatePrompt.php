@@ -23,9 +23,9 @@ class AnticipatePrompt extends Prompt
         public string $label,
         public array|Closure $options,
         public string $placeholder = '',
-        string $default = '',
+        public string $default = '',
         public int $scroll = 5,
-        protected ?Closure $validate = null,
+        public ?Closure $validate = null,
     ) {
         $this->trackTypedValue($default);
 

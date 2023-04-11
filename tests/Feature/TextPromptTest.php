@@ -3,6 +3,7 @@
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 use function Laravel\Prompts\text;
+use Laravel\Prompts\TextPrompt;
 
 it('returns the input', function () {
     Prompt::fake(['J', 'e', 's', 's', Key::ENTER]);
@@ -58,4 +59,18 @@ test('the delete key removes a character', function () {
     $result = text(label: 'What is your name?');
 
     expect($result)->toBe('Jess');
+});
+
+it('can fall back', function () {
+    Prompt::fallbackWhen(true);
+
+    TextPrompt::fallbackUsing(function (TextPrompt $prompt) {
+        expect($prompt->label)->toBe('What is your name?');
+
+        return 'result';
+    });
+
+    $result = text('What is your name?');
+
+    expect($result)->toBe('result');
 });

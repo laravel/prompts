@@ -2,6 +2,7 @@
 
 use Laravel\Prompts\Key;
 use function Laravel\Prompts\multiselect;
+use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Prompt;
 
 it('accepts an array of labels', function () {
@@ -64,4 +65,22 @@ it('accepts default values when the options are keys with labels', function () {
     );
 
     expect($result)->toBe(['green']);
+});
+
+it('can fall back', function () {
+    Prompt::fallbackWhen(true);
+
+    MultiSelectPrompt::fallbackUsing(function (MultiSelectPrompt $prompt) {
+        expect($prompt->label)->toBe('What is your favorite color?');
+
+        return ['Blue'];
+    });
+
+    $result = multiselect('What is your favorite color?', [
+        'Red',
+        'Green',
+        'Blue',
+    ]);
+
+    expect($result)->toBe(['Blue']);
 });

@@ -2,6 +2,7 @@
 
 use Laravel\Prompts\Key;
 use function Laravel\Prompts\password;
+use Laravel\Prompts\PasswordPrompt;
 use Laravel\Prompts\Prompt;
 
 it('returns the input', function () {
@@ -47,4 +48,18 @@ test('the delete key removes a character', function () {
     $result = password(label: 'What is the password?');
 
     expect($result)->toBe('pass');
+});
+
+it('can fall back', function () {
+    Prompt::fallbackWhen(true);
+
+    PasswordPrompt::fallbackUsing(function (PasswordPrompt $prompt) {
+        expect($prompt->label)->toBe('What is the password?');
+
+        return 'result';
+    });
+
+    $result = password('What is the password?');
+
+    expect($result)->toBe('result');
 });
