@@ -13,7 +13,7 @@ class TextPrompt extends Prompt
      * Create a new TextPrompt instance.
      */
     public function __construct(
-        public string $message,
+        public string $label,
         public string $placeholder = '',
         string $default = '',
         protected ?Closure $validate = null,

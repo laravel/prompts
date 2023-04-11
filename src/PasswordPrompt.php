@@ -13,7 +13,7 @@ class PasswordPrompt extends Prompt
      * Create a new PasswordPrompt instance.
      */
     public function __construct(
-        public string $message,
+        public string $label,
         protected ?Closure $validate = null,
         public string $mask = '•',
     ) {

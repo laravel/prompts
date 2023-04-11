@@ -20,7 +20,7 @@ class AnticipatePrompt extends Prompt
      * @param  array<string>|Closure(string): array<string>  $options
      */
     public function __construct(
-        public string $message,
+        public string $label,
         public array|Closure $options,
         public string $placeholder = '',
         string $default = '',

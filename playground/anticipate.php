@@ -5,7 +5,7 @@ use function Laravel\Prompts\anticipate;
 require __DIR__.'/../vendor/autoload.php';
 
 $model = anticipate(
-    message: 'What model should the policy apply to?',
+    label: 'What model should the policy apply to?',
     placeholder: 'E.g. User',
     options: [
         'Article',

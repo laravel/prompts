@@ -18,20 +18,20 @@ class ConfirmPromptRenderer
         return match ($prompt->state) {
             'submit' => <<<EOT
 
-                {$this->box($this->dim($prompt->message), $this->dim($prompt->label()))}
+                {$this->box($this->dim($prompt->label), $this->dim($prompt->label()))}
 
                 EOT,
 
             'cancel' => <<<EOT
 
-                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->label())), color: 'red')}
+                {$this->box($prompt->label, $this->strikethrough($this->dim($prompt->label())), color: 'red')}
                 {$this->red('  ⚠ Cancelled.')}
 
                 EOT,
 
             default => <<<EOT
 
-                {$this->box($this->cyan($prompt->message), $this->renderOptions($prompt))}
+                {$this->box($this->cyan($prompt->label), $this->renderOptions($prompt))}
 
 
                 EOT,

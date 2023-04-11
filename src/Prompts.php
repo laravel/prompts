@@ -20,7 +20,7 @@ trait Prompts
     public function ask($question, $default = null)
     {
         return text(
-            message: $question,
+            label: $question,
             default: $default ?? '',
         );
     }
@@ -35,7 +35,7 @@ trait Prompts
     public function secret($question, $fallback = true)
     {
         return password(
-            message: $question,
+            label: $question,
         );
     }
 
@@ -49,7 +49,7 @@ trait Prompts
     public function confirm($question, $default = false)
     {
         return confirm(
-            message: $question,
+            label: $question,
             default: $default
         );
     }
@@ -67,14 +67,14 @@ trait Prompts
     {
         if (! $multiple) {
             return select(
-                message: $question,
+                label: $question,
                 default: $default,
                 options: $choices,
             );
         }
 
         return multiselect(
-            message: $question,
+            label: $question,
             options: $choices,
             default: explode(',', $default),
         );
@@ -104,7 +104,7 @@ trait Prompts
     public function askWithCompletion($question, $choices, $default = null)
     {
         return anticipate(
-            message: $question,
+            label: $question,
             options: $choices,
             default: $default,
         );

@@ -5,7 +5,7 @@ use function Laravel\Prompts\confirm;
 require __DIR__.'/../vendor/autoload.php';
 
 $confirmed = confirm(
-    message: 'Would you like to install dependencies?',
+    label: 'Would you like to install dependencies?',
 );
 
 var_dump($confirmed);

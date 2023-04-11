@@ -7,17 +7,17 @@ use Closure;
 /**
  * Prompt the user for text input.
  */
-function text(string $message, string $placeholder = '', string $default = '', ?Closure $validate = null): string
+function text(string $label, string $placeholder = '', string $default = '', ?Closure $validate = null): string
 {
-    return (new TextPrompt($message, $placeholder, $default, $validate))->prompt();
+    return (new TextPrompt($label, $placeholder, $default, $validate))->prompt();
 }
 
 /**
  * Prompt the user for input, hiding the value.
  */
-function password(string $message, ?Closure $validate = null): string
+function password(string $label, ?Closure $validate = null): string
 {
-    return (new PasswordPrompt($message, $validate))->prompt();
+    return (new PasswordPrompt($label, $validate))->prompt();
 }
 
 /**
@@ -25,9 +25,9 @@ function password(string $message, ?Closure $validate = null): string
  *
  * @param  array<int|string, string>  $options
  */
-function select(string $message, array $options, ?string $default = null, int $scroll = 5): string
+function select(string $label, array $options, ?string $default = null, int $scroll = 5): string
 {
-    return (new SelectPrompt($message, $options, $default, $scroll))->prompt();
+    return (new SelectPrompt($label, $options, $default, $scroll))->prompt();
 }
 
 /**
@@ -37,18 +37,18 @@ function select(string $message, array $options, ?string $default = null, int $s
  * @param  array<string>  $default
  * @return array<string>
  */
-function multiselect(string $message, array $options, array $default = [], int $scroll = 5, ?Closure $validate = null): array
+function multiselect(string $label, array $options, array $default = [], int $scroll = 5, ?Closure $validate = null): array
 {
-    return (new MultiSelectPrompt($message, $options, $default, $scroll, $validate))->prompt();
+    return (new MultiSelectPrompt($label, $options, $default, $scroll, $validate))->prompt();
 }
 
 /**
  * Prompt the user to confirm an action.
  */
-function confirm(string $message, bool $default = true, string $yes = 'Yes', string $no = 'No'): bool
+function confirm(string $label, bool $default = true, string $yes = 'Yes', string $no = 'No'): bool
 {
     return (new ConfirmPrompt(
-        $message,
+        $label,
         $default,
         $yes,
         $no,
@@ -60,9 +60,9 @@ function confirm(string $message, bool $default = true, string $yes = 'Yes', str
  *
  * @param  array<string>|Closure(string): array<string>  $options
  */
-function anticipate(string $message, array|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, ?Closure $validate = null): string
+function anticipate(string $label, array|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, ?Closure $validate = null): string
 {
-    return (new AnticipatePrompt($message, $options, $placeholder, $default, $scroll, $validate))->prompt();
+    return (new AnticipatePrompt($label, $options, $placeholder, $default, $scroll, $validate))->prompt();
 }
 
 /**

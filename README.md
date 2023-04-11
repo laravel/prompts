@@ -37,7 +37,7 @@ You may also provide a placeholder, default value, and validation callback:
 use function Laravel\Prompts\text;
 
 $name = text(
-    message: 'What is your email address?',
+    label: 'What is your email address?',
     placeholder: 'E.g. taylor@laravel.com',
     default: $user->email,
     validate: fn ($value) => match (true) {
@@ -67,7 +67,7 @@ You may also provide a validation callback:
 use function Laravel\Prompts\password;
 
 $password = password(
-    message: 'Please provide a password',
+    label: 'Please provide a password',
     validate: function ($value) {
         if (strlen($value) < 8) {
             return 'Password must have at least 8 characters.';
@@ -94,7 +94,7 @@ You may also provide a default value and alternative labels for 'Yes' and 'No':
 use function Laravel\Prompts\confirm;
 
 $confirmed = confirm(
-    message: 'Would you like to install dependencies?',
+    label: 'Would you like to install dependencies?',
     default: false,
     yes: 'Yes, please',
     no: 'No, thank you',
@@ -123,7 +123,7 @@ You may also provide keys for each option, a default value, and configure scroll
 use function Laravel\Prompts\select;
 
 $role = select(
-    message: 'What role should the user have?',
+    label: 'What role should the user have?',
     options: [
         'member' => 'Member',
         'contributor' => 'Contributor',
@@ -157,7 +157,7 @@ You may also provide keys for each option, a default value, scroll configuration
 use function Laravel\Prompts\multiselect;
 
 $permissions = multiselect(
-    message: 'What permissions should the user have?',
+    label: 'What permissions should the user have?',
     options: [
         'view' => 'View',
         'create' => 'Create',
@@ -196,7 +196,7 @@ You may also provide keys a placeholder, default value, scroll configuration, an
 use function Laravel\Prompts\anticipate;
 
 $color = anticipate(
-    message: 'What model should the policy apply to?',
+    label: 'What model should the policy apply to?',
     placeholder: 'E.g. User',
     options: [
         'Article',
@@ -219,7 +219,7 @@ By default, options are matched based on whether they start with the users input
 use function Laravel\Prompts\anticipate;
 
 $color = anticipate(
-    message: 'What model should the policy apply to?',
+    label: 'What model should the policy apply to?',
     options: fn (string $value) => array_filter(
         [
             'Article',

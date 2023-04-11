@@ -19,27 +19,27 @@ class AnticipatePromptRenderer
         return match ($prompt->state) {
             'error' => <<<EOT
 
-                {$this->box($prompt->message, $prompt->valueWithCursor(), color: 'yellow')}
+                {$this->box($prompt->label, $prompt->valueWithCursor(), color: 'yellow')}
                 {$this->yellow("  ⚠ {$prompt->error}")}
 
                 EOT,
 
             'submit' => <<<EOT
 
-                {$this->box($this->dim($prompt->message), $this->dim($prompt->value()))}
+                {$this->box($this->dim($prompt->label), $this->dim($prompt->value()))}
 
                 EOT,
 
             'cancel' => <<<EOT
 
-                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->value() ?: $prompt->placeholder)), color: 'red')}
+                {$this->box($prompt->label, $this->strikethrough($this->dim($prompt->value() ?: $prompt->placeholder)), color: 'red')}
                 {$this->red('  ⚠ Cancelled.')}
 
                 EOT,
 
             default => <<<EOT
 
-                {$this->box($this->cyan($prompt->message), $this->valueWithCursorAndArrow($prompt), $this->renderOptions($prompt))}
+                {$this->box($this->cyan($prompt->label), $this->valueWithCursorAndArrow($prompt), $this->renderOptions($prompt))}
                 {$this->spacer($prompt)}
 
                 EOT,

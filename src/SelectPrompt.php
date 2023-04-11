@@ -15,7 +15,7 @@ class SelectPrompt extends Prompt
      * @param  array<int|string, string>  $options
      */
     public function __construct(
-        public string $message,
+        public string $label,
         public array $options,
         protected int|string|null $default = null,
         public int $scroll = 5,

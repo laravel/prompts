@@ -19,7 +19,7 @@ require __DIR__.'/../vendor/autoload.php';
 intro('Welcome to Laravel');
 
 $name = anticipate(
-    message: 'What is your name?',
+    label: 'What is your name?',
     placeholder: 'E.g. Taylor Otwell',
     options: [
         'Dries Vints',
@@ -39,7 +39,7 @@ $name = anticipate(
 );
 
 $path = text(
-    message: 'Where should we create your project?',
+    label: 'Where should we create your project?',
     placeholder: 'E.g. ./laravel',
     validate: fn ($value) => match (true) {
         ! $value => 'Please enter a path',
@@ -49,7 +49,7 @@ $path = text(
 );
 
 $password = password(
-    message: 'Provide a password',
+    label: 'Provide a password',
     validate: fn ($value) => match (true) {
         ! $value => 'Please enter a password.',
         strlen($value) < 5 => 'Password should have at least 5 characters.',
@@ -58,7 +58,7 @@ $password = password(
 );
 
 $type = select(
-    message: 'Pick a project type',
+    label: 'Pick a project type',
     default: 'ts',
     options: [
         'ts' => 'TypeScript',
@@ -67,7 +67,7 @@ $type = select(
 );
 
 $tools = multiselect(
-    message: 'Select additional tools.',
+    label: 'Select additional tools.',
     default: ['pint', 'eslint'],
     options: [
         'pint' => 'Pint',
@@ -82,7 +82,7 @@ $tools = multiselect(
 );
 
 $install = confirm(
-    message: 'Install dependencies?',
+    label: 'Install dependencies?',
 );
 
 if ($install) {

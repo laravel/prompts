@@ -8,7 +8,7 @@ it('accepts an array of labels', function () {
     Prompt::fake([Key::DOWN, Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);
 
     $result = multiselect(
-        message: 'What are your favorite colors?',
+        label: 'What are your favorite colors?',
         options: [
             'Red',
             'Green',
@@ -23,7 +23,7 @@ it('accepts an array of keys and labels', function () {
     Prompt::fake([Key::DOWN, Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);
 
     $result = multiselect(
-        message: 'What are your favorite colors?',
+        label: 'What are your favorite colors?',
         options: [
             'red' => 'Red',
             'green' => 'Green',
@@ -38,7 +38,7 @@ it('accepts default values when the options are labels', function () {
     Prompt::fake([Key::ENTER]);
 
     $result = multiselect(
-        message: 'What are your favorite colors?',
+        label: 'What are your favorite colors?',
         options: [
             'Red',
             'Green',
@@ -54,7 +54,7 @@ it('accepts default values when the options are keys with labels', function () {
     Prompt::fake([Key::ENTER]);
 
     $result = multiselect(
-        message: 'What are your favorite colors?',
+        label: 'What are your favorite colors?',
         options: [
             'red' => 'Red',
             'green' => 'Green',

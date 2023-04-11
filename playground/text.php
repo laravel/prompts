@@ -5,7 +5,7 @@ use function Laravel\Prompts\text;
 require __DIR__.'/../vendor/autoload.php';
 
 $email = text(
-    message: 'What is your email address',
+    label: 'What is your email address',
     placeholder: 'E.g. taylor@laravel.com',
     validate: fn ($value) => match (true) {
         strlen($value) === 0 => 'Please enter an email address.',

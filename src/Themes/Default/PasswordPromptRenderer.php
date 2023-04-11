@@ -18,27 +18,27 @@ class PasswordPromptRenderer
         return match ($prompt->state) {
             'error' => <<<EOT
 
-                {$this->box($prompt->message, $prompt->maskedWithCursor(), color: 'yellow')}
+                {$this->box($prompt->label, $prompt->maskedWithCursor(), color: 'yellow')}
                 {$this->yellow("  ⚠ {$prompt->error}")}
 
                 EOT,
 
             'submit' => <<<EOT
 
-                {$this->box($this->dim($prompt->message), $this->dim($prompt->masked()))}
+                {$this->box($this->dim($prompt->label), $this->dim($prompt->masked()))}
 
                 EOT,
 
             'cancel' => <<<EOT
 
-                {$this->box($prompt->message, $this->strikethrough($this->dim($prompt->masked())), color: 'red')}
+                {$this->box($prompt->label, $this->strikethrough($this->dim($prompt->masked())), color: 'red')}
                 {$this->red('  ⚠ Cancelled.')}
 
                 EOT,
 
             default => <<<EOT
 
-                {$this->box($this->cyan($prompt->message), $prompt->maskedWithCursor())}
+                {$this->box($this->cyan($prompt->label), $prompt->maskedWithCursor())}
 
 
                 EOT,

@@ -45,7 +45,7 @@ it('accepts a callback', function () {
     Prompt::fake(['e', 'e', Key::DOWN, Key::ENTER]);
 
     $result = anticipate(
-        message: 'What is your favorite color?',
+        label: 'What is your favorite color?',
         options: fn (string $value) => array_filter(
             [
                 'Red',

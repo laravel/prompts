@@ -13,7 +13,7 @@ class ConfirmPrompt extends Prompt
      * Create a new ConfirmPrompt instance.
      */
     public function __construct(
-        public string $message,
+        public string $label,
         bool $default = true,
         public string $yes = 'Yes',
         public string $no = 'No',

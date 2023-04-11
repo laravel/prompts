@@ -25,7 +25,7 @@ class MultiSelectPrompt extends Prompt
      * @param  array<string>  $default
      */
     public function __construct(
-        public string $message,
+        public string $label,
         public array $options,
         protected array $default = [],
         public int $scroll = 5,
