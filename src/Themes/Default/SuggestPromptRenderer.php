@@ -48,7 +48,7 @@ class SuggestPromptRenderer
 
     protected function valueWithCursorAndArrow(SuggestPrompt $prompt): string
     {
-        if ($prompt->highlighted !== null || $prompt->value() !== '') {
+        if ($prompt->highlighted !== null || $prompt->value() !== '' || count($prompt->matches()) === 0) {
             return $prompt->valueWithCursor();
         }
 
