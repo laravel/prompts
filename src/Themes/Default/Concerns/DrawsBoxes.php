@@ -74,6 +74,6 @@ trait DrawsBoxes
      */
     protected function stripEscapeSequences(string $text): string
     {
-        return preg_replace('/\x1b[^m]*m/', '', $text);
+        return preg_replace("/\e[^m]*m/", '', $text);
     }
 }

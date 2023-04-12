@@ -9,7 +9,7 @@ trait Colors
      */
     public function reset(string $text): string
     {
-        return "\x1B[0m{$text}\x1B[0m";
+        return "\e[0m{$text}\e[0m";
     }
 
     /**
@@ -17,7 +17,7 @@ trait Colors
      */
     public function bold(string $text): string
     {
-        return "\x1B[1m{$text}\x1B[22m";
+        return "\e[1m{$text}\e[22m";
     }
 
     /**
@@ -25,7 +25,7 @@ trait Colors
      */
     public function dim(string $text): string
     {
-        return "\x1B[2m{$text}\x1B[22m";
+        return "\e[2m{$text}\e[22m";
     }
 
     /**
@@ -33,7 +33,7 @@ trait Colors
      */
     public function italic(string $text): string
     {
-        return "\x1B[3m{$text}\x1B[23m";
+        return "\e[3m{$text}\e[23m";
     }
 
     /**
@@ -41,7 +41,7 @@ trait Colors
      */
     public function underline(string $text): string
     {
-        return "\x1B[4m{$text}\x1B[24m";
+        return "\e[4m{$text}\e[24m";
     }
 
     /**
@@ -49,7 +49,7 @@ trait Colors
      */
     public function inverse(string $text): string
     {
-        return "\x1B[7m{$text}\x1B[27m";
+        return "\e[7m{$text}\e[27m";
     }
 
     /**
@@ -57,7 +57,7 @@ trait Colors
      */
     public function hidden(string $text): string
     {
-        return "\x1B[8m{$text}\x1B[28m";
+        return "\e[8m{$text}\e[28m";
     }
 
     /**
@@ -65,7 +65,7 @@ trait Colors
      */
     public function strikethrough(string $text): string
     {
-        return "\x1B[9m{$text}\x1B[29m";
+        return "\e[9m{$text}\e[29m";
     }
 
     /**
@@ -73,7 +73,7 @@ trait Colors
      */
     public function black(string $text): string
     {
-        return "\x1B[30m{$text}\x1B[39m";
+        return "\e[30m{$text}\e[39m";
     }
 
     /**
@@ -81,7 +81,7 @@ trait Colors
      */
     public function red(string $text): string
     {
-        return "\x1B[31m{$text}\x1B[39m";
+        return "\e[31m{$text}\e[39m";
     }
 
     /**
@@ -89,7 +89,7 @@ trait Colors
      */
     public function green(string $text): string
     {
-        return "\x1B[32m{$text}\x1B[39m";
+        return "\e[32m{$text}\e[39m";
     }
 
     /**
@@ -97,7 +97,7 @@ trait Colors
      */
     public function yellow(string $text): string
     {
-        return "\x1B[33m{$text}\x1B[39m";
+        return "\e[33m{$text}\e[39m";
     }
 
     /**
@@ -105,7 +105,7 @@ trait Colors
      */
     public function blue(string $text): string
     {
-        return "\x1B[34m{$text}\x1B[39m";
+        return "\e[34m{$text}\e[39m";
     }
 
     /**
@@ -113,7 +113,7 @@ trait Colors
      */
     public function magenta(string $text): string
     {
-        return "\x1B[35m{$text}\x1B[39m";
+        return "\e[35m{$text}\e[39m";
     }
 
     /**
@@ -121,7 +121,7 @@ trait Colors
      */
     public function cyan(string $text): string
     {
-        return "\x1B[36m{$text}\x1B[39m";
+        return "\e[36m{$text}\e[39m";
     }
 
     /**
@@ -129,7 +129,7 @@ trait Colors
      */
     public function white(string $text): string
     {
-        return "\x1B[37m{$text}\x1B[39m";
+        return "\e[37m{$text}\e[39m";
     }
 
     /**
@@ -137,7 +137,7 @@ trait Colors
      */
     public function bgBlack(string $text): string
     {
-        return "\x1B[40m{$text}\x1B[49m";
+        return "\e[40m{$text}\e[49m";
     }
 
     /**
@@ -145,7 +145,7 @@ trait Colors
      */
     public function bgRed(string $text): string
     {
-        return "\x1B[41m{$text}\x1B[49m";
+        return "\e[41m{$text}\e[49m";
     }
 
     /**
@@ -153,7 +153,7 @@ trait Colors
      */
     public function bgGreen(string $text): string
     {
-        return "\x1B[42m{$text}\x1B[49m";
+        return "\e[42m{$text}\e[49m";
     }
 
     /**
@@ -161,7 +161,7 @@ trait Colors
      */
     public function bgYellow(string $text): string
     {
-        return "\x1B[43m{$text}\x1B[49m";
+        return "\e[43m{$text}\e[49m";
     }
 
     /**
@@ -169,7 +169,7 @@ trait Colors
      */
     public function bgBlue(string $text): string
     {
-        return "\x1B[44m{$text}\x1B[49m";
+        return "\e[44m{$text}\e[49m";
     }
 
     /**
@@ -177,7 +177,7 @@ trait Colors
      */
     public function bgMagenta(string $text): string
     {
-        return "\x1B[45m{$text}\x1B[49m";
+        return "\e[45m{$text}\e[49m";
     }
 
     /**
@@ -185,7 +185,7 @@ trait Colors
      */
     public function bgCyan(string $text): string
     {
-        return "\x1B[46m{$text}\x1B[49m";
+        return "\e[46m{$text}\e[49m";
     }
 
     /**
@@ -193,7 +193,7 @@ trait Colors
      */
     public function bgWhite(string $text): string
     {
-        return "\x1B[47m{$text}\x1B[49m";
+        return "\e[47m{$text}\e[49m";
     }
 
     /**
@@ -201,7 +201,7 @@ trait Colors
      */
     public function gray(string $text): string
     {
-        return "\x1B[90m{$text}\x1B[39m";
+        return "\e[90m{$text}\e[39m";
     }
 
     /**
