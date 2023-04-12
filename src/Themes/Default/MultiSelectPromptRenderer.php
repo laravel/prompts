@@ -64,10 +64,10 @@ class MultiSelectPromptRenderer
                     $selected = in_array($value, $prompt->value());
 
                     return match (true) {
-                        $active && $selected => "{$this->cyan('› ◼')} {$label}  ",
-                        $active => "{$this->cyan('›')} ◻ {$label}  ",
-                        $selected => "  {$this->cyan('◼')} {$this->dim($label)}  ",
-                        default => "  {$this->dim('◻')} {$this->dim($label)}  ",
+                        $active && $selected => "{$this->cyan('› ◼')} {$this->format($label)}  ",
+                        $active => "{$this->cyan('›')} ◻ {$this->format($label)}  ",
+                        $selected => "  {$this->cyan('◼')} {$this->dim($this->format($label))}  ",
+                        default => "  {$this->dim('◻')} {$this->dim($this->format($label))}  ",
                     };
                 }),
             $prompt->highlighted,
@@ -85,6 +85,6 @@ class MultiSelectPromptRenderer
             return $this->gray('None');
         }
 
-        return implode(', ', $prompt->labels());
+        return implode(', ', array_map(fn ($label) => $this->format($label), $prompt->labels()));
     }
 }

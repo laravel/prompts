@@ -19,7 +19,7 @@ class SelectPromptRenderer
         return match ($prompt->state) {
             'submit' => <<<EOT
 
-                {$this->box($this->dim($prompt->label), $this->dim($prompt->label()))}
+                {$this->box($this->dim($prompt->label), $this->dim($this->format($prompt->label())))}
 
                 EOT,
 
@@ -55,8 +55,8 @@ class SelectPromptRenderer
             collect($prompt->options)
                 ->values()
                 ->map(fn ($label, $i) => $prompt->highlighted === $i
-                    ? "{$this->cyan('›')} {$this->cyan('●')} {$label}  "
-                    : "  {$this->dim('○')} {$this->dim($label)}  "
+                    ? "{$this->cyan('›')} {$this->cyan('●')} {$this->format($label)}  "
+                    : "  {$this->dim('○')} {$this->dim($this->format($label))}  "
                 ),
             $prompt->highlighted,
             $prompt->scroll,
