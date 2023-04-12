@@ -30,6 +30,13 @@ class SelectPromptRenderer
 
                 EOT,
 
+            'error' => <<<EOT
+
+                {$this->box($prompt->label, $this->renderOptions($prompt), color: 'yellow')}
+                {$this->yellow("  ⚠ {$prompt->error}")}
+
+                EOT,
+
             default => <<<EOT
 
                 {$this->box($this->cyan($prompt->label), $this->renderOptions($prompt))}

@@ -6,6 +6,10 @@ require __DIR__.'/../vendor/autoload.php';
 
 $confirmed = confirm(
     label: 'Would you like to install dependencies?',
+    validate: fn ($value) => match ($value) {
+        false => 'You must install dependencies.',
+        default => null,
+    }
 );
 
 var_dump($confirmed);
