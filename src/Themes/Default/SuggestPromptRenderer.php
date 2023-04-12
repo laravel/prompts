@@ -19,7 +19,7 @@ class SuggestPromptRenderer
         return match ($prompt->state) {
             'error' => <<<EOT
 
-                {$this->box($prompt->label, $prompt->valueWithCursor(), color: 'yellow')}
+                {$this->box($prompt->label, $this->valueWithCursorAndArrow($prompt), $this->renderOptions($prompt), color: 'yellow')}
                 {$this->yellow("  ⚠ {$prompt->error}")}
 
                 EOT,
