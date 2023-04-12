@@ -197,7 +197,7 @@ You may also provide keys a placeholder, default value, scroll configuration, an
 ```php
 use function Laravel\Prompts\suggest;
 
-$color = suggest(
+$model = suggest(
     label: 'What model should the policy apply to?',
     placeholder: 'E.g. User',
     options: [
@@ -220,7 +220,7 @@ By default, options are matched based on whether they start with the users input
 ```php
 use function Laravel\Prompts\suggest;
 
-$color = suggest(
+$model = suggest(
     label: 'What model should the policy apply to?',
     options: fn (string $value) => array_filter(
         [
