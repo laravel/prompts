@@ -19,11 +19,11 @@ trait Fallback
     protected static array $fallbacks = [];
 
     /**
-     * Set the fallback state.
+     * Enable the fallback implementation.
      */
     public static function fallbackWhen(bool $condition): void
     {
-        static::$shouldFallback = $condition;
+        static::$shouldFallback = $condition || static::$shouldFallback;
     }
 
     /**
