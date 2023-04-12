@@ -65,7 +65,7 @@ class SuggestPromptRenderer
     protected function spacer(SuggestPrompt $prompt): string
     {
         if ($prompt->value() === '' && $prompt->highlighted === null) {
-            return str_repeat(PHP_EOL, $prompt->scroll + 1);
+            return str_repeat(PHP_EOL, min(count($prompt->matches()), $prompt->scroll) + 1);
         }
 
         return '';
