@@ -99,9 +99,86 @@ abstract class Prompt
     }
 
     /**
-     * Handle a key press.
+     * Render the prompt.
      */
-    protected function handleKeyPress(string $key): ?bool
+    protected function render(): void
+    {
+        $frame = $this->renderTheme();
+
+        if ($frame === $this->prevFrame) {
+            return;
+        }
+
+        if ($this->state === 'initial') {
+            $this->terminal()->write($frame);
+
+            $this->state = 'active';
+            $this->prevFrame = $frame;
+
+            return;
+        }
+
+        $this->resetCursorPosition();
+
+        $diff = $this->diffLines($this->prevFrame, $frame);
+
+        if (count($diff) === 1) { // Update the single line that changed.
+            $diffLine = $diff[0];
+            $this->moveCursor(0, $diffLine);
+            $this->eraseLines(1);
+            $lines = explode(PHP_EOL, $frame);
+            $this->terminal()->write($lines[$diffLine]);
+            $this->moveCursor(0, count($lines) - $diffLine - 1);
+        } elseif (count($diff) > 1) { // Re-render everything past the first change
+            $diffLine = $diff[0];
+            $this->moveCursor(0, $diffLine);
+            $this->eraseDown();
+            $lines = explode(PHP_EOL, $frame);
+            $newLines = array_slice($lines, $diffLine);
+            $this->terminal()->write(implode(PHP_EOL, $newLines));
+        }
+
+        $this->prevFrame = $frame;
+    }
+
+    /**
+     * Reset the cursor position to the beginning of the previous frame.
+     */
+    private function resetCursorPosition(): void
+    {
+        $lines = count(explode(PHP_EOL, $this->prevFrame)) - 1;
+
+        $this->moveCursor(-999, $lines * -1);
+    }
+
+    /**
+     * Get the difference between two strings.
+     *
+     * @return array<int>
+     */
+    private function diffLines(string $a, string $b): array
+    {
+        if ($a === $b) {
+            return [];
+        }
+
+        $aLines = explode(PHP_EOL, $a);
+        $bLines = explode(PHP_EOL, $b);
+        $diff = [];
+
+        for ($i = 0; $i < max(count($aLines), count($bLines)); $i++) {
+            if (! isset($aLines[$i]) || ! isset($bLines[$i]) || $aLines[$i] !== $bLines[$i]) {
+                $diff[] = $i;
+            }
+        }
+
+        return $diff;
+    }
+
+    /**
+     * Handle a key press and determine whether to continue.
+     */
+    private function handleKeyPress(string $key): bool
     {
         if ($this->state === 'error') {
             $this->state = 'active';
@@ -126,13 +203,13 @@ abstract class Prompt
             return false;
         }
 
-        return null;
+        return true;
     }
 
     /**
      * Validate the input.
      */
-    protected function validate(): string
+    private function validate(): string
     {
         if (! isset($this->validate)) {
             return '';
@@ -145,82 +222,5 @@ abstract class Prompt
         }
 
         return $error ?? '';
-    }
-
-    /**
-     * Render the prompt.
-     */
-    protected function render(): void
-    {
-        $frame = $this->renderTheme();
-
-        if ($frame === $this->prevFrame) {
-            return;
-        }
-
-        if ($this->state === 'initial') {
-            $this->terminal()->write($frame);
-
-            $this->state = 'active';
-            $this->prevFrame = $frame;
-
-            return;
-        }
-
-        $this->restoreCursorPosition();
-
-        $diff = $this->diffLines($this->prevFrame, $frame);
-
-        if (count($diff) === 1) { // Update the single line that changed.
-            $diffLine = $diff[0];
-            $this->moveCursor(0, $diffLine);
-            $this->eraseLines(1);
-            $lines = explode(PHP_EOL, $frame);
-            $this->terminal()->write($lines[$diffLine]);
-            $this->moveCursor(0, count($lines) - $diffLine - 1);
-        } elseif (count($diff) > 1) { // Re-render everything past the first change
-            $diffLine = $diff[0];
-            $this->moveCursor(0, $diffLine);
-            $this->eraseDown();
-            $lines = explode(PHP_EOL, $frame);
-            $newLines = array_slice($lines, $diffLine);
-            $this->terminal()->write(implode(PHP_EOL, $newLines));
-        }
-
-        $this->prevFrame = $frame;
-    }
-
-    /**
-     * Restore the cursor position.
-     */
-    private function restoreCursorPosition(): void
-    {
-        $lines = count(explode(PHP_EOL, $this->prevFrame)) - 1;
-
-        $this->moveCursor(-999, $lines * -1);
-    }
-
-    /**
-     * Get the difference between two strings.
-     *
-     * @return array<int>
-     */
-    protected function diffLines(string $a, string $b): array
-    {
-        if ($a === $b) {
-            return [];
-        }
-
-        $aLines = explode(PHP_EOL, $a);
-        $bLines = explode(PHP_EOL, $b);
-        $diff = [];
-
-        for ($i = 0; $i < max(count($aLines), count($bLines)); $i++) {
-            if (! isset($aLines[$i]) || ! isset($bLines[$i]) || $aLines[$i] !== $bLines[$i]) {
-                $diff[] = $i;
-            }
-        }
-
-        return $diff;
     }
 }
