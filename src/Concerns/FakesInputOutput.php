@@ -2,8 +2,10 @@
 
 namespace Laravel\Prompts\Concerns;
 
+use Laravel\Prompts\Output\BufferedConsoleOutput;
 use Laravel\Prompts\Terminal;
-use Mockery\MockInterface;
+use PHPUnit\Framework\Assert;
+use RuntimeException;
 
 trait FakesInputOutput
 {
@@ -12,7 +14,7 @@ trait FakesInputOutput
      *
      * @param  array<string>  $keys
      */
-    public static function fake(array $keys = []): MockInterface
+    public static function fake(array $keys = []): void
     {
         $mock = \Mockery::mock(Terminal::class);
 
@@ -27,6 +29,18 @@ trait FakesInputOutput
 
         static::terminal($mock);
 
-        return $mock;
+        self::setOutput(new BufferedConsoleOutput());
+    }
+
+    /**
+     * Assert that the output contains the given string.
+     */
+    public static function assertOutputContains(string $string): void
+    {
+        if (! static::output() instanceof BufferedConsoleOutput) {
+            throw new RuntimeException('Prompt must be faked before asserting output.');
+        }
+
+        Assert::assertStringContainsString($string, static::output()->content());
     }
 }

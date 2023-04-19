@@ -14,7 +14,7 @@ trait DrawsBoxes
         string $body,
         string $footer = '',
         string $color = 'gray',
-    ): string {
+    ): self {
         $bodyLines = collect(explode(PHP_EOL, $body));
         $footerLines = collect(explode(PHP_EOL, $footer))->filter();
         $width = $this->longest(
@@ -27,21 +27,23 @@ trait DrawsBoxes
         $topBorder = str_repeat('─', $width - mb_strlen($this->stripEscapeSequences($title)));
         $bottomBorder = str_repeat('─', $width + 2);
 
-        $top = "{$this->{$color}(' ┌')} {$title} {$this->{$color}($topBorder.'┐')}";
-        $bodyLines = $bodyLines->map(function ($line) use ($width, $color) {
-            return "{$this->{$color}(' │')} {$this->pad($line, $width)} {$this->{$color}('│')}";
+        $this->line("{$this->{$color}(' ┌')} {$title} {$this->{$color}($topBorder.'┐')}");
+
+        $bodyLines->each(function ($line) use ($width, $color) {
+            $this->line("{$this->{$color}(' │')} {$this->pad($line, $width)} {$this->{$color}('│')}");
         });
-        $divider = $this->{$color}(' ├'.$bottomBorder.'┤');
-        $footerLines = $footerLines->map(function ($line) use ($width, $color) {
-            return "{$this->{$color}(' │')} {$this->pad($line, $width)} {$this->{$color}('│')}";
-        });
-        $bottom = $this->{$color}(' └'.$bottomBorder.'┘');
 
         if ($footerLines->isNotEmpty()) {
-            return $top.PHP_EOL.$bodyLines->implode(PHP_EOL).PHP_EOL.$divider.PHP_EOL.$footerLines->implode(PHP_EOL).PHP_EOL.$bottom;
+            $this->line($this->{$color}(' ├'.$bottomBorder.'┤'));
+
+            $footerLines->each(function ($line) use ($width, $color) {
+                $this->line("{$this->{$color}(' │')} {$this->pad($line, $width)} {$this->{$color}('│')}");
+            });
         }
 
-        return $top.PHP_EOL.$bodyLines->implode(PHP_EOL).PHP_EOL.$bottom;
+        $this->line($this->{$color}(' └'.$bottomBorder.'┘'));
+
+        return $this;
     }
 
     /**

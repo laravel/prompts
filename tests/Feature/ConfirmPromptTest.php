@@ -49,9 +49,7 @@ it('accepts a default value', function () {
 });
 
 it('allows the labels to be changed', function () {
-    Prompt::fake([Key::ENTER])
-        ->expects('write')
-        ->with(Mockery::on(fn ($output) => str_contains($output, 'Sí, por favor') && str_contains($output, 'No, gracias')));
+    Prompt::fake([Key::ENTER]);
 
     $result = confirm(
         label: '¿Estás seguro?',
@@ -60,12 +58,13 @@ it('allows the labels to be changed', function () {
     );
 
     expect($result)->toBeTrue();
+
+    Prompt::assertOutputContains('Sí, por favor');
+    Prompt::assertOutputContains('No, gracias');
 });
 
 it('validates', function () {
-    Prompt::fake([Key::ENTER, 'y', Key::ENTER])
-        ->shouldReceive('write')
-        ->with(Mockery::on(fn ($value) => str_contains($value, 'Invalid name.')));
+    Prompt::fake([Key::ENTER, 'y', Key::ENTER]);
 
     $result = confirm(
         label: 'Would you like to continue?',
@@ -74,6 +73,8 @@ it('validates', function () {
     );
 
     expect($result)->toBeTrue();
+
+    Prompt::assertOutputContains('You must choose yes.');
 });
 
 it('can fall back', function () {

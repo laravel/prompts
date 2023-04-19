@@ -17,7 +17,7 @@ class Note extends Prompt
      */
     public function display(): void
     {
-        $this->terminal()->write($this->renderTheme());
+        $this->prompt();
     }
 
     /**
@@ -25,7 +25,11 @@ class Note extends Prompt
      */
     public function prompt(): bool
     {
-        $this->display();
+        $this->capturePreviousNewLines();
+
+        $this->state = 'submit';
+
+        $this->output()->write($this->renderTheme());
 
         return true;
     }

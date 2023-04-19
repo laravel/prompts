@@ -2,13 +2,10 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use Laravel\Prompts\Concerns\Colors;
 use Laravel\Prompts\Note;
 
-class NoteRenderer
+class NoteRenderer extends Renderer
 {
-    use Colors;
-
     /**
      * Render the note.
      */
@@ -22,33 +19,33 @@ class NoteRenderer
                 $lines = $lines->map(fn ($line) => " {$line} ");
                 $longest = $lines->map(fn ($line) => strlen($line))->max();
 
-                return PHP_EOL.$lines
-                    ->map(function ($line, $i) use ($longest) {
+                $lines
+                    ->each(function ($line) use ($longest) {
                         $line = str_pad($line, $longest, ' ');
+                        $this->line(" {$this->bgCyan($this->black($line))}");
+                    });
 
-                        return " {$this->bgCyan($this->black($line))}";
-                    })
-                    ->implode(PHP_EOL).str_repeat(PHP_EOL, $note->type === 'intro' ? 1 : 2);
+                return $this;
 
             case 'warning':
-                return PHP_EOL.$lines
-                    ->map(fn ($line) => $this->yellow(" {$line}"))
-                    ->implode(PHP_EOL).PHP_EOL;
+                $lines->each(fn ($line) => $this->line($this->yellow(" {$line}")));
+
+                return $this;
 
             case 'error':
-                return PHP_EOL.$lines
-                    ->map(fn ($line) => $this->red(" {$line}"))
-                    ->implode(PHP_EOL).PHP_EOL;
+                $lines->each(fn ($line) => $this->line($this->red(" {$line}")));
+
+                return $this;
 
             case 'alert':
-                return PHP_EOL.$lines
-                    ->map(fn ($line) => ' '.$this->bgRed($this->white(" {$line} ")))
-                    ->implode(PHP_EOL).PHP_EOL;
+                $lines->each(fn ($line) => $this->line(" {$this->bgRed($this->white(" {$line} "))}"));
+
+                return $this;
 
             default:
-                return PHP_EOL.$lines
-                    ->map(fn ($line) => " {$line}")
-                    ->implode(PHP_EOL).PHP_EOL;
+                $lines->each(fn ($line) => $this->line(" {$line}"));
+
+                return $this;
         }
     }
 }

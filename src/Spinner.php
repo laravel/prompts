@@ -40,6 +40,8 @@ class Spinner extends Prompt
      */
     public function spin(Closure $callback): mixed
     {
+        $this->capturePreviousNewLines();
+
         if (! function_exists('pcntl_fork')) {
             $this->renderStatically($callback);
         }

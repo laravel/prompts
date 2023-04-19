@@ -61,17 +61,17 @@ it('accepts a callback', function () {
 });
 
 it('validates', function () {
-    Prompt::fake([Key::ENTER, 'X', Key::ENTER])
-        ->shouldReceive('write')
-        ->with(Mockery::on(fn ($value) => str_contains($value, 'Please enter a name.')));
+    Prompt::fake([Key::ENTER, 'X', Key::ENTER]);
 
     $result = suggest(
         label: 'What is your name?',
         options: ['Taylor'],
-        validate: fn ($value) => empty($value) ? 'Please enter name.' : null,
+        validate: fn ($value) => empty($value) ? 'Please enter your name.' : null,
     );
 
     expect($result)->toBe('X');
+
+    Prompt::assertOutputContains('Please enter your name.');
 });
 
 it('can fall back', function () {

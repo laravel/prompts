@@ -2,12 +2,10 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use Laravel\Prompts\Concerns\Colors;
 use Laravel\Prompts\TextPrompt;
 
-class TextPromptRenderer
+class TextPromptRenderer extends Renderer
 {
-    use Colors;
     use Concerns\DrawsBoxes;
 
     /**
@@ -16,32 +14,20 @@ class TextPromptRenderer
     public function __invoke(TextPrompt $prompt): string
     {
         return match ($prompt->state) {
-            'error' => <<<EOT
+            'error' => $this
+                ->box($prompt->label, $prompt->valueWithCursor(), color: 'yellow')
+                ->warning($prompt->error),
 
-                {$this->box($prompt->label, $prompt->valueWithCursor(), color: 'yellow')}
-                {$this->yellow("  ⚠ {$prompt->error}")}
+            'submit' => $this
+                ->box($this->dim($prompt->label), $this->dim($prompt->value())),
 
-                EOT,
+            'cancel' => $this
+                ->box($prompt->label, $this->strikethrough($this->dim($prompt->value() ?: $prompt->placeholder)), color: 'red')
+                ->error('Cancelled.'),
 
-            'submit' => <<<EOT
-
-                {$this->box($this->dim($prompt->label), $this->dim($prompt->value()))}
-
-                EOT,
-
-            'cancel' => <<<EOT
-
-                {$this->box($prompt->label, $this->strikethrough($this->dim($prompt->value() ?: $prompt->placeholder)), color: 'red')}
-                {$this->red('  ⚠ Cancelled.')}
-
-                EOT,
-
-            default => <<<EOT
-
-                {$this->box($this->cyan($prompt->label), $prompt->valueWithCursor())}
-
-
-                EOT,
+            default => $this
+                ->box($this->cyan($prompt->label), $prompt->valueWithCursor())
+                ->newLine(), // Space for errors
         };
     }
 }

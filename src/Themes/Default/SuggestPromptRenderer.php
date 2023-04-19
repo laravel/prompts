@@ -2,12 +2,10 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use Laravel\Prompts\Concerns\Colors;
 use Laravel\Prompts\SuggestPrompt;
 
-class SuggestPromptRenderer
+class SuggestPromptRenderer extends Renderer
 {
-    use Colors;
     use Concerns\DrawsBoxes;
     use Concerns\DrawsScrollbars;
 
@@ -17,35 +15,27 @@ class SuggestPromptRenderer
     public function __invoke(SuggestPrompt $prompt): string
     {
         return match ($prompt->state) {
-            'error' => <<<EOT
+            'error' => $this
+                ->box($prompt->label, $this->valueWithCursorAndArrow($prompt), $this->renderOptions($prompt), color: 'yellow')
+                ->warning($prompt->error),
 
-                {$this->box($prompt->label, $this->valueWithCursorAndArrow($prompt), $this->renderOptions($prompt), color: 'yellow')}
-                {$this->yellow("  ⚠ {$prompt->error}")}
+            'submit' => $this
+                ->box($this->dim($prompt->label), $this->dim($prompt->value())),
 
-                EOT,
+            'cancel' => $this
+                ->box($prompt->label, $this->strikethrough($this->dim($prompt->value() ?: $prompt->placeholder)), color: 'red')
+                ->error('Cancelled'),
 
-            'submit' => <<<EOT
-
-                {$this->box($this->dim($prompt->label), $this->dim($prompt->value()))}
-
-                EOT,
-
-            'cancel' => <<<EOT
-
-                {$this->box($prompt->label, $this->strikethrough($this->dim($prompt->value() ?: $prompt->placeholder)), color: 'red')}
-                {$this->red('  ⚠ Cancelled.')}
-
-                EOT,
-
-            default => <<<EOT
-
-                {$this->box($this->cyan($prompt->label), $this->valueWithCursorAndArrow($prompt), $this->renderOptions($prompt))}
-                {$this->spacer($prompt)}
-
-                EOT,
+            default => $this
+                ->box($this->cyan($prompt->label), $this->valueWithCursorAndArrow($prompt), $this->renderOptions($prompt))
+                ->spaceForDropdown($prompt)
+                ->newLine(), // Space for errors
         };
     }
 
+    /**
+     * Render the value with the cursor and an arrow.
+     */
     protected function valueWithCursorAndArrow(SuggestPrompt $prompt): string
     {
         if ($prompt->highlighted !== null || $prompt->value() !== '' || count($prompt->matches()) === 0) {
@@ -62,13 +52,13 @@ class SuggestPromptRenderer
     /**
      * Render a spacer to prevent jumping when the suggestions are displayed.
      */
-    protected function spacer(SuggestPrompt $prompt): string
+    protected function spaceForDropdown(SuggestPrompt $prompt): self
     {
         if ($prompt->value() === '' && $prompt->highlighted === null) {
-            return str_repeat(PHP_EOL, min(count($prompt->matches()), $prompt->scroll) + 1);
+            $this->newLine(min(count($prompt->matches()), $prompt->scroll) + 1);
         }
 
-        return '';
+        return $this;
     }
 
     /**

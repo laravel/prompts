@@ -98,7 +98,7 @@ note(<<<EOT
 
     To get started, run:
 
-        cd {$result['path']}
+        cd {$path}
         php artisan serve
     EOT);
 

@@ -4,9 +4,9 @@ use function Laravel\Prompts\note;
 use Laravel\Prompts\Prompt;
 
 it('renders a note', function () {
-    Prompt::fake([])
-        ->expects('write')
-        ->with(Mockery::on(fn ($text) => str_contains($text, 'Hello, World!')));
+    Prompt::fake();
 
     note('Hello, World!');
+
+    Prompt::assertOutputContains('Hello, World!');
 });

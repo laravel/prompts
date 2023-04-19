@@ -2,8 +2,6 @@
 
 namespace Laravel\Prompts\Output;
 
-use Symfony\Component\Console\Output\ConsoleOutput;
-
 class BufferedConsoleOutput extends ConsoleOutput
 {
     /**
@@ -20,6 +18,14 @@ class BufferedConsoleOutput extends ConsoleOutput
         $this->buffer = '';
 
         return $content;
+    }
+
+    /**
+     * Return the content of the buffer.
+     */
+    public function content(): string
+    {
+        return $this->buffer;
     }
 
     /**

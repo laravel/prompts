@@ -2,12 +2,10 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use Laravel\Prompts\Concerns\Colors;
 use Laravel\Prompts\SelectPrompt;
 
-class SelectPromptRenderer
+class SelectPromptRenderer extends Renderer
 {
-    use Colors;
     use Concerns\DrawsBoxes;
     use Concerns\DrawsScrollbars;
 
@@ -17,32 +15,20 @@ class SelectPromptRenderer
     public function __invoke(SelectPrompt $prompt): string
     {
         return match ($prompt->state) {
-            'submit' => <<<EOT
+            'submit' => $this
+                ->box($this->dim($prompt->label), $this->dim($this->format($prompt->label()))),
 
-                {$this->box($this->dim($prompt->label), $this->dim($this->format($prompt->label())))}
+            'cancel' => $this
+                ->box($prompt->label, $this->renderOptions($prompt), color: 'red')
+                ->error('Cancelled.'),
 
-                EOT,
+            'error' => $this
+                ->box($prompt->label, $this->renderOptions($prompt), color: 'yellow')
+                ->warning($prompt->error),
 
-            'cancel' => <<<EOT
-
-                {$this->box($prompt->label, $this->renderOptions($prompt), color: 'red')}
-                {$this->red('  ⚠ Cancelled.')}
-
-                EOT,
-
-            'error' => <<<EOT
-
-                {$this->box($prompt->label, $this->renderOptions($prompt), color: 'yellow')}
-                {$this->yellow("  ⚠ {$prompt->error}")}
-
-                EOT,
-
-            default => <<<EOT
-
-                {$this->box($this->cyan($prompt->label), $this->renderOptions($prompt))}
-
-
-                EOT,
+            default => $this
+                ->box($this->cyan($prompt->label), $this->renderOptions($prompt))
+                ->newLine(), // Space for errors
         };
     }
 

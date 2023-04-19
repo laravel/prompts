@@ -25,9 +25,7 @@ it('accepts a default value', function () {
 });
 
 it('validates', function () {
-    Prompt::fake(['J', 'e', 's', Key::ENTER, 's', Key::ENTER])
-        ->shouldReceive('write')
-        ->with(Mockery::on(fn ($value) => str_contains($value, 'Invalid name.')));
+    Prompt::fake(['J', 'e', 's', Key::ENTER, 's', Key::ENTER]);
 
     $result = text(
         label: 'What is your name?',
@@ -35,14 +33,16 @@ it('validates', function () {
     );
 
     expect($result)->toBe('Jess');
+
+    Prompt::assertOutputContains('Invalid name.');
 });
 
 it('cancels', function () {
-    Prompt::fake([Key::CTRL_C])
-        ->expects('write')
-        ->with(Mockery::on(fn ($value) => str_contains($value, 'Cancelled.')));
+    Prompt::fake([Key::CTRL_C]);
 
     text(label: 'What is your name?');
+
+    Prompt::assertOutputContains('Cancelled.');
 });
 
 test('the backspace key removes a character', function () {

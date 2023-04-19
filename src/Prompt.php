@@ -3,6 +3,8 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Laravel\Prompts\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class Prompt
 {
@@ -29,6 +31,11 @@ abstract class Prompt
     protected string $prevFrame = '';
 
     /**
+     * How many new lines were written by the last output.
+     */
+    protected int $newLinesWritten = 1;
+
+    /**
      * The validator callback.
      */
     protected ?Closure $validate;
@@ -37,6 +44,11 @@ abstract class Prompt
      * Indicates if the prompt has been validated.
      */
     protected bool $validated = false;
+
+    /**
+     * The output instance.
+     */
+    protected static OutputInterface $output;
 
     /**
      * The terminal instance.
@@ -53,6 +65,8 @@ abstract class Prompt
      */
     public function prompt(): mixed
     {
+        $this->capturePreviousNewLines();
+
         if ($this->shouldFallback()) {
             return $this->fallback();
         }
@@ -87,6 +101,40 @@ abstract class Prompt
     }
 
     /**
+     * How many new lines were written by the last output.
+     */
+    public function newLinesWritten(): int
+    {
+        return $this->newLinesWritten;
+    }
+
+    /**
+     * Capture the number of new lines written by the last output.
+     */
+    protected function capturePreviousNewLines(): void
+    {
+        $this->newLinesWritten = method_exists($this->output(), 'newLinesWritten')
+            ? $this->output()->newLinesWritten()
+            : 1;
+    }
+
+    /**
+     * Set the output instance.
+     */
+    public static function setOutput(OutputInterface $output): void
+    {
+        self::$output = $output;
+    }
+
+    /**
+     * Get the current output instance.
+     */
+    protected static function output(): OutputInterface
+    {
+        return self::$output ??= new ConsoleOutput();
+    }
+
+    /**
      * Set or get the terminal instance.
      */
     protected static function terminal(Terminal $terminal = null): Terminal
@@ -110,7 +158,7 @@ abstract class Prompt
         }
 
         if ($this->state === 'initial') {
-            $this->terminal()->write($frame);
+            $this->output()->write($frame);
 
             $this->state = 'active';
             $this->prevFrame = $frame;
@@ -120,6 +168,16 @@ abstract class Prompt
 
         $this->resetCursorPosition();
 
+        // Ensure that the full frame is buffered so subsequent output can see how many trailing newlines were written.
+        if ($this->state === 'submit') {
+            $this->eraseDown();
+            $this->output()->write($frame);
+
+            $this->prevFrame = '';
+
+            return;
+        }
+
         $diff = $this->diffLines($this->prevFrame, $frame);
 
         if (count($diff) === 1) { // Update the single line that changed.
@@ -127,7 +185,7 @@ abstract class Prompt
             $this->moveCursor(0, $diffLine);
             $this->eraseLines(1);
             $lines = explode(PHP_EOL, $frame);
-            $this->terminal()->write($lines[$diffLine]);
+            $this->output()->write($lines[$diffLine]);
             $this->moveCursor(0, count($lines) - $diffLine - 1);
         } elseif (count($diff) > 1) { // Re-render everything past the first change
             $diffLine = $diff[0];
@@ -135,7 +193,7 @@ abstract class Prompt
             $this->eraseDown();
             $lines = explode(PHP_EOL, $frame);
             $newLines = array_slice($lines, $diffLine);
-            $this->terminal()->write(implode(PHP_EOL, $newLines));
+            $this->output()->write(implode(PHP_EOL, $newLines));
         }
 
         $this->prevFrame = $frame;
@@ -186,7 +244,9 @@ abstract class Prompt
 
         $this->emit('key', $key);
 
-        if ($key === Key::ENTER || $this->validated) {
+        if ($key === Key::CTRL_C) {
+            $this->state = 'cancel';
+        } elseif ($key === Key::ENTER || $this->validated) {
             $this->error = $this->validate();
             $this->validated = true;
 
@@ -195,8 +255,6 @@ abstract class Prompt
             } elseif ($key === Key::ENTER) {
                 $this->state = 'submit';
             }
-        } elseif ($key === Key::CTRL_C) {
-            $this->state = 'cancel';
         }
 
         if ($this->state === 'submit' || $this->state === 'cancel') {

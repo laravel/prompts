@@ -2,13 +2,10 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use Laravel\Prompts\Concerns\Colors;
 use Laravel\Prompts\Spinner;
 
-class SpinnerRenderer
+class SpinnerRenderer extends Renderer
 {
-    use Colors;
-
     /**
      * The frames of the spinner.
      *
@@ -32,21 +29,13 @@ class SpinnerRenderer
     public function __invoke(Spinner $spinner): string
     {
         if ($spinner->static) {
-            return <<<EOT
-
-                 {$this->cyan($this->staticFrame)} {$spinner->message}
-
-                EOT;
+            return $this->line(" {$this->cyan($this->staticFrame)} {$spinner->message}");
         }
 
         $spinner->interval = $this->interval;
 
         $frame = $this->frames[$spinner->count % count($this->frames)];
 
-        return <<<EOT
-
-             {$this->cyan($frame)} {$spinner->message}
-
-            EOT;
+        return $this->line(" {$this->cyan($frame)} {$spinner->message}");
     }
 }

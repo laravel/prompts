@@ -14,24 +14,24 @@ it('returns the input', function () {
 });
 
 it('validates', function () {
-    Prompt::fake(['p', 'a', 's', Key::ENTER, 's', Key::ENTER])
-        ->shouldReceive('write')
-        ->with(Mockery::on(fn ($value) => str_contains($value, 'Password must be at least 4 characters.')));
+    Prompt::fake(['p', 'a', 's', Key::ENTER, 's', Key::ENTER]);
 
     $result = password(
         label: 'What is the password',
-        validate: fn ($value) => strlen($value) < 4 ? 'Invalid name.' : '',
+        validate: fn ($value) => strlen($value) < 4 ? 'Password must be at least 4 characters.' : '',
     );
 
     expect($result)->toBe('pass');
+
+    Prompt::assertOutputContains('Password must be at least 4 characters.');
 });
 
 it('cancels', function () {
-    Prompt::fake([Key::CTRL_C])
-        ->expects('write')
-        ->with(Mockery::on(fn ($value) => str_contains($value, 'Cancelled.')));
+    Prompt::fake([Key::CTRL_C]);
 
     password(label: 'What is the password');
+
+    Prompt::assertOutputContains('Cancelled.');
 });
 
 test('the backspace key removes a character', function () {

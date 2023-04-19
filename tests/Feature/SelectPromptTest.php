@@ -68,9 +68,7 @@ it('accepts default values when the options are keys with labels', function () {
 });
 
 it('validates', function () {
-    Prompt::fake([Key::ENTER, Key::DOWN, Key::ENTER])
-        ->shouldReceive('write')
-        ->with(Mockery::on(fn ($value) => str_contains($value, 'You can\'t choose red.')));
+    Prompt::fake([Key::ENTER, Key::DOWN, Key::ENTER]);
 
     $result = select(
         label: 'What is your favorite color?',
@@ -83,6 +81,8 @@ it('validates', function () {
     );
 
     expect($result)->toBe('green');
+
+    Prompt::assertOutputContains('You can\'t choose red.');
 });
 
 it('can fall back', function () {
