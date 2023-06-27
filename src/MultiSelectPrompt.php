@@ -48,7 +48,7 @@ class MultiSelectPrompt extends Prompt
      */
     public function value(): array
     {
-        return $this->values;
+        return array_values($this->values);
     }
 
     /**
