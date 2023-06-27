@@ -32,7 +32,7 @@ class TextPrompt extends Prompt
         }
 
         if ($this->cursorPosition >= strlen($this->value())) {
-            return $this->value().$this->inverse($this->hidden('_'));
+            return $this->value().$this->inverse(' ');
         }
 
         return mb_substr($this->value(), 0, $this->cursorPosition)
