@@ -25,6 +25,7 @@ class SuggestPrompt extends Prompt
         public string $placeholder = '',
         public string $default = '',
         public int $scroll = 5,
+        public bool|string $required = false,
         public ?Closure $validate = null,
     ) {
         $this->trackTypedValue($default);

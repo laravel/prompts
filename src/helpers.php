@@ -7,17 +7,17 @@ use Closure;
 /**
  * Prompt the user for text input.
  */
-function text(string $label, string $placeholder = '', string $default = '', ?Closure $validate = null): string
+function text(string $label, string $placeholder = '', string $default = '', bool|string $required = false, ?Closure $validate = null): string
 {
-    return (new TextPrompt($label, $placeholder, $default, $validate))->prompt();
+    return (new TextPrompt($label, $placeholder, $default, $required, $validate))->prompt();
 }
 
 /**
  * Prompt the user for input, hiding the value.
  */
-function password(string $label, ?Closure $validate = null): string
+function password(string $label, bool|string $required = false, ?Closure $validate = null): string
 {
-    return (new PasswordPrompt($label, $validate))->prompt();
+    return (new PasswordPrompt($label, $required, $validate))->prompt();
 }
 
 /**
@@ -37,17 +37,17 @@ function select(string $label, array $options, ?string $default = null, int $scr
  * @param  array<string>  $default
  * @return array<string>
  */
-function multiselect(string $label, array $options, array $default = [], int $scroll = 5, ?Closure $validate = null): array
+function multiselect(string $label, array $options, array $default = [], int $scroll = 5, bool|string $required = false, ?Closure $validate = null): array
 {
-    return (new MultiSelectPrompt($label, $options, $default, $scroll, $validate))->prompt();
+    return (new MultiSelectPrompt($label, $options, $default, $scroll, $required, $validate))->prompt();
 }
 
 /**
  * Prompt the user to confirm an action.
  */
-function confirm(string $label, bool $default = true, string $yes = 'Yes', string $no = 'No', ?Closure $validate = null): bool
+function confirm(string $label, bool $default = true, string $yes = 'Yes', string $no = 'No', bool|string $required = false, ?Closure $validate = null): bool
 {
-    return (new ConfirmPrompt($label, $default, $yes, $no, $validate))->prompt();
+    return (new ConfirmPrompt($label, $default, $yes, $no, $required, $validate))->prompt();
 }
 
 /**
@@ -55,9 +55,9 @@ function confirm(string $label, bool $default = true, string $yes = 'Yes', strin
  *
  * @param  array<string>|Closure(string): array<string>  $options
  */
-function suggest(string $label, array|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, ?Closure $validate = null): string
+function suggest(string $label, array|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, bool|string $required = false, ?Closure $validate = null): string
 {
-    return (new SuggestPrompt($label, $options, $placeholder, $default, $scroll, $validate))->prompt();
+    return (new SuggestPrompt($label, $options, $placeholder, $default, $scroll, $required, $validate))->prompt();
 }
 
 /**

@@ -36,6 +36,11 @@ abstract class Prompt
     protected int $newLinesWritten = 1;
 
     /**
+     * Whether user input is required.
+     */
+    public bool|string $required;
+
+    /**
      * The validator callback.
      */
     protected ?Closure $validate;
@@ -269,6 +274,10 @@ abstract class Prompt
      */
     private function validate(): string
     {
+        if (($this->required ?? false) && empty($this->value())) {
+            return is_string($this->required) ? $this->required : 'Required.';
+        }
+
         if (! isset($this->validate)) {
             return '';
         }

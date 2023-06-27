@@ -16,6 +16,7 @@ class TextPrompt extends Prompt
         public string $label,
         public string $placeholder = '',
         public string $default = '',
+        public bool|string $required = false,
         public ?Closure $validate = null,
     ) {
         $this->trackTypedValue($default);

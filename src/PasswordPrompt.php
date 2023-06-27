@@ -14,6 +14,7 @@ class PasswordPrompt extends Prompt
      */
     public function __construct(
         public string $label,
+        public bool|string $required = false,
         public ?Closure $validate = null,
         public string $mask = '•',
     ) {
