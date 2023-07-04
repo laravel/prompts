@@ -85,7 +85,7 @@ abstract class Prompt
         $this->hideCursor();
         $this->render();
 
-        while ($key = $this->terminal()->read()) {
+        while (($key = $this->terminal()->read()) !== null) {
             $continue = $this->handleKeyPress($key);
 
             $this->render();
@@ -101,8 +101,6 @@ abstract class Prompt
                 return $this->value();
             }
         }
-
-        return $this->value();
     }
 
     /**
@@ -274,7 +272,7 @@ abstract class Prompt
      */
     private function validate(): string
     {
-        if (($this->required ?? false) && empty($this->value())) {
+        if (($this->required ?? false) && ($this->value() === '' || $this->value() === [])) {
             return is_string($this->required) ? $this->required : 'Required.';
         }
 

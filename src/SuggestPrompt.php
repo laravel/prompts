@@ -44,10 +44,10 @@ class SuggestPrompt extends Prompt
     public function valueWithCursor(): string
     {
         if ($this->highlighted !== null) {
-            return $this->value() ?: $this->dim($this->placeholder);
+            return $this->value() === '' ? $this->dim($this->placeholder) : $this->value();
         }
 
-        if (! $this->value() && $this->placeholder) {
+        if ($this->value() === '' && $this->placeholder) {
             return $this->inverse(substr($this->placeholder, 0, 1)).$this->dim(substr($this->placeholder, 1));
         }
 

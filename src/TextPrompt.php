@@ -27,7 +27,7 @@ class TextPrompt extends Prompt
      */
     public function valueWithCursor(): string
     {
-        if (! $this->value() && $this->placeholder) {
+        if ($this->value() === '' && $this->placeholder) {
             return $this->inverse(substr($this->placeholder, 0, 1)).$this->dim(substr($this->placeholder, 1));
         }
 
