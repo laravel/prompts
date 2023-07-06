@@ -47,12 +47,15 @@ trait TypedValue
                     Key::DELETE => $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition).substr($this->typedValue, $this->cursorPosition + 1),
                     default => null,
                 };
-            } elseif ($key === Key::BACKSPACE) {
+            } elseif ($key[0] === Key::BACKSPACE) {
+                if ($this->cursorPosition === 0) {
+                    return;
+                }
                 $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition - 1).substr($this->typedValue, $this->cursorPosition);
-                $this->cursorPosition = max(0, $this->cursorPosition - 1);
-            } elseif (! in_array($key, $this->ignore)) {
+                $this->cursorPosition--;
+            } elseif (! in_array($key[0], $this->ignore)) {
                 $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition).$key.substr($this->typedValue, $this->cursorPosition);
-                $this->cursorPosition++;
+                $this->cursorPosition += strlen($key); // Account for multiple characters coming through when quickly typed.
             }
         });
     }
