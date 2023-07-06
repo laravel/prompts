@@ -272,7 +272,7 @@ abstract class Prompt
      */
     private function validate(): string
     {
-        if (($this->required ?? false) && ($this->value() === '' || $this->value() === [])) {
+        if (($this->required ?? false) && ($this->value() === '' || $this->value() === [] || $this->value() === false)) {
             return is_string($this->required) ? $this->required : 'Required.';
         }
 
