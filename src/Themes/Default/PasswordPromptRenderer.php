@@ -16,14 +16,6 @@ class PasswordPromptRenderer extends Renderer
         $maxWidth = $prompt->terminal()->cols() - 6;
 
         return match ($prompt->state) {
-            'error' => $this
-                ->box(
-                    $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $prompt->maskedWithCursor($maxWidth),
-                    color: 'yellow',
-                )
-                ->warning($prompt->error),
-
             'submit' => $this
                 ->box(
                     $this->dim($prompt->label),
@@ -37,6 +29,14 @@ class PasswordPromptRenderer extends Renderer
                     color: 'red',
                 )
                 ->error('Cancelled.'),
+
+            'error' => $this
+                ->box(
+                    $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
+                    $prompt->maskedWithCursor($maxWidth),
+                    color: 'yellow',
+                )
+                ->warning($prompt->error),
 
             default => $this
                 ->box(
