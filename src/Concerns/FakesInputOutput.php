@@ -22,12 +22,14 @@ trait FakesInputOutput
         $mock->shouldReceive('exit')->byDefault();
         $mock->shouldReceive('setTty')->byDefault();
         $mock->shouldReceive('restoreTty')->byDefault();
+        $mock->shouldReceive('cols')->byDefault()->andReturn(80);
+        $mock->shouldReceive('lines')->byDefault()->andReturn(24);
 
         foreach ($keys as $key) {
             $mock->shouldReceive('read')->once()->andReturn($key);
         }
 
-        static::terminal($mock);
+        static::$terminal = $mock;
 
         self::setOutput(new BufferedConsoleOutput());
     }

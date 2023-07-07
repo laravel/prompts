@@ -6,7 +6,6 @@ use Closure;
 
 class PasswordPrompt extends Prompt
 {
-    use Concerns\Colors;
     use Concerns\TypedValue;
 
     /**
@@ -32,14 +31,8 @@ class PasswordPrompt extends Prompt
     /**
      * Get the masked value with a virtual cursor.
      */
-    public function maskedWithCursor(): string
+    public function maskedWithCursor(int $maxWidth): string
     {
-        if ($this->cursorPosition >= strlen($this->value())) {
-            return $this->masked().$this->inverse(' ');
-        }
-
-        return mb_substr($this->masked(), 0, $this->cursorPosition)
-            .$this->inverse(mb_substr($this->masked(), $this->cursorPosition, 1))
-            .mb_substr($this->masked(), $this->cursorPosition + 1);
+        return $this->addCursor($this->masked(), $this->cursorPosition, $maxWidth);
     }
 }

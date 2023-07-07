@@ -67,4 +67,36 @@ trait TypedValue
     {
         return $this->typedValue;
     }
+
+    /**
+     * Add a virtual cursor to the value and truncate if necessary.
+     */
+    protected function addCursor(string $value, int $cursorPosition, int $maxWidth): string
+    {
+        $offset = $cursorPosition - $maxWidth + ($cursorPosition < mb_strlen($value) ? 2 : 1);
+        $offset = $offset > 0 ? $offset + 1 : 0;
+        $offsetCursorPosition = $cursorPosition - $offset;
+
+        $output = $offset > 0 ? $this->dim('…') : '';
+        $output .= mb_substr($value, $offset, $offsetCursorPosition);
+
+        if ($cursorPosition > mb_strlen($value) - 1) {
+            return $output.$this->inverse(' ');
+        }
+
+        $output .= $this->inverse(mb_substr($value, $cursorPosition, 1));
+
+        if ($cursorPosition === mb_strlen($value) - 1) {
+            return $output.' ';
+        }
+
+        $remainder = mb_substr($value, $cursorPosition + 1);
+        $remainingSpace = $maxWidth - $offsetCursorPosition - ($offset ? 2 : 1);
+
+        if (mb_strlen($remainder) <= $remainingSpace) {
+            return $output.$remainder;
+        }
+
+        return $output.mb_substr($remainder, 0, $remainingSpace - 1).$this->dim('…');
+    }
 }

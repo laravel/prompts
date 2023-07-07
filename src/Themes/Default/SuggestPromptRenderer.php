@@ -14,20 +14,38 @@ class SuggestPromptRenderer extends Renderer
      */
     public function __invoke(SuggestPrompt $prompt): string
     {
+        $maxWidth = $prompt->terminal()->cols() - 6;
+
         return match ($prompt->state) {
             'error' => $this
-                ->box($prompt->label, $this->valueWithCursorAndArrow($prompt), $this->renderOptions($prompt), color: 'yellow')
+                ->box(
+                    $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
+                    $this->valueWithCursorAndArrow($prompt, $maxWidth),
+                    $this->renderOptions($prompt),
+                    color: 'yellow',
+                )
                 ->warning($prompt->error),
 
             'submit' => $this
-                ->box($this->dim($prompt->label), $this->dim($prompt->value())),
+                ->box(
+                    $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
+                    $this->dim($this->truncate($prompt->value(), $maxWidth)),
+                ),
 
             'cancel' => $this
-                ->box($prompt->label, $this->strikethrough($this->dim($prompt->value() ?: $prompt->placeholder)), color: 'red')
+                ->box(
+                    $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
+                    $this->strikethrough($this->dim($this->truncate($prompt->value() ?: $prompt->placeholder, $maxWidth))),
+                    color: 'red',
+                )
                 ->error('Cancelled'),
 
             default => $this
-                ->box($this->cyan($prompt->label), $this->valueWithCursorAndArrow($prompt), $this->renderOptions($prompt))
+                ->box(
+                    $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
+                    $this->valueWithCursorAndArrow($prompt, $maxWidth),
+                    $this->renderOptions($prompt),
+                )
                 ->spaceForDropdown($prompt)
                 ->newLine(), // Space for errors
         };
@@ -36,16 +54,16 @@ class SuggestPromptRenderer extends Renderer
     /**
      * Render the value with the cursor and an arrow.
      */
-    protected function valueWithCursorAndArrow(SuggestPrompt $prompt): string
+    protected function valueWithCursorAndArrow(SuggestPrompt $prompt, int $maxWidth): string
     {
         if ($prompt->highlighted !== null || $prompt->value() !== '' || count($prompt->matches()) === 0) {
-            return $prompt->valueWithCursor();
+            return $prompt->valueWithCursor($maxWidth);
         }
 
         return preg_replace(
             '/\s$/',
             $this->cyan('⌄'),
-            $this->pad($prompt->valueWithCursor().'  ', $this->longest($prompt->matches(), padding: 2))
+            $this->pad($prompt->valueWithCursor($maxWidth - 1).'  ', min($this->longest($prompt->matches(), padding: 2), $maxWidth))
         );
     }
 
@@ -55,7 +73,11 @@ class SuggestPromptRenderer extends Renderer
     protected function spaceForDropdown(SuggestPrompt $prompt): self
     {
         if ($prompt->value() === '' && $prompt->highlighted === null) {
-            $this->newLine(min(count($prompt->matches()), $prompt->scroll) + 1);
+            $this->newLine(min(
+                count($prompt->matches()),
+                $prompt->scroll,
+                $prompt->terminal()->lines() - 7
+            ) + 1);
         }
 
         return $this;
@@ -72,13 +94,14 @@ class SuggestPromptRenderer extends Renderer
 
         return $this->scroll(
             collect($prompt->matches())
+                ->map(fn ($label) => $this->truncate($label, $prompt->terminal()->cols() - 10))
                 ->map(fn ($label, $i) => $prompt->highlighted === $i
                     ? "{$this->cyan('›')} {$label}  "
                     : "  {$this->dim($label)}  "
                 ),
             $prompt->highlighted,
-            $prompt->scroll,
-            $this->longest($prompt->matches(), padding: 4)
+            min($prompt->scroll, $prompt->terminal()->lines() - 7),
+            min($this->longest($prompt->matches(), padding: 4), $prompt->terminal()->cols() - 6)
         )->implode(PHP_EOL);
     }
 }

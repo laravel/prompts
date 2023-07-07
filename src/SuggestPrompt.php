@@ -3,10 +3,10 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use InvalidArgumentException;
 
 class SuggestPrompt extends Prompt
 {
-    use Concerns\Colors;
     use Concerns\TypedValue;
 
     /**
@@ -41,23 +41,19 @@ class SuggestPrompt extends Prompt
     /**
      * Get the entered value with a virtual cursor.
      */
-    public function valueWithCursor(): string
+    public function valueWithCursor(int $maxWidth): string
     {
         if ($this->highlighted !== null) {
-            return $this->value() === '' ? $this->dim($this->placeholder) : $this->value();
+            return $this->value() === ''
+                ? $this->dim($this->truncate($this->placeholder, $maxWidth))
+                : $this->truncate($this->value(), $maxWidth);
         }
 
-        if ($this->value() === '' && $this->placeholder) {
-            return $this->inverse(substr($this->placeholder, 0, 1)).$this->dim(substr($this->placeholder, 1));
+        if ($this->value() === '') {
+            return $this->dim($this->addCursor($this->placeholder, 0, $maxWidth));
         }
 
-        if ($this->cursorPosition >= strlen($this->value())) {
-            return $this->value().$this->inverse(' ');
-        }
-
-        return mb_substr($this->value(), 0, $this->cursorPosition)
-            .$this->inverse(mb_substr($this->value(), $this->cursorPosition, 1))
-            .mb_substr($this->value(), $this->cursorPosition + 1);
+        return $this->addCursor($this->value(), $this->cursorPosition, $maxWidth);
     }
 
     /**
@@ -116,5 +112,17 @@ class SuggestPrompt extends Prompt
         }
 
         $this->typedValue = $this->matches()[$this->highlighted];
+    }
+
+    /**
+     * Truncate a value with an ellipsis if it exceeds the given length.
+     */
+    protected function truncate(string $value, int $length): string
+    {
+        if ($length <= 0) {
+            throw new InvalidArgumentException("Length [{$length}] must be greater than zero.");
+        }
+
+        return mb_strlen($value) <= $length ? $value : (mb_substr($value, 0, $length - 1).'…');
     }
 }

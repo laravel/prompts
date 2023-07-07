@@ -2,6 +2,8 @@
 
 namespace Laravel\Prompts\Themes\Default\Concerns;
 
+use Laravel\Prompts\Prompt;
+
 trait DrawsBoxes
 {
     protected int $minWidth = 60;
@@ -15,6 +17,8 @@ trait DrawsBoxes
         string $footer = '',
         string $color = 'gray',
     ): self {
+        $this->minWidth = min($this->minWidth, Prompt::terminal()->cols() - 6);
+
         $bodyLines = collect(explode(PHP_EOL, $body));
         $footerLines = collect(explode(PHP_EOL, $footer))->filter();
         $width = $this->longest(

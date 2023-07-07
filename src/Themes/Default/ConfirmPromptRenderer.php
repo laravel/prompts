@@ -15,18 +15,32 @@ class ConfirmPromptRenderer extends Renderer
     {
         return match ($prompt->state) {
             'submit' => $this
-                ->box($this->dim($prompt->label), $this->dim($prompt->label())),
+                ->box(
+                    $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
+                    $this->dim($this->truncate($prompt->label(), $prompt->terminal()->cols() - 6))
+                ),
 
             'cancel' => $this
-                ->box($prompt->label, $this->strikethrough($this->dim($prompt->label())), color: 'red')
+                ->box(
+                    $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
+                    $this->strikethrough($this->dim($this->renderOptions($prompt))),
+                    color: 'red'
+                )
                 ->error('Cancelled.'),
 
             'error' => $this
-                ->box($prompt->label, $this->renderOptions($prompt), color: 'yellow')
+                ->box(
+                    $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
+                    $this->renderOptions($prompt),
+                    color: 'yellow',
+                )
                 ->warning($prompt->error),
 
             default => $this
-                ->box($this->cyan($prompt->label), $this->renderOptions($prompt))
+                ->box(
+                    $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
+                    $this->renderOptions($prompt),
+                )
                 ->newLine(), // Space for errors
         };
     }
@@ -36,8 +50,12 @@ class ConfirmPromptRenderer extends Renderer
      */
     protected function renderOptions(ConfirmPrompt $prompt): string
     {
+        $length = (int) floor(($prompt->terminal()->cols() - 14) / 2);
+        $yes = $this->truncate($prompt->yes, $length);
+        $no = $this->truncate($prompt->no, $length);
+
         return $prompt->confirmed
-            ? "{$this->green('●')} {$prompt->yes} {$this->dim('/ ○ '.$prompt->no)}"
-            : "{$this->dim('○ '.$prompt->yes.' /')} {$this->green('●')} {$prompt->no}";
+            ? "{$this->green('●')} {$yes} {$this->dim('/ ○ '.$no)}"
+            : "{$this->dim('○ '.$yes.' /')} {$this->green('●')} {$no}";
     }
 }

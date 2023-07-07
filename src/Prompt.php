@@ -8,6 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class Prompt
 {
+    use Concerns\Colors;
     use Concerns\Cursor;
     use Concerns\Erase;
     use Concerns\Events;
@@ -138,14 +139,10 @@ abstract class Prompt
     }
 
     /**
-     * Set or get the terminal instance.
+     * Get the terminal instance.
      */
-    protected static function terminal(Terminal $terminal = null): Terminal
+    public static function terminal(): Terminal
     {
-        if ($terminal) {
-            return static::$terminal = $terminal;
-        }
-
         return static::$terminal ??= new Terminal();
     }
 
