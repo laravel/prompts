@@ -6,8 +6,9 @@ require __DIR__.'/../vendor/autoload.php';
 
 $password = password(
     label: 'Please provide a password',
+    placeholder: 'Min 8 characters',
+    required: true,
     validate: fn ($value) => match (true) {
-        ! $value => 'Please enter a password.',
         strlen($value) < 8 => 'Password should have at least 8 characters.',
         default => null,
     },

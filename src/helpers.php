@@ -15,9 +15,9 @@ function text(string $label, string $placeholder = '', string $default = '', boo
 /**
  * Prompt the user for input, hiding the value.
  */
-function password(string $label, bool|string $required = false, ?Closure $validate = null): string
+function password(string $label, string $placeholder = '', bool|string $required = false, ?Closure $validate = null): string
 {
-    return (new PasswordPrompt($label, $required, $validate))->prompt();
+    return (new PasswordPrompt($label, $placeholder, $required, $validate))->prompt();
 }
 
 /**

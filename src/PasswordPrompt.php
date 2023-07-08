@@ -13,6 +13,7 @@ class PasswordPrompt extends Prompt
      */
     public function __construct(
         public string $label,
+        public string $placeholder = '',
         public bool|string $required = false,
         public ?Closure $validate = null,
     ) {
@@ -32,6 +33,10 @@ class PasswordPrompt extends Prompt
      */
     public function maskedWithCursor(int $maxWidth): string
     {
+        if ($this->value() === '') {
+            return $this->dim($this->addCursor($this->placeholder, 0, $maxWidth));
+        }
+
         return $this->addCursor($this->masked(), $this->cursorPosition, $maxWidth);
     }
 }
