@@ -28,6 +28,7 @@ class ConfirmPrompt extends Prompt
             'y' => $this->confirmed = true,
             'n' => $this->confirmed = false,
             Key::UP, Key::DOWN, Key::LEFT, Key::RIGHT, 'h', 'j', 'k', 'l' => $this->confirmed = ! $this->confirmed,
+            Key::ENTER => $this->submit(),
             default => null,
         });
     }

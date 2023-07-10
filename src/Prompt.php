@@ -200,6 +200,18 @@ abstract class Prompt
     }
 
     /**
+     * Submit the prompt.
+     */
+    protected function submit(): void
+    {
+        $this->validate($this->value());
+
+        if ($this->state !== 'error') {
+            $this->state = 'submit';
+        }
+    }
+
+    /**
      * Reset the cursor position to the beginning of the previous frame.
      */
     private function resetCursorPosition(): void
@@ -244,21 +256,18 @@ abstract class Prompt
 
         $this->emit('key', $key);
 
-        if ($key === Key::CTRL_C) {
-            $this->state = 'cancel';
-        } elseif ($key === Key::ENTER || $this->validated) {
-            $this->error = $this->validate();
-            $this->validated = true;
-
-            if ($this->error) {
-                $this->state = 'error';
-            } elseif ($key === Key::ENTER) {
-                $this->state = 'submit';
-            }
+        if ($this->state === 'submit') {
+            return false;
         }
 
-        if ($this->state === 'submit' || $this->state === 'cancel') {
+        if ($key === Key::CTRL_C) {
+            $this->state = 'cancel';
+
             return false;
+        }
+
+        if ($this->validated) {
+            $this->validate($this->value());
         }
 
         return true;
@@ -267,22 +276,30 @@ abstract class Prompt
     /**
      * Validate the input.
      */
-    private function validate(): string
+    private function validate(mixed $value): void
     {
-        if (($this->required ?? false) && ($this->value() === '' || $this->value() === [] || $this->value() === false)) {
-            return is_string($this->required) ? $this->required : 'Required.';
+        $this->validated = true;
+
+        if (($this->required ?? false) && ($value === '' || $value === [] || $value === false)) {
+            $this->state = 'error';
+            $this->error = is_string($this->required) ? $this->required : 'Required.';
+
+            return;
         }
 
         if (! isset($this->validate)) {
-            return '';
+            return;
         }
 
-        $error = ($this->validate)($this->value());
+        $error = ($this->validate)($value);
 
         if (! is_string($error) && ! is_null($error)) {
             throw new \RuntimeException('The validator must return a string or null.');
         }
 
-        return $error ?? '';
+        if (is_string($error) && strlen($error) > 0) {
+            $this->state = 'error';
+            $this->error = $error;
+        }
     }
 }

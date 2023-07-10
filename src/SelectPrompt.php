@@ -34,6 +34,7 @@ class SelectPrompt extends Prompt
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::LEFT, Key::SHIFT_TAB, 'k', 'h' => $this->highlightPrevious(),
             Key::DOWN, Key::RIGHT, Key::TAB, 'j', 'l' => $this->highlightNext(),
+            Key::ENTER => $this->submit(),
             default => null,
         });
     }

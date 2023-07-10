@@ -31,7 +31,7 @@ trait TypedValue
     /**
      * Track the value as the user types.
      */
-    protected function trackTypedValue(string $default = ''): void
+    protected function trackTypedValue(string $default = '', bool $submit = true): void
     {
         $this->typedValue = $default;
 
@@ -39,7 +39,7 @@ trait TypedValue
             $this->cursorPosition = strlen($this->typedValue);
         }
 
-        $this->on('key', function ($key) {
+        $this->on('key', function ($key) use ($submit) {
             if ($key[0] === "\e") {
                 match ($key) {
                     Key::LEFT => $this->cursorPosition = max(0, $this->cursorPosition - 1),
@@ -53,7 +53,11 @@ trait TypedValue
 
             // Keys may be buffered.
             foreach (str_split($key) as $key) {
-                if ($key === Key::BACKSPACE) {
+                if ($key === Key::ENTER && $submit) {
+                    $this->submit();
+
+                    return;
+                } elseif ($key === Key::BACKSPACE) {
                     if ($this->cursorPosition === 0) {
                         return;
                     }

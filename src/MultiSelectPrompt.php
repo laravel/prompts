@@ -38,6 +38,7 @@ class MultiSelectPrompt extends Prompt
             Key::UP, Key::LEFT, Key::SHIFT_TAB, 'k', 'h' => $this->highlightPrevious(),
             Key::DOWN, Key::RIGHT, Key::TAB, 'j', 'l' => $this->highlightNext(),
             Key::SPACE => $this->toggleHighlighted(),
+            Key::ENTER => $this->submit(),
             default => null,
         });
     }
