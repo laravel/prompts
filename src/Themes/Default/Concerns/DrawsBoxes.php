@@ -70,7 +70,7 @@ trait DrawsBoxes
      */
     protected function pad(string $text, int $length): string
     {
-        $rightPadding = str_repeat(' ', $length - mb_strlen($this->stripEscapeSequences($text)));
+        $rightPadding = str_repeat(' ', max(0, $length - mb_strlen($this->stripEscapeSequences($text))));
 
         return "{$text}{$rightPadding}";
     }
