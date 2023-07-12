@@ -22,7 +22,7 @@ class MultiSelectPrompt extends Prompt
      * Create a new SelectPrompt instance.
      *
      * @param  array<int|string, string>  $options
-     * @param  array<string>  $default
+     * @param  array<int|string>  $default
      */
     public function __construct(
         public string $label,
@@ -46,7 +46,7 @@ class MultiSelectPrompt extends Prompt
     /**
      * Get the selected values.
      *
-     * @return array<string>
+     * @return array<int|string>
      */
     public function value(): array
     {

@@ -35,6 +35,21 @@ it('accepts an array of keys and labels', function () {
     expect($result)->toBe('green');
 });
 
+it('accepts an associate array with integer keys', function () {
+    Prompt::fake([Key::DOWN, Key::ENTER]);
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: [
+            1 => 'Red',
+            2 => 'Green',
+            3 => 'Blue',
+        ]
+    );
+
+    expect($result)->toBe(2);
+});
+
 it('accepts default values when the options are labels', function () {
     Prompt::fake([Key::ENTER]);
 

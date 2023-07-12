@@ -42,7 +42,7 @@ class SelectPrompt extends Prompt
     /**
      * Get the selected value.
      */
-    public function value(): string
+    public function value(): int|string
     {
         if (array_is_list($this->options)) {
             return $this->options[$this->highlighted] ?? null;

@@ -25,7 +25,7 @@ function password(string $label, string $placeholder = '', bool|string $required
  *
  * @param  array<int|string, string>  $options
  */
-function select(string $label, array $options, ?string $default = null, int $scroll = 5, ?Closure $validate = null): string
+function select(string $label, array $options, int|string|null $default = null, int $scroll = 5, ?Closure $validate = null): int|string
 {
     return (new SelectPrompt($label, $options, $default, $scroll, $validate))->prompt();
 }
@@ -34,8 +34,8 @@ function select(string $label, array $options, ?string $default = null, int $scr
  * Prompt the user to select multiple options.
  *
  * @param  array<int|string, string>  $options
- * @param  array<string>  $default
- * @return array<string>
+ * @param  array<int|string>  $default
+ * @return array<int|string>
  */
 function multiselect(string $label, array $options, array $default = [], int $scroll = 5, bool|string $required = false, ?Closure $validate = null): array
 {
