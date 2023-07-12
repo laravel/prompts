@@ -12,7 +12,7 @@ trait DrawsScrollbars
      * @param  \Illuminate\Support\Collection<int, string>  $lines
      * @return  \Illuminate\Support\Collection<int, string>
      */
-    protected function scroll(Collection $lines, ?int $focused, int $height, int $width): Collection
+    protected function scroll(Collection $lines, ?int $focused, int $height, int $width, string $color = 'cyan'): Collection
     {
         if ($lines->count() <= $height) {
             return $lines;
@@ -23,7 +23,7 @@ trait DrawsScrollbars
         return $visible
             ->map(fn ($line) => $this->pad($line, $width))
             ->map(fn ($line, $index) => match (true) {
-                $index === $this->scrollPosition($visible, $focused, $height, $lines->count()) => preg_replace('/.$/', $this->cyan('┃'), $line),
+                $index === $this->scrollPosition($visible, $focused, $height, $lines->count()) => preg_replace('/.$/', $this->{$color}('┃'), $line),
                 default => preg_replace('/.$/', $this->gray('│'), $line),
             });
     }

@@ -20,7 +20,7 @@ class SelectPromptRenderer extends Renderer
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->dim($this->truncate($this->format($prompt->label()), $maxWidth)),
+                    $this->truncate($this->format($prompt->label()), $maxWidth),
                 ),
 
             'cancel' => $this
@@ -57,13 +57,22 @@ class SelectPromptRenderer extends Renderer
             collect($prompt->options)
                 ->values()
                 ->map(fn ($label) => $this->truncate($this->format($label), $prompt->terminal()->cols() - 12))
-                ->map(fn ($label, $i) => $prompt->highlighted === $i
-                    ? "{$this->cyan('›')} {$this->cyan('●')} {$label}  "
-                    : "  {$this->dim('○')} {$this->dim($label)}  "
-                ),
+                ->map(function ($label, $i) use ($prompt) {
+                    if ($prompt->state === 'cancel') {
+                        return $this->dim($prompt->highlighted === $i
+                            ? "› ● {$this->strikethrough($label)}  "
+                            : "  ○ {$this->strikethrough($label)}  "
+                        );
+                    }
+
+                    return $prompt->highlighted === $i
+                        ? "{$this->cyan('›')} {$this->cyan('●')} {$label}  "
+                        : "  {$this->dim('○')} {$this->dim($label)}  ";
+                }),
             $prompt->highlighted,
             min($prompt->scroll, $prompt->terminal()->lines() - 5),
-            min($this->longest($prompt->options, padding: 6), $prompt->terminal()->cols() - 6)
+            min($this->longest($prompt->options, padding: 6), $prompt->terminal()->cols() - 6),
+            $prompt->state === 'cancel' ? 'dim' : 'cyan'
         )->implode(PHP_EOL);
     }
 }

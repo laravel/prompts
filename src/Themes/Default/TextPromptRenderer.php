@@ -19,7 +19,7 @@ class TextPromptRenderer extends Renderer
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->dim($this->truncate($prompt->value(), $maxWidth)),
+                    $this->truncate($prompt->value(), $maxWidth),
                 ),
 
             'cancel' => $this

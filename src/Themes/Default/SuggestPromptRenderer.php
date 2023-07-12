@@ -20,7 +20,7 @@ class SuggestPromptRenderer extends Renderer
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->dim($this->truncate($prompt->value(), $maxWidth)),
+                    $this->truncate($prompt->value(), $maxWidth),
                 ),
 
             'cancel' => $this
@@ -101,7 +101,8 @@ class SuggestPromptRenderer extends Renderer
                 ),
             $prompt->highlighted,
             min($prompt->scroll, $prompt->terminal()->lines() - 7),
-            min($this->longest($prompt->matches(), padding: 4), $prompt->terminal()->cols() - 6)
+            min($this->longest($prompt->matches(), padding: 4), $prompt->terminal()->cols() - 6),
+            $prompt->state === 'cancel' ? 'dim' : 'cyan'
         )->implode(PHP_EOL);
     }
 }

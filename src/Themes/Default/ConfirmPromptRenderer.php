@@ -17,13 +17,13 @@ class ConfirmPromptRenderer extends Renderer
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->dim($this->truncate($prompt->label(), $prompt->terminal()->cols() - 6))
+                    $this->truncate($prompt->label(), $prompt->terminal()->cols() - 6)
                 ),
 
             'cancel' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $this->strikethrough($this->dim($this->renderOptions($prompt))),
+                    $this->renderOptions($prompt),
                     color: 'red'
                 )
                 ->error('Cancelled.'),
@@ -53,6 +53,12 @@ class ConfirmPromptRenderer extends Renderer
         $length = (int) floor(($prompt->terminal()->cols() - 14) / 2);
         $yes = $this->truncate($prompt->yes, $length);
         $no = $this->truncate($prompt->no, $length);
+
+        if ($prompt->state === 'cancel') {
+            return $this->dim($prompt->confirmed
+                ? "● {$this->strikethrough($yes)} / ○ {$this->strikethrough($no)}"
+                : "○ {$this->strikethrough($yes)} / ● {$this->strikethrough($no)}");
+        }
 
         return $prompt->confirmed
             ? "{$this->green('●')} {$yes} {$this->dim('/ ○ '.$no)}"

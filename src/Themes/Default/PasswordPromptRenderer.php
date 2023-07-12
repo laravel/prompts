@@ -19,7 +19,7 @@ class PasswordPromptRenderer extends Renderer
             'submit' => $this
                 ->box(
                     $this->dim($prompt->label),
-                    $this->dim($this->truncate($prompt->masked(), $maxWidth)),
+                    $this->truncate($prompt->masked(), $maxWidth),
                 ),
 
             'cancel' => $this

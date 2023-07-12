@@ -18,13 +18,13 @@ class MultiSelectPromptRenderer extends Renderer
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->dim($this->renderSelectedOptions($prompt))
+                    $this->renderSelectedOptions($prompt)
                 ),
 
             'cancel' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $this->strikethrough($this->dim($this->renderSelectedOptions($prompt))),
+                    $this->renderOptions($prompt),
                     color: 'red',
                 )
                 ->error('Cancelled.'),
@@ -64,6 +64,15 @@ class MultiSelectPromptRenderer extends Renderer
                     }
                     $selected = in_array($value, $prompt->value());
 
+                    if ($prompt->state === 'cancel') {
+                        return $this->dim(match (true) {
+                            $active && $selected => "› ◼ {$this->strikethrough($label)}  ",
+                            $active => "› ◻ {$this->strikethrough($label)}  ",
+                            $selected => "  ◼ {$this->strikethrough($label)}  ",
+                            default => "  ◻ {$this->strikethrough($label)}  ",
+                        });
+                    }
+
                     return match (true) {
                         $active && $selected => "{$this->cyan('› ◼')} {$label}  ",
                         $active => "{$this->cyan('›')} ◻ {$label}  ",
@@ -73,7 +82,8 @@ class MultiSelectPromptRenderer extends Renderer
                 }),
             $prompt->highlighted,
             min($prompt->scroll, $prompt->terminal()->lines() - 5),
-            min($this->longest($prompt->options, padding: 6), $prompt->terminal()->cols() - 6)
+            min($this->longest($prompt->options, padding: 6), $prompt->terminal()->cols() - 6),
+            $prompt->state === 'cancel' ? 'dim' : 'cyan'
         )->implode(PHP_EOL);
     }
 
