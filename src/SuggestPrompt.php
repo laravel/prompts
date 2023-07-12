@@ -15,6 +15,13 @@ class SuggestPrompt extends Prompt
     public ?int $highlighted = null;
 
     /**
+     * The cache of matches.
+     *
+     * @var array<string>|null
+     */
+    protected array|null $matches = null;
+
+    /**
      * Create a new SuggestPrompt instance.
      *
      * @param  array<string>|Closure(string): array<string>  $options
@@ -34,7 +41,11 @@ class SuggestPrompt extends Prompt
             Key::UP, Key::SHIFT_TAB => $this->highlightPrevious(),
             Key::DOWN, Key::TAB => $this->highlightNext(),
             Key::ENTER => $this->selectHighlighted(),
-            default => $this->highlighted = null,
+            Key::LEFT, Key::RIGHT => $this->highlighted = null,
+            default => (function () {
+                $this->highlighted = null;
+                $this->matches = null;
+            })(),
         });
     }
 
@@ -63,11 +74,15 @@ class SuggestPrompt extends Prompt
      */
     public function matches(): array
     {
-        if ($this->options instanceof Closure) {
-            return array_values(($this->options)($this->value()));
+        if (is_array($this->matches)) {
+            return $this->matches;
         }
 
-        return array_values(array_filter($this->options, function ($option) {
+        if ($this->options instanceof Closure) {
+            return $this->matches = array_values(($this->options)($this->value()));
+        }
+
+        return $this->matches = array_values(array_filter($this->options, function ($option) {
             return str_starts_with(strtolower($option), strtolower($this->value()));
         }));
     }
