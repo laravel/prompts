@@ -12,7 +12,7 @@ trait DrawsScrollbars
      * @param  \Illuminate\Support\Collection<int, string>  $lines
      * @return  \Illuminate\Support\Collection<int, string>
      */
-    protected function scroll(Collection $lines, int|null $focused, int $height, int $width): Collection
+    protected function scroll(Collection $lines, ?int $focused, int $height, int $width): Collection
     {
         if ($lines->count() <= $height) {
             return $lines;
@@ -34,7 +34,7 @@ trait DrawsScrollbars
      * @param  \Illuminate\Support\Collection<int, string>  $lines
      * @return  \Illuminate\Support\Collection<int, string>
      */
-    protected function visible(Collection $lines, int|null $focused, int $height): Collection
+    protected function visible(Collection $lines, ?int $focused, int $height): Collection
     {
         if ($lines->count() <= $height) {
             return $lines;
@@ -52,7 +52,7 @@ trait DrawsScrollbars
      *
      * @param  \Illuminate\Support\Collection<int, string>  $visible
      */
-    protected function scrollPosition(Collection $visible, int|null $focused, int $height, int $total): int
+    protected function scrollPosition(Collection $visible, ?int $focused, int $height, int $total): int
     {
         if ($focused < $height) {
             return 0;

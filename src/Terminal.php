@@ -7,7 +7,7 @@ class Terminal
     /**
      * The initial TTY mode.
      */
-    protected string|null $initialTtyMode;
+    protected ?string $initialTtyMode;
 
     /**
      * The number of columns in the terminal.

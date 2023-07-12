@@ -12,7 +12,7 @@ class SuggestPrompt extends Prompt
     /**
      * The index of the highlighted option.
      */
-    public int|null $highlighted = null;
+    public ?int $highlighted = null;
 
     /**
      * Create a new SuggestPrompt instance.
