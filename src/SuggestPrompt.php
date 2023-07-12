@@ -19,7 +19,7 @@ class SuggestPrompt extends Prompt
      *
      * @var array<string>|null
      */
-    protected array|null $matches = null;
+    protected ?array $matches = null;
 
     /**
      * Create a new SuggestPrompt instance.
