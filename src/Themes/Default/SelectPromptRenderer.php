@@ -37,7 +37,7 @@ class SelectPromptRenderer extends Renderer
                     $this->renderOptions($prompt),
                     color: 'yellow',
                 )
-                ->warning($prompt->error),
+                ->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
 
             default => $this
                 ->box(
