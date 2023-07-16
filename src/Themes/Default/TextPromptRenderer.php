@@ -36,7 +36,7 @@ class TextPromptRenderer extends Renderer
                     $prompt->valueWithCursor($maxWidth),
                     color: 'yellow',
                 )
-                ->warning($prompt->error),
+                ->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
 
             default => $this
                 ->box(
