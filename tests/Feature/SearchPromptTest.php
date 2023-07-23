@@ -23,7 +23,25 @@ it('accepts a callback', function () {
     expect($result)->toBe('blue');
 });
 
-it('can return integer keys', function () {
+it('returns the value when a list is passed', function () {
+    Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
+
+    $result = search(
+        label: 'What is your favorite color?',
+        options: fn (string $value) => array_values(array_filter(
+            [
+                'Red',
+                'Green',
+                'Blue',
+            ],
+            fn ($option) => str_contains(strtolower($option), strtolower($value)),
+        )),
+    );
+
+    expect($result)->toBe('Blue');
+});
+
+it('returns the key when an associative array is passed', function () {
     Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
 
     $result = search(

@@ -126,7 +126,9 @@ class SearchPrompt extends Prompt
             return null;
         }
 
-        return array_keys($this->matches)[$this->highlighted];
+        return array_is_list($this->matches)
+            ? $this->matches[$this->highlighted]
+            : array_keys($this->matches)[$this->highlighted];
     }
 
     /**
