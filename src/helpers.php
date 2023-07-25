@@ -61,6 +61,16 @@ function suggest(string $label, array|Closure $options, string $placeholder = ''
 }
 
 /**
+ * Allow the user to search for an option.
+ *
+ * @param  Closure(string): array<int|string, string>  $options
+ */
+function search(string $label, Closure $options, string $placeholder = '', int $scroll = 5, ?Closure $validate = null): int|string
+{
+    return (new SearchPrompt($label, $options, $placeholder, $scroll, $validate))->prompt();
+}
+
+/**
  * Render a spinner while the given callback is executing.
  *
  * @template TReturn of mixed
