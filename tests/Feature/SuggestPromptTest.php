@@ -60,6 +60,18 @@ it('accepts a callback', function () {
     expect($result)->toBe('Green');
 });
 
+it('accepts a collection', function () {
+    Prompt::fake(['b', Key::TAB, Key::ENTER]);
+
+    $result = suggest('What is your favorite color?', collect([
+        'Red',
+        'Green',
+        'Blue',
+    ]));
+
+    expect($result)->toBe('Blue');
+});
+
 it('validates', function () {
     Prompt::fake([Key::ENTER, 'X', Key::ENTER]);
 

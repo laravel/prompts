@@ -82,6 +82,22 @@ it('accepts default values when the options are keys with labels', function () {
     expect($result)->toBe(['green']);
 });
 
+it('accepts collections', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: collect([
+            'Red',
+            'Green',
+            'Blue',
+        ]),
+        default: collect(['Green'])
+    );
+
+    expect($result)->toBe(['Green']);
+});
+
 it('validates', function () {
     Prompt::fake([Key::ENTER, Key::SPACE, Key::ENTER]);
 

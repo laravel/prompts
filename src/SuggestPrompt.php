@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 class SuggestPrompt extends Prompt
@@ -15,6 +16,13 @@ class SuggestPrompt extends Prompt
     public ?int $highlighted = null;
 
     /**
+     * The options for the suggest prompt.
+     *
+     * @var array<string>|Closure(string): array<string>
+     */
+    public array|Closure $options;
+
+    /**
      * The cache of matches.
      *
      * @var array<string>|null
@@ -24,17 +32,19 @@ class SuggestPrompt extends Prompt
     /**
      * Create a new SuggestPrompt instance.
      *
-     * @param  array<string>|Closure(string): array<string>  $options
+     * @param  array<string>|Collection<int, string>|Closure(string): array<string>  $options
      */
     public function __construct(
         public string $label,
-        public array|Closure $options,
+        array|Collection|Closure $options,
         public string $placeholder = '',
         public string $default = '',
         public int $scroll = 5,
         public bool|string $required = false,
         public ?Closure $validate = null,
     ) {
+        $this->options = $options instanceof Collection ? $options->all() : $options;
+
         $this->trackTypedValue($default);
 
         $this->on('key', fn ($key) => match ($key) {

@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Illuminate\Support\Collection;
 
 /**
  * Prompt the user for text input.
@@ -23,9 +24,9 @@ function password(string $label, string $placeholder = '', bool|string $required
 /**
  * Prompt the user to select an option.
  *
- * @param  array<int|string, string>  $options
+ * @param  array<int|string, string>|Collection<int|string, string>  $options
  */
-function select(string $label, array $options, int|string $default = null, int $scroll = 5, Closure $validate = null): int|string
+function select(string $label, array|Collection $options, int|string $default = null, int $scroll = 5, Closure $validate = null): int|string
 {
     return (new SelectPrompt($label, $options, $default, $scroll, $validate))->prompt();
 }
@@ -33,11 +34,11 @@ function select(string $label, array $options, int|string $default = null, int $
 /**
  * Prompt the user to select multiple options.
  *
- * @param  array<int|string, string>  $options
- * @param  array<int|string>  $default
+ * @param  array<int|string, string>|Collection<int|string, string>  $options
+ * @param  array<int|string>|Collection<int, int|string>  $default
  * @return array<int|string>
  */
-function multiselect(string $label, array $options, array $default = [], int $scroll = 5, bool|string $required = false, Closure $validate = null): array
+function multiselect(string $label, array|Collection $options, array|Collection $default = [], int $scroll = 5, bool|string $required = false, Closure $validate = null): array
 {
     return (new MultiSelectPrompt($label, $options, $default, $scroll, $required, $validate))->prompt();
 }
@@ -53,9 +54,9 @@ function confirm(string $label, bool $default = true, string $yes = 'Yes', strin
 /**
  * Prompt the user for text input with auto-completion.
  *
- * @param  array<string>|Closure(string): array<string>  $options
+ * @param  array<string>|Collection<int, string>|Closure(string): array<string>  $options
  */
-function suggest(string $label, array|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, bool|string $required = false, Closure $validate = null): string
+function suggest(string $label, array|Collection|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, bool|string $required = false, Closure $validate = null): string
 {
     return (new SuggestPrompt($label, $options, $placeholder, $default, $scroll, $required, $validate))->prompt();
 }

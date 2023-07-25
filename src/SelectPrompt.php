@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Illuminate\Support\Collection;
 
 class SelectPrompt extends Prompt
 {
@@ -12,17 +13,26 @@ class SelectPrompt extends Prompt
     public int $highlighted = 0;
 
     /**
+     * The options for the select prompt.
+     *
+     * @var array<int|string, string>
+     */
+    public array $options;
+
+    /**
      * Create a new SelectPrompt instance.
      *
-     * @param  array<int|string, string>  $options
+     * @param  array<int|string, string>|Collection<int|string, string>  $options
      */
     public function __construct(
         public string $label,
-        public array $options,
+        array|Collection $options,
         public int|string|null $default = null,
         public int $scroll = 5,
         public ?Closure $validate = null,
     ) {
+        $this->options = $options instanceof Collection ? $options->all() : $options;
+
         if ($this->default) {
             if (array_is_list($this->options)) {
                 $this->highlighted = array_search($this->default, $this->options);
