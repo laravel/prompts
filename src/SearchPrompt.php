@@ -12,14 +12,14 @@ class SearchPrompt extends Prompt
     /**
      * The index of the highlighted option.
      */
-    public int|null $highlighted = null;
+    public ?int $highlighted = null;
 
     /**
      * The cached matches.
      *
      * @var array<int|string, string>|null
      */
-    protected array|null $matches = null;
+    protected ?array $matches = null;
 
     /**
      * Create a new SuggestPrompt instance.
