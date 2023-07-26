@@ -1,7 +1,7 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/package-template/compare/v0.1.0...1.x)
+## [Unreleased](https://github.com/laravel/package-template/compare/v1.0.0...1.x)
 
-## v0.1.0 (202x-xx-xx)
+## v1.0.0 (2023-07-26)
 
-Initial pre-release.
+Initial release.
