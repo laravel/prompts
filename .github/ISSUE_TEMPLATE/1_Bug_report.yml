@@ -8,7 +8,7 @@ body:
     attributes:
       label: Laravel Prompts Version
       description: Provide the Laravel Prompts version that you are using.
-      placeholder: 1.0
+      placeholder: 1.0.0
     validations:
       required: true
   - type: input
