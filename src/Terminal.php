@@ -24,7 +24,7 @@ class Terminal
      */
     public function read(): string
     {
-        return fread(STDIN, 1024);
+        return fread(STDIN, 1024) ?: '';
     }
 
     /**
@@ -40,7 +40,7 @@ class Terminal
      */
     public function setTty(string $mode): void
     {
-        $this->initialTtyMode ??= shell_exec('stty -g');
+        $this->initialTtyMode ??= (shell_exec('stty -g') ?: null);
 
         shell_exec("stty $mode");
     }

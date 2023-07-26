@@ -22,14 +22,14 @@ class MultiSelectPrompt extends Prompt
     /**
      * The default values the multi-select prompt.
      *
-     * @var array<int|string, string>
+     * @var array<int|string>
      */
     public array $default;
 
     /**
      * The selected values.
      *
-     * @var array<string>
+     * @var array<int|string>
      */
     protected array $values = [];
 

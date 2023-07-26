@@ -35,9 +35,9 @@ class SelectPrompt extends Prompt
 
         if ($this->default) {
             if (array_is_list($this->options)) {
-                $this->highlighted = array_search($this->default, $this->options);
+                $this->highlighted = array_search($this->default, $this->options) ?: 0;
             } else {
-                $this->highlighted = array_search($this->default, array_keys($this->options));
+                $this->highlighted = array_search($this->default, array_keys($this->options)) ?: 0;
             }
         }
 
