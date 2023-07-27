@@ -11,7 +11,7 @@
 
 Laravel Prompts is a PHP package for adding beautiful and user-friendly forms to your command-line applications, with browser-like features including placeholder text and validation.
 
-Laravel Prompts is perfect for accepting user input in your [Artisan Console Commands](https://laravel.com/docs/artisan#writing-commands), but it may also be used in any command-line PHP project!
+Laravel Prompts is perfect for accepting user input in your [Artisan console commands](https://laravel.com/docs/artisan#writing-commands), but it may also be used in any command-line PHP project.
 
 ## Official Documentation
 
