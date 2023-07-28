@@ -50,7 +50,7 @@ class Spinner extends Prompt
 
         $originalAsync = pcntl_async_signals(true);
 
-        pcntl_signal(SIGINT, function () {
+        pcntl_signal(SIGINT, function (): never {
             $this->showCursor();
             exit();
         });

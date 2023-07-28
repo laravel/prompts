@@ -76,7 +76,7 @@ class Terminal
     /**
      * Exit the interactive session.
      */
-    public function exit(): void
+    public function exit(): never
     {
         exit(1);
     }
