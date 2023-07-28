@@ -1,10 +1,10 @@
 <?php
 
-use function Laravel\Prompts\spin;
+use Laravel\Prompts\P;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$result = spin(
+$result = P::spin(
     function () {
         sleep(4);
 

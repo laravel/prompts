@@ -1,10 +1,10 @@
 <?php
 
-use function Laravel\Prompts\multiselect;
+use Laravel\Prompts\P;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$permissions = multiselect(
+$permissions = P::multiselect(
     label: 'What permissions should the user have?',
     options: [
         'view' => 'View',

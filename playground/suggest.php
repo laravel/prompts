@@ -1,10 +1,10 @@
 <?php
 
-use function Laravel\Prompts\suggest;
+use Laravel\Prompts\P;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$model = suggest(
+$model = P::suggest(
     label: 'What model should the policy apply to?',
     placeholder: 'E.g. User',
     options: [

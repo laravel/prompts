@@ -1,24 +1,12 @@
 <?php
 
-use function Laravel\Prompts\alert;
-use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\error;
-use function Laravel\Prompts\intro;
-use function Laravel\Prompts\multiselect;
-use function Laravel\Prompts\note;
-use function Laravel\Prompts\outro;
-use function Laravel\Prompts\password;
-use function Laravel\Prompts\select;
-use function Laravel\Prompts\spin;
-use function Laravel\Prompts\suggest;
-use function Laravel\Prompts\text;
-use function Laravel\Prompts\warning;
+use Laravel\Prompts\P;
 
 require __DIR__.'/../vendor/autoload.php';
 
-intro('Welcome to Laravel');
+P::intro('Welcome to Laravel');
 
-$name = suggest(
+$name = P::suggest(
     label: 'What is your name?',
     placeholder: 'E.g. Taylor Otwell',
     options: [
@@ -38,7 +26,7 @@ $name = suggest(
     },
 );
 
-$path = text(
+$path = P::text(
     label: 'Where should we create your project?',
     placeholder: 'E.g. ./laravel',
     validate: fn ($value) => match (true) {
@@ -48,7 +36,7 @@ $path = text(
     },
 );
 
-$password = password(
+$password = P::password(
     label: 'Provide a password',
     validate: fn ($value) => match (true) {
         ! $value => 'Please enter a password.',
@@ -57,7 +45,7 @@ $password = password(
     },
 );
 
-$type = select(
+$type = P::select(
     label: 'Pick a project type',
     default: 'ts',
     options: [
@@ -66,7 +54,7 @@ $type = select(
     ],
 );
 
-$tools = multiselect(
+$tools = P::multiselect(
     label: 'Select additional tools.',
     default: ['pint', 'eslint'],
     options: [
@@ -81,19 +69,19 @@ $tools = multiselect(
     }
 );
 
-$install = confirm(
+$install = P::confirm(
     label: 'Install dependencies?',
 );
 
 if ($install) {
-    spin(fn () => sleep(3), 'Installing dependencies...');
+    P::spin(fn () => sleep(3), 'Installing dependencies...');
 }
 
-error('Error');
-warning('Warning');
-alert('Alert');
+P::error('Error');
+P::warning('Warning');
+P::alert('Alert');
 
-note(<<<EOT
+P::note(<<<EOT
     Installation complete!
 
     To get started, run:
@@ -102,6 +90,6 @@ note(<<<EOT
         php artisan serve
     EOT);
 
-outro('Happy coding!');
+P::outro('Happy coding!');
 
 var_dump(compact('name', 'path', 'password', 'type', 'tools', 'install'));

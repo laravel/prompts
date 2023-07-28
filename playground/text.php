@@ -1,10 +1,10 @@
 <?php
 
-use function Laravel\Prompts\text;
+use Laravel\Prompts\P;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$email = text(
+$email = P::text(
     label: 'What is your email address',
     placeholder: 'E.g. taylor@laravel.com',
     validate: fn ($value) => match (true) {

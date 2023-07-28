@@ -1,10 +1,10 @@
 <?php
 
-use function Laravel\Prompts\select;
+use Laravel\Prompts\P;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$role = select(
+$role = P::select(
     label: 'What role should the user have?',
     options: [
         'read-only' => 'Read only',

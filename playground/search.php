@@ -1,10 +1,10 @@
 <?php
 
-use function Laravel\Prompts\search;
+use Laravel\Prompts\P;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$model = search(
+$model = P::search(
     label: 'Which user should receive the email?',
     placeholder: 'Search...',
     options: function ($value) {

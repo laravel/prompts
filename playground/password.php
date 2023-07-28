@@ -1,10 +1,10 @@
 <?php
 
-use function Laravel\Prompts\password;
+use Laravel\Prompts\P;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$password = password(
+$password = P::password(
     label: 'Please provide a password',
     placeholder: 'Min 8 characters',
     required: true,

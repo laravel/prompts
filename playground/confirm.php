@@ -1,10 +1,10 @@
 <?php
 
-use function Laravel\Prompts\confirm;
+use Laravel\Prompts\P;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$confirmed = confirm(
+$confirmed = P::confirm(
     label: 'Would you like to install dependencies?',
     validate: fn ($value) => match ($value) {
         false => 'You must install dependencies.',
