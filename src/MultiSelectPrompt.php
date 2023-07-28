@@ -13,20 +13,6 @@ class MultiSelectPrompt extends Prompt
     public int $highlighted = 0;
 
     /**
-     * The options for the multi-select prompt.
-     *
-     * @var array<int|string, string>
-     */
-    public array $options;
-
-    /**
-     * The default values the multi-select prompt.
-     *
-     * @var array<int|string>
-     */
-    public array $default;
-
-    /**
      * The selected values.
      *
      * @var array<int|string>
@@ -41,8 +27,8 @@ class MultiSelectPrompt extends Prompt
      */
     public function __construct(
         public string $label,
-        array|Collection $options,
-        array|Collection $default = [],
+        public array|Collection $options,
+        public array|Collection $default = [],
         public int $scroll = 5,
         public bool|string $required = false,
         public ?Closure $validate = null,

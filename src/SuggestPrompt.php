@@ -16,13 +16,6 @@ class SuggestPrompt extends Prompt
     public ?int $highlighted = null;
 
     /**
-     * The options for the suggest prompt.
-     *
-     * @var array<string>|Closure(string): array<string>
-     */
-    public array|Closure $options;
-
-    /**
      * The cache of matches.
      *
      * @var array<string>|null
@@ -36,7 +29,7 @@ class SuggestPrompt extends Prompt
      */
     public function __construct(
         public string $label,
-        array|Collection|Closure $options,
+        public array|Collection|Closure $options,
         public string $placeholder = '',
         public string $default = '',
         public int $scroll = 5,
@@ -102,15 +95,12 @@ class SuggestPrompt extends Prompt
      */
     protected function highlightPrevious(): void
     {
-        if ($this->matches() === []) {
-            $this->highlighted = null;
-        } elseif ($this->highlighted === null) {
-            $this->highlighted = count($this->matches()) - 1;
-        } elseif ($this->highlighted === 0) {
-            $this->highlighted = null;
-        } else {
-            $this->highlighted = $this->highlighted - 1;
-        }
+        $this->highlighted = match (true) {
+            $this->matches() === [] => null,
+            $this->highlighted === null => count($this->matches()) - 1,
+            $this->highlighted === 0 => null,
+            default => $this->highlighted - 1,
+        };
     }
 
     /**
@@ -118,13 +108,11 @@ class SuggestPrompt extends Prompt
      */
     protected function highlightNext(): void
     {
-        if ($this->matches() === []) {
-            $this->highlighted = null;
-        } elseif ($this->highlighted === null) {
-            $this->highlighted = 0;
-        } else {
-            $this->highlighted = $this->highlighted === count($this->matches()) - 1 ? null : $this->highlighted + 1;
-        }
+        $this->highlighted = match (true) {
+            $this->matches() === [] => null,
+            $this->highlighted === null => 0,
+            default => $this->highlighted === count($this->matches()) - 1 ? null : $this->highlighted + 1,
+        };
     }
 
     /**
