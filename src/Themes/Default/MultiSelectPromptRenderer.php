@@ -57,7 +57,7 @@ class MultiSelectPromptRenderer extends Renderer
                 ->map(fn ($label) => $this->truncate($this->format($label), $prompt->terminal()->cols() - 12))
                 ->map(function ($label, $index) use ($prompt) {
                     $active = $index === $prompt->highlighted;
-                    if (array_is_list($prompt->options)) {
+                    if (array_values($prompt->options) === $prompt->options) {
                         $value = $prompt->options[$index];
                     } else {
                         $value = array_keys($prompt->options)[$index];

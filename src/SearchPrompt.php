@@ -126,7 +126,7 @@ class SearchPrompt extends Prompt
             return null;
         }
 
-        return array_is_list($this->matches)
+        return array_values($this->matches) === $this->matches
             ? $this->matches[$this->highlighted]
             : array_keys($this->matches)[$this->highlighted];
     }
@@ -134,7 +134,7 @@ class SearchPrompt extends Prompt
     /**
      * Get the selected label.
      */
-    public function label(): string
+    public function label(): string|null
     {
         return $this->matches[array_keys($this->matches)[$this->highlighted]] ?? null;
     }

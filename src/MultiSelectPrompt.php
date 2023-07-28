@@ -77,7 +77,7 @@ class MultiSelectPrompt extends Prompt
      */
     public function labels(): array
     {
-        if (array_is_list($this->options)) {
+        if (array_values($this->options) === $this->options) {
             return array_values(array_intersect_key($this->options, $this->values));
         }
 
@@ -89,7 +89,7 @@ class MultiSelectPrompt extends Prompt
      */
     public function isHighlighted(string $value): bool
     {
-        if (array_is_list($this->options)) {
+        if (array_values($this->options) === $this->options) {
             return $this->options[$this->highlighted] === $value;
         }
 
@@ -125,7 +125,7 @@ class MultiSelectPrompt extends Prompt
      */
     protected function toggleHighlighted(): void
     {
-        $value = array_is_list($this->options)
+        $value = array_values($this->options) === $this->options
             ? $this->options[$this->highlighted]
             : array_keys($this->options)[$this->highlighted];
 

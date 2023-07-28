@@ -34,7 +34,7 @@ class SelectPrompt extends Prompt
         $this->options = $options instanceof Collection ? $options->all() : $options;
 
         if ($this->default) {
-            if (array_is_list($this->options)) {
+            if (array_values($this->options) === $this->options) {
                 $this->highlighted = array_search($this->default, $this->options) ?: 0;
             } else {
                 $this->highlighted = array_search($this->default, array_keys($this->options)) ?: 0;
@@ -52,9 +52,9 @@ class SelectPrompt extends Prompt
     /**
      * Get the selected value.
      */
-    public function value(): int|string
+    public function value(): int|string|null
     {
-        if (array_is_list($this->options)) {
+        if (array_values($this->options) === $this->options) {
             return $this->options[$this->highlighted] ?? null;
         } else {
             return array_keys($this->options)[$this->highlighted];
@@ -64,9 +64,9 @@ class SelectPrompt extends Prompt
     /**
      * Get the selected label.
      */
-    public function label(): string
+    public function label(): string|null
     {
-        if (array_is_list($this->options)) {
+        if (array_values($this->options) === $this->options) {
             return $this->options[$this->highlighted] ?? null;
         } else {
             return $this->options[array_keys($this->options)[$this->highlighted]] ?? null;
