@@ -60,15 +60,7 @@ class Spinner extends Prompt
 
             $pid = pcntl_fork();
 
-            if ($pid === 0) {
-                while (true) { // @phpstan-ignore-line
-                    $this->render();
-
-                    $this->count++;
-
-                    usleep($this->interval * 1000);
-                }
-            } else {
+            if ($pid !== 0) {
                 $result = $callback();
                 posix_kill($pid, SIGHUP);
                 $lines = explode(PHP_EOL, $this->prevFrame);
@@ -79,6 +71,14 @@ class Spinner extends Prompt
                 pcntl_signal(SIGINT, SIG_DFL);
 
                 return $result;
+            }
+
+            while (true) { // @phpstan-ignore-line
+                $this->render();
+
+                $this->count++;
+
+                usleep($this->interval * 1000);
             }
         } catch (\Throwable $e) {
             $this->showCursor();
