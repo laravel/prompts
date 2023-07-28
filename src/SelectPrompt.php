@@ -13,20 +13,13 @@ class SelectPrompt extends Prompt
     public int $highlighted = 0;
 
     /**
-     * The options for the select prompt.
-     *
-     * @var array<int|string, string>
-     */
-    public array $options;
-
-    /**
      * Create a new SelectPrompt instance.
      *
      * @param  array<int|string, string>|Collection<int|string, string>  $options
      */
     public function __construct(
         public string $label,
-        array|Collection $options,
+        public array|Collection $options,
         public int|string|null $default = null,
         public int $scroll = 5,
         public ?Closure $validate = null,
