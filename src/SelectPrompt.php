@@ -34,11 +34,8 @@ class SelectPrompt extends Prompt
         $this->options = $options instanceof Collection ? $options->all() : $options;
 
         if ($this->default) {
-            if (array_is_list($this->options)) {
-                $this->highlighted = array_search($this->default, $this->options) ?: 0;
-            } else {
-                $this->highlighted = array_search($this->default, array_keys($this->options)) ?: 0;
-            }
+            $haystack = array_is_list($this->options) ? $this->options : array_keys($this->options);
+            $this->highlighted = array_search($this->default, $haystack) ?: 0;
         }
 
         $this->on('key', fn ($key) => match ($key) {
@@ -56,9 +53,9 @@ class SelectPrompt extends Prompt
     {
         if (array_is_list($this->options)) {
             return $this->options[$this->highlighted] ?? null;
-        } else {
-            return array_keys($this->options)[$this->highlighted];
         }
+
+        return array_keys($this->options)[$this->highlighted];
     }
 
     /**
@@ -68,9 +65,9 @@ class SelectPrompt extends Prompt
     {
         if (array_is_list($this->options)) {
             return $this->options[$this->highlighted] ?? null;
-        } else {
-            return $this->options[array_keys($this->options)[$this->highlighted]] ?? null;
         }
+
+        return $this->options[array_keys($this->options)[$this->highlighted]] ?? null;
     }
 
     /**

@@ -90,15 +90,12 @@ class SearchPrompt extends Prompt
      */
     protected function highlightPrevious(): void
     {
-        if ($this->matches === []) {
-            $this->highlighted = null;
-        } elseif ($this->highlighted === null) {
-            $this->highlighted = count($this->matches) - 1;
-        } elseif ($this->highlighted === 0) {
-            $this->highlighted = null;
-        } else {
-            $this->highlighted = $this->highlighted - 1;
-        }
+        $this->highlighted = match(true){
+            $this->matches === [] => null,
+            $this->highlighted === null => (int) count($this->matches) - 1,
+            $this->highlighted === 0 => null,
+            default => (int) $this->highlighted - 1,
+        };
     }
 
     /**
@@ -106,13 +103,11 @@ class SearchPrompt extends Prompt
      */
     protected function highlightNext(): void
     {
-        if ($this->matches === []) {
-            $this->highlighted = null;
-        } elseif ($this->highlighted === null) {
-            $this->highlighted = 0;
-        } else {
-            $this->highlighted = $this->highlighted === count($this->matches) - 1 ? null : $this->highlighted + 1;
-        }
+        $this->highlighted = match (true) {
+            $this->matches === [] => null,
+            $this->highlighted === null => 0,
+            default => $this->highlighted === count($this->matches) - 1 ? null : $this->highlighted + 1,
+        };
     }
 
     public function searchValue(): string
