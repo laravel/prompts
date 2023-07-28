@@ -1,14 +1,14 @@
 <?php
 
 use Laravel\Prompts\Key;
+use Laravel\Prompts\P;
 use Laravel\Prompts\Prompt;
-use function Laravel\Prompts\text;
 use Laravel\Prompts\TextPrompt;
 
 it('returns the input', function () {
     Prompt::fake(['J', 'e', 's', 's', Key::ENTER]);
 
-    $result = text(label: 'What is your name?');
+    $result = P::text(label: 'What is your name?');
 
     expect($result)->toBe('Jess');
 });
@@ -16,7 +16,7 @@ it('returns the input', function () {
 it('accepts a default value', function () {
     Prompt::fake([Key::ENTER]);
 
-    $result = text(
+    $result = P::text(
         label: 'What is your name?',
         default: 'Jess'
     );
@@ -27,7 +27,7 @@ it('accepts a default value', function () {
 it('validates', function () {
     Prompt::fake(['J', 'e', 's', Key::ENTER, 's', Key::ENTER]);
 
-    $result = text(
+    $result = P::text(
         label: 'What is your name?',
         validate: fn ($value) => $value !== 'Jess' ? 'Invalid name.' : '',
     );
@@ -40,7 +40,7 @@ it('validates', function () {
 it('cancels', function () {
     Prompt::fake([Key::CTRL_C]);
 
-    text(label: 'What is your name?');
+    P::text(label: 'What is your name?');
 
     Prompt::assertOutputContains('Cancelled.');
 });
@@ -48,7 +48,7 @@ it('cancels', function () {
 test('the backspace key removes a character', function () {
     Prompt::fake(['J', 'e', 'z', Key::BACKSPACE, 's', 's', Key::ENTER]);
 
-    $result = text(label: 'What is your name?');
+    $result = P::text(label: 'What is your name?');
 
     expect($result)->toBe('Jess');
 });
@@ -56,7 +56,7 @@ test('the backspace key removes a character', function () {
 test('the delete key removes a character', function () {
     Prompt::fake(['J', 'e', 'z', Key::LEFT, Key::DELETE, 's', 's', Key::ENTER]);
 
-    $result = text(label: 'What is your name?');
+    $result = P::text(label: 'What is your name?');
 
     expect($result)->toBe('Jess');
 });
@@ -70,7 +70,7 @@ it('can fall back', function () {
         return 'result';
     });
 
-    $result = text('What is your name?');
+    $result = P::text('What is your name?');
 
     expect($result)->toBe('result');
 });

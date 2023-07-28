@@ -1,12 +1,12 @@
 <?php
 
+use Laravel\Prompts\P;
 use Laravel\Prompts\Prompt;
-use function Laravel\Prompts\spin;
 
 it('renders a spinner while executing a callback and then returns the value', function () {
     Prompt::fake();
 
-    $result = spin(function () {
+    $result = P::spin(function () {
         usleep(1000);
 
         return 'done';

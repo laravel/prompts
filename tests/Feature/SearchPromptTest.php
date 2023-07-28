@@ -1,14 +1,14 @@
 <?php
 
 use Laravel\Prompts\Key;
+use Laravel\Prompts\P;
 use Laravel\Prompts\Prompt;
-use function Laravel\Prompts\search;
 use Laravel\Prompts\SearchPrompt;
 
 it('accepts a callback', function () {
     Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
 
-    $result = search(
+    $result = P::search(
         label: 'What is your favorite color?',
         options: fn (string $value) => array_filter(
             [
@@ -26,7 +26,7 @@ it('accepts a callback', function () {
 it('returns the value when a list is passed', function () {
     Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
 
-    $result = search(
+    $result = P::search(
         label: 'What is your favorite color?',
         options: fn (string $value) => array_values(array_filter(
             [
@@ -44,7 +44,7 @@ it('returns the value when a list is passed', function () {
 it('returns the key when an associative array is passed', function () {
     Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
 
-    $result = search(
+    $result = P::search(
         label: 'What is your favorite color?',
         options: fn (string $value) => array_filter(
             [
@@ -62,7 +62,7 @@ it('returns the key when an associative array is passed', function () {
 it('validates', function () {
     Prompt::fake([Key::DOWN, Key::ENTER, Key::DOWN, Key::ENTER]);
 
-    $result = search(
+    $result = P::search(
         label: 'What is your favorite color?',
         options: fn () => [
             'red' => 'Red',
@@ -86,7 +86,7 @@ it('can fall back', function () {
         return 'result';
     });
 
-    $result = search(
+    $result = P::search(
         label: 'What is your favorite color?',
         options: fn () => [
             'red' => 'Red',

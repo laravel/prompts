@@ -1,14 +1,14 @@
 <?php
 
 use Laravel\Prompts\Key;
-use function Laravel\Prompts\password;
+use Laravel\Prompts\P;
 use Laravel\Prompts\PasswordPrompt;
 use Laravel\Prompts\Prompt;
 
 it('returns the input', function () {
     Prompt::fake(['p', 'a', 's', 's', Key::ENTER]);
 
-    $result = password(label: 'What is the password?');
+    $result = P::password(label: 'What is the password?');
 
     expect($result)->toBe('pass');
 });
@@ -16,7 +16,7 @@ it('returns the input', function () {
 it('validates', function () {
     Prompt::fake(['p', 'a', 's', Key::ENTER, 's', Key::ENTER]);
 
-    $result = password(
+    $result = P::password(
         label: 'What is the password',
         validate: fn ($value) => strlen($value) < 4 ? 'Password must be at least 4 characters.' : '',
     );
@@ -29,7 +29,7 @@ it('validates', function () {
 it('cancels', function () {
     Prompt::fake([Key::CTRL_C]);
 
-    password(label: 'What is the password');
+    P::password(label: 'What is the password');
 
     Prompt::assertOutputContains('Cancelled.');
 });
@@ -37,7 +37,7 @@ it('cancels', function () {
 test('the backspace key removes a character', function () {
     Prompt::fake(['p', 'a', 'z', Key::BACKSPACE, 's', 's', Key::ENTER]);
 
-    $result = password(label: 'What is the password?');
+    $result = P::password(label: 'What is the password?');
 
     expect($result)->toBe('pass');
 });
@@ -45,7 +45,7 @@ test('the backspace key removes a character', function () {
 test('the delete key removes a character', function () {
     Prompt::fake(['p', 'a', 'z', Key::LEFT, Key::DELETE, 's', 's', Key::ENTER]);
 
-    $result = password(label: 'What is the password?');
+    $result = P::password(label: 'What is the password?');
 
     expect($result)->toBe('pass');
 });
@@ -59,7 +59,7 @@ it('can fall back', function () {
         return 'result';
     });
 
-    $result = password('What is the password?');
+    $result = P::password('What is the password?');
 
     expect($result)->toBe('result');
 });

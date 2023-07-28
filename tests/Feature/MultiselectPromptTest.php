@@ -1,14 +1,14 @@
 <?php
 
 use Laravel\Prompts\Key;
-use function Laravel\Prompts\multiselect;
 use Laravel\Prompts\MultiSelectPrompt;
+use Laravel\Prompts\P;
 use Laravel\Prompts\Prompt;
 
 it('accepts an array of labels', function () {
     Prompt::fake([Key::DOWN, Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);
 
-    $result = multiselect(
+    $result = P::multiselect(
         label: 'What are your favorite colors?',
         options: [
             'Red',
@@ -23,7 +23,7 @@ it('accepts an array of labels', function () {
 it('accepts an array of keys and labels', function () {
     Prompt::fake([Key::DOWN, Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);
 
-    $result = multiselect(
+    $result = P::multiselect(
         label: 'What are your favorite colors?',
         options: [
             'red' => 'Red',
@@ -38,7 +38,7 @@ it('accepts an array of keys and labels', function () {
 it('accepts an associate array with integer keys', function () {
     Prompt::fake([Key::DOWN, Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);
 
-    $result = multiselect(
+    $result = P::multiselect(
         label: 'What are your favorite colors?',
         options: [
             1 => 'Red',
@@ -53,7 +53,7 @@ it('accepts an associate array with integer keys', function () {
 it('accepts default values when the options are labels', function () {
     Prompt::fake([Key::ENTER]);
 
-    $result = multiselect(
+    $result = P::multiselect(
         label: 'What are your favorite colors?',
         options: [
             'Red',
@@ -69,7 +69,7 @@ it('accepts default values when the options are labels', function () {
 it('accepts default values when the options are keys with labels', function () {
     Prompt::fake([Key::ENTER]);
 
-    $result = multiselect(
+    $result = P::multiselect(
         label: 'What are your favorite colors?',
         options: [
             'red' => 'Red',
@@ -85,7 +85,7 @@ it('accepts default values when the options are keys with labels', function () {
 it('accepts collections', function () {
     Prompt::fake([Key::ENTER]);
 
-    $result = multiselect(
+    $result = P::multiselect(
         label: 'What are your favorite colors?',
         options: collect([
             'Red',
@@ -101,7 +101,7 @@ it('accepts collections', function () {
 it('validates', function () {
     Prompt::fake([Key::ENTER, Key::SPACE, Key::ENTER]);
 
-    $result = multiselect(
+    $result = P::multiselect(
         label: 'What are your favorite colors?',
         options: [
             'red' => 'Red',
@@ -125,7 +125,7 @@ it('can fall back', function () {
         return ['Blue'];
     });
 
-    $result = multiselect('What is your favorite color?', [
+    $result = P::multiselect('What is your favorite color?', [
         'Red',
         'Green',
         'Blue',

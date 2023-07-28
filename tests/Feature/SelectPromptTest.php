@@ -1,14 +1,14 @@
 <?php
 
 use Laravel\Prompts\Key;
+use Laravel\Prompts\P;
 use Laravel\Prompts\Prompt;
-use function Laravel\Prompts\select;
 use Laravel\Prompts\SelectPrompt;
 
 it('accepts an array of labels', function () {
     Prompt::fake([Key::DOWN, Key::ENTER]);
 
-    $result = select(
+    $result = P::select(
         label: 'What is your favorite color?',
         options: [
             'Red',
@@ -23,7 +23,7 @@ it('accepts an array of labels', function () {
 it('accepts an array of keys and labels', function () {
     Prompt::fake([Key::DOWN, Key::ENTER]);
 
-    $result = select(
+    $result = P::select(
         label: 'What is your favorite color?',
         options: [
             'red' => 'Red',
@@ -38,7 +38,7 @@ it('accepts an array of keys and labels', function () {
 it('accepts an associate array with integer keys', function () {
     Prompt::fake([Key::DOWN, Key::ENTER]);
 
-    $result = select(
+    $result = P::select(
         label: 'What is your favorite color?',
         options: [
             1 => 'Red',
@@ -53,7 +53,7 @@ it('accepts an associate array with integer keys', function () {
 it('accepts a collection', function () {
     Prompt::fake([Key::DOWN, Key::ENTER]);
 
-    $result = select(
+    $result = P::select(
         label: 'What is your favorite color?',
         options: collect([
             'Red',
@@ -68,7 +68,7 @@ it('accepts a collection', function () {
 it('accepts default values when the options are labels', function () {
     Prompt::fake([Key::ENTER]);
 
-    $result = select(
+    $result = P::select(
         label: 'What is your favorite color?',
         options: [
             'Red',
@@ -84,7 +84,7 @@ it('accepts default values when the options are labels', function () {
 it('accepts default values when the options are keys with labels', function () {
     Prompt::fake([Key::ENTER]);
 
-    $result = select(
+    $result = P::select(
         label: 'What is your favorite color?',
         options: [
             'red' => 'Red',
@@ -100,7 +100,7 @@ it('accepts default values when the options are keys with labels', function () {
 it('validates', function () {
     Prompt::fake([Key::ENTER, Key::DOWN, Key::ENTER]);
 
-    $result = select(
+    $result = P::select(
         label: 'What is your favorite color?',
         options: [
             'red' => 'Red',
@@ -124,7 +124,7 @@ it('can fall back', function () {
         return 'Blue';
     });
 
-    $result = select('What is your favorite color?', [
+    $result = P::select('What is your favorite color?', [
         'Red',
         'Green',
         'Blue',
