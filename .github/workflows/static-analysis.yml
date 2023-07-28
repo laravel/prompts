@@ -14,9 +14,6 @@ jobs:
   tests:
     runs-on: ubuntu-22.04
 
-    strategy:
-      fail-fast: true
-
     name: Static Analysis
 
     steps:
