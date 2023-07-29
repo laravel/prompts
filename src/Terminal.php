@@ -24,7 +24,8 @@ class Terminal
      */
     public function read(): string
     {
-        return fread(STDIN, 1024) ?: '';
+        $terminalInput = fread(STDIN, 1024);
+        return is_null($terminalInput) ? '' : $terminalInput;
     }
 
     /**
