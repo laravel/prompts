@@ -67,6 +67,6 @@ trait DrawsScrollbars
         $keys = $visible->slice(1, -1)->keys();
         $position = (int) ceil($percent * count($keys) - 1);
 
-        return $keys[$position];
+        return $keys[$position] ?? 0;
     }
 }
