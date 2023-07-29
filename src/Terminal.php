@@ -2,7 +2,7 @@
 
 namespace Laravel\Prompts;
 
-use Symfony\Component\Console\Terminal as Term;
+use Symfony\Component\Console\Terminal as SymfonyTerminal;
 
 class Terminal
 {
@@ -64,7 +64,7 @@ class Terminal
      */
     public function cols(): int
     {
-        return $this->cols ??= (new Term())->getWidth();
+        return $this->cols ??= (new SymfonyTerminal())->getWidth();
     }
 
     /**
@@ -72,7 +72,7 @@ class Terminal
      */
     public function lines(): int
     {
-        return $this->lines ??= (new Term())->getHeight();
+        return $this->lines ??= (new SymfonyTerminal())->getHeight();
     }
 
     /**
