@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - '*.x'
+      - l9
   pull_request:
   schedule:
     - cron: '0 0 * * *'
