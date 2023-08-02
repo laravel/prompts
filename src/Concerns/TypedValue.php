@@ -36,15 +36,15 @@ trait TypedValue
         $this->typedValue = $default;
 
         if ($this->typedValue) {
-            $this->cursorPosition = strlen($this->typedValue);
+            $this->cursorPosition = mb_strlen($this->typedValue);
         }
 
         $this->on('key', function ($key) use ($submit) {
             if ($key[0] === "\e") {
                 match ($key) {
                     Key::LEFT => $this->cursorPosition = max(0, $this->cursorPosition - 1),
-                    Key::RIGHT => $this->cursorPosition = min(strlen($this->typedValue), $this->cursorPosition + 1),
-                    Key::DELETE => $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition).substr($this->typedValue, $this->cursorPosition + 1),
+                    Key::RIGHT => $this->cursorPosition = min(mb_strlen($this->typedValue), $this->cursorPosition + 1),
+                    Key::DELETE => $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition).mb_substr($this->typedValue, $this->cursorPosition + 1),
                     default => null,
                 };
 
@@ -52,7 +52,7 @@ trait TypedValue
             }
 
             // Keys may be buffered.
-            foreach (str_split($key) as $key) {
+            foreach (mb_str_split($key) as $key) {
                 if ($key === Key::ENTER && $submit) {
                     $this->submit();
 
@@ -62,10 +62,10 @@ trait TypedValue
                         return;
                     }
 
-                    $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition - 1).substr($this->typedValue, $this->cursorPosition);
+                    $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition - 1).mb_substr($this->typedValue, $this->cursorPosition);
                     $this->cursorPosition--;
                 } elseif (! in_array($key, $this->ignore)) {
-                    $this->typedValue = substr($this->typedValue, 0, $this->cursorPosition).$key.substr($this->typedValue, $this->cursorPosition);
+                    $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition).$key.mb_substr($this->typedValue, $this->cursorPosition);
                     $this->cursorPosition++;
                 }
             }
