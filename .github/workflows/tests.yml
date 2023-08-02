@@ -20,8 +20,9 @@ jobs:
       fail-fast: true
       matrix:
         php: [8.1, 8.2]
+        laravel: [9, 10]
 
-    name: PHP ${{ matrix.php }}
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
 
     steps:
       - name: Checkout code
@@ -41,7 +42,9 @@ jobs:
         with:
           timeout_minutes: 5
           max_attempts: 5
-          command: composer update --prefer-stable --prefer-dist --no-interaction --no-progress
+          command: |
+            composer require "illuminate/collections=^${{ matrix.laravel }}" --no-update
+            composer update --prefer-stable --prefer-dist --no-interaction --no-progress
 
       - name: Execute tests
         run: vendor/bin/pest
