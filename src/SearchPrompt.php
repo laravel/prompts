@@ -134,7 +134,7 @@ class SearchPrompt extends Prompt
     /**
      * Get the selected label.
      */
-    public function label(): string
+    public function label(): ?string
     {
         return $this->matches[array_keys($this->matches)[$this->highlighted]] ?? null;
     }

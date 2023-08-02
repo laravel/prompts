@@ -52,7 +52,7 @@ class SelectPrompt extends Prompt
     /**
      * Get the selected value.
      */
-    public function value(): int|string
+    public function value(): int|string|null
     {
         if (array_is_list($this->options)) {
             return $this->options[$this->highlighted] ?? null;
@@ -64,7 +64,7 @@ class SelectPrompt extends Prompt
     /**
      * Get the selected label.
      */
-    public function label(): string
+    public function label(): ?string
     {
         if (array_is_list($this->options)) {
             return $this->options[$this->highlighted] ?? null;
