@@ -142,6 +142,18 @@ abstract class Prompt
     }
 
     /**
+     * Write output directly, bypassing newline capture.
+     */
+    protected static function writeDirectly(string $message): void
+    {
+        match (true) {
+            method_exists(static::output(), 'writeDirectly') => static::output()->writeDirectly($message),
+            method_exists(static::output(), 'getOutput') => static::output()->getOutput()->write($message),
+            default => static::output()->write($message),
+        };
+    }
+
+    /**
      * Get the terminal instance.
      */
     public static function terminal(): Terminal

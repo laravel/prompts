@@ -14,7 +14,7 @@ trait Cursor
      */
     public function hideCursor(): void
     {
-        $this->terminal()->write("\e[?25l");
+        static::writeDirectly("\e[?25l");
 
         static::$cursorHidden = true;
     }
@@ -24,7 +24,7 @@ trait Cursor
      */
     public function showCursor(): void
     {
-        $this->terminal()->write("\e[?25h");
+        static::writeDirectly("\e[?25h");
 
         static::$cursorHidden = false;
     }
@@ -58,6 +58,6 @@ trait Cursor
             $sequence .= "\e[{$y}B"; // Down
         }
 
-        $this->terminal()->write($sequence);
+        static::writeDirectly($sequence);
     }
 }

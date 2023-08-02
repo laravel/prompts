@@ -38,4 +38,12 @@ class ConsoleOutput extends SymfonyConsoleOutput
             $this->newLinesWritten = $trailingNewLines;
         }
     }
+
+    /**
+     * Write output directly, bypassing newline capture.
+     */
+    public function writeDirectly(string $message): void
+    {
+        parent::doWrite($message, false);
+    }
 }
