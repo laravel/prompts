@@ -45,8 +45,6 @@ class SuggestPrompt extends Prompt
     ) {
         $this->options = $options instanceof Collection ? $options->all() : $options;
 
-        $this->trackTypedValue($default);
-
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::SHIFT_TAB => $this->highlightPrevious(),
             Key::DOWN, Key::TAB => $this->highlightNext(),
@@ -57,6 +55,8 @@ class SuggestPrompt extends Prompt
                 $this->matches = null;
             })(),
         });
+
+        $this->trackTypedValue($default);
     }
 
     /**
