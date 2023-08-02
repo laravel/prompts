@@ -25,7 +25,7 @@ class PasswordPrompt extends Prompt
      */
     public function masked(): string
     {
-        return str_repeat('•', strlen($this->value()));
+        return str_repeat('•', mb_strlen($this->value()));
     }
 
     /**
