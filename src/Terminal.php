@@ -32,14 +32,6 @@ class Terminal
     }
 
     /**
-     * Write data to the terminal.
-     */
-    public function write(string $data): void
-    {
-        fwrite(STDOUT, $data);
-    }
-
-    /**
      * Set the TTY mode.
      */
     public function setTty(string $mode): void
