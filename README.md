@@ -31,4 +31,4 @@ Please review [our security policy](https://github.com/laravel/prompts/security/
 
 ## License
 
-Laravel Package is open-sourced software licensed under the [MIT license](LICENSE.md).
+Laravel Prompts is open-sourced software licensed under the [MIT license](LICENSE.md).
