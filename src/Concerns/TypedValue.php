@@ -36,14 +36,14 @@ trait TypedValue
         $this->typedValue = $default;
 
         if ($this->typedValue) {
-            $this->cursorPosition = mb_strlen($this->typedValue);
+            $this->cursorPosition = mb_strwidth($this->typedValue);
         }
 
         $this->on('key', function ($key) use ($submit) {
             if ($key[0] === "\e") {
                 match ($key) {
                     Key::LEFT => $this->cursorPosition = max(0, $this->cursorPosition - 1),
-                    Key::RIGHT => $this->cursorPosition = min(mb_strlen($this->typedValue), $this->cursorPosition + 1),
+                    Key::RIGHT => $this->cursorPosition = min(mb_strwidth($this->typedValue), $this->cursorPosition + 1),
                     Key::DELETE => $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition).mb_substr($this->typedValue, $this->cursorPosition + 1),
                     default => null,
                 };
@@ -85,27 +85,27 @@ trait TypedValue
      */
     protected function addCursor(string $value, int $cursorPosition, int $maxWidth): string
     {
-        $offset = $cursorPosition - $maxWidth + ($cursorPosition < mb_strlen($value) ? 2 : 1);
+        $offset = $cursorPosition - $maxWidth + ($cursorPosition < mb_strwidth($value) ? 2 : 1);
         $offset = $offset > 0 ? $offset + 1 : 0;
         $offsetCursorPosition = $cursorPosition - $offset;
 
         $output = $offset > 0 ? $this->dim('…') : '';
         $output .= mb_substr($value, $offset, $offsetCursorPosition);
 
-        if ($cursorPosition > mb_strlen($value) - 1) {
+        if ($cursorPosition > mb_strwidth($value) - 1) {
             return $output.$this->inverse(' ');
         }
 
         $output .= $this->inverse(mb_substr($value, $cursorPosition, 1));
 
-        if ($cursorPosition === mb_strlen($value) - 1) {
+        if ($cursorPosition === mb_strwidth($value) - 1) {
             return $output.' ';
         }
 
         $remainder = mb_substr($value, $cursorPosition + 1);
         $remainingSpace = $maxWidth - $offsetCursorPosition - ($offset ? 2 : 1);
 
-        if (mb_strlen($remainder) <= $remainingSpace) {
+        if (mb_strwidth($remainder) <= $remainingSpace) {
             return $output.$remainder;
         }
 
