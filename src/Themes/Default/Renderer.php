@@ -77,7 +77,7 @@ abstract class Renderer
      */
     public function __toString()
     {
-        return str_repeat(PHP_EOL, 2 - $this->prompt->newLinesWritten())
+        return str_repeat(PHP_EOL, max(2 - $this->prompt->newLinesWritten(), 0))
             .$this->output
             .(in_array($this->prompt->state, ['submit', 'cancel']) ? PHP_EOL : '');
     }
