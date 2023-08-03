@@ -148,6 +148,6 @@ class SuggestPrompt extends Prompt
             throw new InvalidArgumentException("Length [{$length}] must be greater than zero.");
         }
 
-        return mb_strwidth($value) <= $length ? $value : (mb_substr($value, 0, $length - 1).'…');
+        return mb_strlen($value) <= $length ? $value : (mb_substr($value, 0, $length - 1).'…');
     }
 }
