@@ -117,6 +117,14 @@ function alert(string $message): void
 }
 
 /**
+ * Display an information.
+ */
+function info(string $message): void
+{
+    (new Note($message, 'info'))->display();
+}
+
+/**
  * Display an introduction.
  */
 function intro(string $message): void
