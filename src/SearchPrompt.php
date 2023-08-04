@@ -3,10 +3,10 @@
 namespace Laravel\Prompts;
 
 use Closure;
-use InvalidArgumentException;
 
 class SearchPrompt extends Prompt
 {
+    use Concerns\Truncation;
     use Concerns\TypedValue;
 
     /**
@@ -137,17 +137,5 @@ class SearchPrompt extends Prompt
     public function label(): ?string
     {
         return $this->matches[array_keys($this->matches)[$this->highlighted]] ?? null;
-    }
-
-    /**
-     * Truncate a value with an ellipsis if it exceeds the given length.
-     */
-    protected function truncate(string $value, int $length): string
-    {
-        if ($length <= 0) {
-            throw new InvalidArgumentException("Length [{$length}] must be greater than zero.");
-        }
-
-        return mb_strlen($value) <= $length ? $value : (mb_substr($value, 0, $length - 1).'…');
     }
 }
