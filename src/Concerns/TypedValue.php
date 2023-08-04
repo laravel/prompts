@@ -85,30 +85,38 @@ trait TypedValue
      */
     protected function addCursor(string $value, int $cursorPosition, int $maxWidth): string
     {
-        $offset = $cursorPosition - $maxWidth + ($cursorPosition < mb_strlen($value) ? 2 : 1);
-        $offset = $offset > 0 ? $offset + 1 : 0;
-        $offsetCursorPosition = $cursorPosition - $offset;
+        $before = mb_substr($value, 0, $cursorPosition);
+        $current = mb_substr($value, $cursorPosition, 1);
+        $after = mb_substr($value, $cursorPosition + 1);
 
-        $output = $offset > 0 ? $this->dim('…') : '';
-        $output .= mb_substr($value, $offset, $offsetCursorPosition);
+        $cursor = mb_strlen($current) ? $current : ' ';
 
-        if ($cursorPosition > mb_strlen($value) - 1) {
-            return $output.$this->inverse(' ');
-        }
+        $spaceBefore = $maxWidth - mb_strwidth($cursor) - (mb_strwidth($after) > 0 ? 1 : 0);
+        [$truncatedBefore, $wasTruncatedBefore] = mb_strwidth($before) > $spaceBefore
+            ? [$this->trimWidthBackwards($before, 0, $spaceBefore - 1), true]
+            : [$before, false];
 
-        $output .= $this->inverse(mb_substr($value, $cursorPosition, 1));
+        $spaceAfter = $maxWidth - ($wasTruncatedBefore ? 1 : 0) - mb_strwidth($truncatedBefore) - mb_strwidth($cursor);
+        [$truncatedAfter, $wasTruncatedAfter] = mb_strwidth($after) > $spaceAfter
+            ? [mb_strimwidth($after, 0, $spaceAfter - 1), true]
+            : [$after, false];
 
-        if ($cursorPosition === mb_strlen($value) - 1) {
-            return $output.' ';
-        }
+        return ($wasTruncatedBefore ? $this->dim('…') : '')
+            .$truncatedBefore
+            .$this->inverse($cursor)
+            .$truncatedAfter
+            .($wasTruncatedAfter ? $this->dim('…') : '');
+    }
 
-        $remainder = mb_substr($value, $cursorPosition + 1);
-        $remainingSpace = $maxWidth - $offsetCursorPosition - ($offset ? 2 : 1);
+    /**
+     * Get a truncated string with the specified width from the end.
+     */
+    private function trimWidthBackwards(string $string, int $start, int $width): string
+    {
+        $reversed = implode('', array_reverse(mb_str_split($string, 1)));
 
-        if (mb_strlen($remainder) <= $remainingSpace) {
-            return $output.$remainder;
-        }
+        $trimmed = mb_strimwidth($reversed, $start, $width);
 
-        return $output.mb_substr($remainder, 0, $remainingSpace - 1).$this->dim('…');
+        return implode('', array_reverse(mb_str_split($trimmed, 1)));
     }
 }

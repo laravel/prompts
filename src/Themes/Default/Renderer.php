@@ -2,13 +2,14 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use InvalidArgumentException;
 use Laravel\Prompts\Concerns\Colors;
+use Laravel\Prompts\Concerns\Truncation;
 use Laravel\Prompts\Prompt;
 use RuntimeException;
 
 abstract class Renderer
 {
+    use Truncation;
     use Colors;
 
     /**
@@ -58,18 +59,6 @@ abstract class Renderer
     protected function error(string $message): self
     {
         return $this->line($this->red("  ⚠ {$message}"));
-    }
-
-    /**
-     * Truncate a value with an ellipsis if it exceeds the given length.
-     */
-    protected function truncate(string $value, int $length): string
-    {
-        if ($length <= 0) {
-            throw new InvalidArgumentException("Length [{$length}] must be greater than zero.");
-        }
-
-        return mb_strlen($value) <= $length ? $value : (mb_substr($value, 0, $length - 1).'…');
     }
 
     /**
