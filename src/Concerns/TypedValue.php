@@ -17,18 +17,6 @@ trait TypedValue
     protected int $cursorPosition = 0;
 
     /**
-     * Keys to ignore
-     *
-     * @var array<string>
-     */
-    protected array $ignore = [
-        Key::ENTER,
-        Key::TAB,
-        Key::CTRL_C,
-        Key::CTRL_D,
-    ];
-
-    /**
      * Track the value as the user types.
      */
     protected function trackTypedValue(string $default = '', bool $submit = true): void
@@ -64,7 +52,7 @@ trait TypedValue
 
                     $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition - 1).mb_substr($this->typedValue, $this->cursorPosition);
                     $this->cursorPosition--;
-                } elseif (! in_array($key, $this->ignore)) {
+                } elseif (ord($key) >= 32) {
                     $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition).$key.mb_substr($this->typedValue, $this->cursorPosition);
                     $this->cursorPosition++;
                 }

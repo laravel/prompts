@@ -25,6 +25,4 @@ class Key
     const SHIFT_TAB = "\e[Z";
 
     const CTRL_C = "\x03";
-
-    const CTRL_D = "\x04";
 }
