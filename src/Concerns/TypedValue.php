@@ -30,8 +30,8 @@ trait TypedValue
         $this->on('key', function ($key) use ($submit) {
             if ($key[0] === "\e") {
                 match ($key) {
-                    Key::LEFT => $this->cursorPosition = max(0, $this->cursorPosition - 1),
-                    Key::RIGHT => $this->cursorPosition = min(mb_strlen($this->typedValue), $this->cursorPosition + 1),
+                    Key::LEFT, Key::LEFT_ARROW => $this->cursorPosition = max(0, $this->cursorPosition - 1),
+                    Key::RIGHT, Key::RIGHT_ARROW => $this->cursorPosition = min(mb_strlen($this->typedValue), $this->cursorPosition + 1),
                     Key::DELETE => $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition).mb_substr($this->typedValue, $this->cursorPosition + 1),
                     default => null,
                 };

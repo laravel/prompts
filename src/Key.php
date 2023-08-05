@@ -12,6 +12,14 @@ class Key
 
     const LEFT = "\e[D";
 
+    const UP_ARROW = "\eOA";
+
+    const DOWN_ARROW = "\eOB";
+
+    const RIGHT_ARROW = "\eOC";
+
+    const LEFT_ARROW = "\eOD";
+
     const DELETE = "\e[3~";
 
     const BACKSPACE = "\177";

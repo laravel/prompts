@@ -46,10 +46,10 @@ class SuggestPrompt extends Prompt
         $this->options = $options instanceof Collection ? $options->all() : $options;
 
         $this->on('key', fn ($key) => match ($key) {
-            Key::UP, Key::SHIFT_TAB => $this->highlightPrevious(),
-            Key::DOWN, Key::TAB => $this->highlightNext(),
+            Key::UP, Key::UP_ARROW, Key::SHIFT_TAB => $this->highlightPrevious(),
+            Key::DOWN, Key::DOWN_ARROW, Key::TAB => $this->highlightNext(),
             Key::ENTER => $this->selectHighlighted(),
-            Key::LEFT, Key::RIGHT => $this->highlighted = null,
+            Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW => $this->highlighted = null,
             default => (function () {
                 $this->highlighted = null;
                 $this->matches = null;
