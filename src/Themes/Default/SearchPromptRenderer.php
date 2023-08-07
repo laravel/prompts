@@ -18,6 +18,7 @@ class SearchPromptRenderer extends Renderer
 
         if ($prompt->state === 'initial' || $prompt->state === 'searching') {
             $prompt->view->resetCount(count($prompt->matches()));
+            $prompt->view->resetStart();
         }
 
         return match ($prompt->state) {

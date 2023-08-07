@@ -16,8 +16,9 @@ class SuggestPromptRenderer extends Renderer
     {
         $maxWidth = $prompt->terminal()->cols() - 6;
 
-        if ($prompt->state === 'initial') {
+        if ($prompt->state === 'initial' || $prompt->state === 'searching' || $prompt->state === 'active') {
             $prompt->view->resetCount(count($prompt->matches()));
+            $prompt->view->resetStart();
         }
 
         return match ($prompt->state) {
