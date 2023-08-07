@@ -74,6 +74,7 @@ class SelectPromptRenderer extends Renderer
                         : "  {$this->dim('○')} {$this->dim($label)}  ";
                 }),
             $prompt->highlighted,
+            $prompt->view,
             min($prompt->scroll, $prompt->terminal()->lines() - 5),
             min($this->longest($prompt->options, padding: 6), $prompt->terminal()->cols() - 6),
             $prompt->state === 'cancel' ? 'dim' : 'cyan'

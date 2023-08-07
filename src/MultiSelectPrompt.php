@@ -27,6 +27,11 @@ class MultiSelectPrompt extends Prompt
     public array $default;
 
     /**
+     * The view state for scroll the select list.
+     */
+    public ViewState $view;
+
+    /**
      * The selected values.
      *
      * @var array<int|string>
@@ -51,6 +56,7 @@ class MultiSelectPrompt extends Prompt
         $this->options = $options instanceof Collection ? $options->all() : $options;
         $this->default = $default instanceof Collection ? $default->all() : $default;
         $this->values = $this->default;
+        $this->view = new ViewState(min($this->scroll, $this->terminal()->lines() - 5), count($this->options));
 
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::LEFT, Key::LEFT_ARROW, Key::SHIFT_TAB, 'k', 'h' => $this->highlightPrevious(),

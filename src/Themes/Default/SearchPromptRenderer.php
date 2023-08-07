@@ -16,6 +16,10 @@ class SearchPromptRenderer extends Renderer
     {
         $maxWidth = $prompt->terminal()->cols() - 6;
 
+        if ($prompt->state === 'initial' || $prompt->state === 'searching') {
+            $prompt->view->resetCount(count($prompt->matches()));
+        }
+
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
@@ -114,6 +118,7 @@ class SearchPromptRenderer extends Renderer
                     : "  {$this->dim($label)}  "
                 ),
             $prompt->highlighted,
+            $prompt->view,
             min($prompt->scroll, $prompt->terminal()->lines() - 7),
             min($this->longest($prompt->matches(), padding: 4), $prompt->terminal()->cols() - 6)
         )->implode(PHP_EOL);

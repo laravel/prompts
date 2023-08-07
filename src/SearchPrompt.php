@@ -15,6 +15,11 @@ class SearchPrompt extends Prompt
     public ?int $highlighted = null;
 
     /**
+     * The view state for scroll the select list.
+     */
+    public ViewState $view;
+
+    /**
      * The cached matches.
      *
      * @var array<int|string, string>|null

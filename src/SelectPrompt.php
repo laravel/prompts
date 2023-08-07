@@ -20,6 +20,11 @@ class SelectPrompt extends Prompt
     public array $options;
 
     /**
+     * The view state for scroll the select list.
+     */
+    public ViewState $view;
+
+    /**
      * Create a new SelectPrompt instance.
      *
      * @param  array<int|string, string>|Collection<int|string, string>  $options
@@ -33,6 +38,7 @@ class SelectPrompt extends Prompt
         public string $hint = ''
     ) {
         $this->options = $options instanceof Collection ? $options->all() : $options;
+        $this->view = new ViewState(min($this->scroll, $this->terminal()->lines() - 5), count($this->options));
 
         if ($this->default) {
             if (array_is_list($this->options)) {

@@ -3,6 +3,7 @@
 namespace Laravel\Prompts\Themes\Default\Concerns;
 
 use Illuminate\Support\Collection;
+use Laravel\Prompts\ViewState;
 
 trait DrawsScrollbars
 {
@@ -10,15 +11,16 @@ trait DrawsScrollbars
      * Scroll the given lines.
      *
      * @param  \Illuminate\Support\Collection<int, string>  $lines
+     * @param  \Laravel\Prompts\ViewState  $view
      * @return \Illuminate\Support\Collection<int, string>
      */
-    protected function scroll(Collection $lines, ?int $focused, int $height, int $width, string $color = 'cyan'): Collection
+    protected function scroll(Collection $lines, ?int $focused, ViewState $view, int $height, int $width, string $color = 'cyan'): Collection
     {
         if ($lines->count() <= $height) {
             return $lines;
         }
 
-        $visible = $this->visible($lines, $focused, $height);
+        $visible = $this->visible($lines, $focused, $view, $height);
 
         return $visible
             ->map(fn ($line) => $this->pad($line, $width))
@@ -29,22 +31,34 @@ trait DrawsScrollbars
     }
 
     /**
-     * Get a scrolled version of the items.
+     * Get a scrolled version of the items and update the view state.
      *
      * @param  \Illuminate\Support\Collection<int, string>  $lines
+     * @param  \Laravel\Prompts\ViewState  $view
      * @return \Illuminate\Support\Collection<int, string>
      */
-    protected function visible(Collection $lines, ?int $focused, int $height): Collection
+    protected function visible(Collection $lines, ?int $focused, ViewState $view, int $height): Collection
     {
         if ($lines->count() <= $height) {
             return $lines;
         }
 
-        if ($focused === null || $focused < $height) {
+        if ($focused === null) {
+            $view->resetStart();
             return $lines->slice(0, $height);
         }
 
-        return $lines->slice($focused - $height + 1, $height);
+        if ($focused < $view->first()) {
+            $view->update($focused);
+            return $lines->slice($view->first(), count($view->items));
+        }
+
+        if ($focused > $view->last()) {
+            $view->update($focused - $height + 1);
+            return $lines->slice($view->first(), count($view->items));
+        }
+
+        return $lines->slice($view->first(), count($view->items));
     }
 
     /**

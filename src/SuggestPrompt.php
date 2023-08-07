@@ -23,6 +23,11 @@ class SuggestPrompt extends Prompt
     public array|Closure $options;
 
     /**
+     * The view state for scroll the select list.
+     */
+    public ViewState $view;
+
+    /**
      * The cache of matches.
      *
      * @var array<string>|null
