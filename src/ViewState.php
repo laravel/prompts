@@ -24,7 +24,11 @@ class ViewState
      */
     public function resetStart(): void
     {
-        $this->items = range(0, min($this->height - 1, $this->count - 1));
+        if ($this->count === 0) {
+            $this->items = [];
+        } else {
+            $this->items = range(0, min($this->height - 1, $this->count - 1));
+        }
     }
 
     /**
@@ -32,7 +36,11 @@ class ViewState
      */
     public function resetEnd(): void
     {
-        $this->items = range(max($this->count - $this->height, 0), $this->count - 1);
+        if ($this->count === 0) {
+            $this->items = [];
+        } else {
+            $this->items = range(max($this->count - $this->height, 0), $this->count - 1);
+        }
     }
 
     /**
