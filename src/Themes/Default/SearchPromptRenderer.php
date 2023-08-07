@@ -16,11 +16,6 @@ class SearchPromptRenderer extends Renderer
     {
         $maxWidth = $prompt->terminal()->cols() - 6;
 
-        if ($prompt->state === 'initial' || $prompt->state === 'searching') {
-            $prompt->view->resetCount(count($prompt->matches()));
-            $prompt->view->resetStart();
-        }
-
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
@@ -108,6 +103,11 @@ class SearchPromptRenderer extends Renderer
     {
         if ($prompt->searchValue() !== '' && empty($prompt->matches())) {
             return $this->gray('  '.($prompt->state === 'searching' ? 'Searching...' : 'No results.'));
+        }
+
+        if ($prompt->highlighted === null || $prompt->view->count === 0) {
+            $prompt->view->resetCount(count($prompt->matches()));
+            $prompt->view->resetStart();
         }
 
         return $this->scroll(

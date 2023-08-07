@@ -16,11 +16,6 @@ class SuggestPromptRenderer extends Renderer
     {
         $maxWidth = $prompt->terminal()->cols() - 6;
 
-        if ($prompt->state === 'initial' || $prompt->state === 'searching' || $prompt->state === 'active') {
-            $prompt->view->resetCount(count($prompt->matches()));
-            $prompt->view->resetStart();
-        }
-
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
@@ -99,6 +94,11 @@ class SuggestPromptRenderer extends Renderer
     {
         if (empty($prompt->matches()) || ($prompt->value() === '' && $prompt->highlighted === null)) {
             return '';
+        }
+
+        if ($prompt->highlighted === null || $prompt->view->count === 0) {
+            $prompt->view->resetCount(count($prompt->matches()));
+            $prompt->view->resetStart();
         }
 
         return $this->scroll(
