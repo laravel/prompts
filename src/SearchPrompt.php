@@ -40,6 +40,8 @@ class SearchPrompt extends Prompt
         public string $hint = ''
     ) {
         $this->trackTypedValue(submit: false);
+        $this->view = new ViewState(min($this->scroll, $this->terminal()->lines() - 7), 0);
+
 
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB => $this->highlightPrevious(),
