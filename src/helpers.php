@@ -117,7 +117,7 @@ function alert(string $message): void
 }
 
 /**
- * Display an information.
+ * Display an informational message.
  */
 function info(string $message): void
 {
