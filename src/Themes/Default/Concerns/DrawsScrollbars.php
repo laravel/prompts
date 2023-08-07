@@ -25,7 +25,7 @@ trait DrawsScrollbars
         return $visible
             ->map(fn ($line) => $this->pad($line, $width))
             ->map(fn ($line, $index) => match (true) {
-                $index === $this->scrollPosition($visible, $focused, $height, $lines->count()) => preg_replace('/.$/', $this->{$color}('┃'), $line),
+                $index === $this->scrollPosition($visible, $view, $height, $lines->count()) => preg_replace('/.$/', $this->{$color}('┃'), $line),
                 default => preg_replace('/.$/', $this->gray('│'), $line),
             });
     }
@@ -66,17 +66,17 @@ trait DrawsScrollbars
      *
      * @param  \Illuminate\Support\Collection<int, string>  $visible
      */
-    protected function scrollPosition(Collection $visible, ?int $focused, int $height, int $total): int
+    protected function scrollPosition(Collection $visible, ViewState $view, int $height, int $total): int
     {
-        if ($focused < $height) {
+        if ($view->last() < $height) {
             return 0;
         }
 
-        if ($focused === $total - 1) {
+        if ($view->last() === $total - 1) {
             return $total - 1;
         }
 
-        $percent = ($focused + 1 - $height) / ($total - $height);
+        $percent = ($view->last() + 1 - $height) / ($total - $height);
 
         $keys = $visible->slice(1, -1)->keys();
         $position = (int) ceil($percent * count($keys) - 1);
