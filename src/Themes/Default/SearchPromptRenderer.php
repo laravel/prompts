@@ -53,6 +53,7 @@ class SearchPromptRenderer extends Renderer
                     $prompt->valueWithCursor($maxWidth),
                     $this->renderOptions($prompt),
                 )
+                ->hint($prompt->hint)
                 ->spaceForDropdown($prompt)
                 ->newLine(), // Space for errors
         };

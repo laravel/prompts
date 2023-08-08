@@ -21,6 +21,7 @@ $model = suggest(
         strlen($value) === 0 => 'Please enter a model name.',
         default => null,
     },
+    hint: 'The model name should be singular.',
 );
 
 var_dump($model);

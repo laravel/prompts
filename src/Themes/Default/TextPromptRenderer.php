@@ -43,6 +43,7 @@ class TextPromptRenderer extends Renderer
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
                     $prompt->valueWithCursor($maxWidth),
                 )
+                ->hint($prompt->hint)
                 ->newLine(), // Space for errors
         };
     }

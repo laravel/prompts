@@ -30,6 +30,7 @@ class SelectPrompt extends Prompt
         public int|string|null $default = null,
         public int $scroll = 5,
         public ?Closure $validate = null,
+        public string $hint = ''
     ) {
         $this->options = $options instanceof Collection ? $options->all() : $options;
 

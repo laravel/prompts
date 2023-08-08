@@ -62,6 +62,18 @@ abstract class Renderer
     }
 
     /**
+     * Render an hint message.
+     */
+    protected function hint(string $message): self
+    {
+        if ($message === '') {
+            return $this;
+        }
+
+        return $this->line($this->gray("  {$message}"));
+    }
+
+    /**
      * Render the output with a blank line above and below.
      */
     public function __toString()

@@ -41,6 +41,7 @@ class ConfirmPromptRenderer extends Renderer
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
                     $this->renderOptions($prompt),
                 )
+                ->hint($prompt->hint)
                 ->newLine(), // Space for errors
         };
     }

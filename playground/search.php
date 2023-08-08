@@ -29,7 +29,8 @@ $model = search(
         if ($value === '0') {
             return 'User 0 is not allowed to receive emails.';
         }
-    }
+    },
+    hint: 'An email will be sent to the user.',
 );
 
 var_dump($model);

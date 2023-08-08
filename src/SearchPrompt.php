@@ -32,6 +32,7 @@ class SearchPrompt extends Prompt
         public string $placeholder = '',
         public int $scroll = 5,
         public ?Closure $validate = null,
+        public string $hint = ''
     ) {
         $this->trackTypedValue(submit: false);
 
