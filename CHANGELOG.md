@@ -1,6 +1,15 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/package-template/compare/v0.1.3...main)
+## [Unreleased](https://github.com/laravel/package-template/compare/v0.1.4...main)
+
+## [v0.1.4](https://github.com/laravel/package-template/compare/v0.1.3...v0.1.4) - 2023-08-07
+
+- Update README.md by [@lazer-hybiz](https://github.com/lazer-hybiz) in https://github.com/laravel/prompts/pull/35
+- Don't allow negativ str_repeats by [@mpociot](https://github.com/mpociot) in https://github.com/laravel/prompts/pull/37
+- Prevent C0 control codes by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/38
+- support mutli-byte characters by [@tyler36](https://github.com/tyler36) in https://github.com/laravel/prompts/pull/33
+- Add support for alternative arrow keys by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/40
+- Add info note by [@sebastianpopp](https://github.com/sebastianpopp) in https://github.com/laravel/prompts/pull/36
 
 ## [v0.1.3](https://github.com/laravel/package-template/compare/v0.1.2...v0.1.3) - 2023-08-02
 
