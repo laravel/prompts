@@ -70,6 +70,8 @@ abstract class Renderer
             return $this;
         }
 
+        $message = $this->truncate($message, $this->prompt->terminal()->cols() - 6);
+
         return $this->line($this->gray("  {$message}"));
     }
 
