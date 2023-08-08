@@ -46,7 +46,6 @@ class SuggestPromptRenderer extends Renderer
                     $this->valueWithCursorAndArrow($prompt, $maxWidth),
                     $this->renderOptions($prompt),
                 )
-                ->hint($prompt->hint)
                 ->spaceForDropdown($prompt)
                 ->newLine(), // Space for errors
         };
@@ -73,6 +72,8 @@ class SuggestPromptRenderer extends Renderer
      */
     protected function spaceForDropdown(SuggestPrompt $prompt): self
     {
+        $this->hint($prompt->hint);
+
         if ($prompt->value() === '' && $prompt->highlighted === null) {
             $this->newLine(min(
                 count($prompt->matches()),
