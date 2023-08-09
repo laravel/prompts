@@ -37,6 +37,6 @@
 
 **Full Changelog**: https://github.com/laravel/prompts/compare/v0.1.0...v0.1.1
 
-## v1.0.0 (2023-07-26)
+## v0.1.0 (2023-07-26)
 
 Initial release.
