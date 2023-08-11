@@ -43,8 +43,11 @@ class PasswordPromptRenderer extends Renderer
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
                     $prompt->maskedWithCursor($maxWidth),
                 )
-                ->hint($prompt->hint)
-                ->newLine(), // Space for errors
+                ->when(
+                    $prompt->hint,
+                    fn () => $this->hint($prompt->hint),
+                    fn () => $this->newLine() // Space for errors
+                ),
         };
     }
 }

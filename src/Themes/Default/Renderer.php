@@ -76,6 +76,22 @@ abstract class Renderer
     }
 
     /**
+     * Apply the callback if the given "value" is truthy.
+     *
+     * @return $this
+     */
+    protected function when(mixed $value, callable $callback, callable $default = null): self
+    {
+        if ($value) {
+            $callback($this);
+        } elseif ($default) {
+            $default($this);
+        }
+
+        return $this;
+    }
+
+    /**
      * Render the output with a blank line above and below.
      */
     public function __toString()

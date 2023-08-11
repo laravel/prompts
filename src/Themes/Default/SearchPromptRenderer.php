@@ -53,8 +53,12 @@ class SearchPromptRenderer extends Renderer
                     $prompt->valueWithCursor($maxWidth),
                     $this->renderOptions($prompt),
                 )
+                ->when(
+                    $prompt->hint,
+                    fn () => $this->hint($prompt->hint),
+                    fn () => $this->newLine() // Space for errors
+                )
                 ->spaceForDropdown($prompt)
-                ->newLine(), // Space for errors
         };
     }
 
@@ -78,8 +82,6 @@ class SearchPromptRenderer extends Renderer
         if ($prompt->searchValue() !== '') {
             return $this;
         }
-
-        $this->hint($prompt->hint);
 
         $this->newLine(max(
             0,
