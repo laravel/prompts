@@ -20,7 +20,7 @@ class SelectPrompt extends Prompt
     public array $options;
 
     /**
-     * The view state for scroll the select list.
+     * The view state for scrolling the options.
      */
     public ViewState $view;
 

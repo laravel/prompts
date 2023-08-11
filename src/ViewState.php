@@ -5,7 +5,7 @@ namespace Laravel\Prompts;
 class ViewState
 {
     /**
-     * view items list
+     * View items list.
      *
      * @var array<int, int>
      */

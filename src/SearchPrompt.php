@@ -15,7 +15,7 @@ class SearchPrompt extends Prompt
     public ?int $highlighted = null;
 
     /**
-     * The view state for scroll the select list.
+     * The view state for scrolling the matches.
      */
     public ViewState $view;
 
@@ -39,9 +39,9 @@ class SearchPrompt extends Prompt
         public ?Closure $validate = null,
         public string $hint = ''
     ) {
-        $this->trackTypedValue(submit: false);
         $this->view = new ViewState(min($this->scroll, $this->terminal()->lines() - 7), 0);
 
+        $this->trackTypedValue(submit: false);
 
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB => $this->highlightPrevious(),

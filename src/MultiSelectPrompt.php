@@ -27,7 +27,7 @@ class MultiSelectPrompt extends Prompt
     public array $default;
 
     /**
-     * The view state for scroll the select list.
+     * The view state for scrolling the options.
      */
     public ViewState $view;
 
