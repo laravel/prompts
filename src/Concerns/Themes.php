@@ -4,6 +4,7 @@ namespace Laravel\Prompts\Concerns;
 
 use InvalidArgumentException;
 use Laravel\Prompts\ConfirmPrompt;
+use Laravel\Prompts\MultiSearchPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Note;
 use Laravel\Prompts\PasswordPrompt;
@@ -13,6 +14,7 @@ use Laravel\Prompts\Spinner;
 use Laravel\Prompts\SuggestPrompt;
 use Laravel\Prompts\TextPrompt;
 use Laravel\Prompts\Themes\Default\ConfirmPromptRenderer;
+use Laravel\Prompts\Themes\Default\MultiSearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\MultiSelectPromptRenderer;
 use Laravel\Prompts\Themes\Default\NoteRenderer;
 use Laravel\Prompts\Themes\Default\PasswordPromptRenderer;
@@ -42,6 +44,7 @@ trait Themes
             MultiSelectPrompt::class => MultiSelectPromptRenderer::class,
             ConfirmPrompt::class => ConfirmPromptRenderer::class,
             SearchPrompt::class => SearchPromptRenderer::class,
+            MultiSearchPrompt::class => MultiSearchPromptRenderer::class,
             SuggestPrompt::class => SuggestPromptRenderer::class,
             Spinner::class => SpinnerRenderer::class,
             Note::class => NoteRenderer::class,

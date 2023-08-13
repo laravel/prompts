@@ -72,6 +72,17 @@ function search(string $label, Closure $options, string $placeholder = '', int $
 }
 
 /**
+ * Allow the user to search for multiple option.
+ *
+ * @param  Closure(string): array<int|string, string>  $options
+ * @return array<int|string>
+ */
+function multisearch(string $label, Closure $options, bool $returnKeys = true, array|Collection $default = [], string $placeholder = '', int $scroll = 5, bool|string $required = false, Closure $validate = null, string $hint = 'Use the space bar to select options.'): array
+{
+    return (new MultiSearchPrompt($label, $options, $returnKeys, $default, $placeholder, $scroll, $required, $validate, $hint))->prompt();
+}
+
+/**
  * Render a spinner while the given callback is executing.
  *
  * @template TReturn of mixed

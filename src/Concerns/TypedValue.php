@@ -19,7 +19,7 @@ trait TypedValue
     /**
      * Track the value as the user types.
      */
-    protected function trackTypedValue(string $default = '', bool $submit = true): void
+    protected function trackTypedValue(string $default = '', bool $submit = true, ?callable $allowKey = null): void
     {
         $this->typedValue = $default;
 
@@ -27,8 +27,12 @@ trait TypedValue
             $this->cursorPosition = mb_strlen($this->typedValue);
         }
 
-        $this->on('key', function ($key) use ($submit) {
+        $this->on('key', function ($key) use ($submit, $allowKey) {
             if ($key[0] === "\e") {
+                if ($allowKey !== null && !($allowKey)($key)) {
+                    return;
+                }
+
                 match ($key) {
                     Key::LEFT, Key::LEFT_ARROW => $this->cursorPosition = max(0, $this->cursorPosition - 1),
                     Key::RIGHT, Key::RIGHT_ARROW => $this->cursorPosition = min(mb_strlen($this->typedValue), $this->cursorPosition + 1),
@@ -41,6 +45,10 @@ trait TypedValue
 
             // Keys may be buffered.
             foreach (mb_str_split($key) as $key) {
+                if ($allowKey !== null && !($allowKey)($key)) {
+                    return;
+                }
+
                 if ($key === Key::ENTER && $submit) {
                     $this->submit();
 
