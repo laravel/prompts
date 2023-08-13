@@ -34,7 +34,7 @@ class MultiSelectPrompt extends Prompt
     protected array $values = [];
 
     /**
-     * Create a new SelectPrompt instance.
+     * Create a new MultiSelectPrompt instance.
      *
      * @param  array<int|string, string>|Collection<int|string, string>  $options
      * @param  array<int|string>|Collection<int, int|string>  $default

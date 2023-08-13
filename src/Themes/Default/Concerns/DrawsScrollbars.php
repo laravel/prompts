@@ -10,7 +10,7 @@ trait DrawsScrollbars
      * Scroll the given lines.
      *
      * @param  \Illuminate\Support\Collection<int, string>  $lines
-     * @return  \Illuminate\Support\Collection<int, string>
+     * @return \Illuminate\Support\Collection<int, string>
      */
     protected function scroll(Collection $lines, ?int $focused, int $height, int $width, string $color = 'cyan'): Collection
     {
@@ -32,7 +32,7 @@ trait DrawsScrollbars
      * Get a scrolled version of the items.
      *
      * @param  \Illuminate\Support\Collection<int, string>  $lines
-     * @return  \Illuminate\Support\Collection<int, string>
+     * @return \Illuminate\Support\Collection<int, string>
      */
     protected function visible(Collection $lines, ?int $focused, int $height): Collection
     {
