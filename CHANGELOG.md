@@ -1,6 +1,12 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.4...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.5...main)
+
+## [v0.1.5](https://github.com/laravel/prompts/compare/v0.1.4...v0.1.5) - 2023-08-15
+
+- Correct initial release version in changelog by [@ivacuum](https://github.com/ivacuum) in https://github.com/laravel/prompts/pull/46
+- Draw Boxes With All Supported Colors by [@devajmeireles](https://github.com/devajmeireles) in https://github.com/laravel/prompts/pull/47
+- Prompt `hint` by [@devajmeireles](https://github.com/devajmeireles) in https://github.com/laravel/prompts/pull/44
 
 ## [v0.1.4](https://github.com/laravel/prompts/compare/v0.1.3...v0.1.4) - 2023-08-07
 
