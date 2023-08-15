@@ -18,6 +18,7 @@ $permissions = multiselect(
         empty($values) => 'Please select at least one permission.',
         default => null,
     },
+    hint: 'The permissions will determine what the user can do.',
 );
 
 var_dump($permissions);

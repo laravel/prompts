@@ -10,6 +10,8 @@ trait DrawsBoxes
 
     /**
      * Draw a box.
+     *
+     * @return $this
      */
     protected function box(
         string $title,

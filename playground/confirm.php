@@ -9,7 +9,8 @@ $confirmed = confirm(
     validate: fn ($value) => match ($value) {
         false => 'You must install dependencies.',
         default => null,
-    }
+    },
+    hint: 'Dependencies are required to run the application.',
 );
 
 var_dump($confirmed);

@@ -12,6 +12,7 @@ $email = text(
         ! filter_var($value, FILTER_VALIDATE_EMAIL) => 'Please enter a valid email address.',
         default => null,
     },
+    hint: 'We will never share your email address with anyone else.',
 );
 
 var_dump($email);

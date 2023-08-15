@@ -8,17 +8,17 @@ use Illuminate\Support\Collection;
 /**
  * Prompt the user for text input.
  */
-function text(string $label, string $placeholder = '', string $default = '', bool|string $required = false, Closure $validate = null): string
+function text(string $label, string $placeholder = '', string $default = '', bool|string $required = false, Closure $validate = null, string $hint = ''): string
 {
-    return (new TextPrompt($label, $placeholder, $default, $required, $validate))->prompt();
+    return (new TextPrompt($label, $placeholder, $default, $required, $validate, $hint))->prompt();
 }
 
 /**
  * Prompt the user for input, hiding the value.
  */
-function password(string $label, string $placeholder = '', bool|string $required = false, Closure $validate = null): string
+function password(string $label, string $placeholder = '', bool|string $required = false, Closure $validate = null, string $hint = ''): string
 {
-    return (new PasswordPrompt($label, $placeholder, $required, $validate))->prompt();
+    return (new PasswordPrompt($label, $placeholder, $required, $validate, $hint))->prompt();
 }
 
 /**
@@ -26,9 +26,9 @@ function password(string $label, string $placeholder = '', bool|string $required
  *
  * @param  array<int|string, string>|Collection<int|string, string>  $options
  */
-function select(string $label, array|Collection $options, int|string $default = null, int $scroll = 5, Closure $validate = null): int|string
+function select(string $label, array|Collection $options, int|string $default = null, int $scroll = 5, Closure $validate = null, string $hint = ''): int|string
 {
-    return (new SelectPrompt($label, $options, $default, $scroll, $validate))->prompt();
+    return (new SelectPrompt($label, $options, $default, $scroll, $validate, $hint))->prompt();
 }
 
 /**
@@ -38,17 +38,17 @@ function select(string $label, array|Collection $options, int|string $default = 
  * @param  array<int|string>|Collection<int, int|string>  $default
  * @return array<int|string>
  */
-function multiselect(string $label, array|Collection $options, array|Collection $default = [], int $scroll = 5, bool|string $required = false, Closure $validate = null): array
+function multiselect(string $label, array|Collection $options, array|Collection $default = [], int $scroll = 5, bool|string $required = false, Closure $validate = null, string $hint = ''): array
 {
-    return (new MultiSelectPrompt($label, $options, $default, $scroll, $required, $validate))->prompt();
+    return (new MultiSelectPrompt($label, $options, $default, $scroll, $required, $validate, $hint))->prompt();
 }
 
 /**
  * Prompt the user to confirm an action.
  */
-function confirm(string $label, bool $default = true, string $yes = 'Yes', string $no = 'No', bool|string $required = false, Closure $validate = null): bool
+function confirm(string $label, bool $default = true, string $yes = 'Yes', string $no = 'No', bool|string $required = false, Closure $validate = null, string $hint = ''): bool
 {
-    return (new ConfirmPrompt($label, $default, $yes, $no, $required, $validate))->prompt();
+    return (new ConfirmPrompt($label, $default, $yes, $no, $required, $validate, $hint))->prompt();
 }
 
 /**
@@ -56,9 +56,9 @@ function confirm(string $label, bool $default = true, string $yes = 'Yes', strin
  *
  * @param  array<string>|Collection<int, string>|Closure(string): array<string>  $options
  */
-function suggest(string $label, array|Collection|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, bool|string $required = false, Closure $validate = null): string
+function suggest(string $label, array|Collection|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, bool|string $required = false, Closure $validate = null, string $hint = ''): string
 {
-    return (new SuggestPrompt($label, $options, $placeholder, $default, $scroll, $required, $validate))->prompt();
+    return (new SuggestPrompt($label, $options, $placeholder, $default, $scroll, $required, $validate, $hint))->prompt();
 }
 
 /**
@@ -66,9 +66,9 @@ function suggest(string $label, array|Collection|Closure $options, string $place
  *
  * @param  Closure(string): array<int|string, string>  $options
  */
-function search(string $label, Closure $options, string $placeholder = '', int $scroll = 5, Closure $validate = null): int|string
+function search(string $label, Closure $options, string $placeholder = '', int $scroll = 5, Closure $validate = null, string $hint = ''): int|string
 {
-    return (new SearchPrompt($label, $options, $placeholder, $scroll, $validate))->prompt();
+    return (new SearchPrompt($label, $options, $placeholder, $scroll, $validate, $hint))->prompt();
 }
 
 /**

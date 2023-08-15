@@ -12,6 +12,7 @@ $password = password(
         strlen($value) < 8 => 'Password should have at least 8 characters.',
         default => null,
     },
+    hint: 'Your password will be encrypted and stored securely.',
 );
 
 var_dump($password);

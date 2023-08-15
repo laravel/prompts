@@ -46,8 +46,12 @@ class SuggestPromptRenderer extends Renderer
                     $this->valueWithCursorAndArrow($prompt, $maxWidth),
                     $this->renderOptions($prompt),
                 )
-                ->spaceForDropdown($prompt)
-                ->newLine(), // Space for errors
+                ->when(
+                    $prompt->hint,
+                    fn () => $this->hint($prompt->hint),
+                    fn () => $this->newLine() // Space for errors
+                )
+                ->spaceForDropdown($prompt),
         };
     }
 

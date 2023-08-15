@@ -18,7 +18,8 @@ $role = select(
     validate: fn ($value) => match ($value) {
         'owner' => 'The owner role is already assigned.',
         default => null
-    }
+    },
+    hint: 'The role will determine what the user can do.',
 );
 
 var_dump($role);
