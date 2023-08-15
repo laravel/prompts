@@ -20,7 +20,7 @@ class SelectPromptRenderer extends Renderer
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->truncate($this->format($prompt->label()), $maxWidth),
+                    $this->truncate($prompt->label(), $maxWidth),
                 ),
 
             'cancel' => $this
@@ -60,7 +60,7 @@ class SelectPromptRenderer extends Renderer
         return $this->scroll(
             collect($prompt->options)
                 ->values()
-                ->map(fn ($label) => $this->truncate($this->format($label), $prompt->terminal()->cols() - 12))
+                ->map(fn ($label) => $this->truncate($label, $prompt->terminal()->cols() - 12))
                 ->map(function ($label, $i) use ($prompt) {
                     if ($prompt->state === 'cancel') {
                         return $this->dim($prompt->highlighted === $i

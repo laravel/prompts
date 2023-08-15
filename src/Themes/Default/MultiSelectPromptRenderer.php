@@ -58,7 +58,7 @@ class MultiSelectPromptRenderer extends Renderer
         return $this->scroll(
             collect($prompt->options)
                 ->values()
-                ->map(fn ($label) => $this->truncate($this->format($label), $prompt->terminal()->cols() - 12))
+                ->map(fn ($label) => $this->truncate($label, $prompt->terminal()->cols() - 12))
                 ->map(function ($label, $index) use ($prompt) {
                     $active = $index === $prompt->highlighted;
                     if (array_is_list($prompt->options)) {
@@ -101,7 +101,7 @@ class MultiSelectPromptRenderer extends Renderer
         }
 
         return implode("\n", array_map(
-            fn ($label) => $this->truncate($this->format($label), $prompt->terminal()->cols() - 6),
+            fn ($label) => $this->truncate($label, $prompt->terminal()->cols() - 6),
             $prompt->labels()
         ));
     }
