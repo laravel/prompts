@@ -82,6 +82,6 @@ trait DrawsBoxes
     {
         $text = preg_replace("/\e[^m]*m/", '', $text);
 
-        return preg_replace("/<bg=[a-z]+>(.*?)<\/>/i", '$1', $text);
+        return preg_replace("/<(?:(?:[fb]g|options)=[a-z,;]+)+>(.*?)<\/>/i", '$1', $text);
     }
 }
