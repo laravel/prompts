@@ -19,6 +19,10 @@ it('accepts an array of labels', function () {
     );
 
     expect($result)->toBe(['Green', 'Blue']);
+
+    Prompt::assertStrippedOutputDoesntContain('│ Red');
+    Prompt::assertStrippedOutputContains('│ Green');
+    Prompt::assertStrippedOutputContains('│ Blue');
 });
 
 it('accepts an array of keys and labels', function () {
