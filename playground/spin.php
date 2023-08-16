@@ -17,4 +17,29 @@ echo PHP_EOL;
 
 var_dump($result);
 
-echo str_repeat(PHP_EOL, 6);
+spin(
+    function () {
+        sleep(2);
+    },
+    'Starting process...',
+)->then(
+    function () {
+        sleep(2);
+    },
+    'Installing dependencies...',
+)->then(
+    function () {
+        sleep(2);
+    },
+    'Preparing environment...',
+)->then(
+    function () {
+        sleep(2);
+    },
+    'Finishing up...',
+)->then(
+    function () {
+        sleep(1);
+    },
+    'Done!',
+);

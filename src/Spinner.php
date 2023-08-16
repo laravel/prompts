@@ -33,7 +33,7 @@ class Spinner extends Prompt
     /**
      * Render the spinner and execute the callback.
      *
-     * @template TReturn of mixed
+     * @template TReturn of mixed|self|Spinner
      *
      * @param  \Closure(): TReturn  $callback
      * @return TReturn
@@ -78,6 +78,10 @@ class Spinner extends Prompt
                 pcntl_async_signals($originalAsync);
                 pcntl_signal(SIGINT, SIG_DFL);
 
+                if (! $result) {
+                    return $this; // @phpstan-ignore-line
+                }
+
                 return $result;
             }
         } catch (\Throwable $e) {
@@ -87,6 +91,23 @@ class Spinner extends Prompt
 
             throw $e;
         }
+    }
+
+    /**
+     * Render spinners sequentially executing the callback.
+     *
+     * @template TReturn of mixed|self|Spinner
+     *
+     * @param \Closure(): TReturn $callback
+     * @param string $message
+     * @return Spinner
+     * @throws \Throwable
+     */
+    public function then(Closure $callback, string $message = ''): self
+    {
+        (new self($message))->spin($callback);
+
+        return $this;
     }
 
     /**
