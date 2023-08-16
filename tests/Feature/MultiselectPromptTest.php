@@ -1,9 +1,10 @@
 <?php
 
 use Laravel\Prompts\Key;
-use function Laravel\Prompts\multiselect;
 use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Prompt;
+
+use function Laravel\Prompts\multiselect;
 
 it('accepts an array of labels', function () {
     Prompt::fake([Key::DOWN, Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);

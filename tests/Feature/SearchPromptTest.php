@@ -2,8 +2,9 @@
 
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
-use function Laravel\Prompts\search;
 use Laravel\Prompts\SearchPrompt;
+
+use function Laravel\Prompts\search;
 
 it('accepts a callback', function () {
     Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);

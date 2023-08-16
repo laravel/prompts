@@ -1,9 +1,10 @@
 <?php
 
 use Laravel\Prompts\Key;
-use function Laravel\Prompts\password;
 use Laravel\Prompts\PasswordPrompt;
 use Laravel\Prompts\Prompt;
+
+use function Laravel\Prompts\password;
 
 it('returns the input', function () {
     Prompt::fake(['p', 'a', 's', 's', Key::ENTER]);

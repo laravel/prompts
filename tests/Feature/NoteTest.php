@@ -1,7 +1,8 @@
 <?php
 
-use function Laravel\Prompts\note;
 use Laravel\Prompts\Prompt;
+
+use function Laravel\Prompts\note;
 
 it('renders a note', function () {
     Prompt::fake();

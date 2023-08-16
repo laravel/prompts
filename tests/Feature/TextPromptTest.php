@@ -2,8 +2,9 @@
 
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
-use function Laravel\Prompts\text;
 use Laravel\Prompts\TextPrompt;
+
+use function Laravel\Prompts\text;
 
 it('returns the input', function () {
     Prompt::fake(['J', 'e', 's', 's', Key::ENTER]);

@@ -2,8 +2,9 @@
 
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
-use function Laravel\Prompts\select;
 use Laravel\Prompts\SelectPrompt;
+
+use function Laravel\Prompts\select;
 
 it('accepts an array of labels', function () {
     Prompt::fake([Key::DOWN, Key::ENTER]);

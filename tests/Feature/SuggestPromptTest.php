@@ -2,8 +2,9 @@
 
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
-use function Laravel\Prompts\suggest;
 use Laravel\Prompts\SuggestPrompt;
+
+use function Laravel\Prompts\suggest;
 
 it('accepts any input', function () {
     Prompt::fake(['B', 'l', 'a', 'c', 'k', Key::ENTER]);
