@@ -39,10 +39,50 @@ trait FakesInputOutput
      */
     public static function assertOutputContains(string $string): void
     {
+        Assert::assertStringContainsString($string, static::content());
+    }
+
+    /**
+     * Assert that the output doesn't contain the given string.
+     */
+    public static function assertOutputDoesntContain(string $string): void
+    {
+        Assert::assertStringNotContainsString($string, static::content());
+    }
+
+    /**
+     * Assert that the stripped output contains the given string.
+     */
+    public static function assertStrippedOutputContains(string $string): void
+    {
+        Assert::assertStringContainsString($string, static::strippedContent());
+    }
+
+    /**
+     * Assert that the stripped output doesn't contain the given string.
+     */
+    public static function assertStrippedOutputDoesntContain(string $string): void
+    {
+        Assert::assertStringNotContainsString($string, static::strippedContent());
+    }
+
+    /**
+     * Get the buffered console output.
+     */
+    public static function content(): string
+    {
         if (! static::output() instanceof BufferedConsoleOutput) {
-            throw new RuntimeException('Prompt must be faked before asserting output.');
+            throw new RuntimeException('Prompt must be faked before accessing content.');
         }
 
-        Assert::assertStringContainsString($string, static::output()->content());
+        return static::output()->content();
+    }
+
+    /**
+     * Get the buffered console output, stripped of escape sequences.
+     */
+    public static function strippedContent(): string
+    {
+        return preg_replace("/\e\[[0-9;?]*[A-Za-z]/", '', static::content());
     }
 }
