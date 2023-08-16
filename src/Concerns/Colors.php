@@ -203,18 +203,4 @@ trait Colors
     {
         return "\e[90m{$text}\e[39m";
     }
-
-    /**
-     * Format a string using Symfony-style tags.
-     */
-    public function format(string $text): string
-    {
-        return preg_replace_callback(
-            '/<fg=(\w+)>(.*?)<\/>/',
-            fn ($matches) => method_exists($this, $matches[1])
-                ? $this->{$matches[1]}($matches[2])
-                : $matches[2],
-            $text,
-        );
-    }
 }
