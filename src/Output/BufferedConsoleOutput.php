@@ -39,4 +39,12 @@ class BufferedConsoleOutput extends ConsoleOutput
             $this->buffer .= \PHP_EOL;
         }
     }
+
+    /**
+     * Write output directly, bypassing newline capture.
+     */
+    public function writeDirectly(string $message): void
+    {
+        $this->doWrite($message, false);
+    }
 }
