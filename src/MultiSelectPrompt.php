@@ -13,6 +13,11 @@ class MultiSelectPrompt extends Prompt
     public int $highlighted = 0;
 
     /**
+     * The index of the first visible option.
+     */
+    public int $firstVisible = 0;
+
+    /**
      * The options for the multi-select prompt.
      *
      * @var array<int|string, string>
@@ -25,11 +30,6 @@ class MultiSelectPrompt extends Prompt
      * @var array<int|string>
      */
     public array $default;
-
-    /**
-     * The view state for scrolling the options.
-     */
-    public ViewState $view;
 
     /**
      * The selected values.
@@ -56,7 +56,6 @@ class MultiSelectPrompt extends Prompt
         $this->options = $options instanceof Collection ? $options->all() : $options;
         $this->default = $default instanceof Collection ? $default->all() : $default;
         $this->values = $this->default;
-        $this->view = new ViewState(min($this->scroll, $this->terminal()->lines() - 5), count($this->options));
 
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::LEFT, Key::LEFT_ARROW, Key::SHIFT_TAB, 'k', 'h' => $this->highlightPrevious(),
@@ -92,6 +91,16 @@ class MultiSelectPrompt extends Prompt
     }
 
     /**
+     * The currently visible options.
+     *
+     * @return array<int|string, string>
+     */
+    public function visible(): array
+    {
+        return array_slice($this->options, $this->firstVisible, $this->scroll, preserve_keys: true);
+    }
+
+    /**
      * Check whether the value is currently highlighted.
      */
     public function isHighlighted(string $value): bool
@@ -117,6 +126,12 @@ class MultiSelectPrompt extends Prompt
     protected function highlightPrevious(): void
     {
         $this->highlighted = $this->highlighted === 0 ? count($this->options) - 1 : $this->highlighted - 1;
+
+        if ($this->highlighted < $this->firstVisible) {
+            $this->firstVisible--;
+        } elseif ($this->highlighted === count($this->options) - 1) {
+            $this->firstVisible = count($this->options) - min($this->scroll, count($this->options));
+        }
     }
 
     /**
@@ -125,6 +140,12 @@ class MultiSelectPrompt extends Prompt
     protected function highlightNext(): void
     {
         $this->highlighted = $this->highlighted === count($this->options) - 1 ? 0 : $this->highlighted + 1;
+
+        if ($this->highlighted > $this->firstVisible + $this->scroll - 1) {
+            $this->firstVisible++;
+        } elseif ($this->highlighted === 0) {
+            $this->firstVisible = 0;
+        }
     }
 
     /**

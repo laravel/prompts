@@ -3,84 +3,53 @@
 namespace Laravel\Prompts\Themes\Default\Concerns;
 
 use Illuminate\Support\Collection;
-use Laravel\Prompts\ViewState;
 
 trait DrawsScrollbars
 {
     /**
-     * Scroll the given lines.
+     * Render a scrollbar beside the visible items.
      *
-     * @param  \Illuminate\Support\Collection<int, string>  $lines
-     * @param  \Laravel\Prompts\ViewState  $view
+     * @param  \Illuminate\Support\Collection<int, string>  $visible
      * @return \Illuminate\Support\Collection<int, string>
      */
-    protected function scroll(Collection $lines, ?int $focused, ViewState $view, int $height, int $width, string $color = 'cyan'): Collection
+    protected function scrollbar(Collection $visible, int $firstVisible, int $height, int $total, int $width, string $color = 'cyan'): Collection
     {
-        if ($lines->count() <= $height) {
-            return $lines;
+        if ($height >= $total) {
+            return $visible;
         }
 
-        $visible = $this->visible($lines, $focused, $view, $height);
+        $scrollPosition = $this->scrollPosition($firstVisible, $height, $total);
 
         return $visible
+            ->values()
             ->map(fn ($line) => $this->pad($line, $width))
-            ->map(fn ($line, $index) => match (true) {
-                $index === $this->scrollPosition($visible, $view, $height, $lines->count()) => preg_replace('/.$/', $this->{$color}('┃'), $line),
+            ->map(fn ($line, $index) => match ($index) {
+                $scrollPosition => preg_replace('/.$/', $this->{$color}('┃'), $line),
                 default => preg_replace('/.$/', $this->gray('│'), $line),
             });
     }
 
     /**
-     * Get a scrolled version of the items and update the view state.
-     *
-     * @param  \Illuminate\Support\Collection<int, string>  $lines
-     * @param  \Laravel\Prompts\ViewState  $view
-     * @return \Illuminate\Support\Collection<int, string>
+     * Return the position where the scrollbar "handle" should be rendered.
      */
-    protected function visible(Collection $lines, ?int $focused, ViewState $view, int $height): Collection
+    protected function scrollPosition(int $firstVisible, int $height, int $total): int
     {
-        if ($lines->count() <= $height) {
-            return $lines;
-        }
-
-        if ($focused === null) {
-            $view->resetStart();
-            return $lines->slice(0, $height);
-        }
-
-        if ($focused < $view->first()) {
-            $view->update($focused);
-            return $lines->slice($view->first(), count($view->items));
-        }
-
-        if ($focused > $view->last()) {
-            $view->update($focused - $height + 1);
-            return $lines->slice($view->first(), count($view->items));
-        }
-
-        return $lines->slice($view->first(), count($view->items));
-    }
-
-    /**
-     * Scroll the given lines.
-     *
-     * @param  \Illuminate\Support\Collection<int, string>  $visible
-     */
-    protected function scrollPosition(Collection $visible, ViewState $view, int $height, int $total): int
-    {
-        if ($view->last() < $height) {
+        if ($firstVisible === 0) {
             return 0;
         }
 
-        if ($view->last() === $total - 1) {
-            return $total - 1;
+        $maxPosition = $total - $height;
+
+        if ($firstVisible === $maxPosition) {
+            return $height - 1;
         }
 
-        $percent = ($view->last() + 1 - $height) / ($total - $height);
+        if ($height <= 2) {
+            return -1;
+        }
 
-        $keys = $visible->slice(1, -1)->keys();
-        $position = (int) ceil($percent * count($keys) - 1);
+        $percent = $firstVisible / $maxPosition;
 
-        return $keys[$position] ?? 0;
+        return (int) round($percent * ($height - 3)) + 1;
     }
 }

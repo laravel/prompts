@@ -16,16 +16,16 @@ class SuggestPrompt extends Prompt
     public ?int $highlighted = null;
 
     /**
+     * The index of the first visible option.
+     */
+    public int $firstVisible = 0;
+
+    /**
      * The options for the suggest prompt.
      *
      * @var array<string>|Closure(string): array<string>
      */
     public array|Closure $options;
-
-    /**
-     * The view state for scrolling the options.
-     */
-    public ViewState $view;
 
     /**
      * The cache of matches.
@@ -50,7 +50,6 @@ class SuggestPrompt extends Prompt
         public string $hint = ''
     ) {
         $this->options = $options instanceof Collection ? $options->all() : $options;
-        $this->view = new ViewState(min($this->scroll, $this->terminal()->lines() - 7), 0);
 
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB => $this->highlightPrevious(),
@@ -105,6 +104,16 @@ class SuggestPrompt extends Prompt
     }
 
     /**
+     * The current visible matches.
+     *
+     * @return array<string>
+     */
+    public function visible(): array
+    {
+        return array_slice($this->matches(), $this->firstVisible, $this->scroll, preserve_keys: true);
+    }
+
+    /**
      * Highlight the previous entry, or wrap around to the last entry.
      */
     protected function highlightPrevious(): void
@@ -117,6 +126,12 @@ class SuggestPrompt extends Prompt
             $this->highlighted = null;
         } else {
             $this->highlighted = $this->highlighted - 1;
+        }
+
+        if ($this->highlighted < $this->firstVisible) {
+            $this->firstVisible--;
+        } elseif ($this->highlighted === count($this->matches()) - 1) {
+            $this->firstVisible = count($this->matches()) - min($this->scroll, count($this->matches()));
         }
     }
 
@@ -131,6 +146,12 @@ class SuggestPrompt extends Prompt
             $this->highlighted = 0;
         } else {
             $this->highlighted = $this->highlighted === count($this->matches()) - 1 ? null : $this->highlighted + 1;
+        }
+
+        if ($this->highlighted > $this->firstVisible + $this->scroll - 1) {
+            $this->firstVisible++;
+        } elseif ($this->highlighted === 0 || $this->highlighted === null) {
+            $this->firstVisible = 0;
         }
     }
 
