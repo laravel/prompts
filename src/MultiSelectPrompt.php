@@ -13,6 +13,11 @@ class MultiSelectPrompt extends Prompt
     public int $highlighted = 0;
 
     /**
+     * The index of the first visible option.
+     */
+    public int $firstVisible = 0;
+
+    /**
      * The options for the multi-select prompt.
      *
      * @var array<int|string, string>
@@ -86,6 +91,16 @@ class MultiSelectPrompt extends Prompt
     }
 
     /**
+     * The currently visible options.
+     *
+     * @return array<int|string, string>
+     */
+    public function visible(): array
+    {
+        return array_slice($this->options, $this->firstVisible, $this->scroll, preserve_keys: true);
+    }
+
+    /**
      * Check whether the value is currently highlighted.
      */
     public function isHighlighted(string $value): bool
@@ -111,6 +126,12 @@ class MultiSelectPrompt extends Prompt
     protected function highlightPrevious(): void
     {
         $this->highlighted = $this->highlighted === 0 ? count($this->options) - 1 : $this->highlighted - 1;
+
+        if ($this->highlighted < $this->firstVisible) {
+            $this->firstVisible--;
+        } elseif ($this->highlighted === count($this->options) - 1) {
+            $this->firstVisible = count($this->options) - min($this->scroll, count($this->options));
+        }
     }
 
     /**
@@ -119,6 +140,12 @@ class MultiSelectPrompt extends Prompt
     protected function highlightNext(): void
     {
         $this->highlighted = $this->highlighted === count($this->options) - 1 ? 0 : $this->highlighted + 1;
+
+        if ($this->highlighted > $this->firstVisible + $this->scroll - 1) {
+            $this->firstVisible++;
+        } elseif ($this->highlighted === 0) {
+            $this->firstVisible = 0;
+        }
     }
 
     /**

@@ -14,6 +14,7 @@ class SelectPromptRenderer extends Renderer
      */
     public function __invoke(SelectPrompt $prompt): string
     {
+        $prompt->scroll = min($prompt->scroll, $prompt->terminal()->lines() - 5);
         $maxWidth = $prompt->terminal()->cols() - 6;
 
         return match ($prompt->state) {
@@ -57,24 +58,27 @@ class SelectPromptRenderer extends Renderer
      */
     protected function renderOptions(SelectPrompt $prompt): string
     {
-        return $this->scroll(
-            collect($prompt->options)
-                ->values()
+        return $this->scrollbar(
+            collect($prompt->visible())
                 ->map(fn ($label) => $this->truncate($label, $prompt->terminal()->cols() - 12))
-                ->map(function ($label, $i) use ($prompt) {
+                ->map(function ($label, $key) use ($prompt) {
+                    $index = array_search($key, array_keys($prompt->options));
+
                     if ($prompt->state === 'cancel') {
-                        return $this->dim($prompt->highlighted === $i
+                        return $this->dim($prompt->highlighted === $index
                             ? "› ● {$this->strikethrough($label)}  "
                             : "  ○ {$this->strikethrough($label)}  "
                         );
                     }
 
-                    return $prompt->highlighted === $i
+                    return $prompt->highlighted === $index
                         ? "{$this->cyan('›')} {$this->cyan('●')} {$label}  "
                         : "  {$this->dim('○')} {$this->dim($label)}  ";
-                }),
-            $prompt->highlighted,
-            min($prompt->scroll, $prompt->terminal()->lines() - 5),
+                })
+                ->values(),
+            $prompt->firstVisible,
+            $prompt->scroll,
+            count($prompt->options),
             min($this->longest($prompt->options, padding: 6), $prompt->terminal()->cols() - 6),
             $prompt->state === 'cancel' ? 'dim' : 'cyan'
         )->implode(PHP_EOL);
