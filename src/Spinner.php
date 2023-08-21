@@ -123,4 +123,12 @@ class Spinner extends Prompt
     {
         return true;
     }
+
+    /**
+     * Configure the default fallback behavior.
+     */
+    protected function configureDefaultFallback(): void
+    {
+        //
+    }
 }

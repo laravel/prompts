@@ -4,6 +4,8 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class MultiSelectPrompt extends Prompt
 {
@@ -166,5 +168,45 @@ class MultiSelectPrompt extends Prompt
         } else {
             $this->values[] = $value;
         }
+    }
+
+    /**
+     * Configure the default fallback behavior.
+     */
+    protected function configureDefaultFallback(): void
+    {
+        self::fallbackUsing(function (self $prompt) {
+            if ($prompt->default !== []) {
+                return $this->retryUntilValid(
+                    fn () => (new SymfonyStyle(new ArrayInput([]), static::output()))->choice($prompt->label, $prompt->options, implode(',', $prompt->default), true),
+                    $prompt->required,
+                    $prompt->validate,
+                    fn ($message) => static::output()->writeln("<error>{$message}</error>"),
+                );
+            }
+
+            return $this->retryUntilValid(
+                function () use ($prompt) {
+                    /** @var array<int, int|string> * */
+                    $selected = (new SymfonyStyle(new ArrayInput([]), static::output()))->choice(
+                        $prompt->label,
+                        array_is_list($prompt->options)
+                            ? ['None', ...$prompt->options]
+                            : ['none' => 'None', ...$prompt->options],
+                        'None',
+                        true
+                    );
+
+                    return collect($selected)
+                        ->reject(array_is_list($prompt->options) ? 'None' : 'none')
+                        ->unique()
+                        ->values()
+                        ->all();
+                },
+                $prompt->required,
+                $prompt->validate,
+                fn ($message) => static::output()->writeln("<error>{$message}</error>"),
+            );
+        });
     }
 }

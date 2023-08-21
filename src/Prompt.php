@@ -4,7 +4,6 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Laravel\Prompts\Output\ConsoleOutput;
-use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -75,11 +74,13 @@ abstract class Prompt
     {
         $this->capturePreviousNewLines();
 
+        if (! static::hasFallback()) {
+            $this->configureDefaultFallback();
+        }
+
         if (static::shouldFallback()) {
             return $this->fallback();
         }
-
-        $this->checkEnvironment();
 
         try {
             static::terminal()->setTty('-icanon -isig -echo');
@@ -324,16 +325,6 @@ abstract class Prompt
         if (is_string($error) && strlen($error) > 0) {
             $this->state = 'error';
             $this->error = $error;
-        }
-    }
-
-    /**
-     * Check whether the environment can support the prompt.
-     */
-    private function checkEnvironment(): void
-    {
-        if (PHP_OS_FAMILY === 'Windows') {
-            throw new RuntimeException('Prompts is not currently supported on Windows. Please use WSL or configure a fallback.');
         }
     }
 }

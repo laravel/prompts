@@ -3,6 +3,8 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class SearchPrompt extends Prompt
 {
@@ -177,5 +179,27 @@ class SearchPrompt extends Prompt
     public function label(): ?string
     {
         return $this->matches[array_keys($this->matches)[$this->highlighted]] ?? null;
+    }
+
+    /**
+     * Configure the default fallback behavior.
+     */
+    protected function configureDefaultFallback(): void
+    {
+        self::fallbackUsing(fn (self $prompt) => $this->retryUntilValid(
+            function () use ($prompt) {
+                $query = (new SymfonyStyle(new ArrayInput([]), static::output()))->ask($prompt->label) ?? '';
+
+                $options = ($prompt->options)($query);
+                if (! is_array($options) || count($options) === 0) {
+                    return false;
+                }
+
+                return (new SymfonyStyle(new ArrayInput([]), static::output()))->choice($prompt->label, $options);
+            },
+            'Not found',
+            $prompt->validate,
+            fn ($message) => static::output()->writeln("<error>{$message}</error>"),
+        ));
     }
 }

@@ -4,6 +4,9 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class SuggestPrompt extends Prompt
 {
@@ -168,5 +171,26 @@ class SuggestPrompt extends Prompt
         }
 
         $this->typedValue = $this->matches()[$this->highlighted];
+    }
+
+    /**
+     * Configure the default fallback behavior.
+     */
+    protected function configureDefaultFallback(): void
+    {
+        self::fallbackUsing(fn (self $prompt) => $this->retryUntilValid(
+            function () use ($prompt) {
+                $question = new Question($prompt->label, $prompt->default);
+
+                is_callable($prompt->options)
+                ? $question->setAutocompleterCallback($prompt->options)
+                : $question->setAutocompleterValues($prompt->options);
+
+                return (new SymfonyStyle(new ArrayInput([]), static::output()))->askQuestion($question);
+            },
+            $prompt->required,
+            $prompt->validate,
+            fn ($message) => static::output()->writeln("<error>{$message}</error>"),
+        ));
     }
 }

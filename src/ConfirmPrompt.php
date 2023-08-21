@@ -3,6 +3,8 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ConfirmPrompt extends Prompt
 {
@@ -48,5 +50,18 @@ class ConfirmPrompt extends Prompt
     public function label(): string
     {
         return $this->confirmed ? $this->yes : $this->no;
+    }
+
+    /**
+     * Configure the default fallback behavior.
+     */
+    protected function configureDefaultFallback(): void
+    {
+        self::fallbackUsing(fn (self $prompt) => $this->retryUntilValid(
+            fn () => (new SymfonyStyle(new ArrayInput([]), static::output()))->confirm($prompt->label, $prompt->default),
+            $prompt->required,
+            $prompt->validate,
+            fn ($message) => static::output()->writeln("<error>{$message}</error>"),
+        ));
     }
 }

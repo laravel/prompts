@@ -3,6 +3,8 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class PasswordPrompt extends Prompt
 {
@@ -39,5 +41,18 @@ class PasswordPrompt extends Prompt
         }
 
         return $this->addCursor($this->masked(), $this->cursorPosition, $maxWidth);
+    }
+
+    /**
+     * Configure the default fallback behavior.
+     */
+    protected function configureDefaultFallback(): void
+    {
+        self::fallbackUsing(fn (self $prompt) => $this->retryUntilValid(
+            fn () => (new SymfonyStyle(new ArrayInput([]), static::output()))->askHidden($prompt->label) ?? '',
+            $prompt->required,
+            $prompt->validate,
+            fn ($message) => static::output()->writeln("<error>{$message}</error>"),
+        ));
     }
 }

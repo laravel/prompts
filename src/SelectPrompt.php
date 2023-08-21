@@ -4,6 +4,8 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class SelectPrompt extends Prompt
 {
@@ -137,5 +139,18 @@ class SelectPrompt extends Prompt
         } elseif ($this->highlighted === 0) {
             $this->firstVisible = 0;
         }
+    }
+
+    /**
+     * Configure the default fallback behavior.
+     */
+    protected function configureDefaultFallback(): void
+    {
+        self::fallbackUsing(fn (self $prompt) => $this->retryUntilValid(
+            fn () => (new SymfonyStyle(new ArrayInput([]), static::output()))->choice($prompt->label, $prompt->options, $prompt->default),
+            true,
+            $prompt->validate,
+            fn ($message) => static::output()->writeln("<error>{$message}</error>"),
+        ));
     }
 }
