@@ -1,6 +1,13 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.5...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.6...main)
+
+## [v0.1.6](https://github.com/laravel/prompts/compare/v0.1.5...v0.1.6) - 2023-08-18
+
+- Fix display of submitted multiselect selections by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/53
+- Add a default hint for the `multiselect` prompt by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/50
+- Remove redundant handling of Symfony-style tags by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/49
+- Add view state for scroll prompts by [@crazywhalecc](https://github.com/crazywhalecc) in https://github.com/laravel/prompts/pull/43
 
 ## [v0.1.5](https://github.com/laravel/prompts/compare/v0.1.4...v0.1.5) - 2023-08-15
 
