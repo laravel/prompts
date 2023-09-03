@@ -62,6 +62,7 @@ class SearchPrompt extends Prompt
         $this->highlighted = null;
         $this->render();
         $this->matches = null;
+        $this->firstVisible = 0;
         $this->state = 'active';
     }
 
