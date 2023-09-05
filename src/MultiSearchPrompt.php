@@ -36,7 +36,7 @@ class MultiSearchPrompt extends Prompt
 
     /**
      * The selected values.
-     * 
+     *
      * @var array<int|string, string>
      */
     public array $values = [];
@@ -44,6 +44,7 @@ class MultiSearchPrompt extends Prompt
     /**
      * Create a new MultiSearchPrompt instance.
      *
+     * @param  array<int|string, string>|Collection<int|string, string>  $default
      * @param  Closure(string): array<int|string, string>  $options
      */
     public function __construct(
@@ -59,7 +60,7 @@ class MultiSearchPrompt extends Prompt
     ) {
         $this->default = $default instanceof Collection ? $default->all() : $default;
         $this->values = $this->default;
-        
+
         $this->trackTypedValue(submit: false, allowKey: fn ($key) => $key !== Key::SPACE || $this->highlighted === null);
 
         $this->on('key', fn ($key) => match ($key) {
@@ -207,13 +208,11 @@ class MultiSearchPrompt extends Prompt
 
     /**
      * Get the selected value.
+     *
+     * @return array<int|string>
      */
     public function value(): array
     {
-        if ($this->values === null) {
-            return null;
-        }
-
         return $this->returnKeys
             ? array_keys($this->values)
             : $this->values;
