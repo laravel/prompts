@@ -45,6 +45,16 @@ class SelectPrompt extends Prompt
             } else {
                 $this->highlighted = array_search($this->default, array_keys($this->options)) ?: 0;
             }
+
+            // If the default is not visible, scroll and center it.
+            // If it's too near the end of the list, we scroll to the end.
+            if($this->highlighted >= $this->scroll){
+                $optionsLeft = count($this->options) - $this->highlighted;
+                $halfScroll = floor($this->scroll / 2);
+                $endOffset = max(0, $halfScroll - $optionsLeft);
+
+                $this->firstVisible = $this->highlighted - $halfScroll - $endOffset;
+            }
         }
 
         $this->on('key', fn ($key) => match ($key) {
