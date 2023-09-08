@@ -27,6 +27,14 @@ trait Fallback
     }
 
     /**
+     * Disable the fallback implementation.
+     */
+    public static function disableFallback(): void
+    {
+        static::$shouldFallback = false;
+    }
+
+    /**
      * Whether the prompt should fallback to a custom implementation.
      */
     public static function shouldFallback(): bool

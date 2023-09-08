@@ -132,4 +132,61 @@ it('can fall back', function () {
     ]);
 
     expect($result)->toBe('Blue');
+
+    Prompt::disableFallback();
+});
+
+it('centers the default value when it\'s not visible', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+            'Yellow',
+            'Orange',
+            'Purple',
+            'Pink',
+            'Brown',
+            'Black',
+        ],
+        default: 'Purple',
+        scroll: 3
+    );
+
+    expect($result)->toBe('Purple');
+
+    Prompt::assertOutputContains('Orange');
+    Prompt::assertOutputContains('Purple');
+    Prompt::assertOutputContains('Pink');
+});
+
+it('scrolls to the bottom when the default value is near the end', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+            'Yellow',
+            'Orange',
+            'Purple',
+            'Pink',
+            'Brown',
+            'Black',
+        ],
+        default: 'Brown'
+    );
+
+    expect($result)->toBe('Brown');
+
+    Prompt::assertOutputContains('Orange');
+    Prompt::assertOutputContains('Purple');
+    Prompt::assertOutputContains('Pink');
+    Prompt::assertOutputContains('Brown');
+    Prompt::assertOutputContains('Black');
 });

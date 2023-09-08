@@ -47,12 +47,11 @@ class SelectPrompt extends Prompt
             }
 
             // If the default is not visible, scroll and center it.
-            // If it's too near the end of the list, we scroll to the end.
+            // If it's near the end of the list, we just scroll to the end.
             if($this->highlighted >= $this->scroll){
-                $optionsLeft = count($this->options) - $this->highlighted;
+                $optionsLeft = count($this->options) - $this->highlighted - 1;
                 $halfScroll = floor($this->scroll / 2);
                 $endOffset = max(0, $halfScroll - $optionsLeft);
-
                 $this->firstVisible = $this->highlighted - $halfScroll - $endOffset;
             }
         }
