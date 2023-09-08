@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 
 class SuggestPrompt extends Prompt
 {
+    use Concerns\ReducesScrollingToFitTerminal;
     use Concerns\Truncation;
     use Concerns\TypedValue;
 
@@ -50,6 +51,8 @@ class SuggestPrompt extends Prompt
         public string $hint = ''
     ) {
         $this->options = $options instanceof Collection ? $options->all() : $options;
+
+        $this->reduceScrollingToFitTerminal();
 
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB => $this->highlightPrevious(),

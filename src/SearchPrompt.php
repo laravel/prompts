@@ -6,6 +6,7 @@ use Closure;
 
 class SearchPrompt extends Prompt
 {
+    use Concerns\ReducesScrollingToFitTerminal;
     use Concerns\Truncation;
     use Concerns\TypedValue;
 
@@ -40,6 +41,8 @@ class SearchPrompt extends Prompt
         public string $hint = ''
     ) {
         $this->trackTypedValue(submit: false);
+
+        $this->reduceScrollingToFitTerminal();
 
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB => $this->highlightPrevious(),
