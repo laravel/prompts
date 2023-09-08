@@ -163,7 +163,7 @@ it('centers the default value when it\'s not visible', function () {
     Prompt::assertOutputContains('Pink');
 });
 
-it('scrolls to the bottom when the default value is near the end', function () {
+it('scrolls to the bottom when the default value is near the end', function (int $scroll, array $outputContains) {
     Prompt::fake([Key::ENTER]);
 
     $result = select(
@@ -179,14 +179,35 @@ it('scrolls to the bottom when the default value is near the end', function () {
             'Brown',
             'Black',
         ],
-        default: 'Brown'
+        default: 'Brown',
+        scroll: $scroll
     );
 
     expect($result)->toBe('Brown');
 
-    Prompt::assertOutputContains('Orange');
-    Prompt::assertOutputContains('Purple');
-    Prompt::assertOutputContains('Pink');
-    Prompt::assertOutputContains('Brown');
-    Prompt::assertOutputContains('Black');
-});
+    foreach ($outputContains as $output) {
+        Prompt::assertOutputContains($output);
+    }
+})->with([
+    'odd' => [
+        'scroll' => 5,
+        'outputContains' => [
+            'Orange',
+            'Purple',
+            'Pink',
+            'Brown',
+            'Black',
+        ]
+    ],
+    'even' => [
+        'scroll' => 6,
+        'outputContains' => [
+            'Yellow',
+            'Orange',
+            'Purple',
+            'Pink',
+            'Brown',
+            'Black',
+        ]
+    ],
+]);
