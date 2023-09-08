@@ -35,6 +35,7 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
                     $this->renderOptions($prompt),
                     color: 'yellow',
+                    info: count($prompt->options) > $prompt->scroll ? (count($prompt->value()).' selected') : '',
                 )
                 ->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
 
@@ -42,6 +43,7 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
                 ->box(
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
                     $this->renderOptions($prompt),
+                    info: count($prompt->options) > $prompt->scroll ? (count($prompt->value()).' selected') : '',
                 )
                 ->when(
                     $prompt->hint,
