@@ -7,6 +7,8 @@ use Illuminate\Support\Collection;
 
 class SelectPrompt extends Prompt
 {
+    use Concerns\ReducesScrollingToFitTerminal;
+
     /**
      * The index of the highlighted option.
      */
@@ -38,6 +40,8 @@ class SelectPrompt extends Prompt
         public string $hint = ''
     ) {
         $this->options = $options instanceof Collection ? $options->all() : $options;
+
+        $this->reduceScrollingToFitTerminal();
 
         if ($this->default) {
             if (array_is_list($this->options)) {

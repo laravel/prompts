@@ -3,8 +3,9 @@
 namespace Laravel\Prompts\Themes\Default;
 
 use Laravel\Prompts\MultiSelectPrompt;
+use Laravel\Prompts\Themes\Contracts\Scrolling;
 
-class MultiSelectPromptRenderer extends Renderer
+class MultiSelectPromptRenderer extends Renderer implements Scrolling
 {
     use Concerns\DrawsBoxes;
     use Concerns\DrawsScrollbars;
@@ -14,8 +15,6 @@ class MultiSelectPromptRenderer extends Renderer
      */
     public function __invoke(MultiSelectPrompt $prompt): string
     {
-        $prompt->scroll = min($prompt->scroll, $prompt->terminal()->lines() - 5);
-
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
@@ -108,5 +107,13 @@ class MultiSelectPromptRenderer extends Renderer
             fn ($label) => $this->truncate($label, $prompt->terminal()->cols() - 6),
             $prompt->labels()
         ));
+    }
+
+    /**
+     * The number of lines to reserve outside of the scrollable area.
+     */
+    public function reservedLines(): int
+    {
+        return 5;
     }
 }

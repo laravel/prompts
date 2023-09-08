@@ -7,6 +7,8 @@ use Illuminate\Support\Collection;
 
 class MultiSelectPrompt extends Prompt
 {
+    use Concerns\ReducesScrollingToFitTerminal;
+
     /**
      * The index of the highlighted option.
      */
@@ -56,6 +58,8 @@ class MultiSelectPrompt extends Prompt
         $this->options = $options instanceof Collection ? $options->all() : $options;
         $this->default = $default instanceof Collection ? $default->all() : $default;
         $this->values = $this->default;
+
+        $this->reduceScrollingToFitTerminal();
 
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::LEFT, Key::LEFT_ARROW, Key::SHIFT_TAB, 'k', 'h' => $this->highlightPrevious(),
