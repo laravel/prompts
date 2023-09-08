@@ -50,7 +50,7 @@ class SelectPrompt extends Prompt
             // If it's near the end of the list, we just scroll to the end.
             if($this->highlighted >= $this->scroll){
                 $optionsLeft = count($this->options) - $this->highlighted - 1;
-                $halfScroll = floor(($this->scroll - 0.1) / 2);
+                $halfScroll = (int) floor(($this->scroll - 0.1) / 2);
                 $endOffset = max(0, $halfScroll - $optionsLeft);
                 $this->firstVisible = $this->highlighted - $halfScroll - $endOffset;
             }
