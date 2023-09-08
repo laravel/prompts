@@ -133,3 +133,79 @@ it('can fall back', function () {
 
     expect($result)->toBe('Blue');
 });
+
+it('centers the default value when it\'s not visible', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+            'Yellow',
+            'Orange',
+            'Purple',
+            'Pink',
+            'Brown',
+            'Black',
+        ],
+        default: 'Purple',
+        scroll: 3
+    );
+
+    expect($result)->toBe('Purple');
+
+    Prompt::assertOutputContains('Orange');
+    Prompt::assertOutputContains('Purple');
+    Prompt::assertOutputContains('Pink');
+});
+
+it('scrolls to the bottom when the default value is near the end', function (int $scroll, array $outputContains) {
+    Prompt::fake([Key::ENTER]);
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+            'Yellow',
+            'Orange',
+            'Purple',
+            'Pink',
+            'Brown',
+            'Black',
+        ],
+        default: 'Brown',
+        scroll: $scroll
+    );
+
+    expect($result)->toBe('Brown');
+
+    foreach ($outputContains as $output) {
+        Prompt::assertOutputContains($output);
+    }
+})->with([
+    'odd' => [
+        'scroll' => 5,
+        'outputContains' => [
+            'Orange',
+            'Purple',
+            'Pink',
+            'Brown',
+            'Black',
+        ]
+    ],
+    'even' => [
+        'scroll' => 6,
+        'outputContains' => [
+            'Yellow',
+            'Orange',
+            'Purple',
+            'Pink',
+            'Brown',
+            'Black',
+        ]
+    ],
+]);

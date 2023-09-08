@@ -5,21 +5,41 @@ use function Laravel\Prompts\select;
 require __DIR__.'/../vendor/autoload.php';
 
 $role = select(
-    label: 'What role should the user have?',
+    label: 'Where are you from?',
     options: [
-        'read-only' => 'Read only',
-        'member' => 'Member',
-        'contributor' => 'Contributor',
-        'supervisor' => 'Supervisor',
-        'manager' => 'Manager',
-        'admin' => 'Administrator',
-        'owner' => 'Owner',
+        'argentina' => 'Argentina',
+        'australia' => 'Australia',
+        'belgium' => 'Belgium',
+        'brazil' => 'Brazil',
+        'canada' => 'Canada',
+        'chile' => 'Chile',
+        'china' => 'China',
+        'colombia' => 'Colombia',
+        'egypt' => 'Egypt',
+        'france' => 'France',
+        'germany' => 'Germany',
+        'india' => 'India',
+        'italy' => 'Italy',
+        'japan' => 'Japan',
+        'kenya' => 'Kenya',
+        'mexico' => 'Mexico',
+        'morocco' => 'Morocco',
+        'nigeria' => 'Nigeria',
+        'new-zealand' => 'New Zealand',
+        'portugal' => 'Portugal',
+        'south-africa' => 'South Africa',
+        'south-korea' => 'South Korea',
+        'spain' => 'Spain',
+        'switzerland' => 'Switzerland',
+        'united-kingdom' => 'United Kingdom',
+        'united-states' => 'United States',
     ],
+    default: 'france',
     validate: fn ($value) => match ($value) {
-        'owner' => 'The owner role is already assigned.',
+        'spain' => 'Spain is not available yet.',
         default => null
     },
-    hint: 'The role will determine what the user can do.',
+    hint: 'The country will determine the currency and the timezone of the user.',
 );
 
 var_dump($role);

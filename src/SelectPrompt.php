@@ -49,6 +49,24 @@ class SelectPrompt extends Prompt
             } else {
                 $this->highlighted = array_search($this->default, array_keys($this->options)) ?: 0;
             }
+
+            // If the default is not visible, scroll and center it.
+            // If it's near the end of the list, we just scroll to the end.
+            if($this->highlighted >= $this->scroll){
+                $optionsLeft = count($this->options) - $this->highlighted - 1;
+                $halfScroll = (int) floor($this->scroll / 2);
+                $endOffset = max(0, $halfScroll - $optionsLeft);
+
+                // If the scroll is even, we need to subtract one more
+                // in order to take the highlighted option into account.
+                // Since when the scroll is odd the halfScroll is floored,
+                // we don't need to do anything.
+                if($this->scroll % 2 === 0){
+                    $endOffset--;
+                }
+
+                $this->firstVisible = $this->highlighted - $halfScroll - $endOffset;
+            }
         }
 
         $this->on('key', fn ($key) => match ($key) {
