@@ -9,8 +9,8 @@ use RuntimeException;
 
 abstract class Renderer
 {
-    use Truncation;
     use Colors;
+    use Truncation;
 
     /**
      * The output to be rendered.
