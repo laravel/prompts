@@ -132,8 +132,6 @@ it('can fall back', function () {
     ]);
 
     expect($result)->toBe('Blue');
-
-    Prompt::disableFallback();
 });
 
 it('centers the default value when it\'s not visible', function () {
