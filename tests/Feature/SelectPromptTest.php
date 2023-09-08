@@ -195,7 +195,7 @@ it('scrolls to the bottom when the default value is near the end', function (int
             'Pink',
             'Brown',
             'Black',
-        ]
+        ],
     ],
     'even' => [
         'scroll' => 6,
@@ -206,6 +206,6 @@ it('scrolls to the bottom when the default value is near the end', function (int
             'Pink',
             'Brown',
             'Black',
-        ]
+        ],
     ],
 ]);
