@@ -3,8 +3,9 @@
 namespace Laravel\Prompts\Themes\Default;
 
 use Laravel\Prompts\SearchPrompt;
+use Laravel\Prompts\Themes\Contracts\Scrolling;
 
-class SearchPromptRenderer extends Renderer
+class SearchPromptRenderer extends Renderer implements Scrolling
 {
     use Concerns\DrawsBoxes;
     use Concerns\DrawsScrollbars;
@@ -14,7 +15,6 @@ class SearchPromptRenderer extends Renderer
      */
     public function __invoke(SearchPrompt $prompt): string
     {
-        $prompt->scroll = min($prompt->scroll, $prompt->terminal()->lines() - 7);
         $maxWidth = $prompt->terminal()->cols() - 6;
 
         return match ($prompt->state) {
@@ -122,5 +122,13 @@ class SearchPromptRenderer extends Renderer
             count($prompt->matches()),
             min($this->longest($prompt->matches(), padding: 4), $prompt->terminal()->cols() - 6)
         )->implode(PHP_EOL);
+    }
+
+    /**
+     * The number of lines to reserve outside of the scrollable area.
+     */
+    public function reservedLines(): int
+    {
+        return 7;
     }
 }
