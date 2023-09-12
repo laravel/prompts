@@ -16,7 +16,7 @@ $models = multisearch(
         usleep(100 * 1000);
 
         $min = min(strlen($value)-1, 10);
-        $max = max(10, 20 - strlen($value));
+        $max = max(9, 20 - strlen($value));
 
         if ($max - $min < 0) {
             return [];
@@ -25,7 +25,7 @@ $models = multisearch(
         $data = [];
 
         foreach (range($min, $max) as $id) {
-            $data["id-$id"] = "User $id";
+            $data["user-$id"] = "User $id";
         }
 
         return $data;
@@ -40,4 +40,4 @@ $models = multisearch(
 
 var_dump($models);
 
-echo str_repeat(PHP_EOL, 6);
+// echo str_repeat(PHP_EOL, 5);

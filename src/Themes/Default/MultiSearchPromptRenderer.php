@@ -21,7 +21,8 @@ class MultiSearchPromptRenderer extends Renderer
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->renderSelectedOptions($prompt)
+                    $this->renderSelectedOptions($prompt),
+                    info: $this->getInfoText($prompt, false),
                 ),
 
             'cancel' => $this
@@ -38,6 +39,7 @@ class MultiSearchPromptRenderer extends Renderer
                     $prompt->valueWithCursor($maxWidth),
                     $this->renderOptions($prompt),
                     color: 'yellow',
+                    info: $this->getInfoText($prompt),
                 )
                 ->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
 
@@ -46,6 +48,7 @@ class MultiSearchPromptRenderer extends Renderer
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
                     $this->valueWithCursorAndSearchIcon($prompt, $maxWidth),
                     $this->renderOptions($prompt),
+                    info: $this->getInfoText($prompt),
                 )
                 ->hint($prompt->hint),
 
@@ -54,6 +57,7 @@ class MultiSearchPromptRenderer extends Renderer
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
                     $prompt->valueWithCursor($maxWidth),
                     $this->renderOptions($prompt),
+                    info: $this->getInfoText($prompt),
                 )
                 ->when(
                     $prompt->hint,
@@ -149,5 +153,30 @@ class MultiSearchPromptRenderer extends Renderer
             fn ($label) => $this->truncate($label, $prompt->terminal()->cols() - 6),
             $prompt->labels()
         ));
+    }
+
+    /**
+     * Render the info text.
+     */
+    protected function getInfoText(MultiSearchPrompt $prompt, bool $includeHidden = true): string {
+        $info = count($prompt->value()) . ' selected';
+
+        if ($includeHidden) {
+            $countHidden = count($prompt->value()) - collect($prompt->matches())
+                ->filter(function ($label, $key) use ($prompt) {
+                    if ($prompt->returnKeys) {
+                        $value = $key;
+                    } else {
+                        $value = $label;
+                    }
+
+                    return in_array($value, $prompt->value());
+                })
+                ->count();
+
+            $info .= " ($countHidden hidden)";
+        }
+
+        return $info;
     }
 }
