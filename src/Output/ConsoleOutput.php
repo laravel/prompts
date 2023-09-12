@@ -2,10 +2,13 @@
 
 namespace Laravel\Prompts\Output;
 
+use Laravel\Prompts\Prompt;
 use Symfony\Component\Console\Output\ConsoleOutput as SymfonyConsoleOutput;
 
 class ConsoleOutput extends SymfonyConsoleOutput
 {
+    public static $debug = false;
+
     /**
      * How many new lines were written by the last output.
      */
@@ -24,8 +27,6 @@ class ConsoleOutput extends SymfonyConsoleOutput
      */
     protected function doWrite(string $message, bool $newline): void
     {
-        parent::doWrite($message, $newline);
-
         if ($newline) {
             $message .= \PHP_EOL;
         }
@@ -37,6 +38,8 @@ class ConsoleOutput extends SymfonyConsoleOutput
         } else {
             $this->newLinesWritten = $trailingNewLines;
         }
+
+        parent::doWrite(static::$debug ? $this->addDebugMarkers($message) : $message, false);
     }
 
     /**
@@ -45,5 +48,17 @@ class ConsoleOutput extends SymfonyConsoleOutput
     public function writeDirectly(string $message): void
     {
         parent::doWrite($message, false);
+    }
+
+    /**
+     * Add debug markers to the given output.
+     */
+    protected function addDebugMarkers(string $output): string
+    {
+        // Add the current render count to the end of each line.
+        $output = preg_replace('/$/m', Prompt::$renderCount, $output);
+
+        // Add markers to invisible characters.
+        return str_replace([PHP_EOL, ' '], ['↵'.PHP_EOL, '␣'], $output);
     }
 }

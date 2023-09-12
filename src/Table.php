@@ -52,6 +52,8 @@ class Table extends Prompt
      */
     public function prompt(): bool
     {
+        static::$renderCount++;
+
         $this->capturePreviousNewLines();
 
         $this->state = 'submit';

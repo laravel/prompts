@@ -63,6 +63,8 @@ abstract class Prompt
      */
     protected static Terminal $terminal;
 
+    public static $renderCount = 0;
+
     /**
      * Get the value of the prompt.
      */
@@ -175,6 +177,8 @@ abstract class Prompt
      */
     protected function render(): void
     {
+        static::$renderCount++;
+
         $frame = $this->renderTheme();
 
         if ($frame === $this->prevFrame) {
