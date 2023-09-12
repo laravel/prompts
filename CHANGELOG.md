@@ -1,6 +1,14 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.6...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.7...main)
+
+## [v0.1.7](https://github.com/laravel/prompts/compare/v0.1.6...v0.1.7) - 2023-09-12
+
+- Make adjusted `scroll` value available in prompt constructor by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/60
+- Display count of selected items when scrolling by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/61
+- fix(select): default value not being centered when not visible by [@toyi](https://github.com/toyi) in https://github.com/laravel/prompts/pull/59
+- Use fallback implementation when `stty` command fails by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/63
+- Fix synchronous rendering of spinner by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/66
 
 ## [v0.1.6](https://github.com/laravel/prompts/compare/v0.1.5...v0.1.6) - 2023-08-18
 
