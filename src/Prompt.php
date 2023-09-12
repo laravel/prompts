@@ -16,6 +16,7 @@ abstract class Prompt
     use Concerns\Events;
     use Concerns\FakesInputOutput;
     use Concerns\Fallback;
+    use Concerns\Interactivity;
     use Concerns\Themes;
 
     /**
@@ -73,6 +74,12 @@ abstract class Prompt
      */
     public function prompt(): mixed
     {
+        static::$interactive ??= stream_isatty(STDIN);
+
+        if (! static::$interactive) {
+            return $this->default();
+        }
+
         $this->capturePreviousNewLines();
 
         if (static::shouldFallback()) {

@@ -1,5 +1,6 @@
 <?php
 
+use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\PasswordPrompt;
 use Laravel\Prompts\Prompt;
@@ -64,3 +65,17 @@ it('can fall back', function () {
 
     expect($result)->toBe('result');
 });
+
+it('returns an empty string when non-interactive', function () {
+    Prompt::interactive(false);
+
+    $result = password('What is the password?');
+
+    expect($result)->toBe('');
+});
+
+it('fails validation when non-interactive', function () {
+    Prompt::interactive(false);
+
+    password('What is the password?', required: true);
+})->throws(NonInteractiveValidationException::class, 'Required.');
