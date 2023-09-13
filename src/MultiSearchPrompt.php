@@ -42,7 +42,6 @@ class MultiSearchPrompt extends Prompt
     public function __construct(
         public string $label,
         public Closure $options,
-        public bool $returnKeys = true,
         public string $placeholder = '',
         public int $scroll = 5,
         public bool|string $required = false,
@@ -174,22 +173,18 @@ class MultiSearchPrompt extends Prompt
      */
     protected function toggleHighlighted(): void
     {
-        if ($this->returnKeys) {
-            $key = array_keys($this->matches)[$this->highlighted];
-
-            if (array_key_exists($key, $this->values)) {
-                unset($this->values[$key]);
-            } else {
-                $this->values[$key] = $this->matches[$key];
-            }
+        if (array_is_list($this->matches)) {
+            $label = $this->matches[$this->highlighted];
+            $key = $label;
         } else {
-            $value = $this->matches[$this->highlighted];
+            $key = array_keys($this->matches)[$this->highlighted];
+            $label = $this->matches[$key];
+        }
 
-            if (in_array($value, $this->values)) {
-                $this->values = array_filter($this->values, fn ($v) => $v !== $value);
-            } else {
-                $this->values[] = $value;
-            }
+        if (array_key_exists($key, $this->values)) {
+            unset($this->values[$key]);
+        } else {
+            $this->values[$key] = $label;
         }
     }
 
@@ -208,9 +203,7 @@ class MultiSearchPrompt extends Prompt
      */
     public function value(): array
     {
-        return $this->returnKeys
-            ? array_keys($this->values)
-            : $this->values;
+        return array_keys($this->values);
     }
 
     /**

@@ -92,20 +92,19 @@ it("maintains selections when the search value and results are empty", function 
     expect($result)->toBe(['blue', 'green']);
 });
 
-it('returns the value when return key flag is false', function () {
+it('returns the value when the options are a list', function () {
     Prompt::fake(['u', 'e', Key::DOWN, Key::SPACE, Key::ENTER]);
 
     $result = multisearch(
         label: 'What are your favorite colors?',
-        options: fn (string $value) => array_values(array_filter(
-            [
-                'red' => 'Red',
-                'green' => 'Green',
-                'blue' => 'Blue',
-            ],
-            fn ($option) => str_contains(strtolower($option), strtolower($value)),
-        )),
-        returnKeys: false
+        options: fn ($value) => collect([
+            'Red',
+            'Green',
+            'Blue',
+        ])->when(
+            strlen($value),
+            fn ($vendor) => $vendor->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
+        )->values()->all(),
     );
 
     expect($result)->toBe(['Blue']);
