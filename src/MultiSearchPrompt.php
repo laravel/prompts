@@ -106,7 +106,12 @@ class MultiSearchPrompt extends Prompt
         }
 
         if (strlen($this->typedValue) === 0) {
-            return $this->matches = $this->values;
+            $matches = ($this->options)($this->typedValue);
+
+            return $this->matches = [
+                ...array_diff($this->values, $matches),
+                ...$matches,
+            ];
         }
 
         return $this->matches = ($this->options)($this->typedValue);
