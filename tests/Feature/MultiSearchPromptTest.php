@@ -6,20 +6,22 @@ use Laravel\Prompts\Prompt;
 
 use function Laravel\Prompts\multisearch;
 
-it('allows unfiltered results', function () {
-    Prompt::fake([Key::DOWN, Key::DOWN, Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);
+it('supports default results', function ($options, $expected) {
+    Prompt::fake([
+        Key::DOWN, // Highlight "Red"
+        Key::DOWN, // Highlight "Green"
+        Key::SPACE, // Select "Green"
+        'B', // Search for "Blue"
+        Key::DOWN, // Highlight "Blue"
+        Key::SPACE, // Select "Blue"
+        Key::BACKSPACE, // Clear search
+        Key::ENTER, // Confirm selection
+    ]);
 
     $result = multisearch(
         label: 'What are your favorite colors?',
         placeholder: 'Search...',
-        options: fn ($value) => collect([
-            'red' => 'Red',
-            'green' => 'Green',
-            'blue' => 'Blue',
-        ])->when(
-            strlen($value),
-            fn ($vendor) => $vendor->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
-        )->all(),
+        options: $options,
     );
 
     Prompt::assertStrippedOutputContains(<<<'OUTPUT'
@@ -33,82 +35,101 @@ it('allows unfiltered results', function () {
         OUTPUT);
 
     Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+         │ Search...                                                    │
+         ├──────────────────────────────────────────────────────────────┤
+         │   ◻ Red                                                      │
+         │   ◼ Green                                                    │
+         │   ◼ Blue                                                     │
+         └────────────────────────────────────────────────── 2 selected ┘
+        OUTPUT);
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
          ┌ What are your favorite colors? ──────────────────────────────┐
          │ Green                                                        │
          │ Blue                                                         │
          └──────────────────────────────────────────────────────────────┘
         OUTPUT);
 
-    expect($result)->toBe(['green', 'blue']);
-});
+    expect($result)->toBe($expected);
+})->with([
+    'associative' => [
+        fn ($value) => collect([
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ])->when(
+            strlen($value),
+            fn ($vendor) => $vendor->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
+        )->all(),
+        ['green', 'blue'],
+    ],
+    'list' => [
+        fn ($value) => collect(['Red', 'Green', 'Blue'])->when(
+            strlen($value),
+            fn ($vendor) => $vendor->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
+        )->values()->all(),
+        ['Green', 'Blue'],
+    ],
+]);
 
-it("maintains selections when the search value and results are empty", function () {
+it('supports no default results', function ($options, $expected) {
     Prompt::fake([
-        'u', 'e', Key::DOWN, Key::SPACE, // Select Blue
-        Key::BACKSPACE, Key::BACKSPACE, // Clear search
-        'e', 'n', Key::DOWN, Key::SPACE, // Select Green
-        Key::BACKSPACE, Key::BACKSPACE, // Clear search
+        'B', // Search for "Blue"
+        Key::DOWN, // Highlight "Blue"
+        Key::SPACE, // Select "Blue"
+        Key::BACKSPACE, // Clear search
+        'G', // Search for "Green"
+        Key::DOWN, // Highlight "Green"
+        Key::SPACE, // Select "Green"
+        Key::BACKSPACE, // Clear search
         Key::ENTER, // Confirm selection
     ]);
 
     $result = multisearch(
         label: 'What are your favorite colors?',
         placeholder: 'Search...',
-        options: function ($value) {
-            if (strlen($value) === 0) {
-                return [];
-            }
-
-            return collect([
-                'red' => 'Red',
-                'green' => 'Green',
-                'blue' => 'Blue',
-            ])->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))->all();
-        },
+        options: $options,
     );
 
-    Prompt::assertStrippedOutputContains(<<<OUTPUT
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
          ┌ What are your favorite colors? ──────────────────────────────┐
          │ Search...                                                    │
          └────────────────────────────────────────────────── 0 selected ┘
         OUTPUT);
 
-    Prompt::assertStrippedOutputContains(<<<OUTPUT
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
          │ Search...                                                    │
          ├──────────────────────────────────────────────────────────────┤
          │   ◼ Blue                                                     │
          │   ◼ Green                                                    │
          └────────────────────────────────────────────────── 2 selected ┘
-          Use the space bar to select options.
         OUTPUT);
 
-    Prompt::assertStrippedOutputContains(<<<OUTPUT
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
          ┌ What are your favorite colors? ──────────────────────────────┐
          │ Blue                                                         │
          │ Green                                                        │
          └──────────────────────────────────────────────────────────────┘
         OUTPUT);
 
-    expect($result)->toBe(['blue', 'green']);
-});
-
-it('returns the value when the options are a list', function () {
-    Prompt::fake(['u', 'e', Key::DOWN, Key::SPACE, Key::ENTER]);
-
-    $result = multisearch(
-        label: 'What are your favorite colors?',
-        options: fn ($value) => collect([
-            'Red',
-            'Green',
-            'Blue',
-        ])->when(
-            strlen($value),
-            fn ($vendor) => $vendor->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
-        )->values()->all(),
-    );
-
-    expect($result)->toBe(['Blue']);
-});
+    expect($result)->toBe($expected);
+})->with([
+    'associative' => [
+        fn ($value) => strlen($value) > 0 ? collect([
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ])->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))->all() : [],
+        ['blue', 'green'],
+    ],
+    'list' => [
+        fn ($value) => strlen($value) > 0 ? collect(['Red', 'Green', 'Blue'])
+            ->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
+            ->values()
+            ->all() : [],
+        ['Blue', 'Green'],
+    ],
+]);
 
 it('validates', function () {
     Prompt::fake(['a', Key::DOWN, Key::SPACE, Key::ENTER, Key::DOWN, Key::SPACE, Key::ENTER]);
