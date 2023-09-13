@@ -22,7 +22,6 @@ class MultiSearchPromptRenderer extends Renderer implements Scrolling
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
                     $this->renderSelectedOptions($prompt),
-                    info: $this->getInfoText($prompt, false),
                 ),
 
             'cancel' => $this
