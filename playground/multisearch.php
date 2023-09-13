@@ -38,5 +38,3 @@ $models = multisearch(
 );
 
 var_dump($models);
-
-// echo str_repeat(PHP_EOL, 5);
