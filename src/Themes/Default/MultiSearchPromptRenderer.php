@@ -65,7 +65,6 @@ class MultiSearchPromptRenderer extends Renderer implements Scrolling
                     fn () => $this->newLine() // Space for errors
                 )
                 ->spaceForDropdown($prompt)
-                ->newLine(), // Space for errors
         };
     }
 
