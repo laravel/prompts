@@ -209,3 +209,18 @@ it('scrolls to the bottom when the default value is near the end', function (int
         ],
     ],
 ]);
+
+it('support emacs style key binding', function () {
+    Prompt::fake([Key::CTRL_N, Key::CTRL_P, Key::CTRL_N, Key::ENTER]);
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+        ]
+    );
+
+    expect($result)->toBe('Green');
+});

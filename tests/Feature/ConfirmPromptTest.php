@@ -91,3 +91,11 @@ it('can fall back', function () {
 
     expect($result)->toBeTrue();
 });
+
+test('support emacs style key binding', function () {
+    Prompt::fake([Key::CTRL_N, Key::ENTER]);
+
+    $result = confirm(label: 'Are you sure?');
+
+    expect($result)->toBeFalse();
+});

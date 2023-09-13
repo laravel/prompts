@@ -33,4 +33,14 @@ class Key
     const SHIFT_TAB = "\e[Z";
 
     const CTRL_C = "\x03";
+
+    const CTRL_P = "\x10";
+
+    const CTRL_N = "\x0E";
+
+    const CTRL_F = "\x06";
+
+    const CTRL_B = "\x02";
+
+    const CTRL_H = "\x08";
 }

@@ -104,3 +104,16 @@ it('can fall back', function () {
 
     expect($result)->toBe('result');
 });
+
+it('support emacs style key binding', function () {
+    Prompt::fake(['b', Key::CTRL_N, Key::CTRL_N, Key::CTRL_N, Key::CTRL_P, Key::ENTER]);
+
+    $result = suggest('What is your favorite color?', [
+        'Red',
+        'Blue',
+        'Black',
+        'Blurple',
+    ]);
+
+    expect($result)->toBe('Black');
+});

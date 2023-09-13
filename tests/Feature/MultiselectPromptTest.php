@@ -138,3 +138,18 @@ it('can fall back', function () {
 
     expect($result)->toBe(['Blue']);
 });
+
+it('support emacs style key binding', function () {
+    Prompt::fake([Key::CTRL_N, Key::SPACE, Key::CTRL_N, Key::SPACE, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ]
+    );
+
+    expect($result)->toBe(['green', 'blue']);
+});
