@@ -156,23 +156,16 @@ class MultiSearchPromptRenderer extends Renderer implements Scrolling
     /**
      * Render the info text.
      */
-    protected function getInfoText(MultiSearchPrompt $prompt, bool $includeHidden = true): string {
-        $info = count($prompt->value()) . ' selected';
+    protected function getInfoText(MultiSearchPrompt $prompt): string
+    {
+        $info = count($prompt->value()).' selected';
 
-        if ($includeHidden) {
-            $countHidden = count($prompt->value()) - collect($prompt->matches())
-                ->filter(function ($label, $key) use ($prompt) {
-                    if ($prompt->returnKeys) {
-                        $value = $key;
-                    } else {
-                        $value = $label;
-                    }
+        $hiddenCount = count($prompt->value()) - collect($prompt->matches())
+            ->filter(fn ($label, $key) => in_array($prompt->returnKeys ? $key : $label, $prompt->value()))
+            ->count();
 
-                    return in_array($value, $prompt->value());
-                })
-                ->count();
-
-            $info .= " ($countHidden hidden)";
+        if ($hiddenCount > 0) {
+            $info .= " ($hiddenCount hidden)";
         }
 
         return $info;
