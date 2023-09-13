@@ -7,7 +7,6 @@ require __DIR__.'/../vendor/autoload.php';
 $models = multisearch(
     label: 'Which users should receive the email?',
     placeholder: 'Search...',
-    returnKeys: true,
     options: function ($value) {
         if (strlen($value) === 0) {
             return [];
