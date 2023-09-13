@@ -62,7 +62,7 @@ class MultiSearchPrompt extends Prompt
         $this->default = $default instanceof Collection ? $default->all() : $default;
         $this->values = $this->default;
 
-        $this->trackTypedValue(submit: false, allowKey: fn ($key) => $key !== Key::SPACE || $this->highlighted === null);
+        $this->trackTypedValue(submit: false, ignore: fn ($key) => $key === Key::SPACE && $this->highlighted !== null);
 
         $this->reduceScrollingToFitTerminal();
 
