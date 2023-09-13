@@ -53,24 +53,6 @@ it('returns the value when return key flag is false', function () {
     expect($result)->toBe(['Blue']);
 });
 
-it('accepts default values when the options are keys with labels', function () {
-    Prompt::fake([Key::ENTER]);
-
-    $result = multisearch(
-        label: 'What are your favorite colors?',
-        options: fn () => [
-            'red' => 'Red',
-            'green' => 'Green',
-            'blue' => 'Blue',
-        ],
-        default: [
-            'green' => 'Green'
-        ]
-    );
-
-    expect($result)->toBe(['green']);
-});
-
 it('validates', function () {
     Prompt::fake(['a', Key::DOWN, Key::SPACE, Key::ENTER, Key::DOWN, Key::SPACE, Key::ENTER]);
 

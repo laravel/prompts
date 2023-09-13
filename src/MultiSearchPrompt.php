@@ -3,7 +3,6 @@
 namespace Laravel\Prompts;
 
 use Closure;
-use Illuminate\Support\Collection;
 
 class MultiSearchPrompt extends Prompt
 {
@@ -29,13 +28,6 @@ class MultiSearchPrompt extends Prompt
     protected ?array $matches = null;
 
     /**
-     * The default values the multi-search prompt.
-     *
-     * @var array<int|string, string>
-     */
-    public array $default;
-
-    /**
      * The selected values.
      *
      * @var array<int|string, string>
@@ -45,23 +37,18 @@ class MultiSearchPrompt extends Prompt
     /**
      * Create a new MultiSearchPrompt instance.
      *
-     * @param  array<int|string, string>|Collection<int|string, string>  $default
      * @param  Closure(string): array<int|string, string>  $options
      */
     public function __construct(
         public string $label,
         public Closure $options,
         public bool $returnKeys = true,
-        array|Collection $default = [],
         public string $placeholder = '',
         public int $scroll = 5,
         public bool|string $required = false,
         public ?Closure $validate = null,
         public string $hint = '',
     ) {
-        $this->default = $default instanceof Collection ? $default->all() : $default;
-        $this->values = $this->default;
-
         $this->trackTypedValue(submit: false, ignore: fn ($key) => $key === Key::SPACE && $this->highlighted !== null);
 
         $this->reduceScrollingToFitTerminal();
