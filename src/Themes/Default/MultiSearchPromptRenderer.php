@@ -3,8 +3,9 @@
 namespace Laravel\Prompts\Themes\Default;
 
 use Laravel\Prompts\MultiSearchPrompt;
+use Laravel\Prompts\Themes\Contracts\Scrolling;
 
-class MultiSearchPromptRenderer extends Renderer
+class MultiSearchPromptRenderer extends Renderer implements Scrolling
 {
     use Concerns\DrawsBoxes;
     use Concerns\DrawsScrollbars;
@@ -14,7 +15,6 @@ class MultiSearchPromptRenderer extends Renderer
      */
     public function __invoke(MultiSearchPrompt $prompt): string
     {
-        $prompt->scroll = min($prompt->scroll, $prompt->terminal()->lines() - 7);
         $maxWidth = $prompt->terminal()->cols() - 6;
 
         return match ($prompt->state) {
@@ -178,5 +178,13 @@ class MultiSearchPromptRenderer extends Renderer
         }
 
         return $info;
+    }
+
+    /**
+     * The number of lines to reserve outside of the scrollable area.
+     */
+    public function reservedLines(): int
+    {
+        return 7;
     }
 }

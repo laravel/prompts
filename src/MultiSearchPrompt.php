@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 
 class MultiSearchPrompt extends Prompt
 {
+    use Concerns\ReducesScrollingToFitTerminal;
     use Concerns\Truncation;
     use Concerns\TypedValue;
 
@@ -62,6 +63,8 @@ class MultiSearchPrompt extends Prompt
         $this->values = $this->default;
 
         $this->trackTypedValue(submit: false, allowKey: fn ($key) => $key !== Key::SPACE || $this->highlighted === null);
+
+        $this->reduceScrollingToFitTerminal();
 
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB => $this->highlightPrevious(),
