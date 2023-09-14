@@ -98,3 +98,21 @@ it('can fall back', function () {
 
     expect($result)->toBe('result');
 });
+
+it('support emacs style key binding', function () {
+    Prompt::fake(['u', 'e', Key::CTRL_N, Key::ENTER]);
+
+    $result = search(
+        label: 'What is your favorite color?',
+        options: fn (string $value) => array_filter(
+            [
+                'red' => 'Red',
+                'green' => 'Green',
+                'blue' => 'Blue',
+            ],
+            fn ($option) => str_contains(strtolower($option), strtolower($value)),
+        ),
+    );
+
+    expect($result)->toBe('blue');
+});
