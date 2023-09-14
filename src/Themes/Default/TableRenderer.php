@@ -16,8 +16,8 @@ class TableRenderer extends Renderer
     {
         $tableStyle = (new TableStyle())
             ->setHorizontalBorderChars('─')
-            ->setVerticalBorderChars(' │', '│')
-            ->setCrossingChars('┼', ' <fg=gray>┌', '┬', '─┐', '─┤', '─┘</>', '┴', ' └', ' ├')
+            ->setVerticalBorderChars('│', '│')
+            ->setCrossingChars('┼', '<fg=gray>┌', '┬', '┐', '┤', '┘</>', '┴', '└', '├')
             ->setCellHeaderFormat($this->dim('<fg=default>%s</>'))
             ->setCellRowFormat('<fg=default>%s</>');
 
@@ -29,9 +29,8 @@ class TableRenderer extends Renderer
             ->setStyle($tableStyle)
             ->render();
 
-        collect(explode(PHP_EOL, $buffered->content()))
-            ->filter(fn ($line) => $line !== '')
-            ->each(fn ($line) => $this->line($line));
+        collect(explode(PHP_EOL, trim($buffered->content(), PHP_EOL)))
+            ->each(fn ($line) => $this->line(' '.$line));
 
         return $this;
     }
