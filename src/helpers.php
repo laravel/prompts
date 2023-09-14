@@ -142,6 +142,9 @@ function outro(string $message): void
 
 /**
  * Display a table.
+ *
+ * @param  array<int, string>|Collection<int, string>  $headers
+ * @param  array<int, string>|Collection<int, string>  $rows
  */
 function table(array|Collection $headers, array|Collection $rows): void
 {
