@@ -139,3 +139,14 @@ function outro(string $message): void
 {
     (new Note($message, 'outro'))->display();
 }
+
+/**
+ * Display a table.
+ *
+ * @param  array<int, string|array<int, string>>|Collection<int, string|array<int, string>>  $headers
+ * @param  array<int, array<int, string>>|Collection<int, array<int, string>>  $rows
+ */
+function table(array|Collection $headers = [], array|Collection $rows = null): void
+{
+    (new Table($headers, $rows))->display();
+}
