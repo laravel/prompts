@@ -70,6 +70,11 @@ trait TypedValue
                     $regex = "/{$symbols}(?!{$symbols})/";
                     $left = mb_substr($this->typedValue, 0, $this->cursorPosition);
                     $words = preg_split($regex, $left, -1, PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_NO_EMPTY);
+
+                    if (! $words) {
+                        return;
+                    }
+
                     $lastWordPosition = end($words)[1];
                     $left = mb_substr($left, 0, $lastWordPosition);
                     $right = mb_substr($this->typedValue, $this->cursorPosition);
