@@ -83,3 +83,27 @@ test('support emacs style key binding', function () {
 
     expect($result)->toBe('Jess');
 });
+
+test('move to the beginning and end of line', function () {
+    Prompt::fake(['e', 's', Key::HOME, 'J', KEY::END, 's', Key::ENTER]);
+
+    $result = text(label: 'What is your name?');
+
+    expect($result)->toBe('Jess');
+});
+
+test('cut text to the beginning of line', function () {
+    Prompt::fake(['z', 'z', 'J', Key::LEFT, Key::CTRL_U, Key::RIGHT, 'e', 's', 's', Key::ENTER]);
+
+    $result = text(label: 'What is your name?');
+
+    expect($result)->toBe('Jess');
+});
+
+test('cut previous word', function () {
+    Prompt::fake(['z', ' ', 'z', 'z', 'J', Key::LEFT, Key::CTRL_W, Key::CTRL_W, Key::RIGHT, 'e', 's', 's', Key::ENTER]);
+
+    $result = text(label: 'What is your name?');
+
+    expect($result)->toBe('Jess');
+});

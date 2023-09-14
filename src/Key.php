@@ -32,6 +32,10 @@ class Key
 
     const SHIFT_TAB = "\e[Z";
 
+    const HOME = "\e[1~";
+
+    const END = "\e[4~";
+
     const CTRL_C = "\x03";
 
     const CTRL_P = "\x10";
@@ -43,4 +47,12 @@ class Key
     const CTRL_B = "\x02";
 
     const CTRL_H = "\x08";
+
+    const CTRL_A = "\x01";
+
+    const CTRL_E = "\x05";
+
+    const CTRL_U = "\x15";
+
+    const CTRL_W = "\x17";
 }
