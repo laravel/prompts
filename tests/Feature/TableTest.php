@@ -58,7 +58,7 @@ it('renders a table with headers', function ($headers, $rows) {
 it('renders a table without headers', function ($rows) {
     Prompt::fake();
 
-    table([], $rows);
+    table($rows);
 
     Prompt::assertStrippedOutputContains(<<<'OUTPUT'
          ┌────────────────────┬──────────────────┐
