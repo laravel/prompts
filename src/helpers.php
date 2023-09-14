@@ -148,5 +148,8 @@ function outro(string $message): void
  */
 function table(array|Collection $headers, array|Collection $rows): void
 {
+    $headers = $headers instanceof Collection ? $headers->all() : $headers;
+    $rows = $rows instanceof Collection ? $rows->all() : $rows;
+
     (new Table($headers, $rows))->display();
 }

@@ -2,20 +2,16 @@
 
 namespace Laravel\Prompts;
 
-use Illuminate\Support\Collection;
-
 class Table extends Prompt
 {
     /**
      * Create a new Table instance.
      *
-     * @param  array<int, string>|Collection<int, string>  $headers
-     * @param  array<int, string>|Collection<int, string>  $rows
+     * @param  array<int, string>  $headers
+     * @param  array<int, string>  $rows
      */
-    public function __construct(public array|Collection $headers, public array|Collection $rows)
+    public function __construct(public array $headers, public array $rows)
     {
-        $this->headers = $this->headers instanceof Collection ? $this->headers->all() : $this->headers;
-        $this->rows = $this->rows instanceof Collection ? $this->rows->all() : $this->rows;
     }
 
     /**
