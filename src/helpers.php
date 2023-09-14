@@ -145,8 +145,6 @@ function outro(string $message): void
  *
  * @param  array<int, string|array<int, string>>|Collection<int, string|array<int, string>>  $headers
  * @param  array<int, array<int, string>>|Collection<int, array<int, string>>  $rows
- *
- * @phpstan-param ($rows is null ? list<list<string>>|Collection<int, list<string>> : list<string|list<string>>|Collection<int, string|list<string>>) $headers
  */
 function table(array|Collection $headers = [], array|Collection $rows = null): void
 {
