@@ -47,6 +47,8 @@ class SearchPrompt extends Prompt
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB => $this->highlightPrevious(),
             Key::DOWN, Key::DOWN_ARROW, Key::TAB => $this->highlightNext(),
+            Key::PAGE_UP => $this->highlightPreviousPage(),
+            Key::PAGE_DOWN => $this->highlightNextPage(),
             Key::ENTER => $this->highlighted !== null ? $this->submit() : $this->search(),
             Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW => $this->highlighted = null,
             default => $this->search(),
@@ -146,6 +148,54 @@ class SearchPrompt extends Prompt
             $this->firstVisible++;
         } elseif ($this->highlighted === 0 || $this->highlighted === null) {
             $this->firstVisible = 0;
+        }
+    }
+
+    /**
+     * Highlight the previous page entry, or wrap around to the last entry.
+     */
+    protected function highlightPreviousPage(): void
+    {
+        if ($this->matches === []) {
+            $this->highlighted = null;
+        } elseif ($this->highlighted === null) {
+            $this->highlighted = count($this->matches) - 1;
+        } elseif ($this->highlighted === 0) {
+            $this->highlighted = null;
+        } else {
+            $this->highlighted = max($this->highlighted - $this->scroll, 0);
+        }
+
+        if ($this->highlighted === count($this->matches) - 1) {
+            $this->firstVisible = count($this->matches) - min($this->scroll, count($this->matches));
+        } elseif ($this->highlighted === 0 || $this->highlighted === null) {
+            $this->firstVisible = 0;
+        } elseif ($this->highlighted < $this->firstVisible) {
+            $this->firstVisible = max($this->firstVisible - $this->scroll, 0);
+        }
+    }
+
+    /**
+     * Highlight the next page entry, or wrap around to the first entry.
+     */
+    protected function highlightNextPage(): void
+    {
+        if ($this->matches === []) {
+            $this->highlighted = null;
+        } elseif ($this->highlighted === null) {
+            $this->highlighted = 0;
+        } elseif ($this->highlighted === count($this->matches) - 1) {
+            $this->highlighted = null;
+        } else {
+            $this->highlighted = min($this->highlighted + $this->scroll, count($this->matches) - 1);
+        }
+
+        if ($this->highlighted === 0 || $this->highlighted === null) {
+            $this->firstVisible = 0;
+        } elseif ($this->highlighted === count($this->matches) - 1) {
+            $this->firstVisible = count($this->matches) - min($this->scroll, count($this->matches));
+        } elseif ($this->highlighted > $this->firstVisible + $this->scroll - 1) {
+            $this->firstVisible = min($this->firstVisible + $this->scroll, count($this->matches) - $this->scroll);
         }
     }
 

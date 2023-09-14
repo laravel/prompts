@@ -72,6 +72,8 @@ class SelectPrompt extends Prompt
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::LEFT, Key::LEFT_ARROW, Key::SHIFT_TAB, 'k', 'h' => $this->highlightPrevious(),
             Key::DOWN, Key::DOWN_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::TAB, 'j', 'l' => $this->highlightNext(),
+            Key::PAGE_UP => $this->highlightPreviousPage(),
+            Key::PAGE_DOWN => $this->highlightNextPage(),
             Key::ENTER => $this->submit(),
             default => null,
         });
@@ -136,6 +138,39 @@ class SelectPrompt extends Prompt
             $this->firstVisible++;
         } elseif ($this->highlighted === 0) {
             $this->firstVisible = 0;
+        }
+    }
+
+    /**
+     * Highlight the previous page entry, or wrap around to the last entry.
+     */
+    protected function highlightPreviousPage(): void
+    {
+        $this->highlighted = $this->highlighted === 0 ? count($this->options) - 1 : max($this->highlighted - $this->scroll, 0);
+
+        if ($this->highlighted === count($this->options) - 1) {
+            $this->firstVisible = count($this->options) - min($this->scroll, count($this->options));
+        } elseif ($this->highlighted === 0) {
+            $this->firstVisible = 0;
+            // 2 3
+        } elseif ($this->highlighted < $this->firstVisible) {
+            $this->firstVisible = max($this->firstVisible - $this->scroll, 0);
+        }
+    }
+
+    /**
+     * Highlight the next page entry, or wrap around to the first entry.
+     */
+    protected function highlightNextPage(): void
+    {
+        $this->highlighted = $this->highlighted === count($this->options) - 1 ? 0 : min($this->highlighted + $this->scroll, count($this->options) - 1);
+
+        if ($this->highlighted === 0) {
+            $this->firstVisible = 0;
+        } elseif ($this->highlighted === count($this->options) - 1) {
+            $this->firstVisible = count($this->options) - min($this->scroll, count($this->options));
+        } elseif ($this->highlighted > $this->firstVisible + $this->scroll - 1) {
+            $this->firstVisible = min($this->firstVisible + $this->scroll, count($this->options) - $this->scroll);
         }
     }
 }

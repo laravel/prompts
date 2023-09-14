@@ -12,6 +12,10 @@ class Key
 
     const LEFT = "\e[D";
 
+    const PAGE_UP = "\e[5~";
+
+    const PAGE_DOWN = "\e[6~";
+
     const UP_ARROW = "\eOA";
 
     const DOWN_ARROW = "\eOB";
