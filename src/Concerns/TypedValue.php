@@ -54,33 +54,6 @@ trait TypedValue
 
                     $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition - 1).mb_substr($this->typedValue, $this->cursorPosition);
                     $this->cursorPosition--;
-                } elseif ($key === Key::CTRL_U) {
-                    if ($this->cursorPosition === 0) {
-                        return;
-                    }
-
-                    $this->typedValue = mb_substr($this->typedValue, $this->cursorPosition);
-                    $this->cursorPosition = 0;
-                } elseif ($key === Key::CTRL_W) {
-                    if ($this->cursorPosition === 0) {
-                        return;
-                    }
-
-                    $symbols = '[!@#%^&*()-=[\]{};:\'",.<>?\/\s]';
-                    $regex = "/{$symbols}(?!{$symbols})/";
-                    $left = mb_substr($this->typedValue, 0, $this->cursorPosition);
-                    $words = preg_split($regex, $left, -1, PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_NO_EMPTY);
-
-                    if (! $words) {
-                        return;
-                    }
-
-                    $lastWordPosition = end($words)[1];
-                    $left = mb_substr($left, 0, $lastWordPosition);
-                    $right = mb_substr($this->typedValue, $this->cursorPosition);
-
-                    $this->typedValue = $left.$right;
-                    $this->cursorPosition = mb_strlen($left);
                 } elseif (ord($key) >= 32) {
                     $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition).$key.mb_substr($this->typedValue, $this->cursorPosition);
                     $this->cursorPosition++;

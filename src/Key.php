@@ -51,8 +51,4 @@ class Key
     const CTRL_A = "\x01";
 
     const CTRL_E = "\x05";
-
-    const CTRL_U = "\x15";
-
-    const CTRL_W = "\x17";
 }
