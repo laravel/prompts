@@ -55,6 +55,8 @@ class Spinner extends Prompt
             exit();
         });
 
+        $pid = 0;
+
         try {
             $this->render();
 
