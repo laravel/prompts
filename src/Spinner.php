@@ -82,6 +82,7 @@ class Spinner extends Prompt
             }
         } catch (\Throwable $e) {
             $this->showCursor();
+            posix_kill($pid, SIGHUP);
             pcntl_async_signals($originalAsync);
             pcntl_signal(SIGINT, SIG_DFL);
 
