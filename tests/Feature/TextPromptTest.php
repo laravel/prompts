@@ -83,3 +83,11 @@ test('support emacs style key binding', function () {
 
     expect($result)->toBe('Jess');
 });
+
+test('move to the beginning and end of line', function () {
+    Prompt::fake(['e', 's', Key::HOME, 'J', KEY::END, 's', Key::ENTER]);
+
+    $result = text(label: 'What is your name?');
+
+    expect($result)->toBe('Jess');
+});
