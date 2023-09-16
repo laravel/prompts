@@ -73,23 +73,30 @@ class Spinner extends Prompt
             } else {
                 $result = $callback();
 
-                posix_kill($pid, SIGHUP);
-                pcntl_async_signals($originalAsync);
-                pcntl_signal(SIGINT, SIG_DFL);
-
-                $this->eraseRenderedLines();
-                $this->showCursor();
+                $this->resetTerminal($originalAsync,$pid);
 
                 return $result;
             }
         } catch (\Throwable $e) {
-            $this->showCursor();
-            posix_kill($pid, SIGHUP);
-            pcntl_async_signals($originalAsync);
-            pcntl_signal(SIGINT, SIG_DFL);
+            $this->resetTerminal($originalAsync);
 
             throw $e;
         }
+    }
+
+    /**
+     * Reset the terminal.
+     *
+     * @param bool $originalAsync
+     * @param int $pid
+     */
+    protected function resetTerminal(bool $originalAsync, int $pid = 0): void {
+        posix_kill($pid, SIGHUP);
+        pcntl_async_signals($originalAsync);
+        pcntl_signal(SIGINT, SIG_DFL);
+
+        $this->eraseRenderedLines();
+        $this->showCursor();
     }
 
     /**
