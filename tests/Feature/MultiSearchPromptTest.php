@@ -59,14 +59,14 @@ it('supports default results', function ($options, $expected) {
             'blue' => 'Blue',
         ])->when(
             strlen($value),
-            fn ($vendor) => $vendor->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
+            fn ($colors) => $colors->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
         )->all(),
         ['green', 'blue'],
     ],
     'list' => [
         fn ($value) => collect(['Red', 'Green', 'Blue'])->when(
             strlen($value),
-            fn ($vendor) => $vendor->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
+            fn ($colors) => $colors->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
         )->values()->all(),
         ['Green', 'Blue'],
     ],
