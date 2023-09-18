@@ -32,5 +32,47 @@ class Key
 
     const SHIFT_TAB = "\e[Z";
 
+    const HOME = "\e[1~";
+
+    const END = "\e[4~";
+
+    /**
+     * Cancel/SIGINT
+     */
     const CTRL_C = "\x03";
+
+    /**
+     * Previous/Up
+     */
+    const CTRL_P = "\x10";
+
+    /**
+     * Next/Down
+     */
+    const CTRL_N = "\x0E";
+
+    /**
+     * Forward/Right
+     */
+    const CTRL_F = "\x06";
+
+    /**
+     * Back/Left
+     */
+    const CTRL_B = "\x02";
+
+    /**
+     * Backspace
+     */
+    const CTRL_H = "\x08";
+
+    /**
+     * Home
+     */
+    const CTRL_A = "\x01";
+
+    /**
+     * End
+     */
+    const CTRL_E = "\x05";
 }

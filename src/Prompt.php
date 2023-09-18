@@ -6,6 +6,7 @@ use Closure;
 use Laravel\Prompts\Output\ConsoleOutput;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 abstract class Prompt
 {
@@ -80,12 +81,20 @@ abstract class Prompt
 
         $this->checkEnvironment();
 
+        try {
+            static::terminal()->setTty('-icanon -isig -echo');
+        } catch (Throwable $e) {
+            static::output()->writeln("<comment>{$e->getMessage()}</comment>");
+            static::fallbackWhen(true);
+
+            return $this->fallback();
+        }
+
         register_shutdown_function(function () {
             $this->restoreCursor();
             static::terminal()->restoreTty();
         });
 
-        static::terminal()->setTty('-icanon -isig -echo');
         $this->hideCursor();
         $this->render();
 

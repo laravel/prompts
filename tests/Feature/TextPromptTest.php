@@ -75,3 +75,19 @@ it('can fall back', function () {
 
     expect($result)->toBe('result');
 });
+
+test('support emacs style key binding', function () {
+    Prompt::fake(['J', 'z', 'e', Key::CTRL_B, Key::CTRL_H, key::CTRL_F, 's', 's', Key::ENTER]);
+
+    $result = text(label: 'What is your name?');
+
+    expect($result)->toBe('Jess');
+});
+
+test('move to the beginning and end of line', function () {
+    Prompt::fake(['e', 's', Key::HOME, 'J', KEY::END, 's', Key::ENTER]);
+
+    $result = text(label: 'What is your name?');
+
+    expect($result)->toBe('Jess');
+});
