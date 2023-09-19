@@ -84,8 +84,9 @@ class Spinner extends Prompt
     /**
      * Reset the terminal.
      */
-    protected function resetTerminal(bool $originalAsync, ?int $pid): void {
-        if($pid) {
+    protected function resetTerminal(bool $originalAsync, ?int $pid): void
+    {
+        if ($pid) {
             posix_kill($pid, SIGHUP);
         }
 
