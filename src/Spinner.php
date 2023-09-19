@@ -109,13 +109,15 @@ class Spinner extends Prompt
     {
         $this->static = true;
 
-        $this->hideCursor();
-        $this->render();
+        try {
+            $this->hideCursor();
+            $this->render();
 
-        $result = $callback();
-
-        $this->eraseRenderedLines();
-        $this->showCursor();
+            $result = $callback();
+        } finally {
+            $this->eraseRenderedLines();
+            $this->showCursor();
+        }
 
         return $result;
     }
