@@ -46,8 +46,6 @@ class Spinner extends Prompt
             return $this->renderStatically($callback);
         }
 
-        $this->hideCursor();
-
         $originalAsync = pcntl_async_signals(true);
 
         pcntl_signal(SIGINT, function () {
@@ -56,6 +54,7 @@ class Spinner extends Prompt
         });
 
         try {
+            $this->hideCursor();
             $this->render();
 
             $pid = pcntl_fork();
@@ -71,22 +70,31 @@ class Spinner extends Prompt
             } else {
                 $result = $callback();
 
-                posix_kill($pid, SIGHUP);
-                pcntl_async_signals($originalAsync);
-                pcntl_signal(SIGINT, SIG_DFL);
-
-                $this->eraseRenderedLines();
-                $this->showCursor();
+                $this->resetTerminal($originalAsync, $pid);
 
                 return $result;
             }
         } catch (\Throwable $e) {
-            $this->showCursor();
-            pcntl_async_signals($originalAsync);
-            pcntl_signal(SIGINT, SIG_DFL);
+            $this->resetTerminal($originalAsync, $pid ?? null);
 
             throw $e;
         }
+    }
+
+    /**
+     * Reset the terminal.
+     */
+    protected function resetTerminal(bool $originalAsync, ?int $pid): void
+    {
+        if ($pid) {
+            posix_kill($pid, SIGHUP);
+        }
+
+        pcntl_async_signals($originalAsync);
+        pcntl_signal(SIGINT, SIG_DFL);
+
+        $this->eraseRenderedLines();
+        $this->showCursor();
     }
 
     /**
@@ -101,13 +109,15 @@ class Spinner extends Prompt
     {
         $this->static = true;
 
-        $this->hideCursor();
-        $this->render();
+        try {
+            $this->hideCursor();
+            $this->render();
 
-        $result = $callback();
-
-        $this->eraseRenderedLines();
-        $this->showCursor();
+            $result = $callback();
+        } finally {
+            $this->eraseRenderedLines();
+            $this->showCursor();
+        }
 
         return $result;
     }
