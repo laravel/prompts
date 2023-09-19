@@ -1,6 +1,13 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.7...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.8...main)
+
+## [v0.1.8](https://github.com/laravel/prompts/compare/v0.1.7...v0.1.8) - 2023-09-19
+
+- Add a `table` renderer by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/68
+- Support emacs style key binding  by [@storyn26383](https://github.com/storyn26383) in https://github.com/laravel/prompts/pull/67
+- Support more readline keys by [@storyn26383](https://github.com/storyn26383) in https://github.com/laravel/prompts/pull/70
+- `spin`: Ensure process termination on `$callback()` failure by [@manelgavalda](https://github.com/manelgavalda) in https://github.com/laravel/prompts/pull/71
 
 ## [v0.1.7](https://github.com/laravel/prompts/compare/v0.1.6...v0.1.7) - 2023-09-12
 
