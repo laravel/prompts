@@ -46,8 +46,6 @@ class Spinner extends Prompt
             return $this->renderStatically($callback);
         }
 
-        $this->hideCursor();
-
         $originalAsync = pcntl_async_signals(true);
 
         pcntl_signal(SIGINT, function () {
@@ -56,6 +54,7 @@ class Spinner extends Prompt
         });
 
         try {
+            $this->hideCursor();
             $this->render();
 
             $pid = pcntl_fork();
