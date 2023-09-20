@@ -42,16 +42,15 @@ class Spinner extends Prompt
     {
         $this->capturePreviousNewLines();
 
+        register_shutdown_function(fn () => $this->restoreCursor());
+
         if (! function_exists('pcntl_fork')) {
             return $this->renderStatically($callback);
         }
 
         $originalAsync = pcntl_async_signals(true);
 
-        pcntl_signal(SIGINT, function () {
-            $this->showCursor();
-            exit();
-        });
+        pcntl_signal(SIGINT, fn () => exit());
 
         try {
             $this->hideCursor();
@@ -68,14 +67,18 @@ class Spinner extends Prompt
                     usleep($this->interval * 1000);
                 }
             } else {
+                register_shutdown_function(fn () => posix_kill($pid, SIGHUP));
+
                 $result = $callback();
 
-                $this->resetTerminal($originalAsync, $pid);
+                posix_kill($pid, SIGHUP);
+
+                $this->resetTerminal($originalAsync);
 
                 return $result;
             }
         } catch (\Throwable $e) {
-            $this->resetTerminal($originalAsync, $pid ?? null);
+            $this->resetTerminal($originalAsync);
 
             throw $e;
         }
@@ -84,12 +87,8 @@ class Spinner extends Prompt
     /**
      * Reset the terminal.
      */
-    protected function resetTerminal(bool $originalAsync, ?int $pid): void
+    protected function resetTerminal(bool $originalAsync): void
     {
-        if ($pid) {
-            posix_kill($pid, SIGHUP);
-        }
-
         pcntl_async_signals($originalAsync);
         pcntl_signal(SIGINT, SIG_DFL);
 
