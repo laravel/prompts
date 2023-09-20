@@ -68,6 +68,8 @@ class Spinner extends Prompt
                     usleep($this->interval * 1000);
                 }
             } else {
+                register_shutdown_function(fn () => posix_kill($pid, SIGHUP));
+
                 $result = $callback();
 
                 $this->resetTerminal($originalAsync, $pid);
