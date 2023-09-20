@@ -2,39 +2,36 @@
 
 namespace Laravel\Prompts\Concerns;
 
-use Laravel\Prompts\Output\BufferedConsoleOutput;
+use Laravel\Prompts\Output\ConsoleOutput;
 use Laravel\Prompts\Terminal;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Assert;
 use RuntimeException;
+use Tests\PromptFake;
 
 trait FakesInputOutput
 {
     /**
      * Fake the terminal and queue key presses to be simulated.
      *
+     * @internal
+     *
      * @param  array<string>  $keys
      */
-    public static function fake(array $keys = []): void
+    public static function fake(array $keys = []): PromptFake
     {
         // Force interactive mode when testing because we will be mocking the terminal.
         static::interactive();
 
-        $mock = \Mockery::mock(Terminal::class);
+        $terminal = \Mockery::mock(Terminal::class);
+        $output = \Mockery::mock(ConsoleOutput::class);
 
-        $mock->shouldReceive('write')->byDefault();
-        $mock->shouldReceive('exit')->byDefault();
-        $mock->shouldReceive('setTty')->byDefault();
-        $mock->shouldReceive('restoreTty')->byDefault();
-        $mock->shouldReceive('cols')->byDefault()->andReturn(80);
-        $mock->shouldReceive('lines')->byDefault()->andReturn(24);
+        static::$terminal = $terminal;
+        static::$renderCompleteFrames = true;
 
-        foreach ($keys as $key) {
-            $mock->shouldReceive('read')->once()->andReturn($key);
-        }
+        self::setOutput($output);
 
-        static::$terminal = $mock;
-
-        self::setOutput(new BufferedConsoleOutput());
+        return new PromptFake($terminal, $output, $keys);
     }
 
     /**
@@ -42,7 +39,7 @@ trait FakesInputOutput
      */
     public static function assertOutputContains(string $string): void
     {
-        Assert::assertStringContainsString($string, static::content());
+        Assert::assertStringContainsString($string, implode('', static::buffer()));
     }
 
     /**
@@ -50,7 +47,7 @@ trait FakesInputOutput
      */
     public static function assertOutputDoesntContain(string $string): void
     {
-        Assert::assertStringNotContainsString($string, static::content());
+        Assert::assertStringNotContainsString($string, implode('', static::buffer()));
     }
 
     /**
@@ -58,7 +55,7 @@ trait FakesInputOutput
      */
     public static function assertStrippedOutputContains(string $string): void
     {
-        Assert::assertStringContainsString($string, static::strippedContent());
+        Assert::assertStringContainsString($string, implode('', static::strippedBuffer()));
     }
 
     /**
@@ -66,26 +63,34 @@ trait FakesInputOutput
      */
     public static function assertStrippedOutputDoesntContain(string $string): void
     {
-        Assert::assertStringNotContainsString($string, static::strippedContent());
+        Assert::assertStringNotContainsString($string, implode('', static::strippedBuffer()));
     }
 
     /**
      * Get the buffered console output.
+     *
+     * @return list<string>
      */
-    public static function content(): string
+    public static function buffer(): array
     {
-        if (! static::output() instanceof BufferedConsoleOutput) {
-            throw new RuntimeException('Prompt must be faked before accessing content.');
+        if (! static::output() instanceof MockInterface) {
+            throw new RuntimeException('Prompt must be faked before accessing the buffer.');
         }
 
-        return static::output()->content();
+        // @phpstan-ignore-next-line method.notFound
+        return static::output()->buffer();
     }
 
     /**
      * Get the buffered console output, stripped of escape sequences.
+     *
+     * @return list<string>
      */
-    public static function strippedContent(): string
+    public static function strippedBuffer(): array
     {
-        return preg_replace("/\e\[[0-9;?]*[A-Za-z]/", '', static::content());
+        return array_map(
+            fn ($line) => preg_replace("/\e\[[0-9;?]*[A-Za-z]/", '', $line),
+            static::buffer()
+        );
     }
 }

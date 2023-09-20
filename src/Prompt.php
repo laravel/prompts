@@ -65,6 +65,11 @@ abstract class Prompt
     protected static Terminal $terminal;
 
     /**
+     * Whether to render complete frames.
+     */
+    protected static bool $renderCompleteFrames = false;
+
+    /**
      * Get the value of the prompt.
      */
     abstract public function value(): mixed;
@@ -178,6 +183,12 @@ abstract class Prompt
      */
     protected function render(): void
     {
+        if (static::$renderCompleteFrames) {
+            static::output()->write($this->renderTheme());
+
+            return;
+        }
+
         $frame = $this->renderTheme();
 
         if ($frame === $this->prevFrame) {

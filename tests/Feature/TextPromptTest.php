@@ -7,8 +7,27 @@ use Laravel\Prompts\TextPrompt;
 
 use function Laravel\Prompts\text;
 
-it('returns the input', function () {
-    Prompt::fake(['J', 'e', 's', 's', Key::ENTER]);
+it('renders and returns input', function () {
+    Prompt::fake()
+        ->hidesCursor()
+        ->outputs(<<<'OUTPUT'
+
+         ┌ What is your name? ──────────────────────────────────────────┐
+         │                                                              │
+         └──────────────────────────────────────────────────────────────┘
+
+
+        OUTPUT)
+        ->receives(['Jess', Key::ENTER])
+        ->outputs(<<<'OUTPUT'
+
+         ┌ What is your name? ──────────────────────────────────────────┐
+         │ Jess                                                         │
+         └──────────────────────────────────────────────────────────────┘
+
+
+        OUTPUT)
+        ->showsCursor();
 
     $result = text(label: 'What is your name?');
 
@@ -16,7 +35,17 @@ it('returns the input', function () {
 });
 
 it('accepts a default value', function () {
-    Prompt::fake([Key::ENTER]);
+    Prompt::fake()
+        ->hidesCursor()
+        ->outputs(<<<'OUTPUT'
+
+         ┌ What is your name? ──────────────────────────────────────────┐
+         │ Jess                                                         │
+         └──────────────────────────────────────────────────────────────┘
+
+
+        OUTPUT)
+        ->receives(Key::ENTER);
 
     $result = text(
         label: 'What is your name?',
@@ -27,7 +56,35 @@ it('accepts a default value', function () {
 });
 
 it('validates', function () {
-    Prompt::fake(['J', 'e', 's', Key::ENTER, 's', Key::ENTER]);
+    Prompt::fake()
+        ->receives(['J', 'e', 's'])
+        ->outputs(<<<'OUTPUT'
+
+         ┌ What is your name? ──────────────────────────────────────────┐
+         │ Jes                                                          │
+         └──────────────────────────────────────────────────────────────┘
+
+
+        OUTPUT)
+        ->receives(Key::ENTER)
+        ->outputs(<<<'OUTPUT'
+
+         ┌ What is your name? ──────────────────────────────────────────┐
+         │ Jes                                                          │
+         └──────────────────────────────────────────────────────────────┘
+          ⚠ Invalid name.
+
+        OUTPUT)
+        ->receives('s')
+        ->outputs(<<<'OUTPUT'
+
+         ┌ What is your name? ──────────────────────────────────────────┐
+         │ Jess                                                         │
+         └──────────────────────────────────────────────────────────────┘
+
+
+        OUTPUT)
+        ->receives(Key::ENTER);
 
     $result = text(
         label: 'What is your name?',
@@ -35,16 +92,22 @@ it('validates', function () {
     );
 
     expect($result)->toBe('Jess');
-
-    Prompt::assertOutputContains('Invalid name.');
 });
 
 it('cancels', function () {
-    Prompt::fake([Key::CTRL_C]);
+    Prompt::fake()
+        ->receives(Key::CTRL_C)
+        ->outputs(<<<'OUTPUT'
+
+         ┌ What is your name? ──────────────────────────────────────────┐
+         │                                                              │
+         └──────────────────────────────────────────────────────────────┘
+          ⚠ Cancelled.
+
+
+        OUTPUT);
 
     text(label: 'What is your name?');
-
-    Prompt::assertOutputContains('Cancelled.');
 });
 
 test('the backspace key removes a character', function () {
