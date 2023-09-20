@@ -141,7 +141,7 @@ it('validates', function () {
             'green' => 'Green',
             'blue' => 'Blue',
         ],
-        validate: fn ($value) => !in_array('green', $value) ? 'Please choose green.' : null
+        validate: fn ($value) => ! in_array('green', $value) ? 'Please choose green.' : null
     );
 
     expect($result)->toBe(['red', 'green']);
