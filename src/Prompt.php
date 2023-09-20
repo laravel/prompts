@@ -311,7 +311,7 @@ abstract class Prompt
     {
         $this->validated = true;
 
-        if (($this->required ?? false) && ($value === '' || $value === [] || $value === false)) {
+        if (($this->required ?? false) && ($value === '' || $value === [] || $value === false || $value === null)) {
             $this->state = 'error';
             $this->error = is_string($this->required) ? $this->required : 'Required.';
 

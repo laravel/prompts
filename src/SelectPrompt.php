@@ -4,7 +4,6 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
-use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 
 class SelectPrompt extends Prompt
 {
@@ -26,6 +25,11 @@ class SelectPrompt extends Prompt
      * @var array<int|string, string>
      */
     public array $options;
+
+    /**
+     * Whether user input is required.
+     */
+    public bool|string $required = true;
 
     /**
      * Create a new SelectPrompt instance.
@@ -83,6 +87,10 @@ class SelectPrompt extends Prompt
      */
     public function value(): int|string|null
     {
+        if (static::$interactive === false) {
+            return $this->default;
+        }
+
         if (array_is_list($this->options)) {
             return $this->options[$this->highlighted] ?? null;
         } else {
@@ -138,17 +146,5 @@ class SelectPrompt extends Prompt
         } elseif ($this->highlighted === 0) {
             $this->firstVisible = 0;
         }
-    }
-
-    /**
-     * Return the default value if it passes validation.
-     */
-    protected function default(): mixed
-    {
-        if ($this->default === null) {
-            throw new NonInteractiveValidationException('Required.');
-        }
-
-        return parent::default();
     }
 }

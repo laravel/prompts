@@ -3,7 +3,6 @@
 namespace Laravel\Prompts;
 
 use Closure;
-use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 
 class SearchPrompt extends Prompt
 {
@@ -20,6 +19,11 @@ class SearchPrompt extends Prompt
      * The index of the first visible option.
      */
     public int $firstVisible = 0;
+
+    /**
+     * Whether user input is required.
+     */
+    public bool|string $required = true;
 
     /**
      * The cached matches.
@@ -178,13 +182,5 @@ class SearchPrompt extends Prompt
     public function label(): ?string
     {
         return $this->matches[array_keys($this->matches)[$this->highlighted]] ?? null;
-    }
-
-    /**
-     * Fail when non-interactive.
-     */
-    protected function default(): mixed
-    {
-        throw new NonInteractiveValidationException('Required.');
     }
 }
