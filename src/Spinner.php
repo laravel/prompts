@@ -42,16 +42,15 @@ class Spinner extends Prompt
     {
         $this->capturePreviousNewLines();
 
+        register_shutdown_function(fn () => $this->restoreCursor());
+
         if (! function_exists('pcntl_fork')) {
             return $this->renderStatically($callback);
         }
 
         $originalAsync = pcntl_async_signals(true);
 
-        pcntl_signal(SIGINT, function () {
-            $this->showCursor();
-            exit();
-        });
+        pcntl_signal(SIGINT, fn () => exit());
 
         try {
             $this->hideCursor();
