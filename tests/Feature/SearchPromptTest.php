@@ -1,5 +1,6 @@
 <?php
 
+use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SearchPrompt;
@@ -116,3 +117,9 @@ it('support emacs style key binding', function () {
 
     expect($result)->toBe('blue');
 });
+
+it('fails when when non-interactive', function () {
+    Prompt::interactive(false);
+
+    search('What is your favorite color?', fn () => []);
+})->throws(NonInteractiveValidationException::class, 'Required.');

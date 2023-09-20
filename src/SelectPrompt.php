@@ -27,6 +27,11 @@ class SelectPrompt extends Prompt
     public array $options;
 
     /**
+     * Whether user input is required.
+     */
+    public bool|string $required = true;
+
+    /**
      * Create a new SelectPrompt instance.
      *
      * @param  array<int|string, string>|Collection<int|string, string>  $options
@@ -82,6 +87,10 @@ class SelectPrompt extends Prompt
      */
     public function value(): int|string|null
     {
+        if (static::$interactive === false) {
+            return $this->default;
+        }
+
         if (array_is_list($this->options)) {
             return $this->options[$this->highlighted] ?? null;
         } else {

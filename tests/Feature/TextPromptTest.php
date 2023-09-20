@@ -1,5 +1,6 @@
 <?php
 
+use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\TextPrompt;
@@ -91,3 +92,25 @@ test('move to the beginning and end of line', function () {
 
     expect($result)->toBe('Jess');
 });
+
+it('returns an empty string when non-interactive', function () {
+    Prompt::interactive(false);
+
+    $result = text('What is your name?');
+
+    expect($result)->toBe('');
+});
+
+it('returns the default value when non-interactive', function () {
+    Prompt::interactive(false);
+
+    $result = text('What is your name?', default: 'Taylor');
+
+    expect($result)->toBe('Taylor');
+});
+
+it('validates the default value when non-interactive', function () {
+    Prompt::interactive(false);
+
+    text('What is your name?', required: true);
+})->throws(NonInteractiveValidationException::class, 'Required.');

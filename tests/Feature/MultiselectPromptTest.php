@@ -1,5 +1,6 @@
 <?php
 
+use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Prompt;
@@ -153,3 +154,37 @@ it('support emacs style key binding', function () {
 
     expect($result)->toBe(['green', 'blue']);
 });
+
+it('returns an empty array when non-interactive', function () {
+    Prompt::interactive(false);
+
+    $result = multiselect('What is your favorite color?', [
+        'Red',
+        'Green',
+        'Blue',
+    ]);
+
+    expect($result)->toBe([]);
+});
+
+it('returns the default value when non-interactive', function () {
+    Prompt::interactive(false);
+
+    $result = multiselect('What is your favorite color?', [
+        'Red',
+        'Green',
+        'Blue',
+    ], default: ['Green']);
+
+    expect($result)->toBe(['Green']);
+});
+
+it('validates the default value when non-interactive', function () {
+    Prompt::interactive(false);
+
+    multiselect('What is your favorite color?', [
+        'Red',
+        'Green',
+        'Blue',
+    ], required: true);
+})->throws(NonInteractiveValidationException::class, 'Required.');

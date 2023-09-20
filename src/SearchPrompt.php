@@ -21,6 +21,11 @@ class SearchPrompt extends Prompt
     public int $firstVisible = 0;
 
     /**
+     * Whether user input is required.
+     */
+    public bool|string $required = true;
+
+    /**
      * The cached matches.
      *
      * @var array<int|string, string>|null

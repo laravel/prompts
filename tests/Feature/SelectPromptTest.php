@@ -1,5 +1,6 @@
 <?php
 
+use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SelectPrompt;
@@ -224,3 +225,41 @@ it('support emacs style key binding', function () {
 
     expect($result)->toBe('Green');
 });
+
+it('fails when there is no default in non-interactive mode', function () {
+    Prompt::interactive(false);
+
+    select('What is your favorite color?', [
+        'Red',
+        'Green',
+        'Blue',
+    ]);
+})->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('returns the default value when non-interactive', function () {
+    Prompt::interactive(false);
+
+    $result = select('What is your favorite color?', [
+        'Red',
+        'Green',
+        'Blue',
+    ], default: 'Green');
+
+    expect($result)->toBe('Green');
+});
+
+it('validates the default value when non-interactive', function () {
+    Prompt::interactive(false);
+
+    select(
+        label: 'What is your favorite color?',
+        options: [
+            'None',
+            'Red',
+            'Green',
+            'Blue',
+        ],
+        default: 'None',
+        validate: fn ($value) => $value === 'None' ? 'Required.' : null,
+    );
+})->throws(NonInteractiveValidationException::class, 'Required.');

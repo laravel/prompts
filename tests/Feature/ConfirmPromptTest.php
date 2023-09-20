@@ -1,6 +1,7 @@
 <?php
 
 use Laravel\Prompts\ConfirmPrompt;
+use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
@@ -99,3 +100,21 @@ test('support emacs style key binding', function () {
 
     expect($result)->toBeFalse();
 });
+
+it('returns the default value when non-interactive', function () {
+    Prompt::interactive(false);
+
+    $result = confirm('Would you like to continue?', false);
+
+    expect($result)->toBeFalse();
+});
+
+it('validates the default value when non-interactive', function () {
+    Prompt::interactive(false);
+
+    confirm(
+        'Would you like to continue?',
+        default: false,
+        required: true,
+    );
+})->throws(NonInteractiveValidationException::class, 'Required.');
