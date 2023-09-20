@@ -71,12 +71,14 @@ class Spinner extends Prompt
 
                 $result = $callback();
 
-                $this->resetTerminal($originalAsync, $pid);
+                posix_kill($pid, SIGHUP);
+
+                $this->resetTerminal($originalAsync);
 
                 return $result;
             }
         } catch (\Throwable $e) {
-            $this->resetTerminal($originalAsync, $pid ?? null);
+            $this->resetTerminal($originalAsync);
 
             throw $e;
         }
@@ -85,12 +87,8 @@ class Spinner extends Prompt
     /**
      * Reset the terminal.
      */
-    protected function resetTerminal(bool $originalAsync, ?int $pid): void
+    protected function resetTerminal(bool $originalAsync): void
     {
-        if ($pid) {
-            posix_kill($pid, SIGHUP);
-        }
-
         pcntl_async_signals($originalAsync);
         pcntl_signal(SIGINT, SIG_DFL);
 
