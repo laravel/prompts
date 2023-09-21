@@ -151,10 +151,10 @@ class Spinner extends Prompt
      */
     public function __destruct()
     {
-        parent::__destruct();
-
         if (! empty($this->pid)) {
             posix_kill($this->pid, SIGHUP);
         }
+
+        parent::__destruct();
     }
 }
