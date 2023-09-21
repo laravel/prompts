@@ -149,6 +149,36 @@ it('validates', function () {
     Prompt::assertOutputContains('Please choose green.');
 });
 
+it('support home key binding', function () {
+    Prompt::fake(['r', Key::UP, Key::HOME, Key::SPACE, Key::ENTER]);
+
+    $result = multisearch(
+        label: 'What are your favorite colors?',
+        options: fn () => [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ]
+    );
+
+    expect($result)->toBe(['red']);
+});
+
+it('support end key binding', function () {
+    Prompt::fake(['r', Key::DOWN, Key::END, Key::SPACE, Key::ENTER]);
+
+    $result = multisearch(
+        label: 'What are your favorite colors?',
+        options: fn () => [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ]
+    );
+
+    expect($result)->toBe(['blue']);
+});
+
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
 

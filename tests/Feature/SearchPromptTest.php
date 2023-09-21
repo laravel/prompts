@@ -43,6 +43,42 @@ it('returns the value when a list is passed', function () {
     expect($result)->toBe('Blue');
 });
 
+it('select using the home key', function () {
+    Prompt::fake(['e', Key::UP, Key::HOME, Key::ENTER]);
+
+    $result = search(
+        label: 'What is your favorite color?',
+        options: fn (string $value) => array_filter(
+            [
+                'Red',
+                'Blue',
+                'Pink',
+            ],
+            fn ($option) => str_contains(strtolower($option), strtolower($value)),
+        ),
+    );
+
+    expect($result)->toBe('Red');
+});
+
+it('select using the end key', function () {
+    Prompt::fake(['e', Key::DOWN, Key::END, Key::ENTER]);
+
+    $result = search(
+        label: 'What is your favorite color?',
+        options: fn (string $value) => array_filter(
+            [
+                'Red',
+                'Blue',
+                'Pink',
+            ],
+            fn ($option) => str_contains(strtolower($option), strtolower($value)),
+        ),
+    );
+
+    expect($result)->toBe('Blue');
+});
+
 it('returns the key when an associative array is passed', function () {
     Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
 
