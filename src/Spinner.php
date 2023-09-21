@@ -41,6 +41,7 @@ class Spinner extends Prompt
     public function spin(Closure $callback): mixed
     {
         $this->capturePreviousNewLines();
+        $this->ignoreNewLines(true);
 
         register_shutdown_function(fn () => $this->restoreCursor());
 
@@ -94,6 +95,18 @@ class Spinner extends Prompt
 
         $this->eraseRenderedLines();
         $this->showCursor();
+        $this->ignoreNewLines(false);
+    }
+
+    /**
+     * If the method exists, instruct the output to ignore new lines
+     * as the spinner will erase itself at the end of the process.
+     */
+    protected function ignoreNewLines(bool $ignore = true): void
+    {
+        if (method_exists(static::output(), 'ignoreNewLines')) {
+            static::output()->ignoreNewLines($ignore);
+        }
     }
 
     /**

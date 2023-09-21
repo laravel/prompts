@@ -12,11 +12,24 @@ class ConsoleOutput extends SymfonyConsoleOutput
     protected int $newLinesWritten = 1;
 
     /**
+     * Ignore incoming new lines, keeping the previous $newLinesWritten value.
+     */
+    protected bool $ignoreNewLines = false;
+
+    /**
      * How many new lines were written by the last output.
      */
     public function newLinesWritten(): int
     {
         return $this->newLinesWritten;
+    }
+
+    /**
+     * Ignore incoming new lines, keeping the previous $newLinesWritten value.
+     */
+    public function ignoreNewLines(bool $shouldIgnore = true): void
+    {
+        $this->ignoreNewLines = $shouldIgnore;
     }
 
     /**
@@ -28,6 +41,10 @@ class ConsoleOutput extends SymfonyConsoleOutput
 
         if ($newline) {
             $message .= \PHP_EOL;
+        }
+
+        if ($this->ignoreNewLines) {
+            return;
         }
 
         $trailingNewLines = strlen($message) - strlen(rtrim($message, \PHP_EOL));
