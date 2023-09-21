@@ -17,10 +17,16 @@ class Spinner extends Prompt
      */
     public int $count = 0;
 
+    public array $socketResults = [];
+
     /**
      * Whether the spinner can only be rendered once.
      */
     public bool $static = false;
+
+    protected Connection $socketToSpinner;
+
+    protected Connection $socketToTask;
 
     /**
      * Create a new Spinner instance.
@@ -42,9 +48,12 @@ class Spinner extends Prompt
     {
         $this->capturePreviousNewLines();
 
+        // Create a pair of socket connections so the two tasks can communicate
+        [$this->socketToTask, $this->socketToSpinner] = Connection::createPair();
+
         register_shutdown_function(fn () => $this->restoreCursor());
 
-        if (! function_exists('pcntl_fork')) {
+        if (!function_exists('pcntl_fork')) {
             return $this->renderStatically($callback);
         }
 
@@ -60,6 +69,10 @@ class Spinner extends Prompt
 
             if ($pid === 0) {
                 while (true) { // @phpstan-ignore-line
+                    foreach ($this->socketToTask->read() as $output) {
+                        $this->socketResults[] = $output;
+                    }
+
                     $this->render();
 
                     $this->count++;
@@ -69,7 +82,7 @@ class Spinner extends Prompt
             } else {
                 register_shutdown_function(fn () => posix_kill($pid, SIGHUP));
 
-                $result = $callback();
+                $result = $callback(new SpinnerMessenger($this->socketToSpinner));
 
                 posix_kill($pid, SIGHUP);
 
@@ -91,6 +104,9 @@ class Spinner extends Prompt
     {
         pcntl_async_signals($originalAsync);
         pcntl_signal(SIGINT, SIG_DFL);
+
+        $this->socketToSpinner->close();
+        $this->socketToTask->close();
 
         $this->eraseRenderedLines();
         $this->showCursor();
