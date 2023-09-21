@@ -34,5 +34,10 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.2.x-dev"
+        }
     }
 }
