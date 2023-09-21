@@ -32,9 +32,15 @@ class Key
 
     const SHIFT_TAB = "\e[Z";
 
-    const HOME = "\e[1~";
+    /**
+     * Home in xterm.
+     */
+    const HOME = "\e[H";
 
-    const END = "\e[4~";
+    /**
+     * End in xterm.
+     */
+    const END = "\e[F";
 
     /**
      * Cancel/SIGINT

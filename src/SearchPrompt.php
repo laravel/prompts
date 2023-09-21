@@ -50,10 +50,12 @@ class SearchPrompt extends Prompt
         $this->reduceScrollingToFitTerminal();
 
         $this->on('key', fn ($key) => match ($key) {
-            Key::UP, Key::UP_ARROW, Key::SHIFT_TAB, Key::CTRL_P => $this->highlightPrevious(),
-            Key::DOWN, Key::DOWN_ARROW, Key::TAB, Key::CTRL_N => $this->highlightNext(),
+            Key::UP, Key::UP_ARROW, Key::SHIFT_TAB, Key::CTRL_P => $this->highlightOffset(-1),
+            Key::DOWN, Key::DOWN_ARROW, Key::TAB, Key::CTRL_N => $this->highlightOffset(1),
+            Key::HOME, Key::CTRL_A => $this->highlighted !== null ? $this->highlight(0) : null,
+            Key::END, Key::CTRL_E => $this->highlighted !== null ? $this->highlight(count($this->matches()) - 1) : null,
             Key::ENTER => $this->highlighted !== null ? $this->submit() : $this->search(),
-            Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_B, Key::CTRL_F, Key::HOME, Key::END, Key::CTRL_A, Key::CTRL_E => $this->highlighted = null,
+            Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_B, Key::CTRL_F => $this->highlighted = null,
             default => $this->search(),
         });
     }
@@ -113,45 +115,43 @@ class SearchPrompt extends Prompt
         return array_slice($this->matches(), $this->firstVisible, $this->scroll, preserve_keys: true);
     }
 
-    /**
-     * Highlight the previous entry, or wrap around to the last entry.
-     */
-    protected function highlightPrevious(): void
+    protected function highlightOffset(int $offset): void
     {
-        if ($this->matches === []) {
+        if ($offset === 0 || $this->matches === []) {
+            return;
+        }
+
+        if (count($this->matches) === 1) {
+            $this->highlighted = $this->highlighted === null ? 0 : null;
+        } elseif ($this->highlighted === 0 && $offset < 0) {
             $this->highlighted = null;
         } elseif ($this->highlighted === null) {
-            $this->highlighted = count($this->matches) - 1;
-        } elseif ($this->highlighted === 0) {
+            $this->highlighted = $offset < 0 ? count($this->matches) - 1 : 0;
+        } elseif ($this->highlighted === count($this->matches) - 1 && $offset > 0) {
             $this->highlighted = null;
         } else {
-            $this->highlighted = $this->highlighted - 1;
+            $this->highlighted = $offset < 0 ? max(0, $this->highlighted + $offset) : min(count($this->matches) - 1, $this->highlighted + $offset);
+        }
+
+        $this->updateFirstVisible();
+    }
+
+    protected function highlight(?int $highlight): void
+    {
+        $this->highlighted = $highlight;
+        $this->updateFirstVisible();
+    }
+
+    protected function updateFirstVisible(): void
+    {
+        if ($this->highlighted === null) {
+            return;
         }
 
         if ($this->highlighted < $this->firstVisible) {
-            $this->firstVisible--;
-        } elseif ($this->highlighted === count($this->matches) - 1) {
-            $this->firstVisible = count($this->matches) - min($this->scroll, count($this->matches));
-        }
-    }
-
-    /**
-     * Highlight the next entry, or wrap around to the first entry.
-     */
-    protected function highlightNext(): void
-    {
-        if ($this->matches === []) {
-            $this->highlighted = null;
-        } elseif ($this->highlighted === null) {
-            $this->highlighted = 0;
-        } else {
-            $this->highlighted = $this->highlighted === count($this->matches) - 1 ? null : $this->highlighted + 1;
-        }
-
-        if ($this->highlighted > $this->firstVisible + $this->scroll - 1) {
-            $this->firstVisible++;
-        } elseif ($this->highlighted === 0 || $this->highlighted === null) {
-            $this->firstVisible = 0;
+            $this->firstVisible = $this->highlighted;
+        } elseif ($this->highlighted > $this->firstVisible + $this->scroll - 1) {
+            $this->firstVisible = $this->highlighted - $this->scroll + 1;
         }
     }
 
