@@ -4,7 +4,6 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
-use Illuminate\Support\LazyCollection;
 use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
@@ -29,9 +28,9 @@ class Progress extends Prompt
     /**
      * The items to iterate over.
      *
-     * @var array<mixed>|LazyCollection<int, mixed>
+     * @var array<mixed>
      */
-    public array|LazyCollection $items;
+    public array $items;
 
     /**
      * The original value of pcntl_async_signals
@@ -41,10 +40,10 @@ class Progress extends Prompt
     /**
      * Create a new ProgressBar instance.
      *
-     * @param  array<mixed>|Collection<int, mixed>|LazyCollection<int, mixed>  $items
+     * @param  array<mixed>|Collection<int, mixed>  $items
      * @param  ?Closure(string): ?string  $callback
      */
-    public function __construct(public string $label, array|Collection|LazyCollection $items, public ?Closure $callback = null)
+    public function __construct(public string $label, array|Collection $items, public ?Closure $callback = null)
     {
         $this->items = $items instanceof Collection ? $items->all() : $items;
         $this->total = count($this->items);

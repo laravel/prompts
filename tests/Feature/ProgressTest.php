@@ -97,3 +97,17 @@ it('can provide an item label when in manual mode', function () {
         Prompt::assertOutputContains($state);
     }
 });
+
+it('accepts a collection', function () {
+    Prompt::fake();
+
+    progress(
+        label: 'Adding States',
+        items: collect([
+            'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
+        ]),
+        callback: fn () => usleep(1000),
+    );
+
+    Prompt::assertOutputContains('Adding States');
+});

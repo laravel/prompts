@@ -4,7 +4,6 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
-use Illuminate\Support\LazyCollection;
 
 /**
  * Prompt the user for text input.
@@ -166,10 +165,10 @@ function table(array|Collection $headers = [], array|Collection $rows = null): v
 /**
  * Display a progress bar.
  *
- * @param  array<mixed>|Collection<int, mixed>|LazyCollection<int, mixed>  $items
+ * @param  array<mixed>|Collection<int, mixed>  $items
  * @param  ?Closure(string): ?string  $callback
  */
-function progress(string $label, array|Collection|LazyCollection $items, ?Closure $callback = null): ?Progress
+function progress(string $label, array|Collection $items, ?Closure $callback = null): ?Progress
 {
     return (new Progress($label, $items, $callback))->display();
 }
