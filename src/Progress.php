@@ -142,6 +142,34 @@ class Progress extends Prompt
     }
 
     /**
+     * Get or set the label.
+     */
+    public function label(string $label = null): static|string
+    {
+        if ($label === null) {
+            return $this->label;
+        }
+
+        $this->label = $label;
+
+        return $this;
+    }
+
+    /**
+     * Get or set the hint.
+     */
+    public function hint(string $hint = null): static|string
+    {
+        if ($hint === null) {
+            return $this->hint;
+        }
+
+        $this->hint = $hint;
+
+        return $this;
+    }
+
+    /**
      * Get the completion percentage.
      */
     public function percentage(): int|float
@@ -170,7 +198,7 @@ class Progress extends Prompt
     /**
      * Reset the terminal.
      */
-    public function resetTerminal(): void
+    protected function resetTerminal(): void
     {
         if (isset($this->originalAsync)) {
             pcntl_async_signals($this->originalAsync);
