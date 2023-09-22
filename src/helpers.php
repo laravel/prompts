@@ -165,10 +165,12 @@ function table(array|Collection $headers = [], array|Collection $rows = null): v
 /**
  * Display a progress bar.
  *
- * @param  array<mixed>|Collection<int, mixed>  $items
- * @param  ?Closure(string): ?string  $callback
+ * @template T of mixed
+ *
+ * @param  iterable<T>|int  $steps
+ * @param  ?Closure(($steps is int ? int : T), Progress): ?string  $callback
  */
-function progress(string $label, array|Collection $items, ?Closure $callback = null): ?Progress
+function progress(string $label, iterable|int $steps, Closure $callback = null): ?Progress
 {
-    return (new Progress($label, $items, $callback))->display();
+    return (new Progress($label, $steps, $callback))->display();
 }

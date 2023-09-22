@@ -11,7 +11,7 @@ $states = [
 
 progress(
     label: 'Adding States',
-    items: $states,
+    steps: $states,
     callback: function ($item) {
         usleep(250_000);
     },
@@ -19,16 +19,17 @@ progress(
 
 progress(
     label: 'Adding States With Label',
-    items: $states,
+    steps: $states,
     callback: function ($item) {
         usleep(250_000);
+
         return $item;
     },
 );
 
 $progress = progress(
     label: 'Adding States Manually',
-    items: $states,
+    steps: $states,
 );
 
 $progress->start();

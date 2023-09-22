@@ -4,22 +4,35 @@ use Laravel\Prompts\Prompt;
 
 use function Laravel\Prompts\progress;
 
-it('renders a progress bar', function () {
+it('renders a progress bar', function ($steps) {
     Prompt::fake();
-
-    $states = [
-        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-    ];
 
     progress(
         label: 'Adding States',
-        items: $states,
+        steps: $steps,
         callback: fn () => usleep(1000),
     );
 
-    Prompt::assertOutputContains('Adding States');
-    Prompt::assertOutputDoesntContain('Alabama');
-});
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+     ┌ Adding States ───────────────────────────────────────────────┐
+     │                                                              │
+     └──────────────────────────────────────────────────────────────┘
+    OUTPUT);
+
+    Prompt::assertStrippedOutputContains('│ ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆                                              │');
+    Prompt::assertStrippedOutputContains('│ ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆                               │');
+    Prompt::assertStrippedOutputContains('│ ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ │');
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+     ┌ Adding States ───────────────────────────────────────────────┐
+     │ ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ │
+     └──────────────────────────────────────────────────────────────┘
+    OUTPUT);
+})->with([
+    'array' => [['Alabama', 'Alaska', 'Arizona', 'Arkansas']],
+    'collection' => [collect(['Alabama', 'Alaska', 'Arizona', 'Arkansas'])],
+    'integer' => [4],
+]);
 
 it('renders a progress bar with an item label', function () {
     Prompt::fake();
@@ -30,7 +43,7 @@ it('renders a progress bar with an item label', function () {
 
     progress(
         label: 'Adding States',
-        items: $states,
+        steps: $states,
         callback: function ($item) {
             usleep(1000);
 
@@ -54,7 +67,7 @@ it('returns a manual progress bar when no callback is supplied', function () {
 
     $progress = progress(
         label: 'Adding States',
-        items: $states,
+        steps: count($states),
     );
 
     $progress->start();
@@ -79,7 +92,7 @@ it('can provide an item label when in manual mode', function () {
 
     $progress = progress(
         label: 'Adding States',
-        items: $states,
+        steps: count($states),
     );
 
     $progress->start();
@@ -96,18 +109,4 @@ it('can provide an item label when in manual mode', function () {
     foreach ($states as $state) {
         Prompt::assertOutputContains($state);
     }
-});
-
-it('accepts a collection', function () {
-    Prompt::fake();
-
-    progress(
-        label: 'Adding States',
-        items: collect([
-            'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-        ]),
-        callback: fn () => usleep(1000),
-    );
-
-    Prompt::assertOutputContains('Adding States');
 });

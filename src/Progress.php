@@ -3,7 +3,6 @@
 namespace Laravel\Prompts;
 
 use Closure;
-use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
@@ -16,7 +15,7 @@ class Progress extends Prompt
     public int $progress = 0;
 
     /**
-     * The total number of items.
+     * The total number of steps.
      */
     public int $total = 0;
 
@@ -26,13 +25,6 @@ class Progress extends Prompt
     public string $itemLabel = '';
 
     /**
-     * The items to iterate over.
-     *
-     * @var array<mixed>
-     */
-    public array $items;
-
-    /**
      * The original value of pcntl_async_signals
      */
     protected bool $originalAsync;
@@ -40,13 +32,18 @@ class Progress extends Prompt
     /**
      * Create a new ProgressBar instance.
      *
-     * @param  array<mixed>|Collection<int, mixed>  $items
-     * @param  ?Closure(string): ?string  $callback
+     * @template T
+     *
+     * @param  iterable<T>|int  $steps
+     * @param  ?Closure(($steps is int ? int : T), Progress): ?string  $callback
      */
-    public function __construct(public string $label, array|Collection $items, public ?Closure $callback = null)
+    public function __construct(public string $label, public iterable|int $steps, public ?Closure $callback = null)
     {
-        $this->items = $items instanceof Collection ? $items->all() : $items;
-        $this->total = count($this->items);
+        $this->total = match (true) {
+            is_int($this->steps) => $this->steps,
+            is_countable($this->steps) => count($this->steps),
+            is_iterable($this->steps) => iterator_count($this->steps),
+        };
 
         if ($this->total === 0) {
             throw new InvalidArgumentException('Progress bar must have at least one item.');
@@ -56,21 +53,27 @@ class Progress extends Prompt
     /**
      * Display the progress bar.
      */
-    public function display(): static|null
+    public function display(): ?static
     {
         $this->capturePreviousNewLines();
 
         if ($this->callback === null) {
-            // They want to control the progress bar manually
             return $this;
         }
 
         $this->start();
 
         try {
-            foreach ($this->items as $item) {
-                $result = ($this->callback)($item);
-                $this->advance(is_scalar($result) ? (string) $result : '');
+            if (is_int($this->steps)) {
+                for ($i = 0; $i < $this->steps; $i++) {
+                    $result = ($this->callback)($i, $this);
+                    $this->advance(is_scalar($result) ? (string) $result : '');
+                }
+            } else {
+                foreach ($this->steps as $step) {
+                    $result = ($this->callback)($step, $this);
+                    $this->advance(is_scalar($result) ? (string) $result : '');
+                }
             }
         } catch (Throwable $e) {
             $this->state = 'error';
