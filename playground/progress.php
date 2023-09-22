@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\LazyCollection;
+
 use function Laravel\Prompts\progress;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -44,6 +46,21 @@ progress(
     'Processing with Exception',
     $states,
     fn ($item) => $item === 'Arkansas' ? throw new Exception('Issue with Arkansas!') : usleep(250_000),
+);
+
+$users = LazyCollection::times(20, fn ($number) => [
+    'id' => $number,
+    'name' => 'Joe',
+]);
+
+progress(
+    label: 'Processing Users',
+    items: $users,
+    callback: function ($item) {
+        usleep(250_000);
+
+        return $item['name'] . ' #' . $item['id'];
+    },
 );
 
 echo str_repeat(PHP_EOL, 6);

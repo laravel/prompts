@@ -4,6 +4,7 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
@@ -28,17 +29,17 @@ class Progress extends Prompt
     /**
      * The items to iterate over.
      *
-     * @var array<mixed>
+     * @var array<mixed>|LazyCollection<int, mixed>
      */
-    public array $items;
+    public array|LazyCollection $items;
 
     /**
      * Create a new ProgressBar instance.
      *
-     * @param  array<mixed>|Collection<int, mixed>  $items
+     * @param  array<mixed>|Collection<int, mixed>|LazyCollection<int, mixed>  $items
      * @param  ?Closure(string): ?string  $callback
      */
-    public function __construct(public string $label, array|Collection $items, public ?Closure $callback = null)
+    public function __construct(public string $label, array|Collection|LazyCollection $items, public ?Closure $callback = null)
     {
         $this->items = $items instanceof Collection ? $items->all() : $items;
         $this->total = count($this->items);
@@ -73,6 +74,12 @@ class Progress extends Prompt
             $this->showCursor();
 
             throw $e;
+        }
+
+        if ($this->itemLabel !== '') {
+            // Just pause for one moment to show the final item label
+            // so it doesn't look like it was skipped
+            usleep(250_000);
         }
 
         $this->finish();
