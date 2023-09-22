@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
 
-class ProgressBar extends Prompt
+class Progress extends Prompt
 {
     /**
      * The current progress bar item count.

@@ -2,9 +2,9 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use Laravel\Prompts\ProgressBar;
+use Laravel\Prompts\Progress;
 
-class ProgressBarRenderer extends Renderer
+class ProgressRenderer extends Renderer
 {
     use Concerns\DrawsBoxes;
 
@@ -16,7 +16,7 @@ class ProgressBarRenderer extends Renderer
     /**
      * Render the progress bar.
      */
-    public function __invoke(ProgressBar $progressBar): string
+    public function __invoke(Progress $progressBar): string
     {
         $percentage = $progressBar->progress / $progressBar->total;
 

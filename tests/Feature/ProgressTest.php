@@ -2,7 +2,7 @@
 
 use Laravel\Prompts\Prompt;
 
-use function Laravel\Prompts\progressBar;
+use function Laravel\Prompts\progress;
 
 it('renders a progress bar', function () {
     Prompt::fake();
@@ -11,7 +11,7 @@ it('renders a progress bar', function () {
         'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
     ];
 
-    progressBar(
+    progress(
         label: 'Adding States',
         items: $states,
         callback: fn () => usleep(1000),
@@ -28,7 +28,7 @@ it('renders a progress bar with an item label', function () {
         'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
     ];
 
-    progressBar(
+    progress(
         label: 'Adding States',
         items: $states,
         callback: function ($item) {
@@ -52,7 +52,7 @@ it('returns a manual progress bar when no callback is supplied', function () {
         'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
     ];
 
-    $progress = progressBar(
+    $progress = progress(
         label: 'Adding States',
         items: $states,
     );
@@ -77,7 +77,7 @@ it('can provide an item label when in manual mode', function () {
         'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
     ];
 
-    $progress = progressBar(
+    $progress = progress(
         label: 'Adding States',
         items: $states,
     );

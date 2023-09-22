@@ -168,7 +168,7 @@ function table(array|Collection $headers = [], array|Collection $rows = null): v
  * @param  array<mixed>|Collection<int, mixed>  $items
  * @param  ?Closure(string): ?string  $callback
  */
-function progressBar(string $label, array|Collection $items, ?Closure $callback = null): ?ProgressBar
+function progress(string $label, array|Collection $items, ?Closure $callback = null): ?Progress
 {
-    return (new ProgressBar($label, $items, $callback))->display();
+    return (new Progress($label, $items, $callback))->display();
 }

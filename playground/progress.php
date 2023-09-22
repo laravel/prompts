@@ -1,6 +1,6 @@
 <?php
 
-use function Laravel\Prompts\progressBar;
+use function Laravel\Prompts\progress;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -9,7 +9,7 @@ $states = [
     'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
 ];
 
-progressBar(
+progress(
     label: 'Adding States',
     items: $states,
     callback: function ($item) {
@@ -17,7 +17,7 @@ progressBar(
     },
 );
 
-progressBar(
+progress(
     label: 'Adding States With Label',
     items: $states,
     callback: function ($item) {
@@ -26,7 +26,7 @@ progressBar(
     },
 );
 
-$progressBar = progressBar(
+$progressBar = progress(
     label: 'Adding States Manually',
     items: $states,
 );
@@ -40,7 +40,7 @@ foreach ($states as $state) {
 
 $progressBar->finish();
 
-progressBar(
+progress(
     'Processing with Exception',
     $states,
     fn ($item) => $item === 'Arkansas' ? throw new Exception('Issue with Arkansas!') : usleep(250_000),
