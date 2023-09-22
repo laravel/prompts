@@ -161,3 +161,14 @@ function table(array|Collection $headers = [], array|Collection $rows = null): v
 {
     (new Table($headers, $rows))->display();
 }
+
+/**
+ * Display a progress bar.
+ *
+ * @param  array<mixed>|Collection<int, mixed>  $items
+ * @param  ?Closure(string): ?string  $callback
+ */
+function progressBar(string $label, array|Collection $items, ?Closure $callback = null): ?ProgressBar
+{
+    return (new ProgressBar($label, $items, $callback))->display();
+}
