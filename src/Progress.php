@@ -34,6 +34,11 @@ class Progress extends Prompt
     public array|LazyCollection $items;
 
     /**
+     * The original value of pcntl_async_signals
+     */
+    protected bool $originalAsync;
+
+    /**
      * Create a new ProgressBar instance.
      *
      * @param  array<mixed>|Collection<int, mixed>|LazyCollection<int, mixed>  $items
@@ -71,7 +76,8 @@ class Progress extends Prompt
         } catch (Throwable $e) {
             $this->state = 'error';
             $this->render();
-            $this->showCursor();
+            $this->restoreCursor();
+            $this->resetTerminal();
 
             throw $e;
         }
@@ -92,6 +98,11 @@ class Progress extends Prompt
      */
     public function start(): void
     {
+        if (function_exists('pcntl_signal')) {
+            $this->originalAsync = pcntl_async_signals(true);
+            pcntl_signal(SIGINT, fn () => exit());
+        }
+
         $this->state = 'active';
         $this->hideCursor();
         $this->render();
@@ -114,7 +125,8 @@ class Progress extends Prompt
     {
         $this->state = 'submit';
         $this->render();
-        $this->showCursor();
+        $this->restoreCursor();
+        $this->resetTerminal();
     }
 
     /**
@@ -143,8 +155,22 @@ class Progress extends Prompt
         return true;
     }
 
+    /**
+     * Reset the terminal.
+     */
+    public function resetTerminal(): void
+    {
+        if (isset($this->originalAsync)) {
+            pcntl_async_signals($this->originalAsync);
+            pcntl_signal(SIGINT, SIG_DFL);
+        }
+    }
+
+    /**
+     * Restore the cursor.
+     */
     public function __destruct()
     {
-        $this->showCursor();
+        $this->restoreCursor();
     }
 }
