@@ -28,7 +28,8 @@
         "phpstan/phpstan-mockery": "^1.1"
     },
     "conflict": {
-        "laravel/framework": "<10.25.0"
+        "illuminate/console": ">=10.17.0 <10.25.0",
+        "laravel/framework": ">=10.17.0 <10.25.0"
     },
     "suggest": {
         "ext-pcntl": "Required for the spinner to be animated."
