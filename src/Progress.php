@@ -7,6 +7,9 @@ use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
 
+/**
+ * @template TReturn of mixed
+ */
 class Progress extends Prompt
 {
     /**
@@ -32,10 +35,10 @@ class Progress extends Prompt
     /**
      * Create a new ProgressBar instance.
      *
-     * @template T
+     * @template TStep of mixed
      *
-     * @param  iterable<T>|int  $steps
-     * @param  ?Closure(($steps is int ? int : T), Progress): ?string  $callback
+     * @param  iterable<TStep>|int  $steps
+     * @param  ?Closure(($steps is int ? int : TStep), Progress<TReturn>): TReturn  $callback
      */
     public function __construct(public string $label, public iterable|int $steps, public ?Closure $callback = null)
     {
@@ -52,8 +55,10 @@ class Progress extends Prompt
 
     /**
      * Display the progress bar.
+     *
+     * @return $this|array<TReturn>
      */
-    public function display(): ?static
+    public function display(): static|array
     {
         $this->capturePreviousNewLines();
 
@@ -63,15 +68,17 @@ class Progress extends Prompt
 
         $this->start();
 
+        $result = [];
+
         try {
             if (is_int($this->steps)) {
                 for ($i = 0; $i < $this->steps; $i++) {
-                    $result = ($this->callback)($i, $this);
+                    $result[] = ($this->callback)($i, $this);
                     $this->advance();
                 }
             } else {
                 foreach ($this->steps as $step) {
-                    $result = ($this->callback)($step, $this);
+                    $result[] = ($this->callback)($step, $this);
                     $this->advance();
                 }
             }
@@ -92,7 +99,7 @@ class Progress extends Prompt
 
         $this->finish();
 
-        return null;
+        return $result;
     }
 
     /**

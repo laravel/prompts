@@ -165,12 +165,14 @@ function table(array|Collection $headers = [], array|Collection $rows = null): v
 /**
  * Display a progress bar.
  *
- * @template T of mixed
+ * @template TStep of mixed
+ * @template TReturn of mixed
  *
- * @param  iterable<T>|int  $steps
- * @param  ?Closure(($steps is int ? int : T), Progress): ?string  $callback
+ * @param  iterable<TStep>|int  $steps
+ * @param  ?Closure(($steps is int ? int : TStep), Progress<TReturn>): TReturn  $callback
+ * @return Progress<TReturn>|array<TReturn>
  */
-function progress(string $label, iterable|int $steps, Closure $callback = null): ?Progress
+function progress(string $label, iterable|int $steps, Closure $callback = null): Progress|array
 {
     return (new Progress($label, $steps, $callback))->display();
 }

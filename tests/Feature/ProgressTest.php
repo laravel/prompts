@@ -34,6 +34,20 @@ it('renders a progress bar', function ($steps) {
     'integer' => [4],
 ]);
 
+it('returns the results of the callback', function () {
+    Prompt::fake();
+
+    $result = progress(
+        label: 'Uppercasing States',
+        steps: ['Alabama', 'Alaska', 'Arizona', 'Arkansas'],
+        callback: function ($item) {
+            return strtoupper($item);
+        }
+    );
+
+    expect($result)->toBe(['ALABAMA', 'ALASKA', 'ARIZONA', 'ARKANSAS']);
+});
+
 it('renders a progress bar with an item label', function () {
     Prompt::fake();
 

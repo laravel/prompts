@@ -15,6 +15,8 @@ class ProgressRenderer extends Renderer
 
     /**
      * Render the progress bar.
+     *
+     * @param  Progress<mixed>  $progress
      */
     public function __invoke(Progress $progress): string
     {
