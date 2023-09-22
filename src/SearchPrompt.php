@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use InvalidArgumentException;
 
 class SearchPrompt extends Prompt
 {
@@ -19,11 +20,6 @@ class SearchPrompt extends Prompt
      * The index of the first visible option.
      */
     public int $firstVisible = 0;
-
-    /**
-     * Whether user input is required.
-     */
-    public bool|string $required = true;
 
     /**
      * The cached matches.
@@ -43,8 +39,13 @@ class SearchPrompt extends Prompt
         public string $placeholder = '',
         public int $scroll = 5,
         public ?Closure $validate = null,
-        public string $hint = ''
+        public string $hint = '',
+        public bool|string $required = true,
     ) {
+        if ($this->required === false) {
+            throw new InvalidArgumentException('Argument [required] must be true or a string.');
+        }
+
         $this->trackTypedValue(submit: false);
 
         $this->reduceScrollingToFitTerminal();
