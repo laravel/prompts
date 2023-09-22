@@ -47,7 +47,7 @@ class Terminal
      */
     public function restoreTty(): void
     {
-        if ($this->initialTtyMode) {
+        if (isset($this->initialTtyMode)) {
             $this->exec("stty {$this->initialTtyMode}");
 
             $this->initialTtyMode = null;

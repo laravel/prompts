@@ -23,6 +23,11 @@ class Spinner extends Prompt
     public bool $static = false;
 
     /**
+     * The process ID after forking.
+     */
+    protected int $pid;
+
+    /**
      * Create a new Spinner instance.
      */
     public function __construct(public string $message = '')
@@ -42,8 +47,6 @@ class Spinner extends Prompt
     {
         $this->capturePreviousNewLines();
 
-        register_shutdown_function(fn () => $this->restoreCursor());
-
         if (! function_exists('pcntl_fork')) {
             return $this->renderStatically($callback);
         }
@@ -56,9 +59,9 @@ class Spinner extends Prompt
             $this->hideCursor();
             $this->render();
 
-            $pid = pcntl_fork();
+            $this->pid = pcntl_fork();
 
-            if ($pid === 0) {
+            if ($this->pid === 0) {
                 while (true) { // @phpstan-ignore-line
                     $this->render();
 
@@ -67,11 +70,7 @@ class Spinner extends Prompt
                     usleep($this->interval * 1000);
                 }
             } else {
-                register_shutdown_function(fn () => posix_kill($pid, SIGHUP));
-
                 $result = $callback();
-
-                posix_kill($pid, SIGHUP);
 
                 $this->resetTerminal($originalAsync);
 
@@ -93,7 +92,6 @@ class Spinner extends Prompt
         pcntl_signal(SIGINT, SIG_DFL);
 
         $this->eraseRenderedLines();
-        $this->showCursor();
     }
 
     /**
@@ -115,7 +113,6 @@ class Spinner extends Prompt
             $result = $callback();
         } finally {
             $this->eraseRenderedLines();
-            $this->showCursor();
         }
 
         return $result;
@@ -147,5 +144,17 @@ class Spinner extends Prompt
         $lines = explode(PHP_EOL, $this->prevFrame);
         $this->moveCursor(-999, -count($lines) + 1);
         $this->eraseDown();
+    }
+
+    /**
+     * Clean up after the spinner.
+     */
+    public function __destruct()
+    {
+        if (! empty($this->pid)) {
+            posix_kill($this->pid, SIGHUP);
+        }
+
+        parent::__destruct();
     }
 }
