@@ -16,17 +16,28 @@ it('renders a progress bar', function ($steps) {
     Prompt::assertStrippedOutputContains(<<<'OUTPUT'
      ┌ Adding States ───────────────────────────────────────────────┐
      │                                                              │
-     └──────────────────────────────────────────────────────────────┘
+     └───────────────────────────────────────────────────────── 0/4 ┘
     OUTPUT);
 
-    Prompt::assertStrippedOutputContains('│ ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆                                              │');
-    Prompt::assertStrippedOutputContains('│ ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆                               │');
-    Prompt::assertStrippedOutputContains('│ ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ │');
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+     │ ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆                                              │
+     └───────────────────────────────────────────────────────── 1/4 ┘
+    OUTPUT);
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+     │ ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆                               │
+     └───────────────────────────────────────────────────────── 2/4 ┘
+    OUTPUT);
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+     │ ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆                │
+     └───────────────────────────────────────────────────────── 3/4 ┘
+    OUTPUT);
 
     Prompt::assertStrippedOutputContains(<<<'OUTPUT'
      ┌ Adding States ───────────────────────────────────────────────┐
      │ ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ │
-     └──────────────────────────────────────────────────────────────┘
+     └───────────────────────────────────────────────────────── 4/4 ┘
     OUTPUT);
 })->with([
     'array' => [['Alabama', 'Alaska', 'Arizona', 'Arkansas']],
