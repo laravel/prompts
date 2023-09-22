@@ -12,8 +12,14 @@ $states = [
 progress(
     label: 'Adding States',
     steps: $states,
-    callback: function ($item) {
+    callback: function ($item, $progress) {
         usleep(250_000);
+
+        if ($item === 'Arkansas') {
+            $progress->label = 'Arkansas is not a state! Nice try.';
+        }
+
+        return $item . ' added.';
     },
 );
 
