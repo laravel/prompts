@@ -22,7 +22,7 @@ progress(
     steps: $states,
     callback: function ($item, $progress) {
         usleep(250_000);
-        $progress->itemLabel = $item;
+        $progress->hint = $item;
     },
 );
 
@@ -35,7 +35,7 @@ $progress->start();
 
 foreach ($states as $state) {
     usleep(250_000);
-    $progress->itemLabel = $state;
+    $progress->hint = $state;
     $progress->advance();
 }
 

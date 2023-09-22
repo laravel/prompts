@@ -23,11 +23,6 @@ class Progress extends Prompt
     public int $total = 0;
 
     /**
-     * The label for the current item.
-     */
-    public string $itemLabel = '';
-
-    /**
      * The original value of pcntl_async_signals
      */
     protected bool $originalAsync;
@@ -40,7 +35,7 @@ class Progress extends Prompt
      * @param  iterable<TStep>|int  $steps
      * @param  ?Closure(($steps is int ? int : TStep), Progress<TReturn>): TReturn  $callback
      */
-    public function __construct(public string $label, public iterable|int $steps, public ?Closure $callback = null)
+    public function __construct(public string $label, public iterable|int $steps, public ?Closure $callback = null, public string $hint = '')
     {
         $this->total = match (true) {
             is_int($this->steps) => $this->steps,
@@ -91,8 +86,8 @@ class Progress extends Prompt
             throw $e;
         }
 
-        if ($this->itemLabel !== '') {
-            // Just pause for one moment to show the final item label
+        if ($this->hint !== '') {
+            // Just pause for one moment to show the final hint
             // so it doesn't look like it was skipped
             usleep(250_000);
         }

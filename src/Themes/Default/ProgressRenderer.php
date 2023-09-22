@@ -42,8 +42,8 @@ class ProgressRenderer extends Renderer
                     $this->dim($filled),
                 )
                 ->when(
-                    $progress->itemLabel,
-                    fn () => $this->hint($progress->itemLabel),
+                    $progress->hint,
+                    fn () => $this->hint($progress->hint),
                     fn () => $this->newLine() // Space for errors
                 )
         };

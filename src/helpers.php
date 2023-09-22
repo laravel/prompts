@@ -172,7 +172,7 @@ function table(array|Collection $headers = [], array|Collection $rows = null): v
  * @param  ?Closure(($steps is int ? int : TStep), Progress<TReturn>): TReturn  $callback
  * @return Progress<TReturn>|array<TReturn>
  */
-function progress(string $label, iterable|int $steps, Closure $callback = null): Progress|array
+function progress(string $label, iterable|int $steps, Closure $callback = null, string $hint = ''): Progress|array
 {
-    return (new Progress($label, $steps, $callback))->display();
+    return (new Progress($label, $steps, $callback, $hint))->display();
 }
