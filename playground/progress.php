@@ -20,10 +20,9 @@ progress(
 progress(
     label: 'Adding States With Label',
     steps: $states,
-    callback: function ($item) {
+    callback: function ($item, $progress) {
         usleep(250_000);
-
-        return $item;
+        $progress->itemLabel = $item;
     },
 );
 
@@ -36,7 +35,8 @@ $progress->start();
 
 foreach ($states as $state) {
     usleep(250_000);
-    $progress->advance($state);
+    $progress->itemLabel = $state;
+    $progress->advance();
 }
 
 $progress->finish();

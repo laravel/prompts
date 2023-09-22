@@ -67,12 +67,12 @@ class Progress extends Prompt
             if (is_int($this->steps)) {
                 for ($i = 0; $i < $this->steps; $i++) {
                     $result = ($this->callback)($i, $this);
-                    $this->advance(is_scalar($result) ? (string) $result : '');
+                    $this->advance();
                 }
             } else {
                 foreach ($this->steps as $step) {
                     $result = ($this->callback)($step, $this);
-                    $this->advance(is_scalar($result) ? (string) $result : '');
+                    $this->advance();
                 }
             }
         } catch (Throwable $e) {
@@ -113,10 +113,14 @@ class Progress extends Prompt
     /**
      * Advance the progress bar.
      */
-    public function advance(string $itemLabel = ''): void
+    public function advance(int $step = 1): void
     {
-        $this->itemLabel = $itemLabel;
-        $this->progress++;
+        $this->progress += $step;
+
+        if ($this->progress > $this->total) {
+            $this->progress = $this->total;
+        }
+
         $this->render();
     }
 

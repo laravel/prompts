@@ -44,10 +44,9 @@ it('renders a progress bar with an item label', function () {
     progress(
         label: 'Adding States',
         steps: $states,
-        callback: function ($item) {
+        callback: function ($item, $progress) {
             usleep(1000);
-
-            return $item;
+            $progress->itemLabel = $item;
         }
     );
 
@@ -99,7 +98,8 @@ it('can provide an item label when in manual mode', function () {
 
     foreach ($states as $state) {
         usleep(1000);
-        $progress->advance($state);
+        $progress->itemLabel = $state;
+        $progress->advance();
     }
 
     $progress->finish();
