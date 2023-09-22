@@ -25,10 +25,11 @@ function password(string $label, string $placeholder = '', bool|string $required
  * Prompt the user to select an option.
  *
  * @param  array<int|string, string>|Collection<int|string, string>  $options
+ * @param  true|string  $required
  */
-function select(string $label, array|Collection $options, int|string $default = null, int $scroll = 5, Closure $validate = null, string $hint = ''): int|string
+function select(string $label, array|Collection $options, int|string $default = null, int $scroll = 5, Closure $validate = null, string $hint = '', bool|string $required = true): int|string
 {
-    return (new SelectPrompt($label, $options, $default, $scroll, $validate, $hint))->prompt();
+    return (new SelectPrompt($label, $options, $default, $scroll, $validate, $hint, $required))->prompt();
 }
 
 /**
@@ -65,10 +66,11 @@ function suggest(string $label, array|Collection|Closure $options, string $place
  * Allow the user to search for an option.
  *
  * @param  Closure(string): array<int|string, string>  $options
+ * @param  true|string  $required
  */
-function search(string $label, Closure $options, string $placeholder = '', int $scroll = 5, Closure $validate = null, string $hint = ''): int|string
+function search(string $label, Closure $options, string $placeholder = '', int $scroll = 5, Closure $validate = null, string $hint = '', bool|string $required = true): int|string
 {
-    return (new SearchPrompt($label, $options, $placeholder, $scroll, $validate, $hint))->prompt();
+    return (new SearchPrompt($label, $options, $placeholder, $scroll, $validate, $hint, $required))->prompt();
 }
 
 /**

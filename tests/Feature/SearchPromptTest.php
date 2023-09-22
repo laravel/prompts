@@ -123,3 +123,9 @@ it('fails when when non-interactive', function () {
 
     search('What is your favorite color?', fn () => []);
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('allows the required validation message to be customised when non-interactive', function () {
+    Prompt::interactive(false);
+
+    search('What is your favorite color?', fn () => [], required: 'The color is required.');
+})->throws(NonInteractiveValidationException::class, 'The color is required.');
