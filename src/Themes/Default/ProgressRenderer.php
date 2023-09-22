@@ -18,7 +18,7 @@ class ProgressRenderer extends Renderer
      */
     public function __invoke(Progress $progress): string
     {
-        $filled = str_repeat($this->barCharacter, (int) ceil($progress->percentage() * $this->minWidth));
+        $filled = str_repeat($this->barCharacter, (int) ceil($progress->percentage() * min($this->minWidth, $progress->terminal()->cols() - 6)));
 
         return match ($progress->state) {
             'submit' => $this
