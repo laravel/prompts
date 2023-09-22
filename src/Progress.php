@@ -118,6 +118,14 @@ class Progress extends Prompt
     }
 
     /**
+     * Get the completion percentage.
+     */
+    public function percentage(): int|float
+    {
+        return $this->progress / $this->total;
+    }
+
+    /**
      * Disable prompting for input.
      *
      * @throws \RuntimeException

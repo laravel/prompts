@@ -28,19 +28,19 @@ progress(
     },
 );
 
-$progressBar = progress(
+$progress = progress(
     label: 'Adding States Manually',
     items: $states,
 );
 
-$progressBar->start();
+$progress->start();
 
 foreach ($states as $state) {
     usleep(250_000);
-    $progressBar->advance($state);
+    $progress->advance($state);
 }
 
-$progressBar->finish();
+$progress->finish();
 
 progress(
     'Processing with Exception',
