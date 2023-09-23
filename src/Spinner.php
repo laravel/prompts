@@ -3,13 +3,10 @@
 namespace Laravel\Prompts;
 
 use Closure;
-use Laravel\Prompts\Concerns\Colors;
 use RuntimeException;
 
 class Spinner extends Prompt
 {
-    use Colors;
-
     /**
      * How long to wait between rendering each frame.
      */
@@ -38,7 +35,7 @@ class Spinner extends Prompt
     /**
      * Whether the spinner has streamed output.
      */
-    protected bool $hasStreamingOutput = false;
+    public bool $hasStreamingOutput = false;
 
     /**
      * Create a new Spinner instance.
@@ -111,30 +108,15 @@ class Spinner extends Prompt
         $output = $this->sockets->streamingOutput();
 
         if ($output !== '') {
+            $this->hasStreamingOutput = true;
+
             $this->resetCursorPosition();
-
-            $breaksAfterLine = max($this->newLinesWritten() - 1, 0);
-
-            if ($this->hasStreamingOutput) {
-                $this->moveCursor(-999, -2 - $breaksAfterLine);
-            }
-
             $this->eraseDown();
 
             collect(explode(PHP_EOL, rtrim($output)))
                 ->each(fn ($line) => static::writeDirectlyWithFormatting(' ' . $line . PHP_EOL));
 
-            $this->writeDirectly(str_repeat(PHP_EOL, max(2 - $this->newLinesWritten(), 1)));
-            // TODO: Calculate the width of this line based on the terminal width/boxes
-            static::writeDirectlyWithFormatting(' ' . $this->dim(str_repeat('─', 63)) . PHP_EOL);
-
-            if ($breaksAfterLine > 0) {
-                $this->writeDirectly(str_repeat(PHP_EOL, $breaksAfterLine));
-            }
-
             $this->writeDirectly($this->prevFrame);
-
-            $this->hasStreamingOutput = true;
         }
     }
 

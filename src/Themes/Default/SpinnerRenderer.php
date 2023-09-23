@@ -34,6 +34,10 @@ class SpinnerRenderer extends Renderer
 
         $spinner->interval = $this->interval;
 
+        if ($spinner->hasStreamingOutput) {
+            $this->line($this->dim(str_repeat('─', 63)));
+        }
+
         $frame = $this->frames[$spinner->count % count($this->frames)];
 
         return $this->line(" {$this->cyan($frame)} {$spinner->message}");
