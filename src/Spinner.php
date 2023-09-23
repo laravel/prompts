@@ -3,10 +3,13 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Laravel\Prompts\Concerns\Colors;
 use RuntimeException;
 
 class Spinner extends Prompt
 {
+    use Colors;
+
     /**
      * How long to wait between rendering each frame.
      */
@@ -17,16 +20,20 @@ class Spinner extends Prompt
      */
     public int $count = 0;
 
-    public array $socketResults = [];
+    /**
+     * Whether the spinner has streamed output.
+     */
+    public bool $hasStreamingOutput = false;
 
     /**
      * Whether the spinner can only be rendered once.
      */
     public bool $static = false;
 
-    protected Connection $socketToSpinner;
-
-    protected Connection $socketToTask;
+    /**
+     * The sockets used to communicate between the spinner and the task.
+     */
+    protected SpinnerSockets $sockets;
 
     /**
      * Create a new Spinner instance.
@@ -48,8 +55,7 @@ class Spinner extends Prompt
     {
         $this->capturePreviousNewLines();
 
-        // Create a pair of socket connections so the two tasks can communicate
-        [$this->socketToTask, $this->socketToSpinner] = Connection::createPair();
+        $this->sockets = SpinnerSockets::create();
 
         register_shutdown_function(fn () => $this->restoreCursor());
 
@@ -69,10 +75,8 @@ class Spinner extends Prompt
 
             if ($pid === 0) {
                 while (true) { // @phpstan-ignore-line
-                    foreach ($this->socketToTask->read() as $output) {
-                        $this->socketResults[] = $output;
-                    }
-
+                    $this->setNewMessage();
+                    $this->renderStreamedOutput();
                     $this->render();
 
                     $this->count++;
@@ -82,7 +86,7 @@ class Spinner extends Prompt
             } else {
                 register_shutdown_function(fn () => posix_kill($pid, SIGHUP));
 
-                $result = $callback(new SpinnerMessenger($this->socketToSpinner));
+                $result = $callback($this->sockets->messenger());
 
                 posix_kill($pid, SIGHUP);
 
@@ -98,6 +102,41 @@ class Spinner extends Prompt
     }
 
     /**
+     * Render any streaming output from the spinner, if available.
+     */
+    protected function renderStreamedOutput(): void
+    {
+        $output = $this->sockets->streamingOutput();
+
+        if ($output !== '') {
+            $this->hasStreamingOutput = true;
+
+            $lines = count(explode(PHP_EOL, $this->prevFrame)) - 1;
+
+            $this->moveCursor(-999, $lines * -1);
+            $this->eraseDown();
+
+            collect(explode(PHP_EOL, rtrim($output)))
+                ->each(fn ($line) => static::writeDirectlyWithFormatting(' ' . $line . PHP_EOL));
+
+            static::writeDirectlyWithFormatting($this->dim(str_repeat('─', 60)));
+            $this->writeDirectly($this->prevFrame);
+        }
+    }
+
+    /**
+     * Set the new message if one is available.
+     */
+    protected function setNewMessage(): void
+    {
+        $message = $this->sockets->message();
+
+        if ($message !== '') {
+            $this->message = $message;
+        }
+    }
+
+    /**
      * Reset the terminal.
      */
     protected function resetTerminal(bool $originalAsync): void
@@ -105,8 +144,7 @@ class Spinner extends Prompt
         pcntl_async_signals($originalAsync);
         pcntl_signal(SIGINT, SIG_DFL);
 
-        $this->socketToSpinner->close();
-        $this->socketToTask->close();
+        $this->sockets->close();
 
         $this->eraseRenderedLines();
         $this->showCursor();

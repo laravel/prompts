@@ -18,9 +18,9 @@ class Connection
     ) {
         socket_set_nonblock($this->socket);
 
-        $this->timeoutSeconds = floor($this->timeout);
+        $this->timeoutSeconds = (int) floor($this->timeout);
 
-        $this->timeoutMicroseconds = ($this->timeout * 1_000_000) - ($this->timeoutSeconds * 1_000_000);
+        $this->timeoutMicroseconds = (int) (($this->timeout * 1_000_000) - ($this->timeoutSeconds * 1_000_000));
     }
 
     /**

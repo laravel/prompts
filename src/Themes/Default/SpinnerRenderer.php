@@ -36,12 +36,6 @@ class SpinnerRenderer extends Renderer
 
         $frame = $this->frames[$spinner->count % count($this->frames)];
 
-        collect($spinner->socketResults)->each(fn ($result) => $this->line(' ' . $result));
-
-        if (count($spinner->socketResults)) {
-            $this->line('');
-        }
-
         return $this->line(" {$this->cyan($frame)} {$spinner->message}");
     }
 }

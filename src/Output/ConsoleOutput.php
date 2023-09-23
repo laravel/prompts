@@ -46,4 +46,12 @@ class ConsoleOutput extends SymfonyConsoleOutput
     {
         parent::doWrite($message, false);
     }
+
+    /**
+     * Write output directly, bypassing newline capture.
+     */
+    public function writeDirectlyWithFormatting(string $message): void
+    {
+        $this->writeDirectly($this->getFormatter()->format($message));
+    }
 }

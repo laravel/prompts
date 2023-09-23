@@ -170,6 +170,17 @@ abstract class Prompt
     }
 
     /**
+     * Write output directly with formatting, bypassing newline capture.
+     */
+    protected static function writeDirectlyWithFormatting(string $message): void
+    {
+        match (true) {
+            method_exists(static::output(), 'writeDirectlyWithFormatting') => static::output()->writeDirectlyWithFormatting($message),
+            default => static::writeDirectly($message),
+        };
+    }
+
+    /**
      * Get the terminal instance.
      */
     public static function terminal(): Terminal
