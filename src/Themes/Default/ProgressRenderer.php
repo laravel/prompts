@@ -11,7 +11,7 @@ class ProgressRenderer extends Renderer
     /**
      * The character to use for the progress bar.
      */
-    protected string $barCharacter = '▆';
+    protected string $barCharacter = '█';
 
     /**
      * Render the progress bar.
