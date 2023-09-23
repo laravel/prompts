@@ -81,7 +81,7 @@ class Progress extends Prompt
             $this->state = 'error';
             $this->render();
             $this->restoreCursor();
-            $this->resetTerminal();
+            $this->resetSignals();
 
             throw $e;
         }
@@ -138,7 +138,7 @@ class Progress extends Prompt
         $this->state = 'submit';
         $this->render();
         $this->restoreCursor();
-        $this->resetTerminal();
+        $this->resetSignals();
     }
 
     /**
@@ -196,9 +196,9 @@ class Progress extends Prompt
     }
 
     /**
-     * Reset the terminal.
+     * Reset the signal handling.
      */
-    protected function resetTerminal(): void
+    protected function resetSignals(): void
     {
         if (isset($this->originalAsync)) {
             pcntl_async_signals($this->originalAsync);
