@@ -21,11 +21,6 @@ class Spinner extends Prompt
     public int $count = 0;
 
     /**
-     * Whether the spinner has streamed output.
-     */
-    public bool $hasStreamingOutput = false;
-
-    /**
      * Whether the spinner can only be rendered once.
      */
     public bool $static = false;
@@ -108,8 +103,6 @@ class Spinner extends Prompt
         $output = $this->sockets->streamingOutput();
 
         if ($output !== '') {
-            $this->hasStreamingOutput = true;
-
             $lines = count(explode(PHP_EOL, $this->prevFrame)) - 1;
 
             $this->moveCursor(-999, $lines * -1);
