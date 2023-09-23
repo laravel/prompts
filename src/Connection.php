@@ -9,6 +9,7 @@ use Socket;
 class Connection
 {
     protected int $timeoutSeconds;
+
     protected int $timeoutMicroseconds;
 
     protected function __construct(
@@ -129,6 +130,6 @@ class Connection
 
     private function isInterruptionErrorException(): bool
     {
-        return 4 === socket_last_error();
+        return socket_last_error() === 4;
     }
 }

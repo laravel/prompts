@@ -4,9 +4,8 @@ use Laravel\Prompts\SpinnerMessenger;
 use Symfony\Component\Process\Process;
 
 use function Laravel\Prompts\spin;
-use function Laravel\Prompts\text;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 spin(
     function (SpinnerMessenger $messenger) {

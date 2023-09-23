@@ -59,7 +59,7 @@ class Spinner extends Prompt
 
         register_shutdown_function(fn () => $this->restoreCursor());
 
-        if (!function_exists('pcntl_fork')) {
+        if (! function_exists('pcntl_fork')) {
             return $this->renderStatically($callback);
         }
 
@@ -117,7 +117,7 @@ class Spinner extends Prompt
             $this->eraseDown();
 
             collect(explode(PHP_EOL, rtrim($output)))
-                ->each(fn ($line) => static::writeDirectlyWithFormatting(' ' . $line . PHP_EOL));
+                ->each(fn ($line) => static::writeDirectlyWithFormatting(' '.$line.PHP_EOL));
 
             static::writeDirectlyWithFormatting($this->dim(str_repeat('─', 60)));
             $this->writeDirectly($this->prevFrame);
