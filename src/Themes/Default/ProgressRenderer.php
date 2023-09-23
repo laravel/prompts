@@ -43,7 +43,7 @@ class ProgressRenderer extends Renderer
                     $this->truncate($progress->label, $progress->terminal()->cols() - 6),
                     $this->dim($filled),
                     color: 'red',
-                    info: $progress->progress . '/' . $progress->total,
+                    info: $progress->progress.'/'.$progress->total,
                 )
                 ->error('Cancelled.'),
 

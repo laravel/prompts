@@ -35,7 +35,7 @@ trait DrawsBoxes
         $titleLabel = $titleLength > 0 ? " {$title} " : '';
         $topBorder = str_repeat('─', $width - $titleLength + ($titleLength > 0 ? 0 : 2));
 
-        $this->line("{$this->{$color}(' ┌')}{$titleLabel}{$this->{$color}($topBorder . '┐')}");
+        $this->line("{$this->{$color}(' ┌')}{$titleLabel}{$this->{$color}($topBorder.'┐')}");
 
         $bodyLines->each(function ($line) use ($width, $color) {
             $this->line("{$this->{$color}(' │')} {$this->pad($line, $width)} {$this->{$color}('│')}");
