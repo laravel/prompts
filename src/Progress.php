@@ -8,7 +8,7 @@ use RuntimeException;
 use Throwable;
 
 /**
- * @template TReturn of mixed
+ * @template TSteps of iterable<mixed>|int
  */
 class Progress extends Prompt
 {
@@ -30,17 +30,15 @@ class Progress extends Prompt
     /**
      * Create a new ProgressBar instance.
      *
-     * @template TStep of mixed
-     *
-     * @param  iterable<TStep>|int  $steps
-     * @param  ?Closure(($steps is int ? int : TStep), Progress<TReturn>): TReturn  $callback
+     * @param  TSteps  $steps
      */
-    public function __construct(public string $label, public iterable|int $steps, public ?Closure $callback = null, public string $hint = '')
+    public function __construct(public string $label, public iterable|int $steps, public string $hint = '')
     {
         $this->total = match (true) {
             is_int($this->steps) => $this->steps,
             is_countable($this->steps) => count($this->steps),
             is_iterable($this->steps) => iterator_count($this->steps),
+            default => throw new InvalidArgumentException('Unable to count steps.'),
         };
 
         if ($this->total === 0) {
@@ -49,18 +47,15 @@ class Progress extends Prompt
     }
 
     /**
-     * Display the progress bar.
+     * Map over the steps while rendering the progress bar.
      *
-     * @return $this|array<TReturn>
+     * @template TReturn
+     *
+     * @param  Closure((TSteps is int ? int : value-of<TSteps>), $this): TReturn  $callback
+     * @return array<TReturn>
      */
-    public function display(): static|array
+    public function map(Closure $callback): array
     {
-        $this->capturePreviousNewLines();
-
-        if ($this->callback === null) {
-            return $this;
-        }
-
         $this->start();
 
         $result = [];
@@ -68,12 +63,12 @@ class Progress extends Prompt
         try {
             if (is_int($this->steps)) {
                 for ($i = 0; $i < $this->steps; $i++) {
-                    $result[] = ($this->callback)($i, $this);
+                    $result[] = $callback($i, $this);
                     $this->advance();
                 }
             } else {
                 foreach ($this->steps as $step) {
-                    $result[] = ($this->callback)($step, $this);
+                    $result[] = $callback($step, $this);
                     $this->advance();
                 }
             }
@@ -102,6 +97,8 @@ class Progress extends Prompt
      */
     public function start(): void
     {
+        $this->capturePreviousNewLines();
+
         if (function_exists('pcntl_signal')) {
             $this->originalAsync = pcntl_async_signals(true);
             pcntl_signal(SIGINT, function () {

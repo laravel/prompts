@@ -4,6 +4,7 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 /**
  * Prompt the user for text input.
@@ -165,14 +166,30 @@ function table(array|Collection $headers = [], array|Collection $rows = null): v
 /**
  * Display a progress bar.
  *
- * @template TStep of mixed
- * @template TReturn of mixed
+ * @template TSteps of iterable<mixed>|int
+ * @template TReturn
  *
- * @param  iterable<TStep>|int  $steps
- * @param  ?Closure(($steps is int ? int : TStep), Progress<TReturn>): TReturn  $callback
- * @return Progress<TReturn>|array<TReturn>
+ * @param  string  $label
+ * @param  TSteps  $steps
+ * @param  ?Closure((TSteps is int ? int : value-of<TSteps>), Progress<TSteps>): TReturn  $callback
+ * @param  string  $hint
+ * @return ($callback is null ? Progress<TSteps> : array<TReturn>)
  */
-function progress(iterable|int $steps, string $label = '', Closure $callback = null, string $hint = ''): Progress|array
+function progress($label = '', $steps = null, $callback = null, $hint = null): array|Progress
 {
-    return (new Progress($label, $steps, $callback, $hint))->display();
+    if (! is_string($label)) {
+        [$label, $steps, $callback, $hint] = ['', $label, $steps, $callback];
+    }
+
+    if ($steps === null) {
+        throw new InvalidArgumentException('Steps must be an array or integer');
+    }
+
+    $progress = new Progress($label, $steps, $hint ?? '');
+
+    if ($callback !== null) {
+        return $progress->map($callback);
+    }
+
+    return $progress;
 }

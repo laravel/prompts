@@ -59,7 +59,7 @@ it('returns the results of the callback', function () {
     expect($result)->toBe(['ALABAMA', 'ALASKA', 'ARIZONA', 'ARKANSAS']);
 });
 
-it('renders a progress bar with an item label', function () {
+it('can update the label and hint while rendering', function () {
     Prompt::fake();
 
     $states = [
@@ -71,31 +71,78 @@ it('renders a progress bar with an item label', function () {
         steps: $states,
         callback: function ($item, $progress) {
             usleep(1000);
-            $progress->hint($item);
+            $progress->label(strtoupper($item));
+            $progress->hint(strtolower($item));
         }
     );
 
     Prompt::assertOutputContains('Adding States');
 
     foreach ($states as $state) {
-        Prompt::assertOutputContains($state);
+        Prompt::assertOutputContains(strtoupper($state));
+        Prompt::assertOutputContains(strtolower($state));
     }
 });
 
-it('renders a progress bar without a label', function () {
+it('renders a progress bar without a label using named arguments', function () {
     Prompt::fake();
 
-    $states = [
-        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-    ];
-
     progress(
-        steps: $states,
+        steps: 6,
         callback: function ($item, $progress) {
             usleep(1000);
             $progress->hint($item);
         }
     );
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+     ┌──────────────────────────────────────────────────────────────┐
+     │                                                              │
+     └───────────────────────────────────────────────────────── 0/6 ┘
+    OUTPUT);
+});
+
+it('renders a progress bar with a label using named arguments', function () {
+    Prompt::fake();
+
+    progress(
+        label: 'Adding States',
+        steps: 6,
+        callback: function ($item, $progress) {
+            usleep(1000);
+            $progress->hint($item);
+        }
+    );
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+     ┌ Adding States ───────────────────────────────────────────────┐
+     │                                                              │
+     └───────────────────────────────────────────────────────── 0/6 ┘
+    OUTPUT);
+});
+
+it('renders a progress bar with a label using positional arguments', function () {
+    Prompt::fake();
+
+    progress('Adding States', 6, function ($item, $progress) {
+        usleep(1000);
+        $progress->hint($item);
+    });
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+     ┌ Adding States ───────────────────────────────────────────────┐
+     │                                                              │
+     └───────────────────────────────────────────────────────── 0/6 ┘
+    OUTPUT);
+});
+
+it('renders a progress bar without a label using positional arguments', function () {
+    Prompt::fake();
+
+    progress(6, function ($item, $progress) {
+        usleep(1000);
+        $progress->hint($item);
+    });
 
     Prompt::assertStrippedOutputContains(<<<'OUTPUT'
      ┌──────────────────────────────────────────────────────────────┐
@@ -129,7 +176,7 @@ it('returns a manual progress bar when no callback is supplied', function () {
     Prompt::assertOutputDoesntContain('Alabama');
 });
 
-it('can provide an item label when in manual mode', function () {
+it('can update the label and hint in manual mode', function () {
     Prompt::fake();
 
     $states = [
@@ -146,7 +193,8 @@ it('can provide an item label when in manual mode', function () {
     foreach ($states as $state) {
         usleep(1000);
         $progress
-            ->hint($state)
+            ->label(strtoupper($state))
+            ->hint(strtolower($state))
             ->advance();
     }
 
@@ -155,6 +203,7 @@ it('can provide an item label when in manual mode', function () {
     Prompt::assertOutputContains('Adding States');
 
     foreach ($states as $state) {
-        Prompt::assertOutputContains($state);
+        Prompt::assertOutputContains(strtoupper($state));
+        Prompt::assertOutputContains(strtolower($state));
     }
 });
