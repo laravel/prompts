@@ -36,6 +36,11 @@ class Spinner extends Prompt
     protected SpinnerSockets $sockets;
 
     /**
+     * The process ID after forking.
+     */
+    protected int $pid;
+
+    /**
      * Create a new Spinner instance.
      */
     public function __construct(public string $message = '')
@@ -57,9 +62,7 @@ class Spinner extends Prompt
 
         $this->sockets = SpinnerSockets::create();
 
-        register_shutdown_function(fn () => $this->restoreCursor());
-
-        if (! function_exists('pcntl_fork')) {
+        if (!function_exists('pcntl_fork')) {
             return $this->renderStatically($callback);
         }
 
@@ -71,9 +74,9 @@ class Spinner extends Prompt
             $this->hideCursor();
             $this->render();
 
-            $pid = pcntl_fork();
+            $this->pid = pcntl_fork();
 
-            if ($pid === 0) {
+            if ($this->pid === 0) {
                 while (true) { // @phpstan-ignore-line
                     $this->setNewMessage();
                     $this->renderStreamedOutput();
@@ -84,11 +87,7 @@ class Spinner extends Prompt
                     usleep($this->interval * 1000);
                 }
             } else {
-                register_shutdown_function(fn () => posix_kill($pid, SIGHUP));
-
                 $result = $callback($this->sockets->messenger());
-
-                posix_kill($pid, SIGHUP);
 
                 $this->resetTerminal($originalAsync);
 
@@ -117,7 +116,7 @@ class Spinner extends Prompt
             $this->eraseDown();
 
             collect(explode(PHP_EOL, rtrim($output)))
-                ->each(fn ($line) => static::writeDirectlyWithFormatting(' '.$line.PHP_EOL));
+                ->each(fn ($line) => static::writeDirectlyWithFormatting(' ' . $line . PHP_EOL));
 
             static::writeDirectlyWithFormatting($this->dim(str_repeat('─', 60)));
             $this->writeDirectly($this->prevFrame);
@@ -147,7 +146,6 @@ class Spinner extends Prompt
         $this->sockets->close();
 
         $this->eraseRenderedLines();
-        $this->showCursor();
     }
 
     /**
@@ -169,7 +167,6 @@ class Spinner extends Prompt
             $result = $callback();
         } finally {
             $this->eraseRenderedLines();
-            $this->showCursor();
         }
 
         return $result;
@@ -201,5 +198,17 @@ class Spinner extends Prompt
         $lines = explode(PHP_EOL, $this->prevFrame);
         $this->moveCursor(-999, -count($lines) + 1);
         $this->eraseDown();
+    }
+
+    /**
+     * Clean up after the spinner.
+     */
+    public function __destruct()
+    {
+        if (!empty($this->pid)) {
+            posix_kill($this->pid, SIGHUP);
+        }
+
+        parent::__destruct();
     }
 }

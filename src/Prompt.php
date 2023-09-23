@@ -74,52 +74,48 @@ abstract class Prompt
      */
     public function prompt(): mixed
     {
-        static::$interactive ??= stream_isatty(STDIN);
-
-        if (! static::$interactive) {
-            return $this->default();
-        }
-
-        $this->capturePreviousNewLines();
-
-        if (static::shouldFallback()) {
-            return $this->fallback();
-        }
-
-        $this->checkEnvironment();
-
         try {
-            static::terminal()->setTty('-icanon -isig -echo');
-        } catch (Throwable $e) {
-            static::output()->writeln("<comment>{$e->getMessage()}</comment>");
-            static::fallbackWhen(true);
+            static::$interactive ??= stream_isatty(STDIN);
 
-            return $this->fallback();
-        }
+            if (! static::$interactive) {
+                return $this->default();
+            }
 
-        register_shutdown_function(function () {
-            $this->restoreCursor();
-            static::terminal()->restoreTty();
-        });
+            $this->capturePreviousNewLines();
 
-        $this->hideCursor();
-        $this->render();
+            if (static::shouldFallback()) {
+                return $this->fallback();
+            }
 
-        while (($key = static::terminal()->read()) !== null) {
-            $continue = $this->handleKeyPress($key);
+            $this->checkEnvironment();
 
+            try {
+                static::terminal()->setTty('-icanon -isig -echo');
+            } catch (Throwable $e) {
+                static::output()->writeln("<comment>{$e->getMessage()}</comment>");
+                static::fallbackWhen(true);
+
+                return $this->fallback();
+            }
+
+            $this->hideCursor();
             $this->render();
 
-            if ($continue === false || $key === Key::CTRL_C) {
-                $this->restoreCursor();
-                static::terminal()->restoreTty();
+            while (($key = static::terminal()->read()) !== null) {
+                $continue = $this->handleKeyPress($key);
 
-                if ($key === Key::CTRL_C) {
-                    static::terminal()->exit();
+                $this->render();
+
+                if ($continue === false || $key === Key::CTRL_C) {
+                    if ($key === Key::CTRL_C) {
+                        static::terminal()->exit();
+                    }
+
+                    return $this->value();
                 }
-
-                return $this->value();
             }
+        } finally {
+            $this->clearListeners();
         }
     }
 
@@ -353,5 +349,15 @@ abstract class Prompt
         if (PHP_OS_FAMILY === 'Windows') {
             throw new RuntimeException('Prompts is not currently supported on Windows. Please use WSL or configure a fallback.');
         }
+    }
+
+    /**
+     * Restore the cursor and terminal state.
+     */
+    public function __destruct()
+    {
+        $this->restoreCursor();
+
+        static::terminal()->restoreTty();
     }
 }
