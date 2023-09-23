@@ -62,7 +62,7 @@ class Spinner extends Prompt
 
         $this->sockets = SpinnerSockets::create();
 
-        if (!function_exists('pcntl_fork')) {
+        if (! function_exists('pcntl_fork')) {
             return $this->renderStatically($callback);
         }
 
@@ -122,11 +122,11 @@ class Spinner extends Prompt
             $this->eraseDown();
 
             collect(explode(PHP_EOL, rtrim($output)))
-                ->each(fn ($line) => static::writeDirectlyWithFormatting(' ' . $line . PHP_EOL));
+                ->each(fn ($line) => static::writeDirectlyWithFormatting(' '.$line.PHP_EOL));
 
             $this->writeDirectly(str_repeat(PHP_EOL, max(2 - $this->newLinesWritten(), 1)));
             // TODO: Calculate the width of this line based on the terminal width/boxes
-            static::writeDirectlyWithFormatting(' ' . $this->dim(str_repeat('─', 63)) . PHP_EOL);
+            static::writeDirectlyWithFormatting(' '.$this->dim(str_repeat('─', 63)).PHP_EOL);
 
             if ($breaksAfterLine > 0) {
                 $this->writeDirectly(str_repeat(PHP_EOL, $breaksAfterLine));
@@ -220,7 +220,7 @@ class Spinner extends Prompt
      */
     public function __destruct()
     {
-        if (!empty($this->pid)) {
+        if (! empty($this->pid)) {
             posix_kill($this->pid, SIGHUP);
         }
 
