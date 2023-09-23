@@ -82,6 +82,28 @@ it('renders a progress bar with an item label', function () {
     }
 });
 
+it('renders a progress bar without a label', function () {
+    Prompt::fake();
+
+    $states = [
+        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
+    ];
+
+    progress(
+        steps: $states,
+        callback: function ($item, $progress) {
+            usleep(1000);
+            $progress->hint($item);
+        }
+    );
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+     ┌──────────────────────────────────────────────────────────────┐
+     │                                                              │
+     └───────────────────────────────────────────────────────── 0/6 ┘
+    OUTPUT);
+});
+
 it('returns a manual progress bar when no callback is supplied', function () {
     Prompt::fake();
 

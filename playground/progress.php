@@ -2,12 +2,21 @@
 
 use function Laravel\Prompts\progress;
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 $states = [
     'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
     'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
 ];
+
+progress(
+    steps: $states,
+    callback: function ($item, $progress) {
+        usleep(250_000);
+
+        return $item . ' added.';
+    },
+);
 
 progress(
     label: 'Adding States',
