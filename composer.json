@@ -25,7 +25,8 @@
         "phpstan/phpstan": "^1.10",
         "pestphp/pest": "^2.3",
         "mockery/mockery": "^1.5",
-        "phpstan/phpstan-mockery": "^1.1"
+        "phpstan/phpstan-mockery": "^1.1",
+        "spatie/ray": "^1.39"
     },
     "conflict": {
         "illuminate/console": ">=10.17.0 <10.25.0",

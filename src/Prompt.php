@@ -252,7 +252,7 @@ abstract class Prompt
     /**
      * Reset the cursor position to the beginning of the previous frame.
      */
-    private function resetCursorPosition(): void
+    protected function resetCursorPosition(): void
     {
         $lines = count(explode(PHP_EOL, $this->prevFrame)) - 1;
 
