@@ -139,28 +139,20 @@ class Progress extends Prompt
     }
 
     /**
-     * Get or set the label.
+     * Update the label.
      */
-    public function label(string $label = null): static|string
+    public function label(string $label): static
     {
-        if ($label === null) {
-            return $this->label;
-        }
-
         $this->label = $label;
 
         return $this;
     }
 
     /**
-     * Get or set the hint.
+     * Update the hint.
      */
-    public function hint(string $hint = null): static|string
+    public function hint(string $hint): static
     {
-        if ($hint === null) {
-            return $this->hint;
-        }
-
         $this->hint = $hint;
 
         return $this;
