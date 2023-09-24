@@ -45,6 +45,25 @@ it('renders a progress bar', function ($steps) {
     'integer' => [4],
 ]);
 
+it('renders a progress bar without a label', function () {
+    Prompt::fake();
+
+    progress(
+        label: '',
+        steps: 6,
+        callback: function ($item, $progress) {
+            usleep(1000);
+            $progress->hint($item);
+        }
+    );
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+     ┌──────────────────────────────────────────────────────────────┐
+     │                                                              │
+     └───────────────────────────────────────────────────────── 0/6 ┘
+    OUTPUT);
+});
+
 it('returns the results of the callback', function () {
     Prompt::fake();
 
@@ -82,73 +101,6 @@ it('can update the label and hint while rendering', function () {
         Prompt::assertOutputContains(strtoupper($state));
         Prompt::assertOutputContains(strtolower($state));
     }
-});
-
-it('renders a progress bar without a label using named arguments', function () {
-    Prompt::fake();
-
-    progress(
-        steps: 6,
-        callback: function ($item, $progress) {
-            usleep(1000);
-            $progress->hint($item);
-        }
-    );
-
-    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
-     ┌──────────────────────────────────────────────────────────────┐
-     │                                                              │
-     └───────────────────────────────────────────────────────── 0/6 ┘
-    OUTPUT);
-});
-
-it('renders a progress bar with a label using named arguments', function () {
-    Prompt::fake();
-
-    progress(
-        label: 'Adding States',
-        steps: 6,
-        callback: function ($item, $progress) {
-            usleep(1000);
-            $progress->hint($item);
-        }
-    );
-
-    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
-     ┌ Adding States ───────────────────────────────────────────────┐
-     │                                                              │
-     └───────────────────────────────────────────────────────── 0/6 ┘
-    OUTPUT);
-});
-
-it('renders a progress bar with a label using positional arguments', function () {
-    Prompt::fake();
-
-    progress('Adding States', 6, function ($item, $progress) {
-        usleep(1000);
-        $progress->hint($item);
-    });
-
-    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
-     ┌ Adding States ───────────────────────────────────────────────┐
-     │                                                              │
-     └───────────────────────────────────────────────────────── 0/6 ┘
-    OUTPUT);
-});
-
-it('renders a progress bar without a label using positional arguments', function () {
-    Prompt::fake();
-
-    progress(6, function ($item, $progress) {
-        usleep(1000);
-        $progress->hint($item);
-    });
-
-    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
-     ┌──────────────────────────────────────────────────────────────┐
-     │                                                              │
-     └───────────────────────────────────────────────────────── 0/6 ┘
-    OUTPUT);
 });
 
 it('returns a manual progress bar when no callback is supplied', function () {

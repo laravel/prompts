@@ -4,7 +4,6 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
-use InvalidArgumentException;
 
 /**
  * Prompt the user for text input.
@@ -169,23 +168,13 @@ function table(array|Collection $headers = [], array|Collection $rows = null): v
  * @template TSteps of iterable<mixed>|int
  * @template TReturn
  *
- * @param  string  $label
  * @param  TSteps  $steps
  * @param  ?Closure((TSteps is int ? int : value-of<TSteps>), Progress<TSteps>): TReturn  $callback
- * @param  string  $hint
  * @return ($callback is null ? Progress<TSteps> : array<TReturn>)
  */
-function progress($label = '', $steps = null, $callback = null, $hint = null): array|Progress
+function progress(string $label, iterable|int $steps, Closure $callback = null, string $hint = ''): array|Progress
 {
-    if (! is_string($label)) {
-        [$label, $steps, $callback, $hint] = ['', $label, $steps, $callback];
-    }
-
-    if ($steps === null) {
-        throw new InvalidArgumentException('Steps must be an array or integer');
-    }
-
-    $progress = new Progress($label, $steps, $hint ?? '');
+    $progress = new Progress($label, $steps, $hint);
 
     if ($callback !== null) {
         return $progress->map($callback);

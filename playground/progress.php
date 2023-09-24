@@ -10,15 +10,6 @@ $states = [
 ];
 
 progress(
-    steps: $states,
-    callback: function ($item, $progress) {
-        usleep(250_000);
-
-        return $item.' added.';
-    },
-);
-
-progress(
     label: 'Adding States',
     steps: $states,
     callback: function ($item, $progress) {
