@@ -2,7 +2,7 @@
 
 use function Laravel\Prompts\textarea;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 $email = textarea(
     label: 'Tell me a story',
