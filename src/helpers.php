@@ -14,6 +14,14 @@ function text(string $label, string $placeholder = '', string $default = '', boo
 }
 
 /**
+ * Prompt the user for text input.
+ */
+function textarea(string $label, string $placeholder = '', string $default = '', bool|string $required = false, Closure $validate = null, string $hint = ''): string
+{
+    return (new TextareaPrompt($label, $placeholder, $default, $required, $validate, $hint))->prompt();
+}
+
+/**
  * Prompt the user for input, hiding the value.
  */
 function password(string $label, string $placeholder = '', bool|string $required = false, Closure $validate = null, string $hint = ''): string
