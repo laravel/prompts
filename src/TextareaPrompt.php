@@ -66,46 +66,6 @@ class TextareaPrompt extends Prompt
         );
     }
 
-    protected function checkScrollPosition()
-    {
-        $totalLineLength = 0;
-
-        $currentLineIndex = collect($this->lines())->search(function ($line) use (&$totalLineLength) {
-            $totalLineLength += mb_strlen($line);
-
-            return $totalLineLength >= $this->cursorPosition;
-        });
-
-        ray($this->firstVisible + $this->scroll, $currentLineIndex,);
-
-        if ($this->firstVisible + $this->scroll <= $currentLineIndex) {
-            $this->firstVisible++;
-        }
-
-
-        // if ($currentLineIndex < $this->firstVisible) {
-        //     $this->firstVisible--;
-        // }
-
-        // if ($currentLineIndex > $this->firstVisible + $this->scroll) {
-        //     $this->firstVisible++;
-        // }
-
-
-
-
-
-        // if ($this->firstVisible + $this->scroll < count($this->lines())) {
-        //     ray('adding');
-        //     $this->firstVisible++;
-        // }
-
-        // if ($this->firstVisible - $this->scroll > count($this->lines())) {
-        //     ray('subtracting');
-        //     $this->firstVisible--;
-        // }
-    }
-
     protected function handleUpKey(): void
     {
         if ($this->cursorPosition === 0) {
