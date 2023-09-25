@@ -43,7 +43,6 @@ class TextareaPrompt extends Prompt
                 if ($key === Key::ENTER) {
                     $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition) . $key . mb_substr($this->typedValue, $this->cursorPosition);
                     $this->cursorPosition++;
-                    // $this->checkScrollPosition();
                 }
 
                 if ($key[0] === "\e") {
@@ -62,31 +61,7 @@ class TextareaPrompt extends Prompt
                     if ($key === Key::CTRL_D) {
                         $this->submit();
                     }
-
-                    // elseif ($key === Key::BACKSPACE || $key === Key::CTRL_H) {
-                    //     if ($this->cursorPosition === 0) {
-                    //         return;
-                    //     }
-
-                    //     // $this->checkScrollPosition();
-                    // } elseif (ord($key) >= 32) {
-                    //     // $this->checkScrollPosition();
-                    // }
                 }
-
-                // $this->checkScrollPosition();
-
-                // ray($this->firstVisible, count($this->lines()));
-                // ray($this->firstVisible + $this->scroll < count($this->lines()));
-                // ray($this->firstVisible - $this->scroll > count($this->lines()));
-
-                // if ($this->firstVisible - $this->scroll > count($this->lines())) {
-                //     $this->firstVisible--;
-                // }
-
-                // if ($this->firstVisible + $this->scroll < count($this->lines())) {
-                //     $this->firstVisible++;
-                // }
             }
         );
     }
