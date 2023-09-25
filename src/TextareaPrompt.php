@@ -35,6 +35,7 @@ class TextareaPrompt extends Prompt
 
         $this->reduceScrollingToFitTerminal();
 
+        // TODO: Is this right? Or should it be at the end?
         $this->cursorPosition = 0;
 
         $this->on(
@@ -49,7 +50,6 @@ class TextareaPrompt extends Prompt
                     match ($key) {
                         Key::UP, Key::UP_ARROW, Key::CTRL_P => $this->handleUpKey(),
                         Key::DOWN, Key::DOWN_ARROW, Key::CTRL_N => $this->handleDownKey(),
-                        Key::DELETE => $this->checkScrollPosition(),
                         default => null,
                     };
 
@@ -77,23 +77,13 @@ class TextareaPrompt extends Prompt
         // Line length + 1 for the newline character
         $lineLengths = $lines->map(fn ($line, $index) => mb_strlen($line) + ($index === $lines->count() - 1 ? 0 : 1));
 
-        $totalLineLength = 0;
-
-        $currentLineIndex = $lineLengths->search(function ($lineLength) use (&$totalLineLength) {
-            $totalLineLength += $lineLength;
-
-            return $totalLineLength >= $this->cursorPosition;
-        });
+        $currentLineIndex = $this->currentLineIndex();
 
         if ($currentLineIndex === 0) {
             // They're already at the first line, jump them to the first position
             $this->cursorPosition = 0;
 
             return;
-        }
-
-        if ($currentLineIndex + $this->firstVisible < $this->scroll && $this->firstVisible > 0) {
-            $this->firstVisible--;
         }
 
         $currentLines = $lineLengths->slice(0, $currentLineIndex + 1);
@@ -103,17 +93,6 @@ class TextareaPrompt extends Prompt
         $destinationLineLength = $lineLengths->get($currentLineIndex - 1) ?? $currentLines->first();
 
         $newColumn = min($destinationLineLength, $currentColumn);
-
-        // ray($lineLengths->get($currentLineIndex - 1), compact(
-        //     'currentLineIndex',
-        //     'currentColumn',
-        //     'destinationLineLength',
-        //     'newColumn',
-        //     'currentLines',
-        //     'lineLengths',
-        //     'lines',
-        //     'totalLineLength'
-        // ));
 
         if ($newColumn < $currentColumn) {
             $newColumn--;
@@ -128,46 +107,28 @@ class TextareaPrompt extends Prompt
     {
         $lines = collect($this->lines());
 
-        // $this->firstVisible = min($lines->count() - $this->scroll, $this->firstVisible + 1);
-
-        // if ($this->cursorPosition === mb_strlen($lines->implode(PHP_EOL))) {
-        //     return;
-        // }
-
         // Line length + 1 for the newline character
         $lineLengths = $lines->map(fn ($line, $index) => mb_strlen($line) + ($index === $lines->count() - 1 ? 0 : 1));
 
-        $totalLineLengths = 0;
-
-        $currentLineIndex = $lineLengths->search(function ($lineLength) use (&$totalLineLengths) {
-            $totalLineLengths += $lineLength;
-
-            return $totalLineLengths >= $this->cursorPosition;
-        });
+        $currentLineIndex = $this->currentLineIndex();
 
         if ($currentLineIndex === $lines->count() - 1) {
             // They're already at the last line, jump them to the last position
-            // TODO: Fix this number, it's not using $lines
-            $this->cursorPosition = mb_strlen($this->typedValue);
+            $this->cursorPosition = mb_strlen($lines->implode(PHP_EOL));
 
             return;
         }
 
-        if ($currentLineIndex + 1 >= $this->firstVisible + $this->scroll) {
-            $this->firstVisible++;
-        }
-
+        // Lines up to and including the current line
         $currentLines = $lineLengths->slice(0, $currentLineIndex + 1);
 
         $currentColumn = $currentLines->last() - ($currentLines->sum() - $this->cursorPosition);
 
-        $newLineLength = $lineLengths->get($currentLineIndex + 1) ?? $currentLines->last();
+        $destinationLineLength = ($lineLengths->get($currentLineIndex + 1) ?? $currentLines->last()) - 1;
 
-        $newColumn = min($newLineLength, $currentColumn);
+        $newColumn = min($destinationLineLength, $currentColumn);
 
-        $fullLines = $lineLengths->slice(0, $currentLines->count());
-
-        $this->cursorPosition = $fullLines->sum() + $newColumn;
+        $this->cursorPosition = $currentLines->sum() + $newColumn;
     }
 
     /**
@@ -179,16 +140,19 @@ class TextareaPrompt extends Prompt
     {
         $currentLineIndex = $this->currentLineIndex();
 
+        $lines = $this->lines();
+
         if ($this->firstVisible + $this->scroll <= $currentLineIndex) {
             $this->firstVisible++;
         }
 
-        // Make sure there are always the scroll amount visible
-        if ($this->firstVisible + $this->scroll > count($this->lines())) {
-            $this->firstVisible = count($this->lines()) - $this->scroll;
+        if ($currentLineIndex === $this->firstVisible - 1) {
+            $this->firstVisible = max(0, $this->firstVisible - 1);
         }
 
-        return array_slice($this->lines(), $this->firstVisible, $this->scroll, preserve_keys: true);
+        $withCursor = $this->valueWithCursor(implode(PHP_EOL, $lines), 10_000);
+
+        return array_slice(explode(PHP_EOL, $withCursor), $this->firstVisible, $this->scroll, preserve_keys: true);
     }
 
     protected function currentLineIndex(): int
@@ -196,15 +160,16 @@ class TextareaPrompt extends Prompt
         $totalLineLength = 0;
 
         return collect($this->lines())->search(function ($line) use (&$totalLineLength) {
-            $totalLineLength += mb_strlen($line);
+            $totalLineLength += mb_strlen($line) + 1;
 
-            return $totalLineLength >= $this->cursorPosition;
+            return $totalLineLength > $this->cursorPosition;
         });
     }
 
     public function lines(): array
     {
-        $value = $this->valueWithCursor(10_000);
+        // TODO: Figure out the real number here, this comes from the renderer?
+        $value = wordwrap($this->value(), 59, PHP_EOL, true);
 
         $lines = explode(PHP_EOL, $value);
 
@@ -218,14 +183,11 @@ class TextareaPrompt extends Prompt
     /**
      * Get the entered value with a virtual cursor.
      */
-    public function valueWithCursor(int $maxWidth): string
+    public function valueWithCursor(string $value, int $maxWidth): string
     {
-        if ($this->value() === '') {
+        if ($value === '') {
             return $this->dim($this->addCursor($this->placeholder, 0, $maxWidth));
         }
-
-        // TODO: Figure out the real number here, this comes from the renderer?
-        $value = wordwrap($this->value(), 59, PHP_EOL, true);
 
         // TODO: Deal with max width properly
         return $this->addCursor($value, $this->cursorPosition, $maxWidth);
