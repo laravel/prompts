@@ -43,7 +43,6 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
             default => $this
                 ->box(
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    // $prompt->valueWithCursor($maxWidth),
                     $this->renderText($prompt),
                     info: 'Ctrl+D to submit'
                 )
@@ -62,7 +61,7 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
             $prompt->firstVisible,
             $prompt->scroll,
             count($prompt->lines()),
-            $prompt->terminal()->cols() - 6,
+            $this->minWidth,
         )->implode(PHP_EOL);
     }
 

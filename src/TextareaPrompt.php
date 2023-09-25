@@ -288,10 +288,9 @@ class TextareaPrompt extends Prompt
             return $this->dim($this->addCursor($this->placeholder, 0, $maxWidth));
         }
 
-        // TODO: Figure out the real number here, this comes from the renderer
-        // so maybe we just max it out.
+        // TODO: Figure out the real number here, this comes from the renderer?
         $value = wordwrap($this->value(), 59, PHP_EOL, true);
         // TODO: Deal with max width properly
-        return $this->addCursor($value, $this->cursorPosition, 10_000);
+        return $this->addCursor($value, $this->cursorPosition, $maxWidth);
     }
 }
