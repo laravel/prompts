@@ -6,8 +6,8 @@ use Closure;
 
 class TextareaPrompt extends Prompt
 {
-    use Concerns\TypedValue;
     use Concerns\ReducesScrollingToFitTerminal;
+    use Concerns\TypedValue;
 
     /**
      * The index of the first visible option.
@@ -41,7 +41,7 @@ class TextareaPrompt extends Prompt
             'key',
             function ($key) {
                 if ($key === Key::ENTER) {
-                    $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition) . $key . mb_substr($this->typedValue, $this->cursorPosition);
+                    $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition).$key.mb_substr($this->typedValue, $this->cursorPosition);
                     $this->cursorPosition++;
                     // $this->checkScrollPosition();
                 }
@@ -101,12 +101,11 @@ class TextareaPrompt extends Prompt
             return $totalLineLength >= $this->cursorPosition;
         });
 
-        ray($this->firstVisible + $this->scroll, $currentLineIndex,);
+        ray($this->firstVisible + $this->scroll, $currentLineIndex);
 
         if ($this->firstVisible + $this->scroll <= $currentLineIndex) {
             $this->firstVisible++;
         }
-
 
         // if ($currentLineIndex < $this->firstVisible) {
         //     $this->firstVisible--;
@@ -115,10 +114,6 @@ class TextareaPrompt extends Prompt
         // if ($currentLineIndex > $this->firstVisible + $this->scroll) {
         //     $this->firstVisible++;
         // }
-
-
-
-
 
         // if ($this->firstVisible + $this->scroll < count($this->lines())) {
         //     ray('adding');
@@ -153,6 +148,7 @@ class TextareaPrompt extends Prompt
         if ($currentLineIndex === 0) {
             // They're already at the first line, jump them to the first position
             $this->cursorPosition = 0;
+
             return;
         }
 
@@ -209,11 +205,11 @@ class TextareaPrompt extends Prompt
             return $totalLineLengths >= $this->cursorPosition;
         });
 
-
         if ($currentLineIndex === $lines->count() - 1) {
             // They're already at the last line, jump them to the last position
             // TODO: Fix this number, it's not using $lines
             $this->cursorPosition = mb_strlen($this->typedValue);
+
             return;
         }
 
@@ -290,6 +286,7 @@ class TextareaPrompt extends Prompt
 
         // TODO: Figure out the real number here, this comes from the renderer?
         $value = wordwrap($this->value(), 59, PHP_EOL, true);
+
         // TODO: Deal with max width properly
         return $this->addCursor($value, $this->cursorPosition, $maxWidth);
     }
