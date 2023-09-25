@@ -41,7 +41,7 @@ class TextareaPrompt extends Prompt
             'key',
             function ($key) {
                 if ($key === Key::ENTER) {
-                    $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition) . $key . mb_substr($this->typedValue, $this->cursorPosition);
+                    $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition).$key.mb_substr($this->typedValue, $this->cursorPosition);
                     $this->cursorPosition++;
                 }
 
