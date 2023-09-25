@@ -241,33 +241,42 @@ class TextareaPrompt extends Prompt
      */
     public function visible(): array
     {
-        $totalLineLength = 0;
-
-        $currentLineIndex = collect($this->lines())->search(function ($line) use (&$totalLineLength) {
-            $totalLineLength += mb_strlen($line);
-
-            return $totalLineLength >= $this->cursorPosition;
-        });
-
-        ray($this->firstVisible,  $this->firstVisible + $this->scroll, $currentLineIndex,);
+        $currentLineIndex = $this->currentLineIndex();
 
         if ($this->firstVisible + $this->scroll <= $currentLineIndex) {
             $this->firstVisible++;
         }
 
-        //Make sure there are always 5 visible
-        // if ($this->firstVisible + $this->scroll < ) {
-        //     $this->firstVisible--;
-        // }
+        // Make sure there are always the scroll amount visible
+        if ($this->firstVisible + $this->scroll > count($this->lines())) {
+            $this->firstVisible = count($this->lines()) - $this->scroll;
+        }
 
         return array_slice($this->lines(), $this->firstVisible, $this->scroll, preserve_keys: true);
+    }
+
+    protected function currentLineIndex(): int
+    {
+        $totalLineLength = 0;
+
+        return collect($this->lines())->search(function ($line) use (&$totalLineLength) {
+            $totalLineLength += mb_strlen($line);
+
+            return $totalLineLength >= $this->cursorPosition;
+        });
     }
 
     public function lines(): array
     {
         $value = $this->valueWithCursor(10_000);
 
-        return explode(PHP_EOL, $value);
+        $lines = explode(PHP_EOL, $value);
+
+        while (count($lines) < $this->scroll) {
+            $lines[] = '';
+        }
+
+        return $lines;
     }
 
     /**
