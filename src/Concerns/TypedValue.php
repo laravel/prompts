@@ -19,7 +19,7 @@ trait TypedValue
     /**
      * Track the value as the user types.
      */
-    protected function trackTypedValue(string $default = '', bool $submit = true, callable $ignore = null): void
+    protected function trackTypedValue(string $default = '', bool $submit = true, callable $ignore = null, bool $allowNewLine = false): void
     {
         $this->typedValue = $default;
 
@@ -27,7 +27,7 @@ trait TypedValue
             $this->cursorPosition = mb_strlen($this->typedValue);
         }
 
-        $this->on('key', function ($key) use ($submit, $ignore) {
+        $this->on('key', function ($key) use ($submit, $ignore, $allowNewLine) {
             if ($key[0] === "\e" || in_array($key, [Key::CTRL_B, Key::CTRL_F, Key::CTRL_A, Key::CTRL_E])) {
                 if ($ignore !== null && $ignore($key)) {
                     return;
@@ -51,10 +51,16 @@ trait TypedValue
                     return;
                 }
 
-                if ($key === Key::ENTER && $submit) {
-                    $this->submit();
+                if ($key === Key::ENTER) {
+                    if ($submit) {
+                        $this->submit();
+                        return;
+                    }
 
-                    return;
+                    if ($allowNewLine) {
+                        $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition) . PHP_EOL . mb_substr($this->typedValue, $this->cursorPosition);
+                        $this->cursorPosition++;
+                    }
                 } elseif ($key === Key::BACKSPACE || $key === Key::CTRL_H) {
                     if ($this->cursorPosition === 0) {
                         return;
