@@ -60,6 +60,7 @@ class TextareaPrompt extends Prompt
                 foreach (mb_str_split($key) as $key) {
                     if ($key === Key::CTRL_D) {
                         $this->submit();
+
                         return;
                     }
                 }
