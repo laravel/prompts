@@ -35,8 +35,9 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
             'error' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    collect($prompt->lines())->implode(PHP_EOL),
+                    collect($prompt->visible())->implode(PHP_EOL),
                     color: 'yellow',
+                    info: 'Ctrl+D to submit'
                 )
                 ->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
 
