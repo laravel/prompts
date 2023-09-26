@@ -142,7 +142,7 @@ class TextareaPrompt extends Prompt
     /**
      * The currently visible options.
      *
-     * @return array<int|string, string>
+     * @return array<int, string>
      */
     public function visible(): array
     {
@@ -182,15 +182,17 @@ class TextareaPrompt extends Prompt
     {
         $totalLineLength = 0;
 
-        return collect($this->lines())->search(function ($line) use (&$totalLineLength) {
+        return (int) collect($this->lines())->search(function ($line) use (&$totalLineLength) {
             $totalLineLength += mb_strlen($line) + 1;
 
             return $totalLineLength > $this->cursorPosition;
-        });
+        }) ?: 0;
     }
 
     /**
      * Get the formatted lines of the current value.
+     *
+     * @return array<int, string>
      */
     public function lines(): array
     {
