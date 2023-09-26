@@ -79,16 +79,12 @@ class Key
     /**
      * Checks for the constant values for the given match and returns the match
      *
-     * @param string|string[] $keys
+     * @param string[] $keys
      * @param string $match
      * @return string|null
      */
-    public static function any(mixed $keys, string $match): ?string
+    public static function oneOf(array $keys, string $match): ?string
     {
-        if (! is_array($keys)) {
-            $keys = [$keys];
-        }
-        
-        return in_array($match, $keys) ? $match : null;
+        return collect($keys)->flatten()->contains($match) ? $match : null;
     }
 }
