@@ -21,7 +21,7 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->truncate($prompt->value(), $maxWidth),
+                    collect($prompt->lines())->implode(PHP_EOL),
                 ),
 
             'cancel' => $this
