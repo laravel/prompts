@@ -88,6 +88,7 @@ class Key
         if (! is_array($keys)) {
             $keys = [$keys];
         }
+        
         return in_array($match, $keys) ? $match : null;
     }
 }
