@@ -30,7 +30,7 @@ class TextareaPrompt extends Prompt
         $this->trackTypedValue(
             default: $default,
             submit: false,
-            ignore: fn ($key) => $key === Key::ENTER,
+            allowNewLine: true,
         );
 
         $this->reduceScrollingToFitTerminal();
@@ -41,11 +41,6 @@ class TextareaPrompt extends Prompt
         $this->on(
             'key',
             function ($key) {
-                if ($key === Key::ENTER) {
-                    $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition) . $key . mb_substr($this->typedValue, $this->cursorPosition);
-                    $this->cursorPosition++;
-                }
-
                 if ($key[0] === "\e") {
                     match ($key) {
                         Key::UP, Key::UP_ARROW, Key::CTRL_P => $this->handleUpKey(),
@@ -139,6 +134,19 @@ class TextareaPrompt extends Prompt
      */
     public function visible(): array
     {
+        $this->adjustVisibleWindow();
+
+        $withCursor = $this->valueWithCursor(10_000);
+
+        return array_slice(explode(PHP_EOL, $withCursor), $this->firstVisible, $this->scroll, preserve_keys: true);
+    }
+
+    protected function adjustVisibleWindow(): void
+    {
+        if (count($this->lines()) < $this->scroll) {
+            return;
+        }
+
         $currentLineIndex = $this->currentLineIndex();
 
         if ($this->firstVisible + $this->scroll <= $currentLineIndex) {
@@ -153,10 +161,6 @@ class TextareaPrompt extends Prompt
         if ($this->firstVisible + $this->scroll > count($this->lines())) {
             $this->firstVisible = count($this->lines()) - $this->scroll;
         }
-
-        $withCursor = $this->valueWithCursor(10_000);
-
-        return array_slice(explode(PHP_EOL, $withCursor), $this->firstVisible, $this->scroll, preserve_keys: true);
     }
 
     protected function currentLineIndex(): int
@@ -175,13 +179,7 @@ class TextareaPrompt extends Prompt
         // TODO: Figure out the real number here, this comes from the renderer?
         $value = wordwrap($this->value(), 59, PHP_EOL, true);
 
-        $lines = explode(PHP_EOL, $value);
-
-        while (count($lines) < $this->scroll) {
-            $lines[] = '';
-        }
-
-        return $lines;
+        return explode(PHP_EOL, $value);
     }
 
     /**
@@ -191,11 +189,11 @@ class TextareaPrompt extends Prompt
     {
         $value = implode(PHP_EOL, $this->lines());
 
-        if ($value === '') {
-            return $this->dim($this->addCursor($this->placeholder, 0, $maxWidth));
+        if ($this->value() === '') {
+            return $this->dim($this->addCursor($this->placeholder, 0, 10_000));
         }
 
         // TODO: Deal with max width properly
-        return $this->addCursor($value, $this->cursorPosition, $maxWidth);
+        return $this->addCursor($value, $this->cursorPosition, 10_000);
     }
 }
