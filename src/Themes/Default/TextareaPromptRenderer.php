@@ -57,8 +57,14 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
 
     protected function renderText(TextareaPrompt $prompt): string
     {
+        $visible = collect($prompt->visible());
+
+        while ($visible->count() < $prompt->scroll) {
+            $visible->push('');
+        }
+
         return $this->scrollbar(
-            collect($prompt->visible()),
+            $visible,
             $prompt->firstVisible,
             $prompt->scroll,
             count($prompt->lines()),
