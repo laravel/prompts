@@ -32,9 +32,9 @@ class Key
 
     const SHIFT_TAB = "\e[Z";
 
-    const HOME = "\e[1~";
+    const HOME = ["\e[1~", "\eOH", "\e[H"];
 
-    const END = "\e[4~";
+    const END = ["\e[4~", "\eOF", "\e[F"];
 
     /**
      * Cancel/SIGINT
@@ -75,4 +75,19 @@ class Key
      * End
      */
     const CTRL_E = "\x05";
+
+    /**
+     * Checks for the constant values for the given match and returns the match
+     *
+     * @param string|string[] $keys
+     * @param string $match
+     * @return string|null
+     */
+    public static function any(mixed $keys, string $match): ?string
+    {
+        if (! is_array($keys)) {
+            $keys = [$keys];
+        }
+        return in_array($match, $keys) ? $match : null;
+    }
 }
