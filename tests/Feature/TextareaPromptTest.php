@@ -4,7 +4,6 @@ use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\TextareaPrompt;
-use Laravel\Prompts\TextPrompt;
 
 use function Laravel\Prompts\textarea;
 
