@@ -35,7 +35,6 @@ class TextareaPrompt extends Prompt
 
         $this->reduceScrollingToFitTerminal();
 
-        // TODO: Is this right? Or should it be at the end?
         $this->cursorPosition = 0;
 
         $this->on(
