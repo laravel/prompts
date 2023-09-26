@@ -32,9 +32,9 @@ class Key
 
     const SHIFT_TAB = "\e[Z";
 
-    const HOME = ["\e[1~", "\eOH", "\e[H"];
+    const HOME = ["\e[1~", "\eOH", "\e[H", "\e[7~"];
 
-    const END = ["\e[4~", "\eOF", "\e[F"];
+    const END = ["\e[4~", "\eOF", "\e[F", "\e[8~"];
 
     /**
      * Cancel/SIGINT
