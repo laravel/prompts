@@ -149,6 +149,11 @@ class TextareaPrompt extends Prompt
             $this->firstVisible = max(0, $this->firstVisible - 1);
         }
 
+        // Make sure there are always the scroll amount visible
+        if ($this->firstVisible + $this->scroll > count($this->lines())) {
+            $this->firstVisible = count($this->lines()) - $this->scroll;
+        }
+
         $withCursor = $this->valueWithCursor(10_000);
 
         return array_slice(explode(PHP_EOL, $withCursor), $this->firstVisible, $this->scroll, preserve_keys: true);
