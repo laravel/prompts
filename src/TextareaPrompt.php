@@ -60,6 +60,7 @@ class TextareaPrompt extends Prompt
                 foreach (mb_str_split($key) as $key) {
                     if ($key === Key::CTRL_D) {
                         $this->submit();
+                        return;
                     }
                 }
             }
@@ -140,8 +141,6 @@ class TextareaPrompt extends Prompt
     {
         $currentLineIndex = $this->currentLineIndex();
 
-        $lines = $this->lines();
-
         if ($this->firstVisible + $this->scroll <= $currentLineIndex) {
             $this->firstVisible++;
         }
@@ -150,7 +149,7 @@ class TextareaPrompt extends Prompt
             $this->firstVisible = max(0, $this->firstVisible - 1);
         }
 
-        $withCursor = $this->valueWithCursor(implode(PHP_EOL, $lines), 10_000);
+        $withCursor = $this->valueWithCursor(10_000);
 
         return array_slice(explode(PHP_EOL, $withCursor), $this->firstVisible, $this->scroll, preserve_keys: true);
     }
@@ -183,8 +182,10 @@ class TextareaPrompt extends Prompt
     /**
      * Get the entered value with a virtual cursor.
      */
-    public function valueWithCursor(string $value, int $maxWidth): string
+    public function valueWithCursor(int $maxWidth): string
     {
+        $value = implode(PHP_EOL, $this->lines());
+
         if ($value === '') {
             return $this->dim($this->addCursor($this->placeholder, 0, $maxWidth));
         }
