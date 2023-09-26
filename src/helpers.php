@@ -163,3 +163,24 @@ function table(array|Collection $headers = [], array|Collection $rows = null): v
 {
     (new Table($headers, $rows))->display();
 }
+
+/**
+ * Display a progress bar.
+ *
+ * @template TSteps of iterable<mixed>|int
+ * @template TReturn
+ *
+ * @param  TSteps  $steps
+ * @param  ?Closure((TSteps is int ? int : value-of<TSteps>), Progress<TSteps>): TReturn  $callback
+ * @return ($callback is null ? Progress<TSteps> : array<TReturn>)
+ */
+function progress(string $label, iterable|int $steps, Closure $callback = null, string $hint = ''): array|Progress
+{
+    $progress = new Progress($label, $steps, $hint);
+
+    if ($callback !== null) {
+        return $progress->map($callback);
+    }
+
+    return $progress;
+}
