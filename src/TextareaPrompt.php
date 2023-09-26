@@ -14,6 +14,9 @@ class TextareaPrompt extends Prompt
      */
     public int $firstVisible = 0;
 
+    /**
+     * The number of lines to scroll.
+     */
     public int $scroll = 5;
 
     /**
@@ -21,6 +24,7 @@ class TextareaPrompt extends Prompt
      */
     public function __construct(
         public string $label,
+        public int $rows = 5,
         public string $placeholder = '',
         public string $default = '',
         public bool|string $required = false,
@@ -32,6 +36,8 @@ class TextareaPrompt extends Prompt
             submit: false,
             allowNewLine: true,
         );
+
+        $this->scroll = $this->rows;
 
         $this->reduceScrollingToFitTerminal();
 
@@ -61,6 +67,9 @@ class TextareaPrompt extends Prompt
         );
     }
 
+    /**
+     * Handle the up keypress.
+     */
     protected function handleUpKey(): void
     {
         if ($this->cursorPosition === 0) {
@@ -98,6 +107,9 @@ class TextareaPrompt extends Prompt
         $this->cursorPosition = $fullLines->sum() + $newColumn;
     }
 
+    /**
+     * Handle the down keypress.
+     */
     protected function handleDownKey(): void
     {
         $lines = collect($this->lines());
@@ -162,6 +174,9 @@ class TextareaPrompt extends Prompt
         }
     }
 
+    /**
+     * Get the index of the current line that the cursor is on.
+     */
     protected function currentLineIndex(): int
     {
         $totalLineLength = 0;
@@ -173,6 +188,9 @@ class TextareaPrompt extends Prompt
         });
     }
 
+    /**
+     * Get the formatted lines of the current value.
+     */
     public function lines(): array
     {
         // TODO: Figure out the real number here, this comes from the renderer?
@@ -182,7 +200,7 @@ class TextareaPrompt extends Prompt
     }
 
     /**
-     * Get the entered value with a virtual cursor.
+     * Get the formatted value with a virtual cursor.
      */
     public function valueWithCursor(int $maxWidth): string
     {
@@ -192,7 +210,7 @@ class TextareaPrompt extends Prompt
             return $this->dim($this->addCursor($this->placeholder, 0, 10_000));
         }
 
-        // TODO: Deal with max width properly
+        // TODO: Deal with max width properly, 10_000 is a hack
         return $this->addCursor($value, $this->cursorPosition, 10_000);
     }
 }

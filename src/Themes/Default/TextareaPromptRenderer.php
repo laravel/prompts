@@ -15,8 +15,6 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
      */
     public function __invoke(TextareaPrompt $prompt): string
     {
-        $maxWidth = $prompt->terminal()->cols() - 6;
-
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
@@ -55,6 +53,9 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
         };
     }
 
+    /**
+     * Render the text in the prompt.
+     */
     protected function renderText(TextareaPrompt $prompt): string
     {
         $visible = collect($prompt->visible());
