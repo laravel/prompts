@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.9...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.10...main)
+
+## [v0.1.10](https://github.com/laravel/prompts/compare/v0.1.9...v0.1.10) - 2023-09-29
+
+- Prioritize fallback over non-interactive mode by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/91
 
 ## [v0.1.9](https://github.com/laravel/prompts/compare/v0.1.8...v0.1.9) - 2023-09-26
 
