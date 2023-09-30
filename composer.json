@@ -18,6 +18,7 @@
     "require": {
         "php": "^8.1",
         "ext-mbstring": "*",
+        "illuminate/collections": "*",
         "symfony/console": "7.0.x-dev as 6.4.0"
     },
     "require-dev": {
