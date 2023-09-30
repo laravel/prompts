@@ -42,5 +42,7 @@
         "branch-alias": {
             "dev-main": "0.1.x-dev"
         }
-    }
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
 }
