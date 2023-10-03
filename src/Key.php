@@ -32,9 +32,9 @@ class Key
 
     const SHIFT_TAB = "\e[Z";
 
-    const HOME = "\e[1~";
+    const HOME = ["\e[1~", "\eOH", "\e[H", "\e[7~"];
 
-    const END = "\e[4~";
+    const END = ["\e[4~", "\eOF", "\e[F", "\e[8~"];
 
     /**
      * Cancel/SIGINT
@@ -75,4 +75,16 @@ class Key
      * End
      */
     const CTRL_E = "\x05";
+
+    /**
+     * Checks for the constant values for the given match and returns the match
+     *
+     * @param array<string|array<string>> $keys
+     * @param string $match
+     * @return string|null
+     */
+    public static function oneOf(array $keys, string $match): ?string
+    {
+        return collect($keys)->flatten()->contains($match) ? $match : null;
+    }
 }

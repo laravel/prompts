@@ -54,7 +54,7 @@ class SearchPrompt extends Prompt
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB, Key::CTRL_P => $this->highlightPrevious(),
             Key::DOWN, Key::DOWN_ARROW, Key::TAB, Key::CTRL_N => $this->highlightNext(),
             Key::ENTER => $this->highlighted !== null ? $this->submit() : $this->search(),
-            Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_B, Key::CTRL_F, Key::HOME, Key::END, Key::CTRL_A, Key::CTRL_E => $this->highlighted = null,
+            Key::oneOf([Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_B, Key::CTRL_F, Key::HOME, Key::END, Key::CTRL_A, Key::CTRL_E], $key) => $this->highlighted = null,
             default => $this->search(),
         });
     }

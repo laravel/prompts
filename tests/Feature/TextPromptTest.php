@@ -86,11 +86,11 @@ test('support emacs style key binding', function () {
 });
 
 test('move to the beginning and end of line', function () {
-    Prompt::fake(['e', 's', Key::HOME, 'J', KEY::END, 's', Key::ENTER]);
+    Prompt::fake(['A', 'r', Key::HOME[0], 's', KEY::END[0], 'c', Key::HOME[1], 's', Key::END[1], 'h', Key::HOME[2], 'e', Key::END[2], 'e', Key::HOME[3], 'J', Key::END[3], 'r', Key::ENTER]);
 
     $result = text(label: 'What is your name?');
 
-    expect($result)->toBe('Jess');
+    expect($result)->toBe('JessArcher');
 });
 
 it('returns an empty string when non-interactive', function () {
