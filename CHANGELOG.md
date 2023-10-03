@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.10...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.11...main)
+
+## [v0.1.11](https://github.com/laravel/prompts/compare/v0.1.10...v0.1.11) - 2023-10-03
+
+- Adds support for alternate HOME and END escape keys by [@TWithers](https://github.com/TWithers) in https://github.com/laravel/prompts/pull/87
 
 ## [v0.1.10](https://github.com/laravel/prompts/compare/v0.1.9...v0.1.10) - 2023-09-29
 
