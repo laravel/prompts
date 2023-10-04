@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use InvalidArgumentException;
 
 class SearchPrompt extends Prompt
 {
@@ -19,11 +20,6 @@ class SearchPrompt extends Prompt
      * The index of the first visible option.
      */
     public int $firstVisible = 0;
-
-    /**
-     * Whether user input is required.
-     */
-    public bool|string $required = true;
 
     /**
      * The cached matches.
@@ -43,8 +39,13 @@ class SearchPrompt extends Prompt
         public string $placeholder = '',
         public int $scroll = 5,
         public ?Closure $validate = null,
-        public string $hint = ''
+        public string $hint = '',
+        public bool|string $required = true,
     ) {
+        if ($this->required === false) {
+            throw new InvalidArgumentException('Argument [required] must be true or a string.');
+        }
+
         $this->trackTypedValue(submit: false);
 
         $this->reduceScrollingToFitTerminal();
@@ -52,10 +53,10 @@ class SearchPrompt extends Prompt
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB, Key::CTRL_P => $this->highlightOffset(-1),
             Key::DOWN, Key::DOWN_ARROW, Key::TAB, Key::CTRL_N => $this->highlightOffset(1),
-            Key::HOME, Key::CTRL_A => $this->highlighted !== null ? $this->highlight(0) : null,
-            Key::END, Key::CTRL_E => $this->highlighted !== null ? $this->highlight(count($this->matches()) - 1) : null,
+            Key::oneOf([Key::HOME], $key) => $this->highlighted !== null ? $this->highlight(0) : null,
+            Key::oneOf([Key::END], $key) => $this->highlighted !== null ? $this->highlight(count($this->matches()) - 1) : null,
             Key::ENTER => $this->highlighted !== null ? $this->submit() : $this->search(),
-            Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_B, Key::CTRL_F => $this->highlighted = null,
+            Key::oneOf([Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_B, Key::CTRL_F], $key) => $this->highlighted = null,
             default => $this->search(),
         });
     }

@@ -295,3 +295,17 @@ it('validates the default value when non-interactive', function () {
         validate: fn ($value) => $value === 'None' ? 'Required.' : null,
     );
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('Allows the required validation message to be customised when non-interactive', function () {
+    Prompt::interactive(false);
+
+    select(
+        label: 'What is your favorite color?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+        ],
+        required: 'The color is required.',
+    );
+})->throws(NonInteractiveValidationException::class, 'The color is required.');

@@ -27,12 +27,21 @@
         "mockery/mockery": "^1.5",
         "phpstan/phpstan-mockery": "^1.1"
     },
+    "conflict": {
+        "illuminate/console": ">=10.17.0 <10.25.0",
+        "laravel/framework": ">=10.17.0 <10.25.0"
+    },
     "suggest": {
         "ext-pcntl": "Required for the spinner to be animated."
     },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
         }
     }
 }

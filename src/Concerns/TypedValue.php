@@ -36,8 +36,8 @@ trait TypedValue
                 match ($key) {
                     Key::LEFT, Key::LEFT_ARROW, Key::CTRL_B => $this->cursorPosition = max(0, $this->cursorPosition - 1),
                     Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_F => $this->cursorPosition = min(mb_strlen($this->typedValue), $this->cursorPosition + 1),
-                    Key::HOME, Key::CTRL_A => $this->cursorPosition = 0,
-                    Key::END, Key::CTRL_E => $this->cursorPosition = mb_strlen($this->typedValue),
+                    Key::oneOf([Key::HOME, Key::CTRL_A], $key) => $this->cursorPosition = 0,
+                    Key::oneOf([Key::END, Key::CTRL_E], $key) => $this->cursorPosition = mb_strlen($this->typedValue),
                     Key::DELETE => $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition).mb_substr($this->typedValue, $this->cursorPosition + 1),
                     default => null,
                 };
