@@ -55,8 +55,8 @@ class MultiSearchPrompt extends Prompt
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB => $this->highlightOffset(-1),
             Key::DOWN, Key::DOWN_ARROW, Key::TAB => $this->highlightOffset(1),
-            Key::HOME, Key::CTRL_A => $this->highlighted !== null ? $this->highlight(0) : null,
-            Key::END, Key::CTRL_E => $this->highlighted !== null ? $this->highlight(count($this->matches()) - 1) : null,
+            Key::oneOf([Key::HOME, Key::CTRL_A], $key) => $this->highlighted !== null ? $this->highlight(0) : null,
+            Key::oneOf([Key::END, Key::CTRL_E], $key) => $this->highlighted !== null ? $this->highlight(count($this->matches()) - 1) : null,
             Key::SPACE => $this->highlighted !== null ? $this->toggleHighlighted() : null,
             Key::ENTER => $this->submit(),
             Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW => $this->highlighted = null,
