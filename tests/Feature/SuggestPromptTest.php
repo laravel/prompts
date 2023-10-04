@@ -45,7 +45,7 @@ it('completes the input using the arrow keys', function () {
 });
 
 it('select the input using the home key', function () {
-    Prompt::fake(['B', Key::UP, Key::HOME, Key::ENTER]);
+    Prompt::fake(['B', Key::UP, Key::HOME[0], Key::ENTER]);
 
     $result = suggest('What is your favorite color?', [
         'Brown',
@@ -57,7 +57,7 @@ it('select the input using the home key', function () {
 });
 
 it('select the input using the end key', function () {
-    Prompt::fake(['B', Key::DOWN, Key::END, Key::ENTER]);
+    Prompt::fake(['B', Key::DOWN, Key::END[0], Key::ENTER]);
 
     $result = suggest('What is your favorite color?', [
         'Brown',

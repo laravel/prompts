@@ -150,7 +150,7 @@ it('validates', function () {
 });
 
 it('support home key binding', function () {
-    Prompt::fake(['r', Key::UP, Key::HOME, Key::SPACE, Key::ENTER]);
+    Prompt::fake(['r', Key::UP, Key::HOME[0], Key::SPACE, Key::ENTER]);
 
     $result = multisearch(
         label: 'What are your favorite colors?',
@@ -165,7 +165,7 @@ it('support home key binding', function () {
 });
 
 it('support end key binding', function () {
-    Prompt::fake(['r', Key::DOWN, Key::END, Key::SPACE, Key::ENTER]);
+    Prompt::fake(['r', Key::DOWN, Key::END[0], Key::SPACE, Key::ENTER]);
 
     $result = multisearch(
         label: 'What are your favorite colors?',

@@ -227,7 +227,7 @@ it('support emacs style key binding', function () {
 });
 
 it('support home key binding', function () {
-    Prompt::fake([Key::HOME, Key::ENTER]);
+    Prompt::fake([Key::HOME[0], Key::ENTER]);
 
     $result = select(
         label: 'What is your favorite color?',
@@ -243,7 +243,7 @@ it('support home key binding', function () {
 });
 
 it('support end key binding', function () {
-    Prompt::fake([Key::END, Key::ENTER]);
+    Prompt::fake([Key::END[0], Key::ENTER]);
 
     $result = select(
         label: 'What is your favorite color?',

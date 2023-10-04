@@ -44,7 +44,7 @@ it('returns the value when a list is passed', function () {
 });
 
 it('select using the home key', function () {
-    Prompt::fake(['e', Key::UP, Key::HOME, Key::ENTER]);
+    Prompt::fake(['e', Key::UP, Key::HOME[0], Key::ENTER]);
 
     $result = search(
         label: 'What is your favorite color?',
@@ -62,7 +62,7 @@ it('select using the home key', function () {
 });
 
 it('select using the end key', function () {
-    Prompt::fake(['e', Key::DOWN, Key::END, Key::ENTER]);
+    Prompt::fake(['e', Key::DOWN, Key::END[0], Key::ENTER]);
 
     $result = search(
         label: 'What is your favorite color?',
