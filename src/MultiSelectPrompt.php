@@ -7,17 +7,7 @@ use Illuminate\Support\Collection;
 
 class MultiSelectPrompt extends Prompt
 {
-    use Concerns\ReducesScrollingToFitTerminal;
-
-    /**
-     * The index of the highlighted option.
-     */
-    public int $highlighted = 0;
-
-    /**
-     * The index of the first visible option.
-     */
-    public int $firstVisible = 0;
+    use Concerns\Scrolling;
 
     /**
      * The options for the multi-select prompt.
@@ -59,11 +49,11 @@ class MultiSelectPrompt extends Prompt
         $this->default = $default instanceof Collection ? $default->all() : $default;
         $this->values = $this->default;
 
-        $this->reduceScrollingToFitTerminal();
+        $this->initializeScrolling(0);
 
         $this->on('key', fn ($key) => match ($key) {
-            Key::UP, Key::UP_ARROW, Key::LEFT, Key::LEFT_ARROW, Key::SHIFT_TAB, Key::CTRL_P, Key::CTRL_B, 'k', 'h' => $this->highlightOffset(-1),
-            Key::DOWN, Key::DOWN_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::TAB, Key::CTRL_N, Key::CTRL_F, 'j', 'l' => $this->highlightOffset(1),
+            Key::UP, Key::UP_ARROW, Key::LEFT, Key::LEFT_ARROW, Key::SHIFT_TAB, Key::CTRL_P, Key::CTRL_B, 'k', 'h' => $this->highlightOffset(-1, count($this->options)),
+            Key::DOWN, Key::DOWN_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::TAB, Key::CTRL_N, Key::CTRL_F, 'j', 'l' => $this->highlightOffset(1, count($this->options)),
             Key::oneOf([Key::HOME, Key::CTRL_A], $key) => $this->highlight(0),
             Key::oneOf([Key::END, Key::CTRL_E], $key) => $this->highlight(count($this->options) - 1),
             Key::SPACE => $this->toggleHighlighted(),
@@ -124,32 +114,6 @@ class MultiSelectPrompt extends Prompt
     public function isSelected(string $value): bool
     {
         return in_array($value, $this->values);
-    }
-
-    protected function highlightOffset(int $offset): void
-    {
-        if ($offset < 0) {
-            $this->highlighted = $this->highlighted === 0 ? (count($this->options) - 1) : max(0, $this->highlighted + $offset);
-        } else {
-            $this->highlighted = $this->highlighted === count($this->options) - 1 ? 0 : min(count($this->options) - 1, $this->highlighted + $offset);
-        }
-
-        $this->updateFirstVisible();
-    }
-
-    protected function highlight(?int $highlight): void
-    {
-        $this->highlighted = $highlight;
-        $this->updateFirstVisible();
-    }
-
-    protected function updateFirstVisible(): void
-    {
-        if ($this->highlighted < $this->firstVisible) {
-            $this->firstVisible = $this->highlighted;
-        } elseif ($this->highlighted > $this->firstVisible + $this->scroll - 1) {
-            $this->firstVisible = $this->highlighted - $this->scroll + 1;
-        }
     }
 
     /**

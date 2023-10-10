@@ -8,17 +8,7 @@ use InvalidArgumentException;
 
 class SelectPrompt extends Prompt
 {
-    use Concerns\ReducesScrollingToFitTerminal;
-
-    /**
-     * The index of the highlighted option.
-     */
-    public int $highlighted = 0;
-
-    /**
-     * The index of the first visible option.
-     */
-    public int $firstVisible = 0;
+    use Concerns\Scrolling;
 
     /**
      * The options for the select prompt.
@@ -47,37 +37,21 @@ class SelectPrompt extends Prompt
 
         $this->options = $options instanceof Collection ? $options->all() : $options;
 
-        $this->reduceScrollingToFitTerminal();
-
         if ($this->default) {
             if (array_is_list($this->options)) {
-                $this->highlighted = array_search($this->default, $this->options) ?: 0;
+                $this->initializeScrolling(array_search($this->default, $this->options) ?: 0);
             } else {
-                $this->highlighted = array_search($this->default, array_keys($this->options)) ?: 0;
+                $this->initializeScrolling(array_search($this->default, array_keys($this->options)) ?: 0);
             }
 
-            // If the default is not visible, scroll and center it.
-            // If it's near the end of the list, we just scroll to the end.
-            if ($this->highlighted >= $this->scroll) {
-                $optionsLeft = count($this->options) - $this->highlighted - 1;
-                $halfScroll = (int) floor($this->scroll / 2);
-                $endOffset = max(0, $halfScroll - $optionsLeft);
-
-                // If the scroll is even, we need to subtract one more
-                // in order to take the highlighted option into account.
-                // Since when the scroll is odd the halfScroll is floored,
-                // we don't need to do anything.
-                if ($this->scroll % 2 === 0) {
-                    $endOffset--;
-                }
-
-                $this->firstVisible = $this->highlighted - $halfScroll - $endOffset;
-            }
+            $this->scrollToHighlighted(count($this->options));
+        } else {
+            $this->initializeScrolling(0);
         }
 
         $this->on('key', fn ($key) => match ($key) {
-            Key::UP, Key::UP_ARROW, Key::LEFT, Key::LEFT_ARROW, Key::SHIFT_TAB, Key::CTRL_P, Key::CTRL_B, 'k', 'h' => $this->highlightOffset(-1),
-            Key::DOWN, Key::DOWN_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::TAB, Key::CTRL_N, Key::CTRL_F, 'j', 'l' => $this->highlightOffset(1),
+            Key::UP, Key::UP_ARROW, Key::LEFT, Key::LEFT_ARROW, Key::SHIFT_TAB, Key::CTRL_P, Key::CTRL_B, 'k', 'h' => $this->highlightOffset(-1, count($this->options)),
+            Key::DOWN, Key::DOWN_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::TAB, Key::CTRL_N, Key::CTRL_F, 'j', 'l' => $this->highlightOffset(1, count($this->options)),
             Key::oneOf([Key::HOME, Key::CTRL_A], $key) => $this->highlight(0),
             Key::oneOf([Key::END, Key::CTRL_E], $key) => $this->highlight(count($this->options) - 1),
             Key::ENTER => $this->submit(),
@@ -121,31 +95,5 @@ class SelectPrompt extends Prompt
     public function visible(): array
     {
         return array_slice($this->options, $this->firstVisible, $this->scroll, preserve_keys: true);
-    }
-
-    protected function highlightOffset(int $offset): void
-    {
-        if ($offset < 0) {
-            $this->highlighted = $this->highlighted === 0 ? (count($this->options) - 1) : max(0, $this->highlighted + $offset);
-        } else {
-            $this->highlighted = $this->highlighted === count($this->options) - 1 ? 0 : min(count($this->options) - 1, $this->highlighted + $offset);
-        }
-
-        $this->updateFirstVisible();
-    }
-
-    protected function highlight(?int $highlight): void
-    {
-        $this->highlighted = $highlight;
-        $this->updateFirstVisible();
-    }
-
-    protected function updateFirstVisible(): void
-    {
-        if ($this->highlighted < $this->firstVisible) {
-            $this->firstVisible = $this->highlighted;
-        } elseif ($this->highlighted > $this->firstVisible + $this->scroll - 1) {
-            $this->firstVisible = $this->highlighted - $this->scroll + 1;
-        }
     }
 }
