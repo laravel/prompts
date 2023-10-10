@@ -38,7 +38,7 @@ class MultiSearchPrompt extends Prompt
         public ?Closure $validate = null,
         public string $hint = '',
     ) {
-        $this->trackTypedValue(submit: false, ignore: fn ($key) => $key === Key::SPACE && $this->highlighted !== null);
+        $this->trackTypedValue(submit: false, ignore: fn ($key) => Key::oneOf([Key::SPACE, Key::HOME, Key::END, Key::CTRL_A, Key::CTRL_E], $key) && $this->highlighted !== null);
 
         $this->initializeScrolling(null);
 
