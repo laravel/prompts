@@ -62,13 +62,13 @@ trait Scrolling
     /**
      * Offset the currently highlighted option.
      */
-    protected function highlightOffset(int $offset, int $count, bool $allowNull = false): void
+    protected function highlightOffset(int $offset, int $count): void
     {
         if ($offset === 0 || $count === 0) {
             return;
         }
 
-        if ($allowNull) {
+        if ($this->hasTypedValue()) {
             if ($count === 1) {
                 $this->highlight($this->highlighted === null ? 0 : null);
             } elseif ($this->highlighted === 0 && $offset < 0) {
@@ -107,5 +107,13 @@ trait Scrolling
         }
 
         $this->firstVisible = $this->highlighted - $halfScroll - $endOffset;
+    }
+
+    /**
+     * Check whether the class has a typed value.
+     */
+    private function hasTypedValue(): bool
+    {
+        return in_array(TypedValue::class, class_uses($this));
     }
 }
