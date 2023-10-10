@@ -43,8 +43,8 @@ class SearchPrompt extends Prompt
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB, Key::CTRL_P => $this->highlightOffset(-1, count($this->matches), true),
             Key::DOWN, Key::DOWN_ARROW, Key::TAB, Key::CTRL_N => $this->highlightOffset(1, count($this->matches), true),
-            Key::oneOf([Key::HOME], $key) => $this->highlighted !== null ? $this->highlight(0) : null,
-            Key::oneOf([Key::END], $key) => $this->highlighted !== null ? $this->highlight(count($this->matches()) - 1) : null,
+            Key::oneOf([Key::HOME, Key::CTRL_A], $key) => $this->highlighted !== null ? $this->highlight(0) : null,
+            Key::oneOf([Key::END, Key::CTRL_E], $key) => $this->highlighted !== null ? $this->highlight(count($this->matches()) - 1) : null,
             Key::ENTER => $this->highlighted !== null ? $this->submit() : $this->search(),
             Key::oneOf([Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_B, Key::CTRL_F], $key) => $this->highlighted = null,
             default => $this->search(),
