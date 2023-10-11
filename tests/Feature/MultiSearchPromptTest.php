@@ -149,8 +149,8 @@ it('validates', function () {
     Prompt::assertOutputContains('Please choose green.');
 });
 
-it('support home key binding', function () {
-    Prompt::fake(['r', Key::UP, Key::HOME[0], Key::SPACE, Key::ENTER]);
+it('supports the home and end keys while navigating options', function () {
+    Prompt::fake([Key::DOWN, Key::END[0], Key::SPACE, Key::HOME[0], Key::SPACE, Key::ENTER]);
 
     $result = multisearch(
         label: 'What are your favorite colors?',
@@ -161,22 +161,7 @@ it('support home key binding', function () {
         ]
     );
 
-    expect($result)->toBe(['red']);
-});
-
-it('support end key binding', function () {
-    Prompt::fake(['r', Key::DOWN, Key::END[0], Key::SPACE, Key::ENTER]);
-
-    $result = multisearch(
-        label: 'What are your favorite colors?',
-        options: fn () => [
-            'red' => 'Red',
-            'green' => 'Green',
-            'blue' => 'Blue',
-        ]
-    );
-
-    expect($result)->toBe(['blue']);
+    expect($result)->toBe(['blue', 'red']);
 });
 
 it('can fall back', function () {

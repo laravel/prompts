@@ -226,7 +226,7 @@ it('support emacs style key binding', function () {
     expect($result)->toBe('Green');
 });
 
-it('support home key binding', function () {
+it('supports the home key', function () {
     Prompt::fake([Key::HOME[0], Key::ENTER]);
 
     $result = select(
@@ -242,7 +242,7 @@ it('support home key binding', function () {
     expect($result)->toBe('Red');
 });
 
-it('support end key binding', function () {
+it('supports the end key', function () {
     Prompt::fake([Key::END[0], Key::ENTER]);
 
     $result = select(
@@ -252,7 +252,6 @@ it('support end key binding', function () {
             'Green',
             'Blue',
         ],
-        default: 'Red'
     );
 
     expect($result)->toBe('Blue');
