@@ -7,19 +7,9 @@ use InvalidArgumentException;
 
 class SearchPrompt extends Prompt
 {
-    use Concerns\ReducesScrollingToFitTerminal;
+    use Concerns\Scrolling;
     use Concerns\Truncation;
     use Concerns\TypedValue;
-
-    /**
-     * The index of the highlighted option.
-     */
-    public ?int $highlighted = null;
-
-    /**
-     * The index of the first visible option.
-     */
-    public int $firstVisible = 0;
 
     /**
      * The cached matches.
@@ -46,15 +36,17 @@ class SearchPrompt extends Prompt
             throw new InvalidArgumentException('Argument [required] must be true or a string.');
         }
 
-        $this->trackTypedValue(submit: false);
+        $this->trackTypedValue(submit: false, ignore: fn ($key) => Key::oneOf([Key::HOME, Key::END, Key::CTRL_A, Key::CTRL_E], $key) && $this->highlighted !== null);
 
-        $this->reduceScrollingToFitTerminal();
+        $this->initializeScrolling(null);
 
         $this->on('key', fn ($key) => match ($key) {
-            Key::UP, Key::UP_ARROW, Key::SHIFT_TAB, Key::CTRL_P => $this->highlightPrevious(),
-            Key::DOWN, Key::DOWN_ARROW, Key::TAB, Key::CTRL_N => $this->highlightNext(),
+            Key::UP, Key::UP_ARROW, Key::SHIFT_TAB, Key::CTRL_P => $this->highlightPrevious(count($this->matches), true),
+            Key::DOWN, Key::DOWN_ARROW, Key::TAB, Key::CTRL_N => $this->highlightNext(count($this->matches), true),
+            Key::oneOf([Key::HOME, Key::CTRL_A], $key) => $this->highlighted !== null ? $this->highlight(0) : null,
+            Key::oneOf([Key::END, Key::CTRL_E], $key) => $this->highlighted !== null ? $this->highlight(count($this->matches()) - 1) : null,
             Key::ENTER => $this->highlighted !== null ? $this->submit() : $this->search(),
-            Key::oneOf([Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_B, Key::CTRL_F, Key::HOME, Key::END, Key::CTRL_A, Key::CTRL_E], $key) => $this->highlighted = null,
+            Key::oneOf([Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_B, Key::CTRL_F], $key) => $this->highlighted = null,
             default => $this->search(),
         });
     }
@@ -112,48 +104,6 @@ class SearchPrompt extends Prompt
     public function visible(): array
     {
         return array_slice($this->matches(), $this->firstVisible, $this->scroll, preserve_keys: true);
-    }
-
-    /**
-     * Highlight the previous entry, or wrap around to the last entry.
-     */
-    protected function highlightPrevious(): void
-    {
-        if ($this->matches === []) {
-            $this->highlighted = null;
-        } elseif ($this->highlighted === null) {
-            $this->highlighted = count($this->matches) - 1;
-        } elseif ($this->highlighted === 0) {
-            $this->highlighted = null;
-        } else {
-            $this->highlighted = $this->highlighted - 1;
-        }
-
-        if ($this->highlighted < $this->firstVisible) {
-            $this->firstVisible--;
-        } elseif ($this->highlighted === count($this->matches) - 1) {
-            $this->firstVisible = count($this->matches) - min($this->scroll, count($this->matches));
-        }
-    }
-
-    /**
-     * Highlight the next entry, or wrap around to the first entry.
-     */
-    protected function highlightNext(): void
-    {
-        if ($this->matches === []) {
-            $this->highlighted = null;
-        } elseif ($this->highlighted === null) {
-            $this->highlighted = 0;
-        } else {
-            $this->highlighted = $this->highlighted === count($this->matches) - 1 ? null : $this->highlighted + 1;
-        }
-
-        if ($this->highlighted > $this->firstVisible + $this->scroll - 1) {
-            $this->firstVisible++;
-        } elseif ($this->highlighted === 0 || $this->highlighted === null) {
-            $this->firstVisible = 0;
-        }
     }
 
     /**

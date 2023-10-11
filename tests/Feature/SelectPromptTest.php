@@ -226,6 +226,37 @@ it('support emacs style key binding', function () {
     expect($result)->toBe('Green');
 });
 
+it('supports the home key', function () {
+    Prompt::fake([Key::HOME[0], Key::ENTER]);
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+        ],
+        default: 'Blue'
+    );
+
+    expect($result)->toBe('Red');
+});
+
+it('supports the end key', function () {
+    Prompt::fake([Key::END[0], Key::ENTER]);
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+        ],
+    );
+
+    expect($result)->toBe('Blue');
+});
+
 it('fails when there is no default in non-interactive mode', function () {
     Prompt::interactive(false);
 

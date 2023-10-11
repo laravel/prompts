@@ -149,6 +149,21 @@ it('validates', function () {
     Prompt::assertOutputContains('Please choose green.');
 });
 
+it('supports the home and end keys while navigating options', function () {
+    Prompt::fake([Key::DOWN, Key::END[0], Key::SPACE, Key::HOME[0], Key::SPACE, Key::ENTER]);
+
+    $result = multisearch(
+        label: 'What are your favorite colors?',
+        options: fn () => [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ]
+    );
+
+    expect($result)->toBe(['blue', 'red']);
+});
+
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
 
