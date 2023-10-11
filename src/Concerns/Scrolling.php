@@ -60,45 +60,49 @@ trait Scrolling
     }
 
     /**
-     * Offset the currently highlighted option.
+     * Highlight the previous entry, or wrap around to the last entry.
      */
-    protected function highlightOffset(int $offset, int $count): void
+    protected function highlightPrevious(int $total, bool $allowNull = false): void
     {
-        if ($offset === 0 || $count === 0) {
+        if ($total === 0) {
             return;
         }
 
-        if ($this->hasTypedValue()) {
-            if ($count === 1) {
-                $this->highlight($this->highlighted === null ? 0 : null);
-            } elseif ($this->highlighted === 0 && $offset < 0) {
-                $this->highlight(null);
-            } elseif ($this->highlighted === null) {
-                $this->highlight($offset < 0 ? $count - 1 : 0);
-            } elseif ($this->highlighted === $count - 1 && $offset > 0) {
-                $this->highlight(null);
-            } else {
-                $this->highlight($offset < 0 ? max(0, $this->highlighted + $offset) : min($count - 1, $this->highlighted + $offset));
-            }
+        if ($this->highlighted === null) {
+            $this->highlight($total - 1);
+        } elseif ($this->highlighted === 0) {
+            $this->highlight($allowNull ? null : ($total - 1));
         } else {
-            if ($offset < 0) {
-                $this->highlight($this->highlighted === 0 ? ($count - 1) : max(0, $this->highlighted + $offset));
-            } else {
-                $this->highlight($this->highlighted === $count - 1 ? 0 : min($count - 1, $this->highlighted + $offset));
-            }
+            $this->highlight($this->highlighted - 1);
+        }
+    }
+
+    /**
+     * Highlight the next entry, or wrap around to the first entry.
+     */
+    protected function highlightNext(int $total, bool $allowNull = false): void
+    {
+        if ($total === 0) {
+            return;
+        }
+
+        if ($this->highlighted === $total - 1) {
+            $this->highlight($allowNull ? null : 0);
+        } else {
+            $this->highlight(($this->highlighted ?? -1) + 1);
         }
     }
 
     /**
      * Center the highlighted option.
      */
-    protected function scrollToHighlighted(int $count): void
+    protected function scrollToHighlighted(int $total): void
     {
         if ($this->highlighted < $this->scroll) {
             return;
         }
 
-        $remaining = $count - $this->highlighted - 1;
+        $remaining = $total - $this->highlighted - 1;
         $halfScroll = (int) floor($this->scroll / 2);
         $endOffset = max(0, $halfScroll - $remaining);
 
@@ -107,13 +111,5 @@ trait Scrolling
         }
 
         $this->firstVisible = $this->highlighted - $halfScroll - $endOffset;
-    }
-
-    /**
-     * Check whether the class has a typed value.
-     */
-    private function hasTypedValue(): bool
-    {
-        return in_array(TypedValue::class, class_uses($this));
     }
 }
