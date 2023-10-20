@@ -1,6 +1,25 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.8...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.11...main)
+
+## [v0.1.11](https://github.com/laravel/prompts/compare/v0.1.10...v0.1.11) - 2023-10-03
+
+- Adds support for alternate HOME and END escape keys by [@TWithers](https://github.com/TWithers) in https://github.com/laravel/prompts/pull/87
+
+## [v0.1.10](https://github.com/laravel/prompts/compare/v0.1.9...v0.1.10) - 2023-09-29
+
+- Prioritize fallback over non-interactive mode by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/91
+
+## [v0.1.9](https://github.com/laravel/prompts/compare/v0.1.8...v0.1.9) - 2023-09-26
+
+- Register shutdown function to kill process in the event of an early exit by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/76
+- Add non-interactive mode by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/73
+- Add `multisearch` prompt by [@irobin591](https://github.com/irobin591) in https://github.com/laravel/prompts/pull/58
+- Allow to target `^0.2` before official release by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/prompts/pull/78
+- Allow `select` and `search` "required" message to be customized. by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/84
+- Replace shutdown handlers with destructors by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/81
+- Update dependencies for 0.1.9 release by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/prompts/pull/83
+- Add Progress Bar Helper by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/82
 
 ## [v0.1.8](https://github.com/laravel/prompts/compare/v0.1.7...v0.1.8) - 2023-09-19
 

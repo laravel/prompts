@@ -44,6 +44,30 @@ it('completes the input using the arrow keys', function () {
     expect($result)->toBe('Black');
 });
 
+it('supports the home key while navigating options', function () {
+    Prompt::fake([Key::DOWN, Key::DOWN, Key::HOME[0], Key::ENTER]);
+
+    $result = suggest('What is your favorite color?', [
+        'Red',
+        'Blue',
+        'Green',
+    ]);
+
+    expect($result)->toBe('Red');
+});
+
+it('supports the end key while navigating options', function () {
+    Prompt::fake([Key::DOWN, Key::END[0], Key::ENTER]);
+
+    $result = suggest('What is your favorite color?', [
+        'Red',
+        'Blue',
+        'Green',
+    ]);
+
+    expect($result)->toBe('Green');
+});
+
 it('accepts a callback', function () {
     Prompt::fake(['e', 'e', Key::DOWN, Key::ENTER]);
 

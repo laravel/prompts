@@ -155,6 +155,21 @@ it('support emacs style key binding', function () {
     expect($result)->toBe(['green', 'blue']);
 });
 
+it('supports the home and end keys', function () {
+    Prompt::fake([Key::END[0], Key::SPACE, Key::HOME[0], Key::SPACE, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ]
+    );
+
+    expect($result)->toBe(['blue', 'red']);
+});
+
 it('returns an empty array when non-interactive', function () {
     Prompt::interactive(false);
 
