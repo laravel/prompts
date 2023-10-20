@@ -6,18 +6,8 @@ use Closure;
 
 class TextareaPrompt extends Prompt
 {
-    use Concerns\ReducesScrollingToFitTerminal;
+    use Concerns\Scrolling;
     use Concerns\TypedValue;
-
-    /**
-     * The index of the first visible option.
-     */
-    public int $firstVisible = 0;
-
-    /**
-     * The number of lines to scroll.
-     */
-    public int $scroll = 5;
 
     /**
      * Create a new TextareaPrompt instance.
@@ -39,9 +29,7 @@ class TextareaPrompt extends Prompt
 
         $this->scroll = $this->rows;
 
-        $this->reduceScrollingToFitTerminal();
-
-        $this->cursorPosition = 0;
+        $this->initializeScrolling();
 
         $this->on(
             'key',
