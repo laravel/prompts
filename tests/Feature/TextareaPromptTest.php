@@ -128,6 +128,19 @@ it('moves to the end of the line if down is pressed twice on the last line', fun
     expect($result)->toBe("Jess\nJoe");
 });
 
+it('can move back to the last line when it is empty', function () {
+    Prompt::fake([
+        'J', 'e', 's', 's', Key::ENTER,
+        Key::UP, Key::DOWN,
+        'J', 'o', 'e',
+        Key::CTRL_D,
+    ]);
+
+    $result = textarea(label: 'What is your name?');
+
+    expect($result)->toBe("Jess\nJoe");
+});
+
 it('returns an empty string when non-interactive', function () {
     Prompt::interactive(false);
 
