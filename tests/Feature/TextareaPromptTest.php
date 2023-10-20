@@ -86,7 +86,7 @@ test('support emacs style key binding', function () {
 });
 
 test('move to the beginning and end of line', function () {
-    Prompt::fake(['e', 's', Key::HOME, 'J', KEY::END, 's', Key::CTRL_D]);
+    Prompt::fake(['e', 's', Key::HOME[0], 'J', KEY::END[0], 's', Key::CTRL_D]);
 
     $result = textarea(label: 'What is your name?');
 
