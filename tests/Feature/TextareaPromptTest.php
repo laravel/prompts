@@ -77,7 +77,7 @@ it('can fall back', function () {
     expect($result)->toBe('result');
 });
 
-test('support emacs style key binding', function () {
+it('supports emacs style key bindings', function () {
     Prompt::fake(['J', 'z', 'e', Key::CTRL_B, Key::CTRL_H, key::CTRL_F, 's', 's', Key::CTRL_D]);
 
     $result = textarea(label: 'What is your name?');
@@ -85,7 +85,7 @@ test('support emacs style key binding', function () {
     expect($result)->toBe('Jess');
 });
 
-test('move to the beginning and end of line', function () {
+it('moves to the beginning and end of line', function () {
     Prompt::fake(['e', 's', Key::HOME[0], 'J', KEY::END[0], 's', Key::CTRL_D]);
 
     $result = textarea(label: 'What is your name?');
@@ -93,7 +93,7 @@ test('move to the beginning and end of line', function () {
     expect($result)->toBe('Jess');
 });
 
-test('move up and down lines', function () {
+it('moves up and down lines', function () {
     Prompt::fake([
         'e', 's', 's', Key::ENTER, 'o', 'e',
         KEY::UP_ARROW, KEY::LEFT_ARROW, Key::LEFT_ARROW,
@@ -105,7 +105,7 @@ test('move up and down lines', function () {
     expect($result)->toBe("Jess\nJoe");
 });
 
-test('will move to the start of the line if up is pressed twice on the first line', function () {
+it('moves to the start of the line if up is pressed twice on the first line', function () {
     Prompt::fake([
         'e', 's', 's', Key::ENTER, 'J', 'o', 'e',
         KEY::UP_ARROW, KEY::UP_ARROW, 'J', Key::CTRL_D,
@@ -116,7 +116,7 @@ test('will move to the start of the line if up is pressed twice on the first lin
     expect($result)->toBe("Jess\nJoe");
 });
 
-test('will move to the end of the line if down is pressed twice on the last line', function () {
+it('moves to the end of the line if down is pressed twice on the last line', function () {
     Prompt::fake([
         'J', 'e', 's', 's', Key::ENTER, 'J', 'o',
         KEY::UP_ARROW, KEY::UP_ARROW, Key::DOWN_ARROW,
