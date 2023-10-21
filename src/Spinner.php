@@ -38,11 +38,16 @@ class Spinner extends Prompt
     public bool $hasStreamingOutput = false;
 
     /**
+     * A unique string to indicate that the spinner should stop.
+     */
+    public string $stopIndicator;
+
+    /**
      * Create a new Spinner instance.
      */
     public function __construct(public string $message = '')
     {
-        //
+        $this->stopIndicator = uniqid() . uniqid() . uniqid();
     }
 
     /**
@@ -59,7 +64,7 @@ class Spinner extends Prompt
 
         $this->sockets = SpinnerSockets::create();
 
-        if (! function_exists('pcntl_fork')) {
+        if (!function_exists('pcntl_fork')) {
             return $this->renderStatically($callback);
         }
 
@@ -86,8 +91,17 @@ class Spinner extends Prompt
             } else {
                 $result = $callback($this->sockets->messenger());
 
+                $this->sockets->messenger()->stop($this->stopIndicator);
+
                 // Let the spinner finish its last cycle before exiting
                 usleep($this->interval * 1000);
+
+                // Read the last frame actually rendered from the spinner
+                $realPrevFrame = $this->sockets->readPrevFrame();
+
+                if ($realPrevFrame) {
+                    $this->prevFrame = $realPrevFrame;
+                }
 
                 $this->resetTerminal($originalAsync);
 
@@ -107,16 +121,28 @@ class Spinner extends Prompt
     {
         $output = $this->sockets->streamingOutput();
 
-        if ($output !== '') {
-            $this->hasStreamingOutput = true;
+        if ($output === '') {
+            return;
+        }
 
-            $this->resetCursorPosition();
-            $this->eraseDown();
+        $this->resetCursorPosition();
+        $this->eraseDown();
 
-            collect(explode(PHP_EOL, rtrim($output)))
-                ->each(fn ($line) => static::writeDirectlyWithFormatting(' '.$line.PHP_EOL));
+        if (!$this->hasStreamingOutput && str_starts_with($this->prevFrame, PHP_EOL)) {
+            // This is the first line of streaming output we're about to write
+            static::writeDirectly(PHP_EOL);
+        }
 
-            $this->writeDirectly($this->prevFrame);
+        $this->hasStreamingOutput = true;
+
+        collect(explode(PHP_EOL, rtrim($output)))
+            ->each(fn ($line) => $line === $this->stopIndicator ? null : static::writeDirectlyWithFormatting(' ' . $line . PHP_EOL));
+
+        $this->writeDirectly($this->prevFrame);
+
+        if (str_contains($output, $this->stopIndicator)) {
+            // Send the last frame actually rendered back to the parent process
+            $this->sockets->sendPrevFrame($this->prevFrame);
         }
     }
 
@@ -202,7 +228,7 @@ class Spinner extends Prompt
      */
     public function __destruct()
     {
-        if (! empty($this->pid)) {
+        if (!empty($this->pid)) {
             posix_kill($this->pid, SIGHUP);
         }
 

@@ -35,7 +35,11 @@ class SpinnerRenderer extends Renderer
         $spinner->interval = $this->interval;
 
         if ($spinner->hasStreamingOutput) {
-            $this->line($this->dim(str_repeat('─', 63)));
+            if ($spinner->newLinesWritten() > 1) {
+                $this->newLine();
+            }
+
+            $this->line($this->dim(str_repeat('─', $spinner->terminal()->cols() - 6)));
         }
 
         $frame = $this->frames[$spinner->count % count($this->frames)];

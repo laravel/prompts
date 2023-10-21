@@ -42,13 +42,7 @@ class SpinnerSockets
      */
     public function streamingOutput(): string
     {
-        $output = '';
-
-        foreach ($this->outputToTask->read() as $chunk) {
-            $output .= $chunk;
-        }
-
-        return $output;
+        return $this->getSocketOutput($this->outputToTask);
     }
 
     /**
@@ -56,13 +50,28 @@ class SpinnerSockets
      */
     public function message(): string
     {
-        $message = '';
+        return $this->getSocketOutput($this->messageToTask);
+    }
 
-        foreach ($this->messageToTask->read() as $chunk) {
-            $message .= $chunk;
+    public function sendPrevFrame(string $prevFrame)
+    {
+        $this->outputToTask->write($prevFrame);
+    }
+
+    public function readPrevFrame(): string
+    {
+        return $this->getSocketOutput($this->outputToSpinner);
+    }
+
+    protected function getSocketOutput($socket)
+    {
+        $output = '';
+
+        foreach ($socket->read() as $chunk) {
+            $output .= $chunk;
         }
 
-        return $message;
+        return $output;
     }
 
     /**
