@@ -22,7 +22,7 @@ class SpinnerMessenger
      */
     public function line(string $message): void
     {
-        $this->output($message . PHP_EOL);
+        $this->output($message.PHP_EOL);
     }
 
     /**

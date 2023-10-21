@@ -4,7 +4,6 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
-use Laravel\Prompts\SpinnerMessenger;
 
 /**
  * Prompt the user for text input.
