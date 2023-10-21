@@ -47,7 +47,7 @@ class Spinner extends Prompt
      */
     public function __construct(public string $message = '')
     {
-        $this->stopIndicator = uniqid().uniqid().uniqid();
+        $this->stopIndicator = uniqid() . uniqid() . uniqid();
     }
 
     /**
@@ -64,7 +64,7 @@ class Spinner extends Prompt
 
         $this->sockets = SpinnerSockets::create();
 
-        if (! function_exists('pcntl_fork')) {
+        if (!function_exists('pcntl_fork')) {
             return $this->renderStatically($callback);
         }
 
@@ -91,15 +91,14 @@ class Spinner extends Prompt
             } else {
                 $result = $callback($this->sockets->messenger());
 
+                // Tell the child process to stop and send back it's last frame
                 $this->sockets->messenger()->stop($this->stopIndicator);
 
                 // Let the spinner finish its last cycle before exiting
                 usleep($this->interval * 1000);
 
                 // Read the last frame actually rendered from the spinner
-                $realPrevFrame = $this->sockets->readPrevFrame();
-
-                if ($realPrevFrame) {
+                if ($realPrevFrame = $this->sockets->prevFrame()) {
                     $this->prevFrame = $realPrevFrame;
                 }
 
@@ -128,15 +127,16 @@ class Spinner extends Prompt
         $this->resetCursorPosition();
         $this->eraseDown();
 
-        if (! $this->hasStreamingOutput && str_starts_with($this->prevFrame, PHP_EOL)) {
-            // This is the first line of streaming output we're about to write
+        if (!$this->hasStreamingOutput && str_starts_with($this->prevFrame, PHP_EOL)) {
+            // This is the first line of streaming output we're about to write, if the
+            // previous frame started with a new line, we need to write a new line.
             static::writeDirectly(PHP_EOL);
         }
 
         $this->hasStreamingOutput = true;
 
         collect(explode(PHP_EOL, rtrim($output)))
-            ->each(fn ($line) => $line === $this->stopIndicator ? null : static::writeDirectlyWithFormatting(' '.$line.PHP_EOL));
+            ->each(fn ($line) => $line === $this->stopIndicator ? null : static::writeDirectlyWithFormatting(' ' . $line . PHP_EOL));
 
         $this->writeDirectly($this->prevFrame);
 
@@ -151,9 +151,7 @@ class Spinner extends Prompt
      */
     protected function setNewMessage(): void
     {
-        $message = $this->sockets->message();
-
-        if ($message !== '') {
+        if (($message = $this->sockets->message()) !== '') {
             $this->message = $message;
         }
     }
@@ -228,7 +226,7 @@ class Spinner extends Prompt
      */
     public function __destruct()
     {
-        if (! empty($this->pid)) {
+        if (!empty($this->pid)) {
             posix_kill($this->pid, SIGHUP);
         }
 

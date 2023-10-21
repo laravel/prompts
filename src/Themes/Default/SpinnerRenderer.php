@@ -36,6 +36,7 @@ class SpinnerRenderer extends Renderer
 
         if ($spinner->hasStreamingOutput) {
             if ($spinner->newLinesWritten() > 1) {
+                // Make sure there is always one space above the dividing line.
                 $this->newLine();
             }
 

@@ -53,17 +53,26 @@ class SpinnerSockets
         return $this->getSocketOutput($this->messageToTask);
     }
 
+    /**
+     * Send the previous frame back to the parent process.
+     */
     public function sendPrevFrame(string $prevFrame)
     {
         $this->outputToTask->write($prevFrame);
     }
 
-    public function readPrevFrame(): string
+    /**
+     * Read the previous frame from the spinner.
+     */
+    public function prevFrame(): string
     {
         return $this->getSocketOutput($this->outputToSpinner);
     }
 
-    protected function getSocketOutput($socket)
+    /**
+     * Read the output from the given socket.
+     */
+    protected function getSocketOutput(Connection $socket)
     {
         $output = '';
 

@@ -13,6 +13,6 @@ function generateRandomString($length)
 }
 
 foreach (range(0, 50) as $i) {
-    echo $i.' '.generateRandomString(rand(1, 100)).PHP_EOL;
-    usleep(rand(50_000, 250_000));
+    echo $i . ' ' . generateRandomString(rand(1, 100)) . PHP_EOL;
+    usleep(rand(10_000, 250_000));
 }
