@@ -9,6 +9,8 @@ class TextareaPrompt extends Prompt
     use Concerns\Scrolling;
     use Concerns\TypedValue;
 
+    public int $width = 60;
+
     /**
      * Create a new TextareaPrompt instance.
      */
@@ -184,8 +186,7 @@ class TextareaPrompt extends Prompt
      */
     public function lines(): array
     {
-        // TODO: Figure out the real number here, this comes from the renderer?
-        $value = wordwrap($this->value(), 59, PHP_EOL, true);
+        $value = wordwrap($this->value(), $this->width - 1, PHP_EOL, true);
 
         return explode(PHP_EOL, $value);
     }
