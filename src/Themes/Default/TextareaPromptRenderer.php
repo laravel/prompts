@@ -25,7 +25,7 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
             'cancel' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $this->strikethrough($this->dim(collect($prompt->lines())->implode(PHP_EOL))),
+                    collect($prompt->lines())->map(fn ($line) => $this->strikethrough($this->dim($line)))->implode(PHP_EOL),
                     color: 'red',
                 )
                 ->error('Cancelled.'),
