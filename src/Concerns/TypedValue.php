@@ -96,12 +96,12 @@ trait TypedValue
 
         $cursor = mb_strlen($current) && $current !== PHP_EOL ? $current : ' ';
 
-        $spaceBefore = $maxWidth - mb_strwidth($cursor) - (mb_strwidth($after) > 0 ? 1 : 0);
+        $spaceBefore = $maxWidth < 0 ? mb_strwidth($before) : $maxWidth - mb_strwidth($cursor) - (mb_strwidth($after) > 0 ? 1 : 0);
         [$truncatedBefore, $wasTruncatedBefore] = mb_strwidth($before) > $spaceBefore
             ? [$this->trimWidthBackwards($before, 0, $spaceBefore - 1), true]
             : [$before, false];
 
-        $spaceAfter = $maxWidth - ($wasTruncatedBefore ? 1 : 0) - mb_strwidth($truncatedBefore) - mb_strwidth($cursor);
+        $spaceAfter = $maxWidth < 0 ? mb_strwidth($after) : $maxWidth - ($wasTruncatedBefore ? 1 : 0) - mb_strwidth($truncatedBefore) - mb_strwidth($cursor);
         [$truncatedAfter, $wasTruncatedAfter] = mb_strwidth($after) > $spaceAfter
             ? [mb_strimwidth($after, 0, $spaceAfter - 1), true]
             : [$after, false];

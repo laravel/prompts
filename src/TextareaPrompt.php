@@ -202,7 +202,6 @@ class TextareaPrompt extends Prompt
             return $this->dim($this->addCursor($this->placeholder, 0, 10_000));
         }
 
-        // TODO: Deal with max width properly, 10_000 is a hack
-        return $this->addCursor($value, $this->cursorPosition, 10_000);
+        return $this->addCursor($value, $this->cursorPosition, -1);
     }
 }
