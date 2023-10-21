@@ -31,7 +31,7 @@ class SpinnerRenderer extends Renderer
         if ($spinner->finalMessage !== '') {
             $finalMessage = wordwrap($spinner->finalMessage, $spinner->terminal()->cols() - 6);
 
-            collect(explode(PHP_EOL, $finalMessage))->each(fn ($line) => $this->line(' ' . $line));
+            collect(explode(PHP_EOL, $finalMessage))->each(fn ($line) => $this->line(' '.$line));
 
             // Avoid partial line indicator on re-render
             $this->line('');

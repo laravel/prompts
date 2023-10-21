@@ -2,7 +2,7 @@
 
 use function Laravel\Prompts\spin;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 $result1 = spin(
     function () {
