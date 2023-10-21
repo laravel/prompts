@@ -6,11 +6,11 @@ use Symfony\Component\Process\Process;
 use function Laravel\Prompts\spin;
 use function Laravel\Prompts\text;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 spin(
     function (SpinnerMessenger $messenger) {
-        $process = Process::fromShellCommandline('php ' . __DIR__ . '/streaming-spinner-process.php');
+        $process = Process::fromShellCommandline('php '.__DIR__.'/streaming-spinner-process.php');
         $process->start();
 
         foreach ($process as $type => $data) {
@@ -24,7 +24,7 @@ spin(
 
 foreach (range(1, 3) as $i) {
     if ($argv[1] ?? false) {
-        text('Name ' . $i, 'Default ' . $i);
+        text('Name '.$i, 'Default '.$i);
     }
 
     spin(
