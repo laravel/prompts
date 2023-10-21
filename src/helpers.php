@@ -4,6 +4,7 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
+use Laravel\Prompts\SpinnerMessenger;
 
 /**
  * Prompt the user for text input.
@@ -89,7 +90,7 @@ function multisearch(string $label, Closure $options, string $placeholder = '', 
  *
  * @template TReturn of mixed
  *
- * @param  \Closure(): TReturn  $callback
+ * @param  \Closure(SpinnerMessenger): TReturn  $callback
  * @return TReturn
  */
 function spin(Closure $callback, string $message = ''): mixed
