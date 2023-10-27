@@ -307,9 +307,9 @@ abstract class Prompt
     {
         $this->validated = true;
 
-        if (($this->required ?? false) && ($value === '' || $value === [] || $value === false || $value === null)) {
+        if ($this->required !== false && $this->isInvalidWhenRequired($value)) {
             $this->state = 'error';
-            $this->error = is_string($this->required) ? $this->required : 'Required.';
+            $this->error = is_string($this->required) && strlen($this->required) > 0 ? $this->required : 'Required.';
 
             return;
         }
@@ -328,6 +328,14 @@ abstract class Prompt
             $this->state = 'error';
             $this->error = $error;
         }
+    }
+
+    /**
+     * Determine whether the given value is invalid when the prompt is required.
+     */
+    protected function isInvalidWhenRequired(mixed $value): bool
+    {
+        return $value === '' || $value === [] || $value === false || $value === null;
     }
 
     /**
