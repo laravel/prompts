@@ -96,4 +96,12 @@ class SelectPrompt extends Prompt
     {
         return array_slice($this->options, $this->firstVisible, $this->scroll, preserve_keys: true);
     }
+
+    /**
+     * Determine whether the given value is invalid when the prompt is required.
+     */
+    protected function isInvalidWhenRequired(mixed $value): bool
+    {
+        return $value === null;
+    }
 }
