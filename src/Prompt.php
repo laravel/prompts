@@ -307,9 +307,9 @@ abstract class Prompt
     {
         $this->validated = true;
 
-        if (($this->required ?? false) && $this->isInvalidWhenRequired($value)) {
+        if ($this->required !== false && $this->isInvalidWhenRequired($value)) {
             $this->state = 'error';
-            $this->error = is_string($this->required) ? $this->required : 'Required.';
+            $this->error = is_string($this->required) && strlen($this->required) > 0 ? $this->required : 'Required.';
 
             return;
         }
