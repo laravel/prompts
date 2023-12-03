@@ -2,6 +2,7 @@
 
 namespace Laravel\Prompts;
 
+use Laravel\Prompts\Exceptions\UserAbortException;
 use RuntimeException;
 use Symfony\Component\Console\Terminal as SymfonyTerminal;
 
@@ -75,7 +76,7 @@ class Terminal
      */
     public function exit(): void
     {
-        exit(1);
+        throw new UserAbortException();
     }
 
     /**
