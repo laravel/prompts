@@ -16,7 +16,7 @@ function text(string $label, string $placeholder = '', string $default = '', boo
 /**
  * Prompt the user for multiline text input.
  */
-function textarea(string $label, int $rows = 5, string $placeholder = '', string $default = '', bool|string $required = false, Closure $validate = null, string $hint = ''): string
+function textarea(string $label, int $rows = 5, string $placeholder = '', string $default = '', bool|string $required = false, ?Closure $validate = null, string $hint = ''): string
 {
     return (new TextareaPrompt($label, $rows, $placeholder, $default, $required, $validate, $hint))->prompt();
 }
