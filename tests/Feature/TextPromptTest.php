@@ -134,38 +134,6 @@ it('supports custom validation', function () {
     expect($result)->toBe('Jess');
 
     Prompt::assertOutputContains('Minimum 2 chars!');
-});
 
-it('applies default aliases', function () {
-    $aliases = [];
-
-    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
-        $aliases[] = $prompt->alias();
-
-        return null;
-    });
-
-    Prompt::fake([Key::ENTER, Key::ENTER]);
-
-    text(label: 'First prompt');
-    text(label: 'Second prompt');
-
-    expect($aliases)->toBe(['prompt_1', 'prompt_2']);
-});
-
-it('supports custom aliases', function () {
-    $aliases = [];
-
-    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
-        $aliases[] = $prompt->alias();
-
-        return null;
-    });
-
-    Prompt::fake([Key::ENTER, Key::ENTER]);
-
-    text(label: 'First prompt', as: 'first_prompt');
-    text(label: 'Second prompt', as: 'second_prompt');
-
-    expect($aliases)->toBe(['first_prompt', 'second_prompt']);
+    Prompt::validateUsing(fn () => null);
 });

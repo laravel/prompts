@@ -40,11 +40,6 @@ abstract class Prompt
     protected int $newLinesWritten = 1;
 
     /**
-     * The prompt alias.
-     */
-    public ?string $as;
-
-    /**
      * Whether user input is required.
      */
     public bool|string $required;
@@ -73,11 +68,6 @@ abstract class Prompt
      * The terminal instance.
      */
     protected static Terminal $terminal;
-
-    /**
-     * The prompts counter.
-     */
-    protected static int $counter = 0;
 
     /**
      * Get the value of the prompt.
@@ -373,14 +363,6 @@ abstract class Prompt
         if (PHP_OS_FAMILY === 'Windows') {
             throw new RuntimeException('Prompts is not currently supported on Windows. Please use WSL or configure a fallback.');
         }
-    }
-
-    /**
-     * Get the prompt alias.
-     */
-    public function alias(): string
-    {
-        return $this->as ??= 'prompt_' . ++static::$counter;
     }
 
     /**

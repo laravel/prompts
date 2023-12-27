@@ -190,48 +190,6 @@ it('supports custom validation', function () {
     expect($result)->toBe('green');
 
     Prompt::assertOutputContains('Please choose green.');
-});
 
-it('applies default aliases', function () {
-    $aliases = [];
-    $options = fn () => [
-        'red' => 'Red',
-        'green' => 'Green',
-        'blue' => 'Blue',
-    ];
-
-    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
-        $aliases[] = $prompt->alias();
-
-        return null;
-    });
-
-    Prompt::fake([Key::DOWN, Key::ENTER, Key::DOWN, Key::ENTER]);
-
-    search(label: 'First prompt', options: $options);
-    search(label: 'Second prompt', options: $options);
-
-    expect($aliases)->toBe(['prompt_1', 'prompt_2']);
-});
-
-it('supports custom aliases', function () {
-    $aliases = [];
-    $options = fn () => [
-        'red' => 'Red',
-        'green' => 'Green',
-        'blue' => 'Blue',
-    ];
-
-    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
-        $aliases[] = $prompt->alias();
-
-        return null;
-    });
-
-    Prompt::fake([Key::DOWN, Key::ENTER, Key::DOWN, Key::ENTER]);
-
-    search(label: 'First prompt', as: 'first_prompt', options: $options);
-    search(label: 'Second prompt', as: 'second_prompt', options: $options);
-
-    expect($aliases)->toBe(['first_prompt', 'second_prompt']);
+    Prompt::validateUsing(fn () => null);
 });
