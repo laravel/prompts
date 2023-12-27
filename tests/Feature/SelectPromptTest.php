@@ -257,6 +257,20 @@ it('supports the end key', function () {
     expect($result)->toBe('Blue');
 });
 
+it('allows empty strings', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: [
+            '' => 'Empty',
+            'not-empty' => 'Not empty',
+        ],
+    );
+
+    expect($result)->toBe('');
+});
+
 it('fails when there is no default in non-interactive mode', function () {
     Prompt::interactive(false);
 
