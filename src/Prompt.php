@@ -40,19 +40,29 @@ abstract class Prompt
     protected int $newLinesWritten = 1;
 
     /**
+     * The prompt alias.
+     */
+    public ?string $as;
+
+    /**
      * Whether user input is required.
      */
     public bool|string $required;
 
     /**
-     * The validator callback.
+     * The validator callback or rules.
      */
-    protected ?Closure $validate;
+    public mixed $validate;
 
     /**
      * Indicates if the prompt has been validated.
      */
     protected bool $validated = false;
+
+    /**
+     * The custom validation logic.
+     */
+    protected static ?Closure $validateUsing;
 
     /**
      * The output instance.
@@ -63,6 +73,11 @@ abstract class Prompt
      * The terminal instance.
      */
     protected static Terminal $terminal;
+
+    /**
+     * The prompts counter.
+     */
+    protected static int $counter = 0;
 
     /**
      * Get the value of the prompt.
@@ -171,6 +186,14 @@ abstract class Prompt
     public static function terminal(): Terminal
     {
         return static::$terminal ??= new Terminal();
+    }
+
+    /**
+     * Set the custom validation logic.
+     */
+    public static function validateUsing(Closure $callback): void
+    {
+        static::$validateUsing = $callback;
     }
 
     /**
@@ -314,14 +337,18 @@ abstract class Prompt
             return;
         }
 
-        if (! isset($this->validate)) {
+        if (! isset($this->validate) && ! isset(static::$validateUsing)) {
             return;
         }
 
-        $error = ($this->validate)($value);
+        $error = match (true) {
+            is_callable($this->validate) => ($this->validate)($value),
+            isset(static::$validateUsing) => (static::$validateUsing)($this),
+            default => throw new RuntimeException('The validation logic is missing.'),
+        };
 
         if (! is_string($error) && ! is_null($error)) {
-            throw new \RuntimeException('The validator must return a string or null.');
+            throw new RuntimeException('The validator must return a string or null.');
         }
 
         if (is_string($error) && strlen($error) > 0) {
@@ -346,6 +373,14 @@ abstract class Prompt
         if (PHP_OS_FAMILY === 'Windows') {
             throw new RuntimeException('Prompts is not currently supported on Windows. Please use WSL or configure a fallback.');
         }
+    }
+
+    /**
+     * Get the prompt alias.
+     */
+    public function alias(): string
+    {
+        return $this->as ??= 'prompt_' . ++static::$counter;
     }
 
     /**
