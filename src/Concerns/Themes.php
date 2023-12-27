@@ -62,7 +62,7 @@ trait Themes
      *
      * @throws \InvalidArgumentException
      */
-    public static function theme(string $name = null): string
+    public static function theme(?string $name = null): string
     {
         if ($name === null) {
             return static::$theme;

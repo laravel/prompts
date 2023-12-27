@@ -19,7 +19,7 @@ trait TypedValue
     /**
      * Track the value as the user types.
      */
-    protected function trackTypedValue(string $default = '', bool $submit = true, callable $ignore = null): void
+    protected function trackTypedValue(string $default = '', bool $submit = true, ?callable $ignore = null): void
     {
         $this->typedValue = $default;
 
