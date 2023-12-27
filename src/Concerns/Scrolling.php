@@ -24,7 +24,7 @@ trait Scrolling
     /**
      * Initialize scrolling.
      */
-    protected function initializeScrolling(int $highlighted = null): void
+    protected function initializeScrolling(?int $highlighted = null): void
     {
         $this->highlighted = $highlighted;
 

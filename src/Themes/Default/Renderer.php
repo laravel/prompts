@@ -80,7 +80,7 @@ abstract class Renderer
      *
      * @return $this
      */
-    protected function when(mixed $value, callable $callback, callable $default = null): self
+    protected function when(mixed $value, callable $callback, ?callable $default = null): self
     {
         if ($value) {
             $callback($this);
