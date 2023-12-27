@@ -37,8 +37,9 @@ class SuggestPrompt extends Prompt
         public string $default = '',
         public int $scroll = 5,
         public bool|string $required = false,
-        public ?Closure $validate = null,
-        public string $hint = ''
+        public mixed $validate = null,
+        public string $hint = '',
+        public ?string $as = null,
     ) {
         $this->options = $options instanceof Collection ? $options->all() : $options;
 

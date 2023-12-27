@@ -2,7 +2,6 @@
 
 namespace Laravel\Prompts;
 
-use Closure;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
@@ -27,9 +26,10 @@ class SelectPrompt extends Prompt
         array|Collection $options,
         public int|string|null $default = null,
         public int $scroll = 5,
-        public ?Closure $validate = null,
+        public mixed $validate = null,
         public string $hint = '',
         public bool|string $required = true,
+        public ?string $as = null,
     ) {
         if ($this->required === false) {
             throw new InvalidArgumentException('Argument [required] must be true or a string.');
