@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.13...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.14...main)
+
+## [v0.1.14](https://github.com/laravel/prompts/compare/v0.1.13...v0.1.14) - 2023-12-27
+
+* Ignore new PHPStan error by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/103
 
 ## [v0.1.13](https://github.com/laravel/prompts/compare/v0.1.12...v0.1.13) - 2023-10-27
 
