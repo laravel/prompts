@@ -118,3 +118,53 @@ it('validates the default value when non-interactive', function () {
         required: true,
     );
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('supports custom validation', function () {
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('Are you sure?')
+            ->validate->toBe('confirmed');
+
+        return $prompt->validate === 'confirmed' && ! $prompt->value() ? 'Need to be sure!' : null;
+    });
+
+    Prompt::fake([Key::DOWN, Key::ENTER, Key::UP, Key::ENTER]);
+
+    confirm(label: 'Are you sure?', validate: 'confirmed');
+
+    Prompt::assertOutputContains('Need to be sure!');
+});
+
+it('applies default aliases', function () {
+    $aliases = [];
+
+    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
+        $aliases[] = $prompt->alias();
+
+        return null;
+    });
+
+    Prompt::fake([Key::ENTER, Key::ENTER]);
+
+    confirm(label: 'First prompt');
+    confirm(label: 'Second prompt');
+
+    expect($aliases)->toBe(['prompt_1', 'prompt_2']);
+});
+
+it('supports custom aliases', function () {
+    $aliases = [];
+
+    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
+        $aliases[] = $prompt->alias();
+
+        return null;
+    });
+
+    Prompt::fake([Key::ENTER, Key::ENTER]);
+
+    confirm(label: 'First prompt', as: 'first_prompt');
+    confirm(label: 'Second prompt', as: 'second_prompt');
+
+    expect($aliases)->toBe(['first_prompt', 'second_prompt']);
+});

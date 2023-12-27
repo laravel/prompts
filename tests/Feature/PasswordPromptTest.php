@@ -79,3 +79,58 @@ it('fails validation when non-interactive', function () {
 
     password('What is the password?', required: true);
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('supports custom validation', function () {
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('What is the password?')
+            ->validate->toBe('min:8');
+
+        return $prompt->validate === 'min:8' && strlen($prompt->value()) < 8 ? 'Minimum 8 chars!' : null;
+    });
+
+    Prompt::fake(['p', Key::ENTER, 'a', 's', 's', 'w', 'o', 'r', 'd', Key::ENTER]);
+
+    $result = password(
+        label: 'What is the password?',
+        validate: 'min:8',
+    );
+
+    expect($result)->toBe('password');
+
+    Prompt::assertOutputContains('Minimum 8 chars!');
+});
+
+it('applies default aliases', function () {
+    $aliases = [];
+
+    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
+        $aliases[] = $prompt->alias();
+
+        return null;
+    });
+
+    Prompt::fake([Key::ENTER, Key::ENTER]);
+
+    password(label: 'First prompt');
+    password(label: 'Second prompt');
+
+    expect($aliases)->toBe(['prompt_1', 'prompt_2']);
+});
+
+it('supports custom aliases', function () {
+    $aliases = [];
+
+    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
+        $aliases[] = $prompt->alias();
+
+        return null;
+    });
+
+    Prompt::fake([Key::ENTER, Key::ENTER]);
+
+    password(label: 'First prompt', as: 'first_prompt');
+    password(label: 'Second prompt', as: 'second_prompt');
+
+    expect($aliases)->toBe(['first_prompt', 'second_prompt']);
+});

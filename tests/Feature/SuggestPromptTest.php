@@ -176,3 +176,59 @@ it('validates the default value when non-interactive', function () {
         'Blue',
     ], required: true);
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('supports custom validation', function () {
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('What is your name?')
+            ->validate->toBe('min:2');
+
+        return $prompt->validate === 'min:2' && strlen($prompt->value()) < 2 ? 'Minimum 2 chars!' : null;
+    });
+
+    Prompt::fake(['A', Key::ENTER, 'n', 'd', 'r', 'e', 'a', Key::ENTER]);
+
+    $result = suggest(
+        label: 'What is your name?',
+        options: ['Jess', 'Taylor'],
+        validate: 'min:2',
+    );
+
+    expect($result)->toBe('Andrea');
+
+    Prompt::assertOutputContains('Minimum 2 chars!');
+});
+
+it('applies default aliases', function () {
+    $aliases = [];
+
+    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
+        $aliases[] = $prompt->alias();
+
+        return null;
+    });
+
+    Prompt::fake([Key::ENTER, Key::ENTER]);
+
+    suggest(label: 'First prompt', options: ['Jess', 'Taylor']);
+    suggest(label: 'Second prompt', options: ['Jess', 'Taylor']);
+
+    expect($aliases)->toBe(['prompt_1', 'prompt_2']);
+});
+
+it('supports custom aliases', function () {
+    $aliases = [];
+
+    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
+        $aliases[] = $prompt->alias();
+
+        return null;
+    });
+
+    Prompt::fake([Key::ENTER, Key::ENTER]);
+
+    suggest(label: 'First prompt', as: 'first_prompt', options: ['Jess', 'Taylor']);
+    suggest(label: 'Second prompt', as: 'second_prompt', options: ['Jess', 'Taylor']);
+
+    expect($aliases)->toBe(['first_prompt', 'second_prompt']);
+});

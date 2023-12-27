@@ -184,3 +184,73 @@ it('can fall back', function () {
 
     expect($result)->toBe(['result']);
 });
+
+it('supports custom validation', function () {
+    Prompt::fake(['a', Key::DOWN, Key::SPACE, Key::ENTER, Key::DOWN, Key::SPACE, Key::ENTER]);
+
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('What are your favorite colors?')
+            ->validate->toBe('in:green');
+
+        return $prompt->validate === 'in:green' && ! in_array('green', $prompt->value()) ? 'And green?' : null;
+    });
+
+    $result = multisearch(
+        label: 'What are your favorite colors?',
+        options: fn () => [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+        validate: 'in:green',
+    );
+
+    expect($result)->toBe(['red', 'green']);
+
+    Prompt::assertOutputContains('And green?');
+});
+
+it('applies default aliases', function () {
+    $aliases = [];
+    $options = fn () => [
+        'red' => 'Red',
+        'green' => 'Green',
+        'blue' => 'Blue',
+    ];
+
+    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
+        $aliases[] = $prompt->alias();
+
+        return null;
+    });
+
+    Prompt::fake([Key::ENTER, Key::ENTER]);
+
+    multisearch(label: 'First prompt', options: $options);
+    multisearch(label: 'Second prompt', options: $options);
+
+    expect($aliases)->toBe(['prompt_1', 'prompt_2']);
+});
+
+it('supports custom aliases', function () {
+    $aliases = [];
+    $options = fn () => [
+        'red' => 'Red',
+        'green' => 'Green',
+        'blue' => 'Blue',
+    ];
+
+    Prompt::validateUsing(function (Prompt $prompt) use (&$aliases) {
+        $aliases[] = $prompt->alias();
+
+        return null;
+    });
+
+    Prompt::fake([Key::ENTER, Key::ENTER]);
+
+    multisearch(label: 'First prompt', as: 'first_prompt', options: $options);
+    multisearch(label: 'Second prompt', as: 'second_prompt', options: $options);
+
+    expect($aliases)->toBe(['first_prompt', 'second_prompt']);
+});
