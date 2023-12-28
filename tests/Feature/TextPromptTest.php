@@ -114,3 +114,10 @@ it('validates the default value when non-interactive', function () {
 
     text('What is your name?', required: true);
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('allows customizing the cancellation', function () {
+    Prompt::cancelUsing(fn () => throw new Exception('Cancelled.'));
+    Prompt::fake([Key::CTRL_C]);
+
+    text('What is your name?');
+})->throws(Exception::class, 'Cancelled.');
