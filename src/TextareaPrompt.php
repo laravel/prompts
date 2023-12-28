@@ -11,6 +11,8 @@ class TextareaPrompt extends Prompt
 
     public int $width = 60;
 
+    protected int $cursorOffset = 0;
+
     /**
      * Create a new TextareaPrompt instance.
      */
@@ -186,6 +188,8 @@ class TextareaPrompt extends Prompt
      */
     public function lines(): array
     {
+        $this->calculateCursorOffset();
+
         $value = wordwrap($this->value(), $this->width - 1, PHP_EOL, true);
 
         return explode(PHP_EOL, $value);
@@ -202,6 +206,24 @@ class TextareaPrompt extends Prompt
             return $this->dim($this->addCursor($this->placeholder, 0, 10_000));
         }
 
-        return $this->addCursor($value, $this->cursorPosition, -1);
+        return $this->addCursor($value, $this->cursorPosition + $this->cursorOffset, -1);
+    }
+
+    /**
+     * When there are long words that wrap, the `typedValue` and the display value are different,
+     * (due to the inserted new line characters from the word wrap) and the cursor calculation is off.
+     * This method calculates the difference and adjusts the cursor position accordingly.
+     */
+    protected function calculateCursorOffset(): void
+    {
+        $this->cursorOffset = 0;
+
+        preg_match_all('/\S{' . ($this->width) . ',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
+
+        foreach ($matches[0] as $match) {
+            if ($match[1] + mb_strlen($match[0]) <= $this->cursorPosition + $this->cursorOffset) {
+                $this->cursorOffset += (int) floor(mb_strlen($match[0]) / ($this->width - 1));
+            }
+        }
     }
 }
