@@ -55,7 +55,7 @@ abstract class Prompt
     protected bool $validated = false;
 
     /**
-     * The custom validation logic.
+     * The custom validation callback.
      */
     protected static ?Closure $validateUsing;
 
@@ -179,7 +179,7 @@ abstract class Prompt
     }
 
     /**
-     * Set the custom validation logic.
+     * Set the custom validation callback.
      */
     public static function validateUsing(Closure $callback): void
     {
