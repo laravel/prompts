@@ -137,3 +137,10 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('allows customizing the cancellation', function () {
+    Prompt::cancelUsing(fn () => throw new Exception('Cancelled.'));
+    Prompt::fake([Key::CTRL_C]);
+
+    text('What is your name?');
+})->throws(Exception::class, 'Cancelled.');

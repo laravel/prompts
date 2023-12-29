@@ -50,6 +50,11 @@ abstract class Prompt
     public mixed $validate;
 
     /**
+     * The cancellation callback.
+     */
+    protected static Closure $cancelUsing;
+
+    /**
      * Indicates if the prompt has been validated.
      */
     protected bool $validated = false;
@@ -113,7 +118,11 @@ abstract class Prompt
 
                 if ($continue === false || $key === Key::CTRL_C) {
                     if ($key === Key::CTRL_C) {
-                        static::terminal()->exit();
+                        if (isset(static::$cancelUsing)) {
+                            return (static::$cancelUsing)();
+                        } else {
+                            static::terminal()->exit();
+                        }
                     }
 
                     return $this->value();
@@ -122,6 +131,14 @@ abstract class Prompt
         } finally {
             $this->clearListeners();
         }
+    }
+
+    /**
+     * Register a callback to be invoked when a user cancels a prompt.
+     */
+    public static function cancelUsing(Closure $callback): void
+    {
+        static::$cancelUsing = $callback;
     }
 
     /**
