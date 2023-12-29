@@ -203,3 +203,31 @@ it('validates the default value when non-interactive', function () {
         'Blue',
     ], required: true);
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('supports custom validation', function () {
+    Prompt::fake([Key::SPACE, Key::ENTER, Key::DOWN, Key::SPACE, Key::ENTER]);
+
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('What are your favorite colors?')
+            ->validate->toBe('in:green');
+
+        return $prompt->validate === 'in:green' && ! in_array('green', $prompt->value()) ? 'And green?' : null;
+    });
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+        validate: 'in:green',
+    );
+
+    expect($result)->toBe(['red', 'green']);
+
+    Prompt::assertOutputContains('And green?');
+
+    Prompt::validateUsing(fn () => null);
+});

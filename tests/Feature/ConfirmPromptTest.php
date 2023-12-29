@@ -118,3 +118,21 @@ it('validates the default value when non-interactive', function () {
         required: true,
     );
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('supports custom validation', function () {
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('Are you sure?')
+            ->validate->toBe('confirmed');
+
+        return $prompt->validate === 'confirmed' && ! $prompt->value() ? 'Need to be sure!' : null;
+    });
+
+    Prompt::fake([Key::DOWN, Key::ENTER, Key::UP, Key::ENTER]);
+
+    confirm(label: 'Are you sure?', validate: 'confirmed');
+
+    Prompt::assertOutputContains('Need to be sure!');
+
+    Prompt::validateUsing(fn () => null);
+});

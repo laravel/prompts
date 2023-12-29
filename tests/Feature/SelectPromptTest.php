@@ -322,3 +322,31 @@ it('Allows the required validation message to be customised when non-interactive
         required: 'The color is required.',
     );
 })->throws(NonInteractiveValidationException::class, 'The color is required.');
+
+it('supports custom validation', function () {
+    Prompt::fake([Key::ENTER, Key::DOWN, Key::ENTER]);
+
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('What is your favorite color?')
+            ->validate->toBe('in:green');
+
+        return $prompt->validate === 'in:green' && $prompt->value() != 'green' ? 'Please choose green.' : null;
+    });
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+        validate: 'in:green',
+    );
+
+    expect($result)->toBe('green');
+
+    Prompt::assertOutputContains('Please choose green.');
+
+    Prompt::validateUsing(fn () => null);
+});

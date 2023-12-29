@@ -184,3 +184,31 @@ it('can fall back', function () {
 
     expect($result)->toBe(['result']);
 });
+
+it('supports custom validation', function () {
+    Prompt::fake(['a', Key::DOWN, Key::SPACE, Key::ENTER, Key::DOWN, Key::SPACE, Key::ENTER]);
+
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('What are your favorite colors?')
+            ->validate->toBe('in:green');
+
+        return $prompt->validate === 'in:green' && ! in_array('green', $prompt->value()) ? 'And green?' : null;
+    });
+
+    $result = multisearch(
+        label: 'What are your favorite colors?',
+        options: fn () => [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+        validate: 'in:green',
+    );
+
+    expect($result)->toBe(['red', 'green']);
+
+    Prompt::assertOutputContains('And green?');
+
+    Prompt::validateUsing(fn () => null);
+});
