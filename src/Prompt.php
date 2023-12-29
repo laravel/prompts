@@ -129,7 +129,7 @@ abstract class Prompt
     }
 
     /**
-     * Register a callback to be used when a user cancels a prompt.
+     * Register a callback to be invoked when a user cancels a prompt.
      */
     public static function cancelUsing(Closure $callback): void {
         static::$cancelUsing = $callback;
