@@ -223,7 +223,7 @@ class TextareaPrompt extends Prompt
     {
         $this->cursorOffset = 0;
 
-        preg_match_all('/\S{' . $this->width . ',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/\S{'.$this->width.',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
 
         foreach ($matches[0] as $match) {
             if ($this->cursorPosition + $this->cursorOffset >= $match[1] + mb_strwidth($match[0])) {
