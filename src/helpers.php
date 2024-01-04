@@ -208,6 +208,7 @@ function mb_wordwrap(
     foreach ($lines as $originalLine) {
         if (mb_strwidth($originalLine) <= $width) {
             $result[] = $originalLine;
+
             continue;
         }
 
@@ -222,7 +223,7 @@ function mb_wordwrap(
                 $str = '';
 
                 foreach ($characters as $character) {
-                    $tmp = $str . $character;
+                    $tmp = $str.$character;
 
                     if (mb_strwidth($tmp) > $width) {
                         $strings[] = $str;
@@ -243,7 +244,7 @@ function mb_wordwrap(
         }
 
         foreach ($words as $word) {
-            $tmp = ($line === null) ? $word : $line . ' ' . $word;
+            $tmp = ($line === null) ? $word : $line.' '.$word;
 
             // Look for zero-width joiner characters (combined emojis)
             preg_match('/\p{Cf}/u', $word, $joinerMatches);
