@@ -11,6 +11,8 @@ class TextareaPrompt extends Prompt
 
     public int $width = 60;
 
+    public int $maxLineWidth = 60;
+
     protected int $cursorOffset = 0;
 
     /**
@@ -72,7 +74,7 @@ class TextareaPrompt extends Prompt
         $lines = collect($this->lines());
 
         // Line length + 1 for the newline character
-        $lineLengths = $lines->map(fn ($line, $index) => mb_strlen($line) + ($index === $lines->count() - 1 ? 0 : 1));
+        $lineLengths = $lines->map(fn ($line, $index) => mb_strwidth($line) + ($index === $lines->count() - 1 ? 0 : 1));
 
         $currentLineIndex = $this->currentLineIndex();
 
@@ -108,13 +110,13 @@ class TextareaPrompt extends Prompt
         $lines = collect($this->lines());
 
         // Line length + 1 for the newline character
-        $lineLengths = $lines->map(fn ($line, $index) => mb_strlen($line) + ($index === $lines->count() - 1 ? 0 : 1));
+        $lineLengths = $lines->map(fn ($line, $index) => mb_strwidth($line) + ($index === $lines->count() - 1 ? 0 : 1));
 
         $currentLineIndex = $this->currentLineIndex();
 
         if ($currentLineIndex === $lines->count() - 1) {
             // They're already at the last line, jump them to the last position
-            $this->cursorPosition = mb_strlen($lines->implode(PHP_EOL));
+            $this->cursorPosition = mb_strwidth($lines->implode(PHP_EOL));
 
             return;
         }
@@ -175,7 +177,7 @@ class TextareaPrompt extends Prompt
         $totalLineLength = 0;
 
         return (int) collect($this->lines())->search(function ($line) use (&$totalLineLength) {
-            $totalLineLength += mb_strlen($line) + 1;
+            $totalLineLength += mb_strwidth($line) + 1;
 
             return $totalLineLength > $this->cursorPosition;
         }) ?: 0;
@@ -188,9 +190,12 @@ class TextareaPrompt extends Prompt
      */
     public function lines(): array
     {
+        // Subtract 2 for the scrollbar
+        $this->maxLineWidth = $this->width - 2;
+
         $this->calculateCursorOffset();
 
-        $value = wordwrap($this->value(), $this->width - 1, PHP_EOL, true);
+        $value = mb_wordwrap($this->value(), $this->maxLineWidth, PHP_EOL, true);
 
         return explode(PHP_EOL, $value);
     }
@@ -218,11 +223,11 @@ class TextareaPrompt extends Prompt
     {
         $this->cursorOffset = 0;
 
-        preg_match_all('/\S{'.($this->width).',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/\S{' . $this->width . ',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
 
         foreach ($matches[0] as $match) {
-            if ($this->cursorPosition + $this->cursorOffset >= $match[1] + mb_strlen($match[0])) {
-                $this->cursorOffset += (int) floor(mb_strlen($match[0]) / ($this->width - 1));
+            if ($this->cursorPosition + $this->cursorOffset >= $match[1] + mb_strwidth($match[0])) {
+                $this->cursorOffset += (int) floor(mb_strwidth($match[0]) / $this->maxLineWidth);
             }
         }
     }
