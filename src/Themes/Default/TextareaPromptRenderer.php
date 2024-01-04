@@ -20,13 +20,13 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
-                    $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
+                    $this->dim($this->truncate($prompt->label, $prompt->width)),
                     collect($prompt->lines())->implode(PHP_EOL),
                 ),
 
             'cancel' => $this
                 ->box(
-                    $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
+                    $this->truncate($prompt->label, $prompt->width),
                     collect($prompt->lines())->map(fn ($line) => $this->strikethrough($this->dim($line)))->implode(PHP_EOL),
                     color: 'red',
                 )
@@ -34,7 +34,7 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
 
             'error' => $this
                 ->box(
-                    $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
+                    $this->truncate($prompt->label, $prompt->width),
                     $this->renderText($prompt),
                     color: 'yellow',
                     info: 'Ctrl+D to submit'
@@ -43,7 +43,7 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
 
             default => $this
                 ->box(
-                    $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
+                    $this->cyan($this->truncate($prompt->label, $prompt->width)),
                     $this->renderText($prompt),
                     info: 'Ctrl+D to submit'
                 )
@@ -66,12 +66,14 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
             $visible->push('');
         }
 
+        $longest = $this->longest($prompt->lines()) + 2;
+
         return $this->scrollbar(
             $visible,
             $prompt->firstVisible,
             $prompt->scroll,
             count($prompt->lines()),
-            $prompt->width,
+            min($longest, $prompt->width),
         )->implode(PHP_EOL);
     }
 
