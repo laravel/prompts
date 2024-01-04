@@ -195,6 +195,8 @@ function progress(string $label, iterable|int $steps, ?Closure $callback = null,
 
 /**
  * Multi-byte version of wordwrap.
+ *
+ * @param non-empty-string $break
  */
 function mb_wordwrap(
     string $string,
