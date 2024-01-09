@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.14...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.15...main)
+
+## [v0.1.15](https://github.com/laravel/prompts/compare/v0.1.14...v0.1.15) - 2023-12-29
+
+* Allow customizing the cancel behaviour by [@weitzman](https://github.com/weitzman) in https://github.com/laravel/prompts/pull/100
+* Support for custom validation and aliases by [@cerbero90](https://github.com/cerbero90) in https://github.com/laravel/prompts/pull/102
 
 ## [v0.1.14](https://github.com/laravel/prompts/compare/v0.1.13...v0.1.14) - 2023-12-27
 
