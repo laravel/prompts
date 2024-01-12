@@ -4,48 +4,55 @@ body:
   - type: markdown
     attributes:
       value: "Before submitting your report, [please ensure your Laravel version is still supported](https://laravel.com/docs/releases#support-policy)."
-  - type: input
+  - id: package-version
+    type: input
     attributes:
       label: Laravel Prompts Version
       description: Provide the Laravel Prompts version that you are using.
       placeholder: 1.0.0
     validations:
       required: true
-  - type: input
+  - id: laravel-version
+    type: input
     attributes:
       label: Laravel Version
       description: Provide the Laravel version that you are using.
       placeholder: 10.4.1
     validations:
       required: true
-  - type: input
+  - id: php-version
+    type: input
     attributes:
       label: PHP Version
       description: Provide the PHP version that you are using.
       placeholder: 8.1.4
     validations:
       required: true
-  - type: input
+  - id: operating-system
+    type: input
     attributes:
       label: Operating System & Version
       description: Provide the operating system and version you are using.
       placeholder: "macOS 13.0"
     validations:
       required: true
-  - type: input
+  - id: terminal
+    type: input
     attributes:
       label: Terminal Application
       description: Provide the name of the terminal application you are using
       placeholder: "iTerm"
     validations:
       required: true
-  - type: textarea
+  - id: issue-description
+    type: textarea
     attributes:
       label: Description
       description: Provide a detailed description of the issue you are facing.
     validations:
       required: true
-  - type: textarea
+  - id: steps-to-reproduce
+    type: textarea
     attributes:
       label: Steps To Reproduce
       description: Provide detailed steps to reproduce your issue. If necessary, please provide a GitHub repository to demonstrate your issue using `laravel new bug-report --github="--public"`.
