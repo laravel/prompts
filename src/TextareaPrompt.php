@@ -149,7 +149,7 @@ class TextareaPrompt extends Prompt
 
         $currentLineIndex = $this->currentLineIndex();
 
-        if ($this->firstVisible + $this->scroll <= $currentLineIndex) {
+        while ($this->firstVisible + $this->scroll <= $currentLineIndex) {
             $this->firstVisible++;
         }
 
