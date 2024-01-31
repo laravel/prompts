@@ -176,3 +176,27 @@ it('validates the default value when non-interactive', function () {
         'Blue',
     ], required: true);
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('supports custom validation', function () {
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('What is your name?')
+            ->validate->toBe('min:2');
+
+        return $prompt->validate === 'min:2' && strlen($prompt->value()) < 2 ? 'Minimum 2 chars!' : null;
+    });
+
+    Prompt::fake(['A', Key::ENTER, 'n', 'd', 'r', 'e', 'a', Key::ENTER]);
+
+    $result = suggest(
+        label: 'What is your name?',
+        options: ['Jess', 'Taylor'],
+        validate: 'min:2',
+    );
+
+    expect($result)->toBe('Andrea');
+
+    Prompt::assertOutputContains('Minimum 2 chars!');
+
+    Prompt::validateUsing(fn () => null);
+});

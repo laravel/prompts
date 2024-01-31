@@ -28,7 +28,7 @@ class SearchPrompt extends Prompt
         public Closure $options,
         public string $placeholder = '',
         public int $scroll = 5,
-        public ?Closure $validate = null,
+        public mixed $validate = null,
         public string $hint = '',
         public bool|string $required = true,
     ) {

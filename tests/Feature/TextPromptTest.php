@@ -114,3 +114,33 @@ it('validates the default value when non-interactive', function () {
 
     text('What is your name?', required: true);
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('supports custom validation', function () {
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('What is your name?')
+            ->validate->toBe('min:2');
+
+        return $prompt->validate === 'min:2' && strlen($prompt->value()) < 2 ? 'Minimum 2 chars!' : null;
+    });
+
+    Prompt::fake(['J', Key::ENTER, 'e', 's', 's', Key::ENTER]);
+
+    $result = text(
+        label: 'What is your name?',
+        validate: 'min:2',
+    );
+
+    expect($result)->toBe('Jess');
+
+    Prompt::assertOutputContains('Minimum 2 chars!');
+
+    Prompt::validateUsing(fn () => null);
+});
+
+it('allows customizing the cancellation', function () {
+    Prompt::cancelUsing(fn () => throw new Exception('Cancelled.'));
+    Prompt::fake([Key::CTRL_C]);
+
+    text('What is your name?');
+})->throws(Exception::class, 'Cancelled.');

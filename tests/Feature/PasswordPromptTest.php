@@ -79,3 +79,26 @@ it('fails validation when non-interactive', function () {
 
     password('What is the password?', required: true);
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('supports custom validation', function () {
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('What is the password?')
+            ->validate->toBe('min:8');
+
+        return $prompt->validate === 'min:8' && strlen($prompt->value()) < 8 ? 'Minimum 8 chars!' : null;
+    });
+
+    Prompt::fake(['p', Key::ENTER, 'a', 's', 's', 'w', 'o', 'r', 'd', Key::ENTER]);
+
+    $result = password(
+        label: 'What is the password?',
+        validate: 'min:8',
+    );
+
+    expect($result)->toBe('password');
+
+    Prompt::assertOutputContains('Minimum 8 chars!');
+
+    Prompt::validateUsing(fn () => null);
+});
