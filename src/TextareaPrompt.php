@@ -190,12 +190,9 @@ class TextareaPrompt extends Prompt
      */
     public function lines(): array
     {
-        // Subtract 2 for the scrollbar
-        $this->maxLineWidth = $this->width - 2;
-
         $this->calculateCursorOffset();
 
-        $value = mb_wordwrap($this->value(), $this->maxLineWidth, PHP_EOL, true);
+        $value = mb_wordwrap($this->value(), $this->width, PHP_EOL, true);
 
         return explode(PHP_EOL, $value);
     }
@@ -223,11 +220,11 @@ class TextareaPrompt extends Prompt
     {
         $this->cursorOffset = 0;
 
-        preg_match_all('/\S{'.$this->width.',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/\S{' . $this->width . ',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
 
         foreach ($matches[0] as $match) {
             if ($this->cursorPosition + $this->cursorOffset >= $match[1] + mb_strwidth($match[0])) {
-                $this->cursorOffset += (int) floor(mb_strwidth($match[0]) / $this->maxLineWidth);
+                $this->cursorOffset += (int) floor(mb_strwidth($match[0]) / $this->width);
             }
         }
     }

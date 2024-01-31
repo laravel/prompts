@@ -15,7 +15,7 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
      */
     public function __invoke(TextareaPrompt $prompt): string
     {
-        $prompt->width = $prompt->terminal()->cols() - 6;
+        $prompt->width = $prompt->terminal()->cols() - 8;
 
         return match ($prompt->state) {
             'submit' => $this
@@ -73,7 +73,7 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
             $prompt->firstVisible,
             $prompt->scroll,
             count($prompt->lines()),
-            min($longest, $prompt->width),
+            min($longest, $prompt->width + 2),
         )->implode(PHP_EOL);
     }
 
