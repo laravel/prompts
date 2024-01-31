@@ -22,7 +22,7 @@ class TextareaPrompt extends Prompt
         public string $placeholder = '',
         public string $default = '',
         public bool|string $required = false,
-        public ?Closure $validate = null,
+        protected ?Closure $validate = null,
         public string $hint = ''
     ) {
         $this->trackTypedValue(
@@ -214,7 +214,7 @@ class TextareaPrompt extends Prompt
     {
         $this->cursorOffset = 0;
 
-        preg_match_all('/\S{'.$this->width.',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/\S{' . $this->width . ',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
 
         foreach ($matches[0] as $match) {
             if ($this->cursorPosition + $this->cursorOffset >= $match[1] + mb_strwidth($match[0])) {
