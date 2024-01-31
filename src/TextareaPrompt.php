@@ -11,8 +11,6 @@ class TextareaPrompt extends Prompt
 
     public int $width = 60;
 
-    public int $maxLineWidth = 60;
-
     protected int $cursorOffset = 0;
 
     /**
