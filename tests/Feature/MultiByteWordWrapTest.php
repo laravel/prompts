@@ -67,7 +67,7 @@ test('will wrap strings with multi-byte characters', function () {
 
     $mbResult = mb_wordwrap($str, 18, "\n", false);
 
-    $expectedResult = <<<RESULT
+    $expectedResult = <<<'RESULT'
     This is a story
     all about how my
     life got flippêd
@@ -89,7 +89,7 @@ test('will wrap strings with emojis', function () {
 
     $mbResult = mb_wordwrap($str, 13, "\n", false);
 
-    $expectedResult = <<<RESULT
+    $expectedResult = <<<'RESULT'
     This is a 📖
     all about how
     my life got
@@ -114,7 +114,7 @@ test('will wrap strings with emojis and multi-byte characters', function () {
 
     $mbResult = mb_wordwrap($str, 11, "\n", false);
 
-    $expectedResult = <<<RESULT
+    $expectedResult = <<<'RESULT'
     This is a
     📖 all
     about how
@@ -143,7 +143,7 @@ test('will wrap strings with combined emojis', function () {
 
     $mbResult = mb_wordwrap($str, 13, "\n", false);
 
-    $expectedResult = <<<RESULT
+    $expectedResult = <<<'RESULT'
     This is a 📖
     all about how
     my life got
@@ -168,7 +168,7 @@ test('will handle long strings with multi-byte characters and emojis with cut lo
 
     $mbResult = mb_wordwrap($str, 13, "\n", false);
 
-    $expectedResult = <<<RESULT
+    $expectedResult = <<<'RESULT'
     This is a 📖
     all about how
     my life got
