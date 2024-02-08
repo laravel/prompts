@@ -53,6 +53,14 @@ function confirm(string $label, bool $default = true, string $yes = 'Yes', strin
 }
 
 /**
+ * Prompt the user to continue or cancel after pause.
+ */
+function pause(string $body, string $title = '', string $info = 'ENTER to continue or Ctrl+C to cancel', bool|string $required = 'Please, press ENTER to continue or Ctrl+C to cancel.', string $hint = ''): bool
+{
+    return (new PausePrompt(...func_get_args()))->prompt();
+}
+
+/**
  * Prompt the user for text input with auto-completion.
  *
  * @param  array<string>|Collection<int, string>|Closure(string): array<string>  $options
