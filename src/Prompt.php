@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Laravel\Prompts\Exceptions\StepRevertedException;
 use Laravel\Prompts\Output\ConsoleOutput;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -116,13 +117,17 @@ abstract class Prompt
 
                 $this->render();
 
-                if ($continue === false || $key === Key::CTRL_C) {
+                if ($continue === false || $key === Key::CTRL_C || $key === Key::CTRL_U) {
                     if ($key === Key::CTRL_C) {
                         if (isset(static::$cancelUsing)) {
                             return (static::$cancelUsing)();
                         } else {
                             static::terminal()->exit();
                         }
+                    }
+
+                    if ($key === Key::CTRL_U) {
+                        throw new StepRevertedException();
                     }
 
                     return $this->value();

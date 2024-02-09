@@ -77,6 +77,11 @@ class Key
     const CTRL_E = "\x05";
 
     /**
+     * Negative Acknowledgement
+     */
+    const CTRL_U = "\x15";
+
+    /**
      * Checks for the constant values for the given match and returns the match
      *
      * @param  array<string|array<string>>  $keys

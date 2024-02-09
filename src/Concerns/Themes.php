@@ -12,6 +12,7 @@ use Laravel\Prompts\Progress;
 use Laravel\Prompts\SearchPrompt;
 use Laravel\Prompts\SelectPrompt;
 use Laravel\Prompts\Spinner;
+use Laravel\Prompts\Step;
 use Laravel\Prompts\SuggestPrompt;
 use Laravel\Prompts\Table;
 use Laravel\Prompts\TextPrompt;
@@ -24,6 +25,7 @@ use Laravel\Prompts\Themes\Default\ProgressRenderer;
 use Laravel\Prompts\Themes\Default\SearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\SelectPromptRenderer;
 use Laravel\Prompts\Themes\Default\SpinnerRenderer;
+use Laravel\Prompts\Themes\Default\StepRenderer;
 use Laravel\Prompts\Themes\Default\SuggestPromptRenderer;
 use Laravel\Prompts\Themes\Default\TableRenderer;
 use Laravel\Prompts\Themes\Default\TextPromptRenderer;
@@ -54,6 +56,7 @@ trait Themes
             Note::class => NoteRenderer::class,
             Table::class => TableRenderer::class,
             Progress::class => ProgressRenderer::class,
+            Step::class => StepRenderer::class,
         ],
     ];
 
