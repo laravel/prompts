@@ -5,6 +5,7 @@ namespace Laravel\Prompts;
 use Closure;
 use Laravel\Prompts\Output\ConsoleOutput;
 use RuntimeException;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -201,6 +202,17 @@ abstract class Prompt
     public static function validateUsing(Closure $callback): void
     {
         static::$validateUsing = $callback;
+    }
+
+    /**
+     * Use stderr for prompt output
+     */
+    public static function useStderr(): void
+    {
+        $output = static::output();
+        if ($output instanceof ConsoleOutputInterface) {
+            static::setOutput($output->getErrorOutput());
+        }
     }
 
     /**
