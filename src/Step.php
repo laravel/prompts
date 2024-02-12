@@ -2,43 +2,26 @@
 
 namespace Laravel\Prompts;
 
-class Step extends Prompt
+use Closure;
+
+class Step
 {
+    protected mixed $response = null;
+
     public function __construct(
-        public string $title,
-        public int $currentStep,
-        public int $totalSteps,
+        protected Closure $action,
+        public readonly Closure|false $revert,
     )
     {
     }
 
-    /**
-     * Display the step.
-     */
-    public function display(): void
+    public function run(StepPrompt $prompt): void
     {
-        $this->prompt();
+        $this->response = call_user_func($this->action, $prompt->value());
     }
 
-    /**
-     * Display the step.
-     */
-    public function prompt(): bool
+    public function getResponse(): mixed
     {
-        $this->capturePreviousNewLines();
-
-        $this->state = 'submit';
-
-        static::output()->write($this->renderTheme());
-
-        return true;
-    }
-
-    /**
-     * Get the value of the prompt.
-     */
-    public function value(): bool
-    {
-        return true;
+        return $this->response;
     }
 }

@@ -127,7 +127,7 @@ abstract class Prompt
                     }
 
                     if ($key === Key::CTRL_U) {
-                        throw new StepRevertedException();
+                        throw new StepRevertedException($this);
                     }
 
                     return $this->value();

@@ -4,6 +4,7 @@ namespace Laravel\Prompts\Concerns;
 
 use InvalidArgumentException;
 use Laravel\Prompts\ConfirmPrompt;
+use Laravel\Prompts\StepPrompt;
 use Laravel\Prompts\MultiSearchPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Note;
@@ -17,6 +18,7 @@ use Laravel\Prompts\SuggestPrompt;
 use Laravel\Prompts\Table;
 use Laravel\Prompts\TextPrompt;
 use Laravel\Prompts\Themes\Default\ConfirmPromptRenderer;
+use Laravel\Prompts\Themes\Default\StepPromptRenderer;
 use Laravel\Prompts\Themes\Default\MultiSearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\MultiSelectPromptRenderer;
 use Laravel\Prompts\Themes\Default\NoteRenderer;
@@ -56,7 +58,7 @@ trait Themes
             Note::class => NoteRenderer::class,
             Table::class => TableRenderer::class,
             Progress::class => ProgressRenderer::class,
-            Step::class => StepRenderer::class,
+            StepPrompt::class => StepPromptRenderer::class,
         ],
     ];
 
