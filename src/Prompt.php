@@ -210,6 +210,7 @@ abstract class Prompt
     public static function useStderr(): void
     {
         $output = static::output();
+
         if ($output instanceof ConsoleOutputInterface) {
             static::setOutput($output->getErrorOutput());
         }
