@@ -10,7 +10,7 @@ use function Laravel\Prompts\warning;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$responses = steps(fn() => text('What should we call your project?'), title: 'Project Info')
+$responses = steps(fn() => text('What should we call your project?'), revert: false, title: 'Project Info')
     ->then(
         fn ($project) => select("Which database would you like to use for {$project}?", ['MySQL', 'PostGreSQL', 'SQLite']),
         revert: fn ($database) => info("Deleting database {$database}"),

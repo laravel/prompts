@@ -10,7 +10,7 @@ class StepFactory
     /**
      * The order of steps to execute.
      *
-     * @var array<int, array{0: Closure(mixed): mixed, 1: Closure(mixed): void}>
+     * @var array<int, array{0: Closure(mixed): mixed, 1: (Closure(mixed): void)|false|null}>
      */
     protected array $steps = [];
 
@@ -34,11 +34,11 @@ class StepFactory
      * Register the next step.
      *
      * @param Closure(mixed): mixed $prompt
-     * @param (Closure(mixed): void)|null $revert
+     * @param (Closure(mixed): void)|false|null $revert
      */
-    public function then(Closure $prompt, Closure $revert = null): static
+    public function then(Closure $prompt, Closure|false $revert = null): static
     {
-        $this->steps[] = [$prompt, $revert ?? fn() => null];
+        $this->steps[] = [$prompt, $revert];
 
         return $this;
     }
@@ -73,13 +73,20 @@ class StepFactory
      */
     protected function revert(): void
     {
-        $this->currentStepIndex = max($this->currentStepIndex - 1, 0);
+        $previousStepIndex = max($this->currentStepIndex - 1, 0);
+        $previousStep = $this->steps[$previousStepIndex];
+
+        if ($previousStep[1] === false) {
+            (new Note(sprintf('%s %d cannot be reverted.', $this->title, $previousStepIndex + 1), 'alert'))->display();
+            return;
+        }
 
         call_user_func(
-            $this->steps[$this->currentStepIndex][1],
-            $this->responses[$this->currentStepIndex] ?? null,
+            $previousStep[1] ?? fn () => null,
+            $this->responses[$previousStepIndex] ?? null,
         );
 
-        unset($this->responses[$this->currentStepIndex]);
+        unset($this->responses[$previousStepIndex]);
+        $this->currentStepIndex = $previousStepIndex;
     }
 }

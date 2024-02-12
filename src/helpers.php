@@ -189,9 +189,9 @@ function progress(string $label, iterable|int $steps, ?Closure $callback = null,
  * Start a series of revertable prompts.
  *
  * @param Closure(): mixed $prompt
- * @param (Closure(mixed): void)|null $onBack
+ * @param (Closure(mixed): void)|false|null $revert
  */
-function steps(Closure $prompt, Closure $onBack = null, string $title = 'Step'): StepFactory
+function steps(Closure $prompt, Closure|false $revert = null, string $title = 'Step'): StepFactory
 {
-    return (new StepFactory($title))->then($prompt, $onBack);
+    return (new StepFactory($title))->then($prompt, $revert);
 }
