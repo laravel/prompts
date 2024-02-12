@@ -9,7 +9,6 @@ class StepPromptRenderer extends Renderer
     public function __invoke(StepPrompt $prompt): string
     {
         return match ($prompt->state) {
-            'initial', 'complete' => '',
             'active' => $this->line(sprintf(' %s %d%s%d',
                 $this->dim($prompt->title),
                 $prompt->currentStepNumber(),
@@ -18,6 +17,7 @@ class StepPromptRenderer extends Renderer
             ),
             'reverting' => $this->dim(' Reverting step…'),
             'error' => $this->error("Step {$prompt->currentStepNumber()} cannot be reverted."),
+            default => '',
         };
     }
 }
