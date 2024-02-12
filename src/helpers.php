@@ -190,5 +190,5 @@ function progress(string $label, iterable|int $steps, ?Closure $callback = null,
  */
 function steps(string $title = 'Step'): StepBuilder
 {
-    return (new StepBuilder([], title: $title));
+    return new StepBuilder([], title: $title);
 }

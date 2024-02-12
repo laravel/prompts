@@ -3,7 +3,6 @@
 namespace Laravel\Prompts;
 
 use Laravel\Prompts\Exceptions\StepRevertedException;
-use Laravel\Prompts\Output\GroupConsoleOutput;
 
 class StepPrompt extends Prompt
 {
@@ -13,9 +12,8 @@ class StepPrompt extends Prompt
 
     public function __construct(
         protected array $steps,
-        public string   $title,
-    )
-    {
+        public string $title,
+    ) {
     }
 
     public function value(): array
@@ -58,7 +56,7 @@ class StepPrompt extends Prompt
     {
         $this->currentStep = max($this->currentStep - 1, 0);
 
-        if (!$this->step()->revert) {
+        if (! $this->step()->revert) {
             $this->state = 'error';
             $this->render();
             $this->currentStep++;

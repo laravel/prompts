@@ -11,8 +11,7 @@ class Step
     public function __construct(
         protected Closure $action,
         public readonly Closure|false $revert,
-    )
-    {
+    ) {
     }
 
     public function run(StepPrompt $prompt): void

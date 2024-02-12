@@ -9,11 +9,10 @@ class StepBuilder
     public function __construct(
         public array $steps = [],
         public string $title = 'Step',
-    )
-    {
+    ) {
     }
 
-    public function add(Closure $step, Closure|false $revert = null): static
+    public function add(Closure $step, Closure|false|null $revert = null): static
     {
         if ($revert === null) {
             $revert = fn () => null;
