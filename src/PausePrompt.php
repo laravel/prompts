@@ -5,24 +5,19 @@ namespace Laravel\Prompts;
 class PausePrompt extends Prompt
 {
     /**
-     * Whether the prompt has been confirmed.
+     * Whether enter key has been pressed.
      */
-    public bool $confirmed = false;
+    public bool $enterPressed = false;
 
     /**
      * Create a new PausePrompt instance.
      */
     public function __construct(
-        public string $body,
-        public string $title = '',
-        public string $info = 'ENTER to continue or Ctrl+C to cancel',
-        public bool|string $required = 'Please, press ENTER to continue or Ctrl+C to cancel.',
-        public string $hint = '',
+        public string $message = 'Press enter to continue...',
     ) {
+        $this->required = $this->message;
         $this->validate = null;
-        $this->on('key', fn ($key) => match ($key) {
-            default => $this->onKey($key),
-        });
+        $this->on('key', fn ($key) => $this->onKey($key));
     }
 
     /**
@@ -31,7 +26,7 @@ class PausePrompt extends Prompt
     public function onKey(string $key): void
     {
         if ($key === Key::ENTER) {
-            $this->confirmed = true;
+            $this->enterPressed = true;
         }
         $this->submit();
     }
@@ -41,6 +36,6 @@ class PausePrompt extends Prompt
      */
     public function value(): bool
     {
-        return $this->confirmed;
+        return $this->enterPressed;
     }
 }

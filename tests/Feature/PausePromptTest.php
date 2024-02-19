@@ -9,25 +9,24 @@ use Laravel\Prompts\Prompt;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\pause;
 
-it('continues', function () {
+
+it('continues after enter', function () {
     Prompt::fake([Key::ENTER]);
 
-    $result = pause('This is a fake content.');
+    $result = pause();
 
     expect($result)->toBeTrue();
+    Prompt::assertOutputContains('Press enter to continue...');
 });
 
-it('allows the title to be changed', function () {
+it('allows the message to be changed', function () {
     Prompt::fake([Key::ENTER]);
 
-    $result = pause(
-        'teste',
-        'Leia com atenção!',
-    );
+    $result = pause('Read and then press enter...');
 
     expect($result)->toBeTrue();
 
-    Prompt::assertOutputContains('Leia com atenção!');
+    Prompt::assertOutputContains('Read and then press enter...');
 });
 
 
@@ -35,29 +34,19 @@ it('can fall back', function () {
     Prompt::fallbackWhen(true);
 
     PausePrompt::fallbackUsing(function (PausePrompt $prompt) {
-        expect($prompt->body)->toBe('This is a fake content.')
-            ->and($prompt->title)
-            ->toBe('Warning...');
+        expect($prompt->message)->toBe('Press enter to continue...');
 
         return true;
     });
 
-    $result = pause('This is a fake content.', 'Warning...', false);
+    $result = pause();
 
     expect($result)->toBeTrue();
 });
 
-it('returns the default value when non-interactive', function () {
+it('returns the message value when non-interactive', function () {
     Prompt::interactive(false);
-    pause('This is a fake content.');
-})->throws(NonInteractiveValidationException::class, 'Please, press ENTER to continue or Ctrl+C to cancel.');
+    pause('This is a fake message.');
+})->throws(NonInteractiveValidationException::class, 'This is a fake message.');
 
-it('validates the default value when non-interactive', function () {
-    Prompt::interactive(false);
-
-    pause(
-        'This is a fake content.',
-        required: true,
-    );
-})->throws(NonInteractiveValidationException::class, 'Required.');
 
