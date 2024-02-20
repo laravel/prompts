@@ -1,14 +1,10 @@
 <?php
 
-use Laravel\Prompts\ConfirmPrompt;
-use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\PausePrompt;
 use Laravel\Prompts\Prompt;
 
-use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\pause;
-
 
 it('continues after enter', function () {
     Prompt::fake([Key::ENTER]);
@@ -16,6 +12,7 @@ it('continues after enter', function () {
     $result = pause();
 
     expect($result)->toBeTrue();
+
     Prompt::assertOutputContains('Press enter to continue...');
 });
 
@@ -28,7 +25,6 @@ it('allows the message to be changed', function () {
 
     Prompt::assertOutputContains('Read and then press enter...');
 });
-
 
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
@@ -44,9 +40,13 @@ it('can fall back', function () {
     expect($result)->toBeTrue();
 });
 
-it('returns the message value when non-interactive', function () {
+it('does not render when non-interactive', function () {
+    Prompt::fake();
     Prompt::interactive(false);
-    pause('This is a fake message.');
-})->throws(NonInteractiveValidationException::class, 'This is a fake message.');
 
+    $result = pause('This should not be rendered');
 
+    expect($result)->toBeFalse();
+
+    Prompt::assertOutputDoesntContain('This should not be rendered');
+});
