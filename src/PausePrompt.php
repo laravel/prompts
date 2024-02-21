@@ -7,11 +7,12 @@ class PausePrompt extends Prompt
     /**
      * Create a new PausePrompt instance.
      */
-    public function __construct(public string $message = 'Press enter to continue...') {
+    public function __construct(public string $message = 'Press enter to continue...')
+    {
         $this->required = false;
         $this->validate = null;
 
-        $this->on('key', fn ($key) => match($key) {
+        $this->on('key', fn ($key) => match ($key) {
             Key::ENTER => $this->submit(),
             default => null,
         });

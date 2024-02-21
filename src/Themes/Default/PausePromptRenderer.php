@@ -15,10 +15,11 @@ class PausePromptRenderer extends Renderer
     {
         match ($prompt->state) {
             'submit' => collect(explode(PHP_EOL, $prompt->message))
-                ->each(fn($line) => $this->line($this->gray(" {$line}"))),
+                ->each(fn ($line) => $this->line($this->gray(" {$line}"))),
             default => collect(explode(PHP_EOL, $prompt->message))
-                ->each(fn($line) => $this->line($this->green(" {$line}")))
+                ->each(fn ($line) => $this->line($this->green(" {$line}")))
         };
+
         return $this;
     }
 }
