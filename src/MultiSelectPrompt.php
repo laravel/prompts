@@ -151,7 +151,7 @@ class MultiSelectPrompt extends Prompt
      * Returns options as an array; and re-evaluates them if they were in a closure
      * 
      * @param  array<int|string, string>|Collection<int|string, string>|Closure  $options
-     * @return array
+     * @return array<int|string, string>
      */
     public function eval(array|Collection|Closure $options): array
     {
