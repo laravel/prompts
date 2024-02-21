@@ -333,7 +333,7 @@ abstract class Prompt
     /**
      * Validate the input.
      */
-    private function validate(mixed $value): void
+    protected function validate(mixed $value): void
     {
         $this->validated = true;
 

@@ -231,3 +231,19 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('supports options as closure', function () {
+    Prompt::fake([Key::DOWN, Key::SPACE, Key::ENTER]);
+
+    function presumablyChangingOptions()
+    {
+        return ['something', 'another'];
+    }
+
+    $result = multiselect(
+        label: 'So what are you talking about?',
+        options: fn () => presumablyChangingOptions(),
+    );
+
+    expect($result)->toBe(['another']);
+});
