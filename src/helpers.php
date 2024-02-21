@@ -53,7 +53,7 @@ function confirm(string $label, bool $default = true, string $yes = 'Yes', strin
 }
 
 /**
- * Prompt the user to continue or cancel after pause.
+ * Prompt the user to continue or cancel after pausing.
  */
 function pause(string $message = 'Press enter to continue...'): bool
 {
