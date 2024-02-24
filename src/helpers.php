@@ -192,3 +192,13 @@ function progress(string $label, iterable|int $steps, ?Closure $callback = null,
 
     return $progress;
 }
+
+/**
+ * Continuously updates output on each interval.
+ *
+ * @param callable(): void $watch
+ */
+function watch(callable $watch, ?int $interval = 2): void
+{
+    (new Watch($watch, $interval))->prompt();
+}

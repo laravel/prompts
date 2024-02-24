@@ -29,6 +29,8 @@ use Laravel\Prompts\Themes\Default\SpinnerRenderer;
 use Laravel\Prompts\Themes\Default\SuggestPromptRenderer;
 use Laravel\Prompts\Themes\Default\TableRenderer;
 use Laravel\Prompts\Themes\Default\TextPromptRenderer;
+use Laravel\Prompts\Themes\Default\WatchRenderer;
+use Laravel\Prompts\Watch;
 
 trait Themes
 {
@@ -57,6 +59,7 @@ trait Themes
             Note::class => NoteRenderer::class,
             Table::class => TableRenderer::class,
             Progress::class => ProgressRenderer::class,
+            Watch::class => WatchRenderer::class,
         ],
     ];
 

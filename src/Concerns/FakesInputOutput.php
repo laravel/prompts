@@ -4,6 +4,7 @@ namespace Laravel\Prompts\Concerns;
 
 use Laravel\Prompts\Output\BufferedConsoleOutput;
 use Laravel\Prompts\Terminal;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Assert;
 use RuntimeException;
 
@@ -35,6 +36,14 @@ trait FakesInputOutput
         static::$terminal = $mock;
 
         self::setOutput(new BufferedConsoleOutput());
+    }
+
+    /**
+     * Tells if Prompt is currently being faked.
+     */
+    protected static function isFaked(): bool
+    {
+        return static::terminal() instanceof MockInterface;
     }
 
     /**
