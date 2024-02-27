@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.15...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.16...main)
+
+## [v0.1.16](https://github.com/laravel/prompts/compare/v0.1.15...v0.1.16) - 2024-02-21
+
+* [0.x] Fix `multisearch` long option truncation by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/114
+* Added pause prompt by [@allanmcarvalho](https://github.com/allanmcarvalho) in https://github.com/laravel/prompts/pull/108
 
 ## [v0.1.15](https://github.com/laravel/prompts/compare/v0.1.14...v0.1.15) - 2023-12-29
 
