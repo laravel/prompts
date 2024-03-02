@@ -2,32 +2,18 @@
 
 namespace Laravel\Prompts\Output;
 
-use Symfony\Component\Console\Formatter\OutputFormatterInterface;
-use Symfony\Component\Console\Output\ConsoleOutput as SymfonyConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\StreamOutput;
 
-class ConsoleOutput extends SymfonyConsoleOutput
+class PromptWriter
 {
     /**
      * How many new lines were written by the last output.
      */
     protected int $newLinesWritten = 1;
 
-    protected OutputInterface $promptOutput;
-
     public function __construct(
-        int $verbosity = self::VERBOSITY_NORMAL,
-        ?bool $decorated = null,
-        ?OutputFormatterInterface $formatter = null
+        private OutputInterface $output
     ) {
-        parent::__construct($verbosity, $decorated, $formatter);
-
-        if (stream_isatty(STDERR) && ! stream_isatty(STDOUT)) {
-            $this->promptOutput = $this->getErrorOutput();
-        } else {
-            $this->promptOutput = new StreamOutput($this->getStream());
-        }
     }
 
     /**
@@ -41,9 +27,9 @@ class ConsoleOutput extends SymfonyConsoleOutput
     /**
      * Write the output and capture the number of trailing new lines.
      */
-    protected function doWrite(string $message, bool $newline): void
+    public function write(string $message, bool $newline = false): void
     {
-        $this->promptOutput->write($message, $newline);
+        $this->output->write($message, $newline);
 
         if ($newline) {
             $message .= \PHP_EOL;
@@ -61,8 +47,13 @@ class ConsoleOutput extends SymfonyConsoleOutput
     /**
      * Write output directly, bypassing newline capture.
      */
-    public function writeDirectly(string $message): void
+    public function writeDirectly(string $message, bool $newline = false): void
     {
-        $this->promptOutput->write($message, false);
+        $this->output->write($message, $newline);
+    }
+
+    public function getOutput(): OutputInterface
+    {
+        return $this->output;
     }
 }

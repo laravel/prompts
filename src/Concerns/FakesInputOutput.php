@@ -74,11 +74,12 @@ trait FakesInputOutput
      */
     public static function content(): string
     {
-        if (! static::output() instanceof BufferedConsoleOutput) {
+        $output = static::writer()->getOutput();
+        if (! $output instanceof BufferedConsoleOutput) {
             throw new RuntimeException('Prompt must be faked before accessing content.');
         }
 
-        return static::output()->content();
+        return $output->content();
     }
 
     /**

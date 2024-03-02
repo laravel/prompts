@@ -2,6 +2,8 @@
 
 namespace Laravel\Prompts\Output;
 
+use Symfony\Component\Console\Output\ConsoleOutput;
+
 class BufferedConsoleOutput extends ConsoleOutput
 {
     /**

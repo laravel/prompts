@@ -3,8 +3,10 @@
 namespace Laravel\Prompts;
 
 use Closure;
-use Laravel\Prompts\Output\ConsoleOutput;
+use Laravel\Prompts\Output\PromptWriter;
 use RuntimeException;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -65,9 +67,9 @@ abstract class Prompt
     protected static ?Closure $validateUsing;
 
     /**
-     * The output instance.
+     * The writer instance.
      */
-    protected static OutputInterface $output;
+    protected static PromptWriter $writer;
 
     /**
      * The terminal instance.
@@ -102,7 +104,7 @@ abstract class Prompt
             try {
                 static::terminal()->setTty('-icanon -isig -echo');
             } catch (Throwable $e) {
-                static::output()->writeln("<comment>{$e->getMessage()}</comment>");
+                static::writer()->write("<comment>{$e->getMessage()}</comment>", true);
                 static::fallbackWhen(true);
 
                 return $this->fallback();
@@ -154,9 +156,7 @@ abstract class Prompt
      */
     protected function capturePreviousNewLines(): void
     {
-        $this->newLinesWritten = method_exists(static::output(), 'newLinesWritten')
-            ? static::output()->newLinesWritten()
-            : 1;
+        $this->newLinesWritten = static::writer()->newLinesWritten();
     }
 
     /**
@@ -164,27 +164,22 @@ abstract class Prompt
      */
     public static function setOutput(OutputInterface $output): void
     {
-        self::$output = $output;
+        if ($output instanceof ConsoleOutputInterface && stream_isatty(STDERR) && ! stream_isatty(STDOUT)) {
+            $output = $output->getErrorOutput();
+        }
+        self::$writer = new PromptWriter($output);
     }
 
     /**
-     * Get the current output instance.
+     * Get the prompt writer.
      */
-    protected static function output(): OutputInterface
+    protected static function writer(): PromptWriter
     {
-        return self::$output ??= new ConsoleOutput();
-    }
+        if (! isset(self::$writer)) {
+            self::setOutput(new ConsoleOutput());
+        }
 
-    /**
-     * Write output directly, bypassing newline capture.
-     */
-    protected static function writeDirectly(string $message): void
-    {
-        match (true) {
-            method_exists(static::output(), 'writeDirectly') => static::output()->writeDirectly($message),
-            method_exists(static::output(), 'getOutput') => static::output()->getOutput()->write($message),
-            default => static::output()->write($message),
-        };
+        return self::$writer;
     }
 
     /**
@@ -215,7 +210,7 @@ abstract class Prompt
         }
 
         if ($this->state === 'initial') {
-            static::output()->write($frame);
+            static::writer()->write($frame);
 
             $this->state = 'active';
             $this->prevFrame = $frame;
@@ -228,7 +223,7 @@ abstract class Prompt
         // Ensure that the full frame is buffered so subsequent output can see how many trailing newlines were written.
         if ($this->state === 'submit') {
             $this->eraseDown();
-            static::output()->write($frame);
+            static::writer()->write($frame);
 
             $this->prevFrame = '';
 
@@ -242,7 +237,7 @@ abstract class Prompt
             $this->moveCursor(0, $diffLine);
             $this->eraseLines(1);
             $lines = explode(PHP_EOL, $frame);
-            static::output()->write($lines[$diffLine]);
+            static::writer()->write($lines[$diffLine]);
             $this->moveCursor(0, count($lines) - $diffLine - 1);
         } elseif (count($diff) > 1) { // Re-render everything past the first change
             $diffLine = $diff[0];
@@ -250,7 +245,7 @@ abstract class Prompt
             $this->eraseDown();
             $lines = explode(PHP_EOL, $frame);
             $newLines = array_slice($lines, $diffLine);
-            static::output()->write(implode(PHP_EOL, $newLines));
+            static::writer()->write(implode(PHP_EOL, $newLines));
         }
 
         $this->prevFrame = $frame;
