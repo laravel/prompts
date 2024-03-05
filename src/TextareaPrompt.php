@@ -2,8 +2,6 @@
 
 namespace Laravel\Prompts;
 
-use Closure;
-
 class TextareaPrompt extends Prompt
 {
     use Concerns\Scrolling;
