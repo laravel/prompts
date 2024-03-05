@@ -111,7 +111,7 @@ class MultiSearchPromptRenderer extends Renderer implements Scrolling
 
         return $this->scrollbar(
             collect($prompt->visible())
-                ->map(fn ($label) => $this->truncate($label, $prompt->terminal()->cols() - 10))
+                ->map(fn ($label) => $this->truncate($label, $prompt->terminal()->cols() - 12))
                 ->map(function ($label, $key) use ($prompt) {
                     $index = array_search($key, array_keys($prompt->matches()));
                     $active = $index === $prompt->highlighted;
