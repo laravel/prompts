@@ -22,7 +22,7 @@ class TextareaPrompt extends Prompt
         public string $placeholder = '',
         public string $default = '',
         public bool|string $required = false,
-        protected ?Closure $validate = null,
+        public ?Closure $validate = null,
         public string $hint = ''
     ) {
         $this->trackTypedValue(
