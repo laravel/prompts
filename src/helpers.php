@@ -39,7 +39,7 @@ function select(string $label, array|Collection $options, int|string|null $defau
  * @param  array<int|string>|Collection<int, int|string>  $default
  * @return array<int|string>
  */
-function multiselect(string $label, array|Collection $options, array|Collection $default = [], int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = 'Use the space bar to select options.'): array
+function multiselect(string $label, array|Collection $options, array|Collection $default = [], int $scroll = 5, bool|string $required = false, mixed $validate = null, bool $validateOnToggle = false, string $hint = 'Use the space bar to select options.'): array
 {
     return (new MultiSelectPrompt(...func_get_args()))->prompt();
 }

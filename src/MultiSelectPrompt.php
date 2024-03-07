@@ -42,6 +42,7 @@ class MultiSelectPrompt extends Prompt
         public int $scroll = 5,
         public bool|string $required = false,
         public mixed $validate = null,
+        public bool $validateOnToggle = false, 
         public string $hint = '',
     ) {
         $this->options = $options instanceof Collection ? $options->all() : $options;
@@ -128,6 +129,10 @@ class MultiSelectPrompt extends Prompt
             $this->values = array_filter($this->values, fn ($v) => $v !== $value);
         } else {
             $this->values[] = $value;
+        }
+
+        if ($this->validateOnToggle) {
+            $this->validated = true;
         }
     }
 }

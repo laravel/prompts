@@ -122,6 +122,25 @@ it('validates', function () {
     Prompt::assertOutputContains('You must select at least one color.');
 });
 
+it('can validate automatically upon toggling options', function () {
+    Prompt::fake([Key::DOWN, Key::SPACE, Key::SPACE, Key::UP, Key::SPACE, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What was the reason for the guard\'s retirement?',
+        options: [
+            'arrow' => 'He took an arrow in the knee',
+            'swordless' => 'He lost his sword',
+            'dragone' => 'He defeated all dragons',
+        ],
+        validate: fn ($values) => in_array('arrow', $values) ? null : 'Missing a joke!',
+        validateOnToggle: true,
+    );
+
+    expect($result)->toBe(['arrow']);
+
+    Prompt::assertOutputContains('Missing a joke!');
+});
+
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
 
