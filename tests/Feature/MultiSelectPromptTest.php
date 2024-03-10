@@ -104,6 +104,44 @@ it('accepts collections', function () {
     expect($result)->toBe(['Green']);
 });
 
+it('accepts closures', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: fn () => collect([
+            'Red',
+            'Green',
+            'Blue',
+        ]),
+        default: collect(['Green'])
+    );
+
+    expect($result)->toBe(['Green']);
+});
+
+it('can reactively change options', function () {
+    Prompt::fake([Key::DOWN, Key::SPACE, Key::DOWN, Key::SPACE, Key::UP, Key::SPACE, Key::SPACE, Key::ENTER]);
+
+    $result = multiselect(
+        label: "Pick up items (2 items slots available):",
+        options: fn($values) => collect([
+            'food' => 'Some food',
+            'map' => 'A map',
+            'jacket' => 'A life jacket',
+        ])->when(count($values) >= 2, fn ($collection) =>  $collection->only($values)),
+    );
+
+    expect($result)->toBe(['jacket', 'food']);
+});
+
+it('throws when options are empty', function () {
+    multiselect(
+        label: 'Hey, man! About the ahh... -just hold on... (keyboard typing)',
+        options: fn() => [],
+    );
+})->throws(NonInteractiveValidationException::class, 'All options are no longer available!');
+
 it('validates', function () {
     Prompt::fake([Key::ENTER, Key::SPACE, Key::ENTER]);
 

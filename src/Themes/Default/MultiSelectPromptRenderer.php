@@ -15,6 +15,10 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
      */
     public function __invoke(MultiSelectPrompt $prompt): string
     {
+        if ($prompt->state === 'toggle' || $prompt->state === 'error') {
+            $prompt->evaluatedOptions = null;
+        }
+
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
@@ -35,7 +39,7 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
                     $this->renderOptions($prompt),
                     color: 'yellow',
-                    info: count($prompt->options) > $prompt->scroll ? (count($prompt->value()).' selected') : '',
+                    info: count($prompt->options()) > $prompt->scroll ? (count($prompt->value()).' selected') : '',
                 )
                 ->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
 
@@ -43,7 +47,7 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
                 ->box(
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
                     $this->renderOptions($prompt),
-                    info: count($prompt->options) > $prompt->scroll ? (count($prompt->value()).' selected') : '',
+                    info: count($prompt->options()) > $prompt->scroll ? (count($prompt->value()).' selected') : '',
                 )
                 ->when(
                     $prompt->hint,
@@ -62,12 +66,12 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
             collect($prompt->visible())
                 ->map(fn ($label) => $this->truncate($label, $prompt->terminal()->cols() - 12))
                 ->map(function ($label, $key) use ($prompt) {
-                    $index = array_search($key, array_keys($prompt->options));
+                    $index = array_search($key, array_keys($prompt->options()));
                     $active = $index === $prompt->highlighted;
-                    if (array_is_list($prompt->options)) {
-                        $value = $prompt->options[$index];
+                    if (array_is_list($prompt->options())) {
+                        $value = $prompt->options()[$index];
                     } else {
-                        $value = array_keys($prompt->options)[$index];
+                        $value = array_keys($prompt->options())[$index];
                     }
                     $selected = in_array($value, $prompt->value());
 
@@ -90,8 +94,8 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
                 ->values(),
             $prompt->firstVisible,
             $prompt->scroll,
-            count($prompt->options),
-            min($this->longest($prompt->options, padding: 6), $prompt->terminal()->cols() - 6),
+            count($prompt->options()),
+            min($this->longest($prompt->options(), padding: 6), $prompt->terminal()->cols() - 6),
             $prompt->state === 'cancel' ? 'dim' : 'cyan'
         )->implode(PHP_EOL);
     }
