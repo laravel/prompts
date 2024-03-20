@@ -118,7 +118,11 @@ class TextareaPrompt extends Prompt
 
         $currentColumn = $currentLines->last() - ($currentLines->sum() - $this->cursorPosition);
 
-        $destinationLineLength = ($lineLengths->get($currentLineIndex + 1) ?? $currentLines->last());
+        $destinationLineLength = $lineLengths->get($currentLineIndex + 1) ?? $currentLines->last();
+
+        if ($currentLineIndex + 1 !== $lines->count() - 1) {
+            $destinationLineLength--;
+        }
 
         $newColumn = min(max(0, $destinationLineLength), $currentColumn);
 

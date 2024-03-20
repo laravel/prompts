@@ -162,3 +162,39 @@ it('validates the default value when non-interactive', function () {
 
     textarea('What is your name?', required: true);
 })->throws(NonInteractiveValidationException::class, 'Required.');
+
+it('correctly handles ascending line lengths', function () {
+    Prompt::fake([
+        'a', Key::ENTER,
+        'b', 'c', Key::ENTER,
+        'd', 'e', 'f',
+        Key::UP,
+        Key::UP,
+        Key::DOWN,
+        'g',
+        Key::CTRL_D,
+    ]);
+
+    $result = textarea(label: 'What is your name?');
+
+    expect($result)->toBe("a\nbgc\ndef");
+});
+
+it('correctly handles descending line lengths', function () {
+    Prompt::fake([
+        'a', 'b', 'c', Key::ENTER,
+        'd', 'e', Key::ENTER,
+        'f',
+        Key::UP,
+        Key::UP,
+        Key::RIGHT,
+        Key::RIGHT,
+        Key::DOWN,
+        'g',
+        Key::CTRL_D,
+    ]);
+
+    $result = textarea(label: 'What is your name?');
+
+    expect($result)->toBe("abc\ndeg\nf");
+});
