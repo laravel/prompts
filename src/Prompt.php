@@ -65,6 +65,11 @@ abstract class Prompt
     protected static ?Closure $validateUsing;
 
     /**
+     * The revert handler from the StepBuilder.
+     */
+    protected static ?Closure $revertUsing = null;
+
+    /**
      * The output instance.
      */
     protected static OutputInterface $output;
@@ -204,6 +209,26 @@ abstract class Prompt
     }
 
     /**
+     * Revert the prompt using the given callback.
+     *
+     * @internal
+     */
+    public static function revertUsing(Closure $callback): void
+    {
+        static::$revertUsing = $callback;
+    }
+
+    /**
+     * Clear any previous revert callback.
+     *
+     * @internal
+     */
+    public static function preventReverting(): void
+    {
+        static::$revertUsing = null;
+    }
+
+    /**
      * Render the prompt.
      */
     protected function render(): void
@@ -314,6 +339,21 @@ abstract class Prompt
         $this->emit('key', $key);
 
         if ($this->state === 'submit') {
+            return false;
+        }
+
+        if ($key === Key::CTRL_U) {
+            $this->state = 'error';
+            $this->error = 'Reverted.';
+
+            if (! self::$revertUsing) {
+                $this->error = 'This cannot be reverted.';
+
+                return true;
+            }
+
+            call_user_func(self::$revertUsing);
+
             return false;
         }
 

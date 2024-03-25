@@ -1,24 +1,16 @@
 <?php
 
-use function Laravel\Prompts\alert;
 use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\error;
-use function Laravel\Prompts\intro;
-use function Laravel\Prompts\multiselect;
+use function Laravel\Prompts\form;
+use function Laravel\Prompts\info;
 use function Laravel\Prompts\note;
-use function Laravel\Prompts\outro;
-use function Laravel\Prompts\password;
-use function Laravel\Prompts\select;
 use function Laravel\Prompts\spin;
-use function Laravel\Prompts\suggest;
-use function Laravel\Prompts\text;
-use function Laravel\Prompts\warning;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$responses = steps()
-    ->add(fn () => intro('Welcome to Laravel'), revert: false)
-    ->add(fn () => suggest(
+$responses = form()
+    ->intro('Welcome to Laravel')
+    ->suggest(
         label: 'What is your name?',
         placeholder: 'E.g. Taylor Otwell',
         options: [
@@ -36,8 +28,8 @@ $responses = steps()
             ! $value => 'Please enter your name.',
             default => null,
         },
-    ))
-    ->add(fn () => text(
+    )
+    ->text(
         label: 'Where should we create your project?',
         placeholder: 'E.g. ./laravel',
         validate: fn ($value) => match (true) {
@@ -45,24 +37,34 @@ $responses = steps()
             $value[0] !== '.' => 'Please enter a relative path',
             default => null,
         },
-    ))
-    ->add(fn () => password(
+        name: 'path'
+    )
+    ->when(
+        fn (array $responses) => $responses['path'] === './laravel',
+        fn (array $responses) => info('This is a Laravel project!'),
+        ignoreWhenReverting: true,
+    )
+    ->pause()
+    ->submit();
+
+$moreResponses = form()
+    ->password(
         label: 'Provide a password',
         validate: fn ($value) => match (true) {
             ! $value => 'Please enter a password.',
             strlen($value) < 5 => 'Password should have at least 5 characters.',
             default => null,
         },
-    ), revert: false)
-    ->add(fn () => select(
+    )
+    ->select(
         label: 'Pick a project type',
         default: 'ts',
         options: [
             'ts' => 'TypeScript',
             'js' => 'JavaScript',
         ],
-    ))
-    ->add(fn () => multiselect(
+    )
+    ->multiselect(
         label: 'Select additional tools.',
         default: ['pint', 'eslint'],
         options: [
@@ -75,7 +77,7 @@ $responses = steps()
                 return 'Please select at least one tool.';
             }
         }
-    ))
+    )
     ->add(function () {
         $install = confirm(
             label: 'Install dependencies?',
@@ -86,17 +88,17 @@ $responses = steps()
         }
 
         return $install;
-    }, revert: function () {
-        spin(fn () => sleep(3), 'Uninstalling...');
-    })
+    }, name: 'install')
+    ->confirm('Finish installation?')
     ->add(fn ($responses) => note(<<<EOT
     Installation complete!
 
     To get started, run:
 
-        cd {$responses[2]}
+        cd {$responses['path']}
         php artisan serve
-    EOT))
-    ->run();
+    EOT
+    ))
+    ->submit();
 
-var_dump($responses);
+var_dump($responses, $moreResponses);
