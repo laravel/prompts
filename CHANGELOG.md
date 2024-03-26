@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.16...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.17...main)
+
+## [v0.1.17](https://github.com/laravel/prompts/compare/v0.1.16...v0.1.17) - 2024-03-13
+
+* [0.x] Fix box spacing with Symfony named style tags by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/125
 
 ## [v0.1.16](https://github.com/laravel/prompts/compare/v0.1.15...v0.1.16) - 2024-02-21
 
