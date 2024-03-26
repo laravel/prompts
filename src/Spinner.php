@@ -28,11 +28,25 @@ class Spinner extends Prompt
     protected int $pid;
 
     /**
-     * Create a new Spinner instance.
+     * The final message to display.
      */
-    public function __construct(public string $message = '')
+    public string $finalMessage = '';
+
+    /**
+     * A callback to generate the final message.
+     *
+     * @var string|\Closure(mixed): string
+     */
+    protected $finalMessageHandler;
+
+    /**
+     * Create a new Spinner instance.
+     *
+     * @param  string|\Closure(mixed): string  $finalMessageHandler
+     */
+    public function __construct(public string $message = '', string|Closure $finalMessageHandler = '')
     {
-        //
+        $this->finalMessageHandler = $finalMessageHandler;
     }
 
     /**
@@ -72,6 +86,8 @@ class Spinner extends Prompt
             } else {
                 $result = $callback();
 
+                $this->finalMessage = $this->getFinalMessage($result);
+
                 $this->resetTerminal($originalAsync);
 
                 return $result;
@@ -81,6 +97,22 @@ class Spinner extends Prompt
 
             throw $e;
         }
+    }
+
+    /**
+     * Get the final message to display.
+     */
+    protected function getFinalMessage(mixed $result): string
+    {
+        if ($this->finalMessageHandler === '') {
+            return '';
+        }
+
+        if (is_callable($this->finalMessageHandler)) {
+            return ($this->finalMessageHandler)($result) ?? '';
+        }
+
+        return $this->finalMessageHandler;
     }
 
     /**
@@ -111,6 +143,8 @@ class Spinner extends Prompt
             $this->render();
 
             $result = $callback();
+
+            $this->finalMessage = $this->getFinalMessage($result);
         } finally {
             $this->eraseRenderedLines();
         }
@@ -141,9 +175,13 @@ class Spinner extends Prompt
      */
     protected function eraseRenderedLines(): void
     {
-        $lines = explode(PHP_EOL, $this->prevFrame);
-        $this->moveCursor(-999, -count($lines) + 1);
-        $this->eraseDown();
+        if ($this->finalMessage !== '') {
+            $this->render();
+        } else {
+            $lines = explode(PHP_EOL, $this->prevFrame);
+            $this->moveCursor(-999, -count($lines) + 1);
+            $this->eraseDown();
+        }
     }
 
     /**
