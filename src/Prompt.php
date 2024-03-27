@@ -52,7 +52,7 @@ abstract class Prompt
     /**
      * The cancellation callback.
      */
-    protected static Closure $cancelUsing;
+    protected static ?Closure $cancelUsing;
 
     /**
      * Indicates if the prompt has been validated.
@@ -136,7 +136,7 @@ abstract class Prompt
     /**
      * Register a callback to be invoked when a user cancels a prompt.
      */
-    public static function cancelUsing(Closure $callback): void
+    public static function cancelUsing(?Closure $callback): void
     {
         static::$cancelUsing = $callback;
     }

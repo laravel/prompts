@@ -72,6 +72,11 @@ class Key
     const CTRL_A = "\x01";
 
     /**
+     * EOF
+     */
+    const CTRL_D = "\x04";
+
+    /**
      * End
      */
     const CTRL_E = "\x05";
