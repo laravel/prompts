@@ -34,6 +34,15 @@ class SpinnerRenderer extends Renderer
 
         $spinner->interval = $this->interval;
 
+        if ($spinner->hasStreamingOutput) {
+            if ($spinner->newLinesWritten() > 1) {
+                // Make sure there is always one space above the dividing line.
+                $this->newLine();
+            }
+
+            $this->line($this->dim(str_repeat('─', $spinner->terminal()->cols() - 6)));
+        }
+
         $frame = $this->frames[$spinner->count % count($this->frames)];
 
         return $this->line(" {$this->cyan($frame)} {$spinner->message}");

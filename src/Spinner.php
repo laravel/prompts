@@ -23,16 +23,31 @@ class Spinner extends Prompt
     public bool $static = false;
 
     /**
+     * The sockets used to communicate between the spinner and the task.
+     */
+    protected SpinnerSockets $sockets;
+
+    /**
      * The process ID after forking.
      */
     protected int $pid;
+
+    /**
+     * Whether the spinner has streamed output.
+     */
+    public bool $hasStreamingOutput = false;
+
+    /**
+     * A unique string to indicate that the spinner should stop.
+     */
+    public string $stopIndicator;
 
     /**
      * Create a new Spinner instance.
      */
     public function __construct(public string $message = '')
     {
-        //
+        $this->stopIndicator = uniqid().uniqid().uniqid();
     }
 
     /**
@@ -46,6 +61,8 @@ class Spinner extends Prompt
     public function spin(Closure $callback): mixed
     {
         $this->capturePreviousNewLines();
+
+        $this->sockets = SpinnerSockets::create();
 
         if (! function_exists('pcntl_fork')) {
             return $this->renderStatically($callback);
@@ -63,6 +80,8 @@ class Spinner extends Prompt
 
             if ($this->pid === 0) {
                 while (true) { // @phpstan-ignore-line
+                    $this->setNewMessage();
+                    $this->renderStreamedOutput();
                     $this->render();
 
                     $this->count++;
@@ -70,7 +89,18 @@ class Spinner extends Prompt
                     usleep($this->interval * 1000);
                 }
             } else {
-                $result = $callback();
+                $result = $callback($this->sockets->messenger());
+
+                // Tell the child process to stop and send back it's last frame
+                $this->sockets->messenger()->stop($this->stopIndicator);
+
+                // Let the spinner finish its last cycle before exiting
+                usleep($this->interval * 1000);
+
+                // Read the last frame actually rendered from the spinner
+                if ($realPrevFrame = $this->sockets->prevFrame()) {
+                    $this->prevFrame = $realPrevFrame;
+                }
 
                 $this->resetTerminal($originalAsync);
 
@@ -84,12 +114,57 @@ class Spinner extends Prompt
     }
 
     /**
+     * Render any streaming output from the spinner, if available.
+     */
+    protected function renderStreamedOutput(): void
+    {
+        $output = $this->sockets->streamingOutput();
+
+        if ($output === '') {
+            return;
+        }
+
+        $this->resetCursorPosition();
+        $this->eraseDown();
+
+        if (! $this->hasStreamingOutput && str_starts_with($this->prevFrame, PHP_EOL)) {
+            // This is the first line of streaming output we're about to write, if the
+            // previous frame started with a new line, we need to write a new line.
+            static::writeDirectly(PHP_EOL);
+        }
+
+        $this->hasStreamingOutput = true;
+
+        collect(explode(PHP_EOL, rtrim($output)))
+            ->each(fn ($line) => $line === $this->stopIndicator ? null : static::writeDirectlyWithFormatting(' '.$line.PHP_EOL));
+
+        $this->writeDirectly($this->prevFrame);
+
+        if (str_contains($output, $this->stopIndicator)) {
+            // Send the last frame actually rendered back to the parent process
+            $this->sockets->sendPrevFrame($this->prevFrame);
+        }
+    }
+
+    /**
+     * Set the new message if one is available.
+     */
+    protected function setNewMessage(): void
+    {
+        if (($message = $this->sockets->message()) !== '') {
+            $this->message = $message;
+        }
+    }
+
+    /**
      * Reset the terminal.
      */
     protected function resetTerminal(bool $originalAsync): void
     {
         pcntl_async_signals($originalAsync);
         pcntl_signal(SIGINT, SIG_DFL);
+
+        $this->sockets->close();
 
         $this->eraseRenderedLines();
     }

@@ -188,6 +188,17 @@ abstract class Prompt
     }
 
     /**
+     * Write output directly with formatting, bypassing newline capture.
+     */
+    protected static function writeDirectlyWithFormatting(string $message): void
+    {
+        match (true) {
+            method_exists(static::output(), 'writeDirectlyWithFormatting') => static::output()->writeDirectlyWithFormatting($message),
+            default => static::writeDirectly($message),
+        };
+    }
+
+    /**
      * Get the terminal instance.
      */
     public static function terminal(): Terminal
@@ -271,7 +282,7 @@ abstract class Prompt
     /**
      * Reset the cursor position to the beginning of the previous frame.
      */
-    private function resetCursorPosition(): void
+    protected function resetCursorPosition(): void
     {
         $lines = count(explode(PHP_EOL, $this->prevFrame)) - 1;
 

@@ -97,7 +97,7 @@ function multisearch(string $label, Closure $options, string $placeholder = '', 
  *
  * @template TReturn of mixed
  *
- * @param  \Closure(): TReturn  $callback
+ * @param  \Closure(SpinnerMessenger): TReturn  $callback
  * @return TReturn
  */
 function spin(Closure $callback, string $message = ''): mixed
