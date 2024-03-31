@@ -5,8 +5,8 @@ namespace Laravel\Prompts;
 class TextareaPrompt extends Prompt
 {
     use Concerns\Scrolling;
-    use Concerns\TypedValue;
     use Concerns\Truncation;
+    use Concerns\TypedValue;
 
     public int $width = 60;
 
@@ -217,7 +217,7 @@ class TextareaPrompt extends Prompt
     {
         $this->cursorOffset = 0;
 
-        preg_match_all('/\S{' . $this->width . ',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/\S{'.$this->width.',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
 
         foreach ($matches[0] as $match) {
             if ($this->cursorPosition + $this->cursorOffset >= $match[1] + mb_strwidth($match[0])) {

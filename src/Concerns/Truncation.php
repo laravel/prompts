@@ -15,10 +15,8 @@ trait Truncation
             throw new InvalidArgumentException("Width [{$width}] must be greater than zero.");
         }
 
-        return mb_strwidth($string) <= $width ? $string : (mb_strimwidth($string, 0, $width - 1) . '…');
+        return mb_strwidth($string) <= $width ? $string : (mb_strimwidth($string, 0, $width - 1).'…');
     }
-
-
 
     /**
      * Multi-byte version of wordwrap.
@@ -52,7 +50,7 @@ trait Truncation
                     $str = '';
 
                     foreach ($characters as $character) {
-                        $tmp = $str . $character;
+                        $tmp = $str.$character;
 
                         if (mb_strwidth($tmp) > $width) {
                             $strings[] = $str;
@@ -73,7 +71,7 @@ trait Truncation
             }
 
             foreach ($words as $word) {
-                $tmp = ($line === null) ? $word : $line . ' ' . $word;
+                $tmp = ($line === null) ? $word : $line.' '.$word;
 
                 // Look for zero-width joiner characters (combined emojis)
                 preg_match('/\p{Cf}/u', $word, $joinerMatches);
