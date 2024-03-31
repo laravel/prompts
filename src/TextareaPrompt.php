@@ -6,6 +6,7 @@ class TextareaPrompt extends Prompt
 {
     use Concerns\Scrolling;
     use Concerns\TypedValue;
+    use Concerns\Truncation;
 
     public int $width = 60;
 
@@ -188,7 +189,7 @@ class TextareaPrompt extends Prompt
     {
         $this->calculateCursorOffset();
 
-        $value = mb_wordwrap($this->value(), $this->width, PHP_EOL, true);
+        $value = $this->mbWordwrap($this->value(), $this->width, PHP_EOL, true);
 
         return explode(PHP_EOL, $value);
     }
@@ -216,7 +217,7 @@ class TextareaPrompt extends Prompt
     {
         $this->cursorOffset = 0;
 
-        preg_match_all('/\S{'.$this->width.',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/\S{' . $this->width . ',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
 
         foreach ($matches[0] as $match) {
             if ($this->cursorPosition + $this->cursorOffset >= $match[1] + mb_strwidth($match[0])) {
