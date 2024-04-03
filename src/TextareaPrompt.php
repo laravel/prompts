@@ -58,6 +58,36 @@ class TextareaPrompt extends Prompt
     }
 
     /**
+     * Get the formatted value with a virtual cursor.
+     */
+    public function valueWithCursor(): string
+    {
+        if ($this->value() === '') {
+            return $this->wrappedPlaceholderWithCursor();
+        }
+
+        return $this->addCursor($this->wrappedValue(), $this->cursorPosition + $this->cursorOffset(), -1);
+    }
+
+    /**
+     * The word-wrapped version of the typed value.
+     */
+    public function wrappedValue(): string
+    {
+        return $this->mbWordwrap($this->value(), $this->width, PHP_EOL, true);
+    }
+
+    /**
+     * The formatted lines.
+     *
+     * @return array<int, string>
+     */
+    public function lines(): array
+    {
+        return explode(PHP_EOL, $this->wrappedValue());
+    }
+
+    /**
      * The currently visible lines.
      *
      * @return array<int, string>
@@ -69,18 +99,6 @@ class TextareaPrompt extends Prompt
         $withCursor = $this->valueWithCursor();
 
         return array_slice(explode(PHP_EOL, $withCursor), $this->firstVisible, $this->scroll, preserve_keys: true);
-    }
-
-    /**
-     * The formatted lines.
-     *
-     * @return array<int, string>
-     */
-    public function lines(): array
-    {
-        $value = $this->mbWordwrap($this->value(), $this->width, PHP_EOL, true);
-
-        return explode(PHP_EOL, $value);
     }
 
     /**
@@ -194,20 +212,6 @@ class TextareaPrompt extends Prompt
     }
 
     /**
-     * Get the formatted value with a virtual cursor.
-     */
-    public function valueWithCursor(): string
-    {
-        $value = implode(PHP_EOL, $this->lines());
-
-        if ($this->value() === '') {
-            return $this->dim($this->addCursor($this->placeholder, 0, PHP_INT_MAX));
-        }
-
-        return $this->addCursor($value, $this->cursorPosition + $this->cursorOffset(), -1);
-    }
-
-    /**
      * Calculate the cursor offset considering wrapped words.
      */
     protected function cursorOffset(): int
@@ -223,5 +227,19 @@ class TextareaPrompt extends Prompt
         }
 
         return $cursorOffset;
+    }
+
+    /**
+     * A wrapped version of the placeholder with the virtual cursor.
+     */
+    protected function wrappedPlaceholderWithCursor(): string
+    {
+        return implode(PHP_EOL, array_map(
+            $this->dim(...),
+            explode(PHP_EOL, $this->addCursor(
+                $this->mbWordwrap($this->placeholder, $this->width, PHP_EOL, true),
+                cursorPosition: 0,
+            ))
+        ));
     }
 }
