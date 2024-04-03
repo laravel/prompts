@@ -18,7 +18,7 @@ function text(string $label, string $placeholder = '', string $default = '', boo
  */
 function textarea(string $label, string $placeholder = '', string $default = '', bool|string $required = false, ?Closure $validate = null, string $hint = '', int $rows = 5): string
 {
-    return (new TextareaPrompt($label, $rows, $placeholder, $default, $required, $validate, $hint))->prompt();
+    return (new TextareaPrompt($label, $placeholder, $default, $required, $validate, $hint, $rows))->prompt();
 }
 
 /**

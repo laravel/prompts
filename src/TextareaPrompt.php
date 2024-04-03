@@ -8,59 +8,83 @@ class TextareaPrompt extends Prompt
     use Concerns\Truncation;
     use Concerns\TypedValue;
 
+    /**
+     * The width of the textarea.
+     */
     public int $width = 60;
-
-    protected int $cursorOffset = 0;
 
     /**
      * Create a new TextareaPrompt instance.
      */
     public function __construct(
         public string $label,
-        public int $rows = 5,
         public string $placeholder = '',
         public string $default = '',
         public bool|string $required = false,
         public mixed $validate = null,
-        public string $hint = ''
+        public string $hint = '',
+        int $rows = 5,
     ) {
+        $this->scroll = $rows;
+
+        $this->initializeScrolling();
+
         $this->trackTypedValue(
             default: $default,
             submit: false,
             allowNewLine: true,
         );
 
-        $this->scroll = $this->rows;
+        $this->on('key', function ($key) {
+            if ($key[0] === "\e") {
+                match ($key) {
+                    Key::UP, Key::UP_ARROW, Key::CTRL_P => $this->handleUpKey(),
+                    Key::DOWN, Key::DOWN_ARROW, Key::CTRL_N => $this->handleDownKey(),
+                    default => null,
+                };
 
-        $this->initializeScrolling();
+                return;
+            }
 
-        $this->on(
-            'key',
-            function ($key) {
-                if ($key[0] === "\e") {
-                    match ($key) {
-                        Key::UP, Key::UP_ARROW, Key::CTRL_P => $this->handleUpKey(),
-                        Key::DOWN, Key::DOWN_ARROW, Key::CTRL_N => $this->handleDownKey(),
-                        default => null,
-                    };
+            // Keys may be buffered.
+            foreach (mb_str_split($key) as $key) {
+                if ($key === Key::CTRL_D) {
+                    $this->submit();
 
                     return;
                 }
-
-                // Keys may be buffered.
-                foreach (mb_str_split($key) as $key) {
-                    if ($key === Key::CTRL_D) {
-                        $this->submit();
-
-                        return;
-                    }
-                }
             }
-        );
+        });
     }
 
     /**
-     * Handle the up keypress.
+     * The currently visible lines.
+     *
+     * @return array<int, string>
+     */
+    public function visible(): array
+    {
+        $this->adjustVisibleWindow();
+
+        $withCursor = $this->valueWithCursor();
+
+        return array_slice(explode(PHP_EOL, $withCursor), $this->firstVisible, $this->scroll, preserve_keys: true);
+    }
+
+    /**
+     * The formatted lines.
+     *
+     * @return array<int, string>
+     */
+    public function lines(): array
+    {
+        $value = $this->mbWordwrap($this->value(), $this->width, PHP_EOL, true);
+
+        return explode(PHP_EOL, $value);
+    }
+
+    /**
+     * Handle the up key press.
      */
     protected function handleUpKey(): void
     {
@@ -96,7 +120,7 @@ class TextareaPrompt extends Prompt
     }
 
     /**
-     * Handle the down keypress.
+     * Handle the down key press.
      */
     protected function handleDownKey(): void
     {
@@ -131,19 +155,8 @@ class TextareaPrompt extends Prompt
     }
 
     /**
-     * The currently visible options.
-     *
-     * @return array<int, string>
+     * Adjust the visible window to ensure the cursor is always visible.
      */
-    public function visible(): array
-    {
-        $this->adjustVisibleWindow();
-
-        $withCursor = $this->valueWithCursor(10_000);
-
-        return array_slice(explode(PHP_EOL, $withCursor), $this->firstVisible, $this->scroll, preserve_keys: true);
-    }
-
     protected function adjustVisibleWindow(): void
     {
         if (count($this->lines()) < $this->scroll) {
@@ -181,48 +194,34 @@ class TextareaPrompt extends Prompt
     }
 
     /**
-     * Get the formatted lines of the current value.
-     *
-     * @return array<int, string>
-     */
-    public function lines(): array
-    {
-        $this->calculateCursorOffset();
-
-        $value = $this->mbWordwrap($this->value(), $this->width, PHP_EOL, true);
-
-        return explode(PHP_EOL, $value);
-    }
-
-    /**
      * Get the formatted value with a virtual cursor.
      */
-    public function valueWithCursor(int $maxWidth): string
+    public function valueWithCursor(): string
     {
         $value = implode(PHP_EOL, $this->lines());
 
         if ($this->value() === '') {
-            return $this->dim($this->addCursor($this->placeholder, 0, 10_000));
+            return $this->dim($this->addCursor($this->placeholder, 0, PHP_INT_MAX));
         }
 
-        return $this->addCursor($value, $this->cursorPosition + $this->cursorOffset, -1);
+        return $this->addCursor($value, $this->cursorPosition + $this->cursorOffset(), -1);
     }
 
     /**
-     * When there are long words that wrap, the `typedValue` and the display value are different,
-     * (due to the inserted new line characters from the word wrap) and the cursor calculation is off.
-     * This method calculates the difference and adjusts the cursor position accordingly.
+     * Calculate the cursor offset considering wrapped words.
      */
-    protected function calculateCursorOffset(): void
+    protected function cursorOffset(): int
     {
-        $this->cursorOffset = 0;
+        $cursorOffset = 0;
 
         preg_match_all('/\S{'.$this->width.',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
 
         foreach ($matches[0] as $match) {
-            if ($this->cursorPosition + $this->cursorOffset >= $match[1] + mb_strwidth($match[0])) {
-                $this->cursorOffset += (int) floor(mb_strwidth($match[0]) / $this->width);
+            if ($this->cursorPosition + $cursorOffset >= $match[1] + mb_strwidth($match[0])) {
+                $cursorOffset += (int) floor(mb_strwidth($match[0]) / $this->width);
             }
         }
+
+        return $cursorOffset;
     }
 }
