@@ -16,7 +16,7 @@ Trait Number
         ? range(
             array_slice($values, 0, 1)[0],
             array_slice($values, 0, 1)[0] + count($values) - 1
-        ) === $values
+        ) === array_values($values)
         : false;
     }
 }
