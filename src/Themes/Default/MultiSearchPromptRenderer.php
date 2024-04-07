@@ -9,6 +9,7 @@ class MultiSearchPromptRenderer extends Renderer implements Scrolling
 {
     use Concerns\DrawsBoxes;
     use Concerns\DrawsScrollbars;
+    use Concerns\Number;
 
     /**
      * Render the suggest prompt.
@@ -115,7 +116,7 @@ class MultiSearchPromptRenderer extends Renderer implements Scrolling
                 ->map(function ($label, $key) use ($prompt) {
                     $index = array_search($key, array_keys($prompt->matches()));
                     $active = $index === $prompt->highlighted;
-                    $selected = array_is_list($prompt->visible())
+                    $selected = $this->isConsecutive(array_keys($prompt->visible()))
                         ? in_array($label, $prompt->value())
                         : in_array($key, $prompt->value());
 

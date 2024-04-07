@@ -131,6 +131,106 @@ it('supports no default results', function ($options, $expected) {
     ],
 ]);
 
+it('supports scrolled results', function ($options, $expected) {
+    Prompt::fake([
+        'B', // Search for "Blue"
+        Key::UP, // Highlight "Blue"
+        Key::SPACE, // Select "Blue"
+        Key::UP, // Highlight "Blue"
+        Key::UP, // Highlight "Blue"
+        Key::SPACE, // Select "Blue"
+        Key::BACKSPACE, // Clear search
+        'G', // Search for "Green"
+        Key::UP, // Highlight "Green"
+        Key::SPACE, // Select "Green"
+        Key::UP, // Highlight "Green"
+        Key::UP, // Highlight "Green"
+        Key::SPACE, // Select "Green"
+        Key::BACKSPACE, // Clear search
+        Key::ENTER, // Confirm selection
+    ]);
+
+    $result = multisearch(
+        label: 'What are your favorite colors?',
+        placeholder: 'Search...',
+        options: $options,
+    );
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+         ┌ What are your favorite colors? ──────────────────────────────┐
+         │ Search...                                                    │
+         └────────────────────────────────────────────────── 0 selected ┘
+        OUTPUT);
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+         │ Search...                                                    │
+         ├──────────────────────────────────────────────────────────────┤
+         │   ◼ Blue-900                                                 │
+         │   ◼ Blue-700                                                 │
+         │   ◼ Green-700                                                │
+         │   ◼ Green-500                                                │
+         └────────────────────────────────────────────────── 4 selected ┘
+        OUTPUT);
+
+    Prompt::assertStrippedOutputContains(<<<'OUTPUT'
+         ┌ What are your favorite colors? ──────────────────────────────┐
+         │ Blue-900                                                     │
+         │ Blue-700                                                     │
+         │ Green-700                                                    │
+         │ Green-500                                                    │
+         └──────────────────────────────────────────────────────────────┘
+        OUTPUT);
+
+    expect($result)->toBe($expected);
+})->with([
+    'associative' => [
+        fn ($value) => strlen($value) > 0 ? collect([
+            'red' => 'Red',
+            'green-100' => 'Green-100',
+            'green-200' => 'Green-200',
+            'green-300' => 'Green-300',
+            'green-400' => 'Green-400',
+            'green-500' => 'Green-500',
+            'green-600' => 'Green-600',
+            'green-700' => 'Green-700',
+            'blue-100' => 'Blue-100',
+            'blue-200' => 'Blue-200',
+            'blue-300' => 'Blue-300',
+            'blue-400' => 'Blue-400',
+            'blue-500' => 'Blue-500',
+            'blue-600' => 'Blue-600',
+            'blue-700' => 'Blue-700',
+            'blue-800' => 'Blue-800',
+            'blue-900' => 'Blue-900',
+        ])->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))->all() : [],
+        ['blue-900', 'blue-700', 'green-700', 'green-500'],
+    ],
+    'list' => [
+        fn ($value) => strlen($value) > 0 ? collect([
+            'Red',
+            'Green-100',
+            'Green-200',
+            'Green-300',
+            'Green-400',
+            'Green-500',
+            'Green-600',
+            'Green-700',
+            'Blue-100',
+            'Blue-200',
+            'Blue-300',
+            'Blue-400',
+            'Blue-500',
+            'Blue-600',
+            'Blue-700',
+            'Blue-800',
+            'Blue-900',
+        ])->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
+        ->values()
+        ->all() : [],
+        ['Blue-900', 'Blue-700', 'Green-700', 'Green-500'],
+    ],
+]);
+
 it('validates', function () {
     Prompt::fake(['a', Key::DOWN, Key::SPACE, Key::ENTER, Key::DOWN, Key::SPACE, Key::ENTER]);
 
