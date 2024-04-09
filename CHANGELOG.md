@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.17...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.18...main)
+
+## [v0.1.18](https://github.com/laravel/prompts/compare/v0.1.17...v0.1.18) - 2024-04-04
+
+* Add Component: Multiline Text Input by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/88
+* Remove terminal height requirement by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/128
 
 ## [v0.1.17](https://github.com/laravel/prompts/compare/v0.1.16...v0.1.17) - 2024-03-13
 
