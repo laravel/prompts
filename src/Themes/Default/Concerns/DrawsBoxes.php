@@ -86,8 +86,13 @@ trait DrawsBoxes
      */
     protected function stripEscapeSequences(string $text): string
     {
+        // Strip ANSI escape sequences.
         $text = preg_replace("/\e[^m]*m/", '', $text);
 
+        // Strip Symfony named style tags.
+        $text = preg_replace("/<(info|comment|question|error)>(.*?)<\/\\1>/", '$2', $text);
+
+        // Strip Symfony inline style tags.
         return preg_replace("/<(?:(?:[fb]g|options)=[a-z,;]+)+>(.*?)<\/>/i", '$1', $text);
     }
 }

@@ -52,7 +52,7 @@ abstract class Prompt
     /**
      * The cancellation callback.
      */
-    protected static Closure $cancelUsing;
+    protected static ?Closure $cancelUsing;
 
     /**
      * Indicates if the prompt has been validated.
@@ -141,7 +141,7 @@ abstract class Prompt
     /**
      * Register a callback to be invoked when a user cancels a prompt.
      */
-    public static function cancelUsing(Closure $callback): void
+    public static function cancelUsing(?Closure $callback): void
     {
         static::$cancelUsing = $callback;
     }
@@ -233,6 +233,8 @@ abstract class Prompt
      */
     protected function render(): void
     {
+        $this->terminal()->initDimensions();
+
         $frame = $this->renderTheme();
 
         if ($frame === $this->prevFrame) {
@@ -248,35 +250,14 @@ abstract class Prompt
             return;
         }
 
-        $this->resetCursorPosition();
+        $terminalHeight = $this->terminal()->lines();
+        $previousFrameHeight = count(explode(PHP_EOL, $this->prevFrame));
+        $renderableLines = array_slice(explode(PHP_EOL, $frame), abs(min(0, $terminalHeight - $previousFrameHeight)));
 
-        // Ensure that the full frame is buffered so subsequent output can see how many trailing newlines were written.
-        if ($this->state === 'submit') {
-            $this->eraseDown();
-            static::output()->write($frame);
-
-            $this->prevFrame = '';
-
-            return;
-        }
-
-        $diff = $this->diffLines($this->prevFrame, $frame);
-
-        if (count($diff) === 1) { // Update the single line that changed.
-            $diffLine = $diff[0];
-            $this->moveCursor(0, $diffLine);
-            $this->eraseLines(1);
-            $lines = explode(PHP_EOL, $frame);
-            static::output()->write($lines[$diffLine]);
-            $this->moveCursor(0, count($lines) - $diffLine - 1);
-        } elseif (count($diff) > 1) { // Re-render everything past the first change
-            $diffLine = $diff[0];
-            $this->moveCursor(0, $diffLine);
-            $this->eraseDown();
-            $lines = explode(PHP_EOL, $frame);
-            $newLines = array_slice($lines, $diffLine);
-            static::output()->write(implode(PHP_EOL, $newLines));
-        }
+        $this->moveCursorToColumn(1);
+        $this->moveCursorUp(min($terminalHeight, $previousFrameHeight) - 1);
+        $this->eraseDown();
+        $this->output()->write(implode(PHP_EOL, $renderableLines));
 
         $this->prevFrame = $frame;
     }
@@ -291,40 +272,6 @@ abstract class Prompt
         if ($this->state !== 'error') {
             $this->state = 'submit';
         }
-    }
-
-    /**
-     * Reset the cursor position to the beginning of the previous frame.
-     */
-    private function resetCursorPosition(): void
-    {
-        $lines = count(explode(PHP_EOL, $this->prevFrame)) - 1;
-
-        $this->moveCursor(-999, $lines * -1);
-    }
-
-    /**
-     * Get the difference between two strings.
-     *
-     * @return array<int>
-     */
-    private function diffLines(string $a, string $b): array
-    {
-        if ($a === $b) {
-            return [];
-        }
-
-        $aLines = explode(PHP_EOL, $a);
-        $bLines = explode(PHP_EOL, $b);
-        $diff = [];
-
-        for ($i = 0; $i < max(count($aLines), count($bLines)); $i++) {
-            if (! isset($aLines[$i]) || ! isset($bLines[$i]) || $aLines[$i] !== $bLines[$i]) {
-                $diff[] = $i;
-            }
-        }
-
-        return $diff;
     }
 
     /**

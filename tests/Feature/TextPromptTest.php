@@ -7,6 +7,10 @@ use Laravel\Prompts\TextPrompt;
 
 use function Laravel\Prompts\text;
 
+afterEach(function () {
+    Prompt::cancelUsing(null);
+});
+
 it('returns the input', function () {
     Prompt::fake(['J', 'e', 's', 's', Key::ENTER]);
 
