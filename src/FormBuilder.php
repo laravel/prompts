@@ -27,17 +27,7 @@ class FormBuilder
      */
     public function add(Closure $step, ?string $name = null, bool $ignoreWhenReverting = false): self
     {
-        return $this->when(true, $step, $name, $ignoreWhenReverting);
-    }
-
-    /**
-     * Add a step if the given condition evaluates to true.
-     *
-     * @param  bool|(Closure(array<mixed>): bool)  $condition
-     */
-    public function when(bool|Closure $condition, Closure $step, ?string $name = null, bool $ignoreWhenReverting = false): self
-    {
-        $this->steps[] = new FormStep($step, $condition, $name, $ignoreWhenReverting);
+        $this->steps[] = new FormStep($step, true, $name, $ignoreWhenReverting);
 
         return $this;
     }

@@ -110,36 +110,6 @@ it('does not allow reverting the first step', function () {
     expect($responses)->toBe([true]);
 });
 
-it('can conditionally run a step', function () {
-    Prompt::fake([
-        Key::ENTER,
-        Key::DOWN, Key::ENTER,
-    ]);
-
-    form()
-        ->when(true, fn () => confirm('Are you sure?'), name: 'confirm')
-        ->when(
-            fn (array $responses) => $responses['confirm'],
-            fn (array $responses) => outro('This should display')
-        )
-        ->submit();
-
-    form()
-        ->when(false, fn () => outro('This should not display'))
-        ->submit();
-
-    form()
-        ->confirm('Are you sure?', name: 'confirm')
-        ->when(
-            fn (array $responses) => $responses['confirm'],
-            fn () => outro('This should not display')
-        )
-        ->submit();
-
-    Prompt::assertOutputContains('This should display');
-    Prompt::assertOutputDoesntContain('This should not display');
-});
-
 it('skips steps over steps that have no user input when reverting', function () {
     Prompt::fake([
         '3', Key::ENTER,
