@@ -45,7 +45,7 @@ class ProgressRenderer extends Renderer
                     color: 'red',
                     info: $progress->progress.'/'.$progress->total,
                 )
-                ->error($prompt->cancelMessage),
+                ->error($progress->cancelMessage),
 
             default => $this
                 ->box(
