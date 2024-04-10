@@ -40,11 +40,6 @@ $responses = form()
         name: 'path'
     )
     ->textarea('Describe your project')
-    ->when(
-        fn (array $responses) => $responses['path'] === './laravel',
-        fn (array $responses) => info('This is a Laravel project!'),
-        ignoreWhenReverting: true,
-    )
     ->pause()
     ->submit();
 
