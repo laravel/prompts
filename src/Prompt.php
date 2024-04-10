@@ -30,6 +30,11 @@ abstract class Prompt
     public string $error = '';
 
     /**
+     * The cancel message displayed when this prompt is cancelled.
+     */
+    public string $cancelMessage = 'Cancelled.';
+
+    /**
      * The previously rendered frame.
      */
     protected string $prevFrame = '';
@@ -290,14 +295,15 @@ abstract class Prompt
         }
 
         if ($key === Key::CTRL_U) {
-            $this->state = 'error';
-            $this->error = 'Reverted.';
-
             if (! self::$revertUsing) {
+                $this->state = 'error';
                 $this->error = 'This cannot be reverted.';
 
                 return true;
             }
+
+            $this->state = 'cancel';
+            $this->cancelMessage = 'Reverted.';
 
             call_user_func(self::$revertUsing);
 
