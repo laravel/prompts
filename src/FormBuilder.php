@@ -91,6 +91,14 @@ class FormBuilder
     }
 
     /**
+     * Prompt the user for multiline text input.
+     */
+    public function textarea(string $label, string $placeholder = '', string $default = '', bool|string $required = false, ?Closure $validate = null, string $hint = '', int $rows = 5, string $name = null): self
+    {
+        return $this->runPrompt('\\Laravel\\Prompts\\textarea', get_defined_vars());
+    }
+
+    /**
      * Prompt the user for input, hiding the value.
      */
     public function password(string $label, string $placeholder = '', bool|string $required = false, mixed $validate = null, string $hint = '', ?string $name = null): self
