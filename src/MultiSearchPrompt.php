@@ -18,6 +18,11 @@ class MultiSearchPrompt extends Prompt
     protected ?array $matches = null;
 
     /**
+     * Whether the matches are initially a list.
+     */
+    protected bool $isList;
+
+    /**
      * The selected values.
      *
      * @var array<int|string, string>
@@ -96,16 +101,25 @@ class MultiSearchPrompt extends Prompt
             return $this->matches;
         }
 
-        if (strlen($this->typedValue) === 0) {
-            $matches = ($this->options)($this->typedValue);
+        $matches = ($this->options)($this->typedValue);
 
-            return $this->matches = [
-                ...array_diff($this->values, $matches),
-                ...$matches,
-            ];
+        if (! isset($this->isList) && count($matches) > 0) {
+            // This needs to be captured the first time we receive matches so
+            // we know what we're dealing with later if matches is empty.
+            $this->isList = array_is_list($matches);
         }
 
-        return $this->matches = ($this->options)($this->typedValue);
+        if (! isset($this->isList)) {
+            return $this->matches = [];
+        }
+
+        if (strlen($this->typedValue) > 0) {
+            return $this->matches = $matches;
+        }
+
+        return $this->matches = $this->isList
+            ? [...array_diff(array_values($this->values), $matches), ...$matches]
+            : array_diff($this->values, $matches) + $matches;
     }
 
     /**
@@ -123,7 +137,7 @@ class MultiSearchPrompt extends Prompt
      */
     protected function toggleHighlighted(): void
     {
-        if (array_is_list($this->matches)) {
+        if ($this->isList()) {
             $label = $this->matches[$this->highlighted];
             $key = $label;
         } else {
@@ -164,5 +178,13 @@ class MultiSearchPrompt extends Prompt
     public function labels(): array
     {
         return array_values($this->values);
+    }
+
+    /**
+     * Whether the matches are initially a list.
+     */
+    public function isList(): bool
+    {
+        return $this->isList;
     }
 }
