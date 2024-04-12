@@ -2,7 +2,6 @@
 
 namespace Laravel\Prompts;
 
-use BadFunctionCallException;
 use Closure;
 use Illuminate\Support\Collection;
 use Laravel\Prompts\Exceptions\FormRevertedException;
@@ -81,7 +80,7 @@ class FormBuilder
      */
     public function text(string $label, string $placeholder = '', string $default = '', bool|string $required = false, mixed $validate = null, string $hint = '', ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\text', get_defined_vars());
+        return $this->runPrompt(text(...), get_defined_vars());
     }
 
     /**
@@ -89,7 +88,7 @@ class FormBuilder
      */
     public function textarea(string $label, string $placeholder = '', string $default = '', bool|string $required = false, ?Closure $validate = null, string $hint = '', int $rows = 5, ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\textarea', get_defined_vars());
+        return $this->runPrompt(textarea(...), get_defined_vars());
     }
 
     /**
@@ -97,7 +96,7 @@ class FormBuilder
      */
     public function password(string $label, string $placeholder = '', bool|string $required = false, mixed $validate = null, string $hint = '', ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\password', get_defined_vars());
+        return $this->runPrompt(password(...), get_defined_vars());
     }
 
     /**
@@ -108,7 +107,7 @@ class FormBuilder
      */
     public function select(string $label, array|Collection $options, int|string|null $default = null, int $scroll = 5, mixed $validate = null, string $hint = '', bool|string $required = true, ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\select', get_defined_vars());
+        return $this->runPrompt(select(...), get_defined_vars());
     }
 
     /**
@@ -119,7 +118,7 @@ class FormBuilder
      */
     public function multiselect(string $label, array|Collection $options, array|Collection $default = [], int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = 'Use the space bar to select options.', ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\multiselect', get_defined_vars());
+        return $this->runPrompt(multiselect(...), get_defined_vars());
     }
 
     /**
@@ -127,7 +126,7 @@ class FormBuilder
      */
     public function confirm(string $label, bool $default = true, string $yes = 'Yes', string $no = 'No', bool|string $required = false, mixed $validate = null, string $hint = '', ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\confirm', get_defined_vars());
+        return $this->runPrompt(confirm(...), get_defined_vars());
     }
 
     /**
@@ -135,7 +134,7 @@ class FormBuilder
      */
     public function pause(string $message = 'Press enter to continue...', ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\pause', get_defined_vars());
+        return $this->runPrompt(pause(...), get_defined_vars());
     }
 
     /**
@@ -145,7 +144,7 @@ class FormBuilder
      */
     public function suggest(string $label, array|Collection|Closure $options, string $placeholder = '', string $default = '', int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = '', ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\suggest', get_defined_vars());
+        return $this->runPrompt(suggest(...), get_defined_vars());
     }
 
     /**
@@ -156,7 +155,7 @@ class FormBuilder
      */
     public function search(string $label, Closure $options, string $placeholder = '', int $scroll = 5, mixed $validate = null, string $hint = '', bool|string $required = true, ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\search', get_defined_vars());
+        return $this->runPrompt(search(...), get_defined_vars());
     }
 
     /**
@@ -166,7 +165,7 @@ class FormBuilder
      */
     public function multisearch(string $label, Closure $options, string $placeholder = '', int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = 'Use the space bar to select options.', ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\multisearch', get_defined_vars());
+        return $this->runPrompt(multisearch(...), get_defined_vars());
     }
 
     /**
@@ -176,7 +175,7 @@ class FormBuilder
      */
     public function spin(Closure $callback, string $message = '', ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\spin', get_defined_vars(), true);
+        return $this->runPrompt(spin(...), get_defined_vars(), true);
     }
 
     /**
@@ -184,7 +183,7 @@ class FormBuilder
      */
     public function note(string $message, ?string $type = null, ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\note', get_defined_vars(), true);
+        return $this->runPrompt(note(...), get_defined_vars(), true);
     }
 
     /**
@@ -192,7 +191,7 @@ class FormBuilder
      */
     public function error(string $message, ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\error', get_defined_vars(), true);
+        return $this->runPrompt(error(...), get_defined_vars(), true);
     }
 
     /**
@@ -200,7 +199,7 @@ class FormBuilder
      */
     public function warning(string $message, ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\warning', get_defined_vars(), true);
+        return $this->runPrompt(warning(...), get_defined_vars(), true);
     }
 
     /**
@@ -208,7 +207,7 @@ class FormBuilder
      */
     public function alert(string $message, ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\alert', get_defined_vars(), true);
+        return $this->runPrompt(alert(...), get_defined_vars(), true);
     }
 
     /**
@@ -216,7 +215,7 @@ class FormBuilder
      */
     public function info(string $message, ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\info', get_defined_vars(), true);
+        return $this->runPrompt(info(...), get_defined_vars(), true);
     }
 
     /**
@@ -224,7 +223,7 @@ class FormBuilder
      */
     public function intro(string $message, ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\intro', get_defined_vars(), true);
+        return $this->runPrompt(intro(...), get_defined_vars(), true);
     }
 
     /**
@@ -232,7 +231,7 @@ class FormBuilder
      */
     public function outro(string $message, ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\outro', get_defined_vars(), true);
+        return $this->runPrompt(outro(...), get_defined_vars(), true);
     }
 
     /**
@@ -243,7 +242,7 @@ class FormBuilder
      */
     public function table(array|Collection $headers = [], array|Collection|null $rows = null, ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\table', get_defined_vars(), true);
+        return $this->runPrompt(table(...), get_defined_vars(), true);
     }
 
     /**
@@ -257,21 +256,16 @@ class FormBuilder
      */
     public function progress(string $label, iterable|int $steps, ?Closure $callback = null, string $hint = '', ?string $name = null): self
     {
-        return $this->runPrompt('\\Laravel\\Prompts\\progress', get_defined_vars(), true);
+        return $this->runPrompt(progress(...), get_defined_vars(), true);
     }
 
     /**
      * Execute the given prompt passing the given arguments.
      *
-     * @param  callable-string  $prompt
      * @param  array<mixed>  $arguments
      */
-    protected function runPrompt(string $prompt, array $arguments, bool $ignoreWhenReverting = false): self
+    protected function runPrompt(callable $prompt, array $arguments, bool $ignoreWhenReverting = false): self
     {
-        if (! function_exists($prompt)) {
-            throw new BadFunctionCallException("The given prompt {$prompt} does not exist.");
-        }
-
         return $this->add(function (array $responses, mixed $previousResponse) use ($prompt, $arguments) {
             unset($arguments['name']);
 
