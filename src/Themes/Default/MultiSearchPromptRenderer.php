@@ -115,7 +115,7 @@ class MultiSearchPromptRenderer extends Renderer implements Scrolling
                 ->map(function ($label, $key) use ($prompt) {
                     $index = array_search($key, array_keys($prompt->matches()));
                     $active = $index === $prompt->highlighted;
-                    $selected = array_is_list($prompt->visible())
+                    $selected = $prompt->isList()
                         ? in_array($label, $prompt->value())
                         : in_array($key, $prompt->value());
 
@@ -156,7 +156,7 @@ class MultiSearchPromptRenderer extends Renderer implements Scrolling
         $info = count($prompt->value()).' selected';
 
         $hiddenCount = count($prompt->value()) - collect($prompt->matches())
-            ->filter(fn ($label, $key) => in_array(array_is_list($prompt->matches()) ? $label : $key, $prompt->value()))
+            ->filter(fn ($label, $key) => in_array($prompt->isList() ? $label : $key, $prompt->value()))
             ->count();
 
         if ($hiddenCount > 0) {
