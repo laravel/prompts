@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Laravel\Prompts\Exceptions\FormRevertedException;
 use Laravel\Prompts\Output\ConsoleOutput;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -133,6 +134,10 @@ abstract class Prompt
                         } else {
                             static::terminal()->exit();
                         }
+                    }
+
+                    if ($key === Key::CTRL_U && self::$revertUsing) {
+                        throw new FormRevertedException();
                     }
 
                     return $this->value();

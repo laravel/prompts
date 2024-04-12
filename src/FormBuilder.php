@@ -5,6 +5,7 @@ namespace Laravel\Prompts;
 use BadFunctionCallException;
 use Closure;
 use Illuminate\Support\Collection;
+use Laravel\Prompts\Exceptions\FormRevertedException;
 
 class FormBuilder
 {
@@ -56,13 +57,16 @@ class FormBuilder
             $index > 0
                 ? Prompt::revertUsing(function () use (&$wasReverted) {
                     $wasReverted = true;
-                })
-                : Prompt::preventReverting();
+                }) : Prompt::preventReverting();
 
-            $this->responses[$step->name ?? $index] = $step->run(
-                $this->responses,
-                $this->responses[$step->name ?? $index] ?? null,
-            );
+            try {
+                $this->responses[$step->name ?? $index] = $step->run(
+                    $this->responses,
+                    $this->responses[$step->name ?? $index] ?? null,
+                );
+            } catch (FormRevertedException) {
+                $wasReverted = true;
+            }
 
             $wasReverted ? $index-- : $index++;
         }
@@ -83,7 +87,7 @@ class FormBuilder
     /**
      * Prompt the user for multiline text input.
      */
-    public function textarea(string $label, string $placeholder = '', string $default = '', bool|string $required = false, ?Closure $validate = null, string $hint = '', int $rows = 5, string $name = null): self
+    public function textarea(string $label, string $placeholder = '', string $default = '', bool|string $required = false, ?Closure $validate = null, string $hint = '', int $rows = 5, ?string $name = null): self
     {
         return $this->runPrompt('\\Laravel\\Prompts\\textarea', get_defined_vars());
     }

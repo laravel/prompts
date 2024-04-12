@@ -157,3 +157,25 @@ it('prefills existing responses when reverting', function () {
 
     expect($responses[0])->toBe('Jess');
 });
+
+it('stops steps at the moment of reverting', function () {
+    Prompt::fake([
+        '2', '7', Key::ENTER,
+        Key::DOWN,
+        Key::CTRL_U,
+        Key::ENTER,
+        Key::ENTER,
+    ]);
+
+    form()
+        ->text('What is your age?')
+        ->add(function () {
+            $confirmed = confirm('Are you sure?');
+
+            if (! $confirmed) {
+                outro('This should not appear!');
+            }
+        })->submit();
+
+    Prompt::assertOutputDoesntContain('This should not appear!');
+});
