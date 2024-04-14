@@ -92,6 +92,7 @@ class SuggestPrompt extends Prompt
 
         if ($this->options instanceof Closure) {
             $matches = ($this->options)($this->value());
+            // @phpstan-ignore-next-line
             return $this->matches = array_values($matches instanceof Collection ? $matches->toArray() : $matches);
         }
 
