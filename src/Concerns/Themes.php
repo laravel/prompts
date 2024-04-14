@@ -14,6 +14,7 @@ use Laravel\Prompts\SearchPrompt;
 use Laravel\Prompts\SelectPrompt;
 use Laravel\Prompts\Spinner;
 use Laravel\Prompts\SuggestPrompt;
+use Laravel\Prompts\TabbedScrollableSelectPrompt;
 use Laravel\Prompts\Table;
 use Laravel\Prompts\TextareaPrompt;
 use Laravel\Prompts\TextPrompt;
@@ -28,6 +29,7 @@ use Laravel\Prompts\Themes\Default\SearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\SelectPromptRenderer;
 use Laravel\Prompts\Themes\Default\SpinnerRenderer;
 use Laravel\Prompts\Themes\Default\SuggestPromptRenderer;
+use Laravel\Prompts\Themes\Default\TabbedScrollableSelectRenderer;
 use Laravel\Prompts\Themes\Default\TableRenderer;
 use Laravel\Prompts\Themes\Default\TextareaPromptRenderer;
 use Laravel\Prompts\Themes\Default\TextPromptRenderer;
@@ -51,6 +53,7 @@ trait Themes
             PasswordPrompt::class => PasswordPromptRenderer::class,
             SelectPrompt::class => SelectPromptRenderer::class,
             MultiSelectPrompt::class => MultiSelectPromptRenderer::class,
+            TabbedScrollableSelectPrompt::class => TabbedScrollableSelectRenderer::class,
             ConfirmPrompt::class => ConfirmPromptRenderer::class,
             PausePrompt::class => PausePromptRenderer::class,
             SearchPrompt::class => SearchPromptRenderer::class,
