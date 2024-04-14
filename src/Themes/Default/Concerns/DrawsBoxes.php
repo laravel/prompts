@@ -74,9 +74,9 @@ trait DrawsBoxes
     /**
      * Pad text ignoring ANSI escape sequences.
      */
-    protected function pad(string $text, int $length): string
+    protected function pad(string $text, int $length, string $char = ' '): string
     {
-        $rightPadding = str_repeat(' ', max(0, $length - mb_strwidth($this->stripEscapeSequences($text))));
+        $rightPadding = str_repeat($char, max(0, $length - mb_strwidth($this->stripEscapeSequences($text))));
 
         return "{$text}{$rightPadding}";
     }
