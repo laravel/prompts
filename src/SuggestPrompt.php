@@ -93,7 +93,7 @@ class SuggestPrompt extends Prompt
         if ($this->options instanceof Closure) {
             $matches = ($this->options)($this->value());
 
-            return $this->matches = array_values($matches instanceof Collection ? $matches->toArray() : $matches);
+            return $this->matches = array_values($matches instanceof Collection ? $matches->all() : $matches);
         }
 
         return $this->matches = array_values(array_filter($this->options, function ($option) {
