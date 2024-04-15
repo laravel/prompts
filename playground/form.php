@@ -2,7 +2,6 @@
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\form;
-use function Laravel\Prompts\info;
 use function Laravel\Prompts\note;
 use function Laravel\Prompts\spin;
 
