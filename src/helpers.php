@@ -200,3 +200,8 @@ function progress(string $label, iterable|int $steps, ?Closure $callback = null,
 
     return $progress;
 }
+
+function form(): FormBuilder
+{
+    return new FormBuilder();
+}

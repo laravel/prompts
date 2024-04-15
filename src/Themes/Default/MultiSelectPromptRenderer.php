@@ -28,7 +28,7 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
                     $this->renderOptions($prompt),
                     color: 'red',
                 )
-                ->error('Cancelled.'),
+                ->error($prompt->cancelMessage),
 
             'error' => $this
                 ->box(

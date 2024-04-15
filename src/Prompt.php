@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Laravel\Prompts\Exceptions\FormRevertedException;
 use Laravel\Prompts\Output\ConsoleOutput;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,6 +29,11 @@ abstract class Prompt
      * The error message from the validator.
      */
     public string $error = '';
+
+    /**
+     * The cancel message displayed when this prompt is cancelled.
+     */
+    public string $cancelMessage = 'Cancelled.';
 
     /**
      * The previously rendered frame.
@@ -63,6 +69,11 @@ abstract class Prompt
      * The custom validation callback.
      */
     protected static ?Closure $validateUsing;
+
+    /**
+     * The revert handler from the StepBuilder.
+     */
+    protected static ?Closure $revertUsing = null;
 
     /**
      * The output instance.
@@ -123,6 +134,10 @@ abstract class Prompt
                         } else {
                             static::terminal()->exit();
                         }
+                    }
+
+                    if ($key === Key::CTRL_U && self::$revertUsing) {
+                        throw new FormRevertedException();
                     }
 
                     return $this->value();
@@ -204,6 +219,26 @@ abstract class Prompt
     }
 
     /**
+     * Revert the prompt using the given callback.
+     *
+     * @internal
+     */
+    public static function revertUsing(Closure $callback): void
+    {
+        static::$revertUsing = $callback;
+    }
+
+    /**
+     * Clear any previous revert callback.
+     *
+     * @internal
+     */
+    public static function preventReverting(): void
+    {
+        static::$revertUsing = null;
+    }
+
+    /**
      * Render the prompt.
      */
     protected function render(): void
@@ -261,6 +296,22 @@ abstract class Prompt
         $this->emit('key', $key);
 
         if ($this->state === 'submit') {
+            return false;
+        }
+
+        if ($key === Key::CTRL_U) {
+            if (! self::$revertUsing) {
+                $this->state = 'error';
+                $this->error = 'This cannot be reverted.';
+
+                return true;
+            }
+
+            $this->state = 'cancel';
+            $this->cancelMessage = 'Reverted.';
+
+            call_user_func(self::$revertUsing);
+
             return false;
         }
 
