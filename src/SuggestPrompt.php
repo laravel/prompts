@@ -14,7 +14,7 @@ class SuggestPrompt extends Prompt
     /**
      * The options for the suggest prompt.
      *
-     * @var array<string>|Closure(string): array<string>
+     * @var array<string>|Closure(string): (array<string>|Collection<int, string>)
      */
     public array|Closure $options;
 
@@ -28,7 +28,7 @@ class SuggestPrompt extends Prompt
     /**
      * Create a new SuggestPrompt instance.
      *
-     * @param  array<string>|Collection<int, string>|Closure(string): array<string>  $options
+     * @param  array<string>|Collection<int, string>|Closure(string): (array<string>|Collection<int, string>)  $options
      */
     public function __construct(
         public string $label,
@@ -91,7 +91,9 @@ class SuggestPrompt extends Prompt
         }
 
         if ($this->options instanceof Closure) {
-            return $this->matches = array_values(($this->options)($this->value()));
+            $matches = ($this->options)($this->value());
+
+            return $this->matches = array_values($matches instanceof Collection ? $matches->all() : $matches);
         }
 
         return $this->matches = array_values(array_filter($this->options, function ($option) {

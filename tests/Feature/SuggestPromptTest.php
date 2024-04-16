@@ -98,6 +98,26 @@ it('accepts a collection', function () {
     expect($result)->toBe('Blue');
 });
 
+it('accepts a callback returning a collection', function () {
+    Prompt::fake(['b', Key::TAB, Key::ENTER]);
+
+    $result = suggest(
+        label: 'What is your favorite color?',
+        options: fn ($value) => collect([
+            'Red',
+            'Green',
+            'Blue',
+        ])->filter(
+            fn ($name) => str_contains(
+                strtoupper($name),
+                strtoupper($value)
+            )
+        )
+    );
+
+    expect($result)->toBe('Blue');
+});
+
 it('validates', function () {
     Prompt::fake([Key::ENTER, 'X', Key::ENTER]);
 
