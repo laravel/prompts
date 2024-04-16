@@ -1,6 +1,12 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.18...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.19...main)
+
+## [v0.1.19](https://github.com/laravel/prompts/compare/v0.1.18...v0.1.19) - 2024-04-16
+
+* Fix `multisearch` array handling by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/132
+* Adds Reversible Forms to Prompts by [@lukeraymonddowning](https://github.com/lukeraymonddowning) in https://github.com/laravel/prompts/pull/118
+* Fix type error in suggest with collection by [@macocci7](https://github.com/macocci7) in https://github.com/laravel/prompts/pull/134
 
 ## [v0.1.18](https://github.com/laravel/prompts/compare/v0.1.17...v0.1.18) - 2024-04-04
 
