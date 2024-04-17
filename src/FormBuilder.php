@@ -280,30 +280,30 @@ class FormBuilder
     }
 
     /**
-     * Display a form inside the current form.
+     * Display a nested form in the current form.
      *
+     * @param  FormBuilder|(Closure(array<mixed>): FormBuilder)  $form
      * @param  ?Closure(array<mixed>): bool  $when
      */
-    public function form(Closure $action, ?Closure $when = null, ?string $name = null): self
+    public function nested(FormBuilder|Closure $form, ?Closure $when = null, ?string $name = null): self
     {
+        $form = $form instanceof FormBuilder ? fn () => $form : $form;
         $when ??= fn () => true;
 
-        $this->steps[] = new FormStep(function (array $responses, mixed $previousResponse) use ($action, $when) {
+        $this->steps[] = new FormStep(function (array $responses, mixed $previousResponse) use ($form, $when) {
             if (! $when($responses)) {
                 return null;
             }
 
-            $nestedForm = new FormBuilder();
-            $nestedForm->isNested = true;
-            $nestedForm->responses = $previousResponse ?? [];
+            $form = $form($responses);
 
-            $action($nestedForm, $responses);
-
-            $nestedForm->index = $previousResponse === null
+            $form->isNested = true;
+            $form->responses = $previousResponse ?? [];
+            $form->index = $previousResponse === null
                 ? 0
-                : max(count($nestedForm->steps) - 1, 0);
+                : max(count($form->steps) - 1, 0);
 
-            return $nestedForm->submit();
+            return $form->submit();
         }, condition: $when, name: $name, ignoreWhenReverting: false);
 
         return $this;

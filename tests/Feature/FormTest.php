@@ -1,6 +1,5 @@
 <?php
 
-use Laravel\Prompts\FormBuilder;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
@@ -198,7 +197,7 @@ it('allows a form inside a form', function () {
 
     $responses = form()
         ->confirm('Are you sure?')
-        ->form(fn (FormBuilder $form) => $form
+        ->nested(form()
             ->intro('And so begins a nested form…')
             ->text('What is your name?', name: 'name')
             ->text('How old are you?'),
@@ -231,15 +230,15 @@ it('can conditionally run a nested form based on previous responses', function (
 
     $responses = form()
         ->text('What is your name?', name: 'name', required: true)
-        ->form(
-            fn (FormBuilder $form, array $responses) => $form
+        ->nested(
+            fn (array $responses) => form()
                 ->confirm("Do you work at Laracasts, {$responses['name']}?")
                 ->text('How many days a week do you work?'),
             when: fn (array $responses) => $responses['name'] === 'Luke',
             name: 'form-for-luke'
         )
-        ->form(
-            fn (FormBuilder $form) => $form->confirm('Do you work at Laravel?'),
+        ->nested(
+            form()->confirm('Do you work at Laravel?'),
             when: fn (array $responses) => $responses['name'] === 'Jess',
             name: 'form-for-jess'
         )

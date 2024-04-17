@@ -1,7 +1,5 @@
 <?php
 
-use Laravel\Prompts\FormBuilder;
-
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\form;
 use function Laravel\Prompts\note;
@@ -31,17 +29,16 @@ $responses = form()
         },
     )
     ->select('Which scaffolding project would you like?', ['Breeze', 'Jetstream', 'None'], required: true, name: 'scaffolding')
-    ->form(
-        fn (FormBuilder $form, array $responses) => $form
+    ->nested(
+        fn (array $responses) => form()
             ->note("{$responses['scaffolding']} selected")
             ->confirm('Would you like to install dark mode?')
             ->select('Which stack would you like?', ['Blade', 'Vue', 'React']),
         when: fn (array $responses) => $responses['scaffolding'] === 'Breeze',
         name: 'breeze-stack',
     )
-    ->form(
-        fn (FormBuilder $form, array $responses) => $form
-            ->note("{$responses['scaffolding']} selected")
+    ->nested(
+        form()
             ->confirm('Would you like to install teams support?')
             ->confirm('Would you like to support dark mode?')
             ->select('Which stack would you like', ['Inertia', 'Livewire']),
