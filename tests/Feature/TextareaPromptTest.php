@@ -198,3 +198,50 @@ it('correctly handles descending line lengths', function () {
 
     expect($result)->toBe("abc\ndeg\nf");
 });
+
+it('correctly handles multi-byte strings for the down arrow', function () {
+    Prompt::fake([
+        'ａ', 'ｂ', Key::ENTER,
+        'ｃ', 'ｄ', 'ｅ', 'ｆ', Key::ENTER,
+        'ｇ', 'ｈ', 'ｉ', 'j', 'k', 'l', 'm', 'n', 'n', 'o', 'p', 'q', 'r', 's', Key::ENTER,
+        't', 'u', 'v', 'w', 'x', 'y', 'z',
+        Key::UP,
+        Key::UP,
+        Key::UP,
+        Key::UP,
+        Key::RIGHT,
+        Key::DOWN,
+        'y', 'o',
+        Key::CTRL_D,
+    ]);
+
+    $result = textarea(label: 'What is your name?');
+
+    expect($result)->toBe(
+        "ａｂ\nｃyoｄｅｆ\nｇｈｉjklmnnopqrs\ntuvwxyz"
+    );
+});
+
+it('correctly handles multi-byte strings for the up arrow', function () {
+    Prompt::fake([
+        'ａ', 'ｂ', Key::ENTER,
+        'ｃ', 'ｄ', 'ｅ', 'ｆ', Key::ENTER,
+        'ｇ', 'ｈ', 'ｉ', 'j', 'k', 'l', 'm', 'n', 'n', 'o', 'p', 'q', 'r', 's', Key::ENTER,
+        't', 'u', 'v', 'w', 'x', 'y', 'z',
+        Key::UP,
+        Key::UP,
+        Key::UP,
+        Key::UP,
+        Key::RIGHT,
+        Key::DOWN,
+        Key::UP,
+        'y', 'o',
+        Key::CTRL_D,
+    ]);
+
+    $result = textarea(label: 'What is your name?');
+
+    expect($result)->toBe(
+        "ａyoｂ\nｃｄｅｆ\nｇｈｉjklmnnopqrs\ntuvwxyz"
+    );
+});
