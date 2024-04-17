@@ -23,6 +23,16 @@ class FormBuilder
     protected array $responses = [];
 
     /**
+     * If this form is nested inside of another form.
+     */
+    protected bool $isNested = false;
+
+    /**
+     * The index of the currently running step.
+     */
+    protected int $index = 0;
+
+    /**
      * Add a new step.
      */
     public function add(Closure $step, ?string $name = null, bool $ignoreWhenReverting = false): self
@@ -39,37 +49,47 @@ class FormBuilder
      */
     public function submit(): array
     {
-        $index = 0;
         $wasReverted = false;
 
-        while ($index < count($this->steps)) {
-            $step = $this->steps[$index];
+        while ($this->index < count($this->steps)) {
+            $step = $this->steps[$this->index];
 
-            if ($wasReverted && $index > 0 && $step->shouldIgnoreWhenReverting($this->responses)) {
-                $index--;
+            if ($wasReverted && $step->shouldIgnoreWhenReverting($this->responses)) {
+                if ($this->index > 0) {
+                    $this->index--;
 
-                continue;
+                    continue;
+                }
+
+                if ($this->isNested) {
+                    throw new FormRevertedException();
+                }
             }
 
             $wasReverted = false;
 
-            $index > 0
+            $this->index > 0 || $this->isNested
                 ? Prompt::revertUsing(function () use (&$wasReverted) {
                     $wasReverted = true;
                 }) : Prompt::preventReverting();
 
             try {
-                $this->responses[$step->name ?? $index] = $step->run(
+                $this->responses[$step->name ?? $this->index] = $step->run(
                     $this->responses,
-                    $this->responses[$step->name ?? $index] ?? null,
+                    $this->responses[$step->name ?? $this->index] ?? null,
                 );
             } catch (FormRevertedException) {
                 $wasReverted = true;
             }
 
-            $wasReverted ? $index-- : $index++;
+            if ($wasReverted && $this->index === 0 && $this->isNested) {
+                throw new FormRevertedException();
+            }
+
+            $wasReverted ? $this->index-- : $this->index++;
         }
 
+        $this->index = 0;
         Prompt::preventReverting();
 
         return $this->responses;
@@ -257,6 +277,36 @@ class FormBuilder
     public function progress(string $label, iterable|int $steps, ?Closure $callback = null, string $hint = '', ?string $name = null): self
     {
         return $this->runPrompt(progress(...), get_defined_vars(), true);
+    }
+
+    /**
+     * Display a form inside the current form.
+     *
+     * @param  ?Closure(array<mixed>): bool  $when
+     */
+    public function form(Closure $action, ?Closure $when = null, ?string $name = null): self
+    {
+        $when ??= fn () => true;
+
+        $this->steps[] = new FormStep(function (array $responses, mixed $previousResponse) use ($action, $when) {
+            if (! $when($responses)) {
+                return null;
+            }
+
+            $nestedForm = new FormBuilder();
+            $nestedForm->isNested = true;
+            $nestedForm->responses = $previousResponse ?? [];
+
+            $action($nestedForm, $responses);
+
+            $nestedForm->index = $previousResponse === null
+                ? 0
+                : max(count($nestedForm->steps) - 1, 0);
+
+            return $nestedForm->submit();
+        }, condition: $when, name: $name, ignoreWhenReverting: false);
+
+        return $this;
     }
 
     /**

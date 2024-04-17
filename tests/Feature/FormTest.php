@@ -1,5 +1,6 @@
 <?php
 
+use Laravel\Prompts\FormBuilder;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
@@ -178,4 +179,80 @@ it('stops steps at the moment of reverting', function () {
         })->submit();
 
     Prompt::assertOutputDoesntContain('This should not appear!');
+});
+
+it('allows a form inside a form', function () {
+    Prompt::fake([
+        Key::ENTER,
+        Key::CTRL_U,
+        Key::DOWN, Key::ENTER,
+        'Luk', Key::ENTER,
+        Key::CTRL_U,
+        'e', Key::ENTER,
+        '27', Key::ENTER,
+        Key::CTRL_U,
+        Key::BACKSPACE, '8',
+        Key::ENTER,
+        Key::ENTER,
+    ]);
+
+    $responses = form()
+        ->confirm('Are you sure?')
+        ->form(fn (FormBuilder $form) => $form
+            ->intro('And so begins a nested form…')
+            ->text('What is your name?', name: 'name')
+            ->text('How old are you?'),
+            name: 'form'
+        )
+        ->pause('Finish?')
+        ->submit();
+
+    expect($responses)->toBe([
+        0 => false,
+        'form' => [
+            0 => null,
+            'name' => 'Luke',
+            2 => '28',
+        ],
+        2 => true,
+    ]);
+});
+
+it('can conditionally run a nested form based on previous responses', function () {
+    Prompt::fake([
+        'Luke', Key::ENTER,
+        Key::RIGHT, Key::ENTER,
+        '3', Key::ENTER,
+        Key::CTRL_U, Key::CTRL_U,
+        Key::LEFT, Key::ENTER,
+        Key::ENTER,
+        Key::ENTER,
+    ]);
+
+    $responses = form()
+        ->text('What is your name?', name: 'name', required: true)
+        ->form(
+            fn (FormBuilder $form, array $responses) => $form
+                ->confirm("Do you work at Laracasts, {$responses['name']}?")
+                ->text('How many days a week do you work?'),
+            when: fn (array $responses) => $responses['name'] === 'Luke',
+            name: 'form-for-luke'
+        )
+        ->form(
+            fn (FormBuilder $form) => $form->confirm('Do you work at Laravel?'),
+            when: fn (array $responses) => $responses['name'] === 'Jess',
+            name: 'form-for-jess'
+        )
+        ->pause('Confirm you\'ve finished…')
+        ->submit();
+
+    Prompt::assertOutputContains('Do you work at Laracasts, Luke?');
+    Prompt::assertOutputDoesntContain('Do you work at Laravel?');
+
+    expect($responses['form-for-luke'])->toBe([
+        true,
+        '3',
+    ]);
+
+    expect($responses['form-for-jess'])->toBe(null);
 });
