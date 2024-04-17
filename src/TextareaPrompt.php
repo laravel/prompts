@@ -163,7 +163,6 @@ class TextareaPrompt extends Prompt
 
         $destinationLineLength = $lineLengths->get($currentLineIndex + 1) ?? $currentLines->last();
 
-
         if ($currentLineIndex + 1 !== $lines->count() - 1) {
             $destinationLineLength--;
         }
@@ -219,7 +218,7 @@ class TextareaPrompt extends Prompt
     {
         $cursorOffset = 0;
 
-        preg_match_all('/\S{' . $this->width . ',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/\S{'.$this->width.',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
 
         foreach ($matches[0] as $match) {
             if ($this->cursorPosition + $cursorOffset >= $match[1] + mb_strwidth($match[0])) {
