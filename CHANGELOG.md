@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.19...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.20...main)
+
+## [v0.1.20](https://github.com/laravel/prompts/compare/v0.1.19...v0.1.20) - 2024-04-18
+
+* Fix for up/down arrows + cursor position when textarea content contains multi-byte strings by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/137
 
 ## [v0.1.19](https://github.com/laravel/prompts/compare/v0.1.18...v0.1.19) - 2024-04-16
 
