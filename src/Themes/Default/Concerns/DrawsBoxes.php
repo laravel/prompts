@@ -6,7 +6,7 @@ use Laravel\Prompts\Prompt;
 
 trait DrawsBoxes
 {
-    use HandlesStrings;
+    use InteractsWithStrings;
 
     protected int $minWidth = 60;
 
