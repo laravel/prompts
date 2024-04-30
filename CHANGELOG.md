@@ -1,6 +1,13 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.20...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.21...main)
+
+## [v0.1.21](https://github.com/laravel/prompts/compare/v0.1.20...v0.1.21) - 2024-04-30
+
+* Add description to composer.json by [@edwinvdpol](https://github.com/edwinvdpol) in https://github.com/laravel/prompts/pull/139
+* Add ability to specify character in pad function by [@ProjektGopher](https://github.com/ProjektGopher) in https://github.com/laravel/prompts/pull/141
+* Adds support for additional keys by [@ProjektGopher](https://github.com/ProjektGopher) in https://github.com/laravel/prompts/pull/140
+* Extract string handling methods from DrawsBoxes trait by [@ProjektGopher](https://github.com/ProjektGopher) in https://github.com/laravel/prompts/pull/142
 
 ## [v0.1.20](https://github.com/laravel/prompts/compare/v0.1.19...v0.1.20) - 2024-04-18
 
