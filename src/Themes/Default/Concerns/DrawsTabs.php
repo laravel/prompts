@@ -39,11 +39,11 @@ trait DrawsTabs
 
         // automatic horizontal tab scrolling
         if ($strippedWidth($top_row) > $width) {
+            $scroll = $selected / ($tabs->count() - 1);
             $chars_to_kill = $strippedWidth($top_row) - $width;
-            $percent = $selected / ($tabs->count() - 1);
-            $left = (int) round($percent * $chars_to_kill);
+            $offset = (int) round($scroll * $chars_to_kill);
             foreach ([&$top_row, &$middle_row, &$bottom_row] as &$row) {
-                $row = mb_substr($row, $left, mb_strwidth($row) - $chars_to_kill);
+                $row = mb_substr($row, $offset, mb_strwidth($row) - $chars_to_kill);
             }
         }
 
