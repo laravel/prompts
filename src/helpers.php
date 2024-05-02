@@ -106,11 +106,12 @@ function multisearch(string $label, Closure $options, string $placeholder = '', 
  * @template TReturn of mixed
  *
  * @param  \Closure(): TReturn  $callback
+ * @param  string|\Closure(TReturn): string  $finalMessage
  * @return TReturn
  */
-function spin(Closure $callback, string $message = ''): mixed
+function spin(Closure $callback, string $message = '', string|Closure $finalMessage = ''): mixed
 {
-    return (new Spinner($message))->spin($callback);
+    return (new Spinner($message, $finalMessage))->spin($callback);
 }
 
 /**

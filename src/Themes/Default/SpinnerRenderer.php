@@ -28,6 +28,17 @@ class SpinnerRenderer extends Renderer
      */
     public function __invoke(Spinner $spinner): string
     {
+        if ($spinner->finalMessage !== '') {
+            $finalMessage = wordwrap($spinner->finalMessage, $spinner->terminal()->cols() - 6);
+
+            collect(explode(PHP_EOL, $finalMessage))->each(fn ($line) => $this->line(' '.$line));
+
+            // Avoid partial line indicator on re-render
+            $this->line('');
+
+            return $this;
+        }
+
         if ($spinner->static) {
             return $this->line(" {$this->cyan($this->staticFrame)} {$spinner->message}");
         }
