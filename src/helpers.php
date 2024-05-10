@@ -5,7 +5,7 @@ namespace Laravel\Prompts;
 use Closure;
 use Illuminate\Support\Collection;
 
-if (! function_exists(\Laravel\Prompts\text::class)) {
+if (! function_exists('\Laravel\Prompts\text')) {
     /**
      * Prompt the user for text input.
      */
@@ -15,7 +15,7 @@ if (! function_exists(\Laravel\Prompts\text::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\textarea::class)) {
+if (! function_exists('\Laravel\Prompts\textarea')) {
     /**
      * Prompt the user for multiline text input.
      */
@@ -25,7 +25,7 @@ if (! function_exists(\Laravel\Prompts\textarea::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\password::class)) {
+if (! function_exists('\Laravel\Prompts\password')) {
     /**
      * Prompt the user for input, hiding the value.
      */
@@ -35,7 +35,7 @@ if (! function_exists(\Laravel\Prompts\password::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\select::class)) {
+if (! function_exists('\Laravel\Prompts\select')) {
     /**
      * Prompt the user to select an option.
      *
@@ -48,7 +48,7 @@ if (! function_exists(\Laravel\Prompts\select::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\multiselect::class)) {
+if (! function_exists('\Laravel\Prompts\multiselect')) {
     /**
      * Prompt the user to select multiple options.
      *
@@ -62,7 +62,7 @@ if (! function_exists(\Laravel\Prompts\multiselect::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\confirm::class)) {
+if (! function_exists('\Laravel\Prompts\confirm')) {
     /**
      * Prompt the user to confirm an action.
      */
@@ -72,7 +72,7 @@ if (! function_exists(\Laravel\Prompts\confirm::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\pause::class)) {
+if (! function_exists('\Laravel\Prompts\pause')) {
     /**
      * Prompt the user to continue or cancel after pausing.
      */
@@ -82,7 +82,7 @@ if (! function_exists(\Laravel\Prompts\pause::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\suggest::class)) {
+if (! function_exists('\Laravel\Prompts\suggest')) {
     /**
      * Prompt the user for text input with auto-completion.
      *
@@ -94,7 +94,7 @@ if (! function_exists(\Laravel\Prompts\suggest::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\search::class)) {
+if (! function_exists('\Laravel\Prompts\search')) {
     /**
      * Allow the user to search for an option.
      *
@@ -107,7 +107,7 @@ if (! function_exists(\Laravel\Prompts\search::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\multisearch::class)) {
+if (! function_exists('\Laravel\Prompts\multisearch')) {
     /**
      * Allow the user to search for multiple option.
      *
@@ -120,7 +120,7 @@ if (! function_exists(\Laravel\Prompts\multisearch::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\spin::class)) {
+if (! function_exists('\Laravel\Prompts\spin')) {
     /**
      * Render a spinner while the given callback is executing.
      *
@@ -135,7 +135,7 @@ if (! function_exists(\Laravel\Prompts\spin::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\note::class)) {
+if (! function_exists('\Laravel\Prompts\note')) {
     /**
      * Display a note.
      */
@@ -145,7 +145,7 @@ if (! function_exists(\Laravel\Prompts\note::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\error::class)) {
+if (! function_exists('\Laravel\Prompts\error')) {
     /**
      * Display an error.
      */
@@ -155,7 +155,7 @@ if (! function_exists(\Laravel\Prompts\error::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\warning::class)) {
+if (! function_exists('\Laravel\Prompts\warning')) {
     /**
      * Display a warning.
      */
@@ -165,7 +165,7 @@ if (! function_exists(\Laravel\Prompts\warning::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\alert::class)) {
+if (! function_exists('\Laravel\Prompts\alert')) {
     /**
      * Display an alert.
      */
@@ -175,7 +175,7 @@ if (! function_exists(\Laravel\Prompts\alert::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\info::class)) {
+if (! function_exists('\Laravel\Prompts\info')) {
     /**
      * Display an informational message.
      */
@@ -185,7 +185,7 @@ if (! function_exists(\Laravel\Prompts\info::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\intro::class)) {
+if (! function_exists('\Laravel\Prompts\intro')) {
     /**
      * Display an introduction.
      */
@@ -195,7 +195,7 @@ if (! function_exists(\Laravel\Prompts\intro::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\outro::class)) {
+if (! function_exists('\Laravel\Prompts\outro')) {
     /**
      * Display a closing message.
      */
@@ -205,7 +205,7 @@ if (! function_exists(\Laravel\Prompts\outro::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\table::class)) {
+if (! function_exists('\Laravel\Prompts\table')) {
     /**
      * Display a table.
      *
@@ -218,7 +218,7 @@ if (! function_exists(\Laravel\Prompts\table::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\progress::class)) {
+if (! function_exists('\Laravel\Prompts\progress')) {
     /**
      * Display a progress bar.
      *
@@ -241,7 +241,7 @@ if (! function_exists(\Laravel\Prompts\progress::class)) {
     }
 }
 
-if (! function_exists(\Laravel\Prompts\form::class)) {
+if (! function_exists('\Laravel\Prompts\form')) {
     function form(): FormBuilder
     {
         return new FormBuilder();
