@@ -142,7 +142,7 @@ class MultiSelectPrompt extends Prompt
         }
     }
 
-    protected function handleSelectAll(string $option): void
+    protected function handleSelectAll(int|string $option): void
     {
         // When selecting "All", select all options.
         if ($option === 'All' && in_array('All', $this->values)) {
