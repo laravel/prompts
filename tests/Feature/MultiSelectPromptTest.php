@@ -231,3 +231,65 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('supports select all option', function () {
+    // Ensures all options are selected when the "All" option is selected.
+    Prompt::fake([Key::SPACE, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+        ],
+        canSelectAll: true
+    );
+
+    expect($result)->toBe(['All', 'Red', 'Green', 'Blue']);
+
+    Prompt::assertStrippedOutputContains('│ All');
+    Prompt::assertStrippedOutputContains('│ Red');
+    Prompt::assertStrippedOutputContains('│ Green');
+    Prompt::assertStrippedOutputContains('│ Blue');
+
+    // Ensures all options are deselected when the "All" option is deselected.
+    Prompt::fake([Key::SPACE, Key::SPACE, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+        ],
+        canSelectAll: true
+    );
+
+    expect($result)->toBe([]);
+
+    Prompt::assertStrippedOutputDoesntContain('│ All');
+    Prompt::assertStrippedOutputDoesntContain('│ Red');
+    Prompt::assertStrippedOutputDoesntContain('│ Green');
+    Prompt::assertStrippedOutputDoesntContain('│ Blue');
+
+    // Ensures the "All" option is deselected when a single option is deselected.
+    Prompt::fake([Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+        ],
+        canSelectAll: true
+    );
+
+    expect($result)->toBe(['Green', 'Blue']);
+
+    Prompt::assertStrippedOutputDoesntContain('│ All');
+    Prompt::assertStrippedOutputDoesntContain('│ Red');
+    Prompt::assertStrippedOutputContains('│ Green');
+    Prompt::assertStrippedOutputContains('│ Blue');
+});
