@@ -56,7 +56,7 @@ if (! function_exists('\Laravel\Prompts\multiselect')) {
      * @param  array<int|string>|Collection<int, int|string>  $default
      * @return array<int|string>
      */
-    function multiselect(string $label, array|Collection $options, array|Collection $default = [], int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = 'Use the space bar to select options.', bool $canSelectAll = false): array
+    function multiselect(string $label, array|Collection $options, array|Collection $default = [], int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = 'Use the space bar to select options.', bool|string $selectAll = false): array
     {
         return (new MultiSelectPrompt(...func_get_args()))->prompt();
     }

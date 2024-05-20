@@ -43,16 +43,18 @@ class MultiSelectPrompt extends Prompt
         public bool|string $required = false,
         public mixed $validate = null,
         public string $hint = '',
-        public bool $canSelectAll = false,
+        public bool|string $selectAll = false,
     ) {
         $this->options = $options instanceof Collection ? $options->all() : $options;
         $this->default = $default instanceof Collection ? $default->all() : $default;
         $this->values = $this->default;
 
-        if ($this->canSelectAll) {
+        if ($this->selectAll) {
+            $selectAllOption = is_string($this->selectAll) ? $this->selectAll : 'All';
+
             $this->options = array_is_list($this->options)
-                ? ['All', ...$this->options]
-                : ['All' => 'All', ...$this->options];
+                ? [$selectAllOption, ...$this->options]
+                : [$selectAllOption => $selectAllOption, ...$this->options];
         }
 
         $this->initializeScrolling(0);
@@ -137,28 +139,30 @@ class MultiSelectPrompt extends Prompt
             $this->values[] = $value;
         }
 
-        if ($this->canSelectAll) {
+        if ($this->selectAll) {
             $this->handleSelectAll($value);
         }
     }
 
     protected function handleSelectAll(int|string $option): void
     {
+        $selectAllOption = is_string($this->selectAll) ? $this->selectAll : 'All';
+
         // When selecting "All", select all options.
-        if ($option === 'All' && in_array('All', $this->values)) {
+        if ($option === $selectAllOption && in_array($selectAllOption, $this->values)) {
             $this->values = array_is_list($this->options)
                 ? array_values($this->options)
                 : array_keys($this->options);
         }
 
         // When deselecting "All", deselect all options.
-        if ($option === 'All' && ! in_array('All', $this->values)) {
+        if ($option === $selectAllOption && ! in_array($selectAllOption, $this->values)) {
             $this->values = [];
         }
 
         // When deselecting one of the options, deselect "All".
-        if ($option !== 'All' && in_array('All', $this->values)) {
-            $this->values = array_filter($this->values, fn ($value) => $value !== 'All');
+        if ($option !== $selectAllOption && in_array($selectAllOption, $this->values)) {
+            $this->values = array_filter($this->values, fn ($value) => $value !== $selectAllOption);
         }
     }
 }
