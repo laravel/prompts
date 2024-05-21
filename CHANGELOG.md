@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.21...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.22...main)
+
+## [v0.1.22](https://github.com/laravel/prompts/compare/v0.1.21...v0.1.22) - 2024-05-10
+
+* fix(helper): ensure helpers can't be redeclared by [@NickSdot](https://github.com/NickSdot) in https://github.com/laravel/prompts/pull/146
 
 ## [v0.1.21](https://github.com/laravel/prompts/compare/v0.1.20...v0.1.21) - 2024-04-30
 
