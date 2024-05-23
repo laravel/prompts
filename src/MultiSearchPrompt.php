@@ -52,6 +52,8 @@ class MultiSearchPrompt extends Prompt
             Key::DOWN, Key::DOWN_ARROW, Key::TAB => $this->highlightNext(count($this->matches), true),
             Key::CTRL_A => $this->highlighted !== null ? $this->toggleAll() : null,
             Key::CTRL_E => null,
+            Key::oneOf([Key::HOME], $key) => $this->highlighted !== null ? $this->highlight(0) : null,
+            Key::oneOf([Key::END], $key) => $this->highlighted !== null ? $this->highlight(count($this->matches()) - 1) : null,
             Key::SPACE => $this->highlighted !== null ? $this->toggleHighlighted() : null,
             Key::ENTER => $this->submit(),
             Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW => $this->highlighted = null,
