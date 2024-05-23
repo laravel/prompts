@@ -43,15 +43,15 @@ class MultiSearchPrompt extends Prompt
         public mixed $validate = null,
         public string $hint = '',
     ) {
-        $this->trackTypedValue(submit: false, ignore: fn ($key) => Key::oneOf([Key::SPACE, Key::HOME, Key::END, Key::CTRL_A, Key::CTRL_E], $key) && $this->highlighted !== null);
+        $this->trackTypedValue(submit: false, ignore: fn ($key) => Key::oneOf([Key::SPACE, Key::HOME, Key::END, Key::CTRL_A], $key) && $this->highlighted !== null);
 
         $this->initializeScrolling(null);
 
         $this->on('key', fn ($key) => match ($key) {
             Key::UP, Key::UP_ARROW, Key::SHIFT_TAB => $this->highlightPrevious(count($this->matches), true),
             Key::DOWN, Key::DOWN_ARROW, Key::TAB => $this->highlightNext(count($this->matches), true),
-            Key::oneOf([Key::HOME, Key::CTRL_A], $key) => $this->highlighted !== null ? $this->highlight(0) : null,
-            Key::oneOf([Key::END, Key::CTRL_E], $key) => $this->highlighted !== null ? $this->highlight(count($this->matches()) - 1) : null,
+            Key::CTRL_A => $this->highlighted !== null ? $this->toggleAll() : null,
+            Key::CTRL_E => null,
             Key::SPACE => $this->highlighted !== null ? $this->toggleHighlighted() : null,
             Key::ENTER => $this->submit(),
             Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW => $this->highlighted = null,
@@ -130,6 +130,20 @@ class MultiSearchPrompt extends Prompt
     public function visible(): array
     {
         return array_slice($this->matches(), $this->firstVisible, $this->scroll, preserve_keys: true);
+    }
+
+    /**
+     * Toggle all options.
+     */
+    protected function toggleAll(): void
+    {
+        if (count($this->values) === count($this->matches)) {
+            $this->values = [];
+        } else {
+            $this->values = $this->isList()
+                ? array_combine(array_values($this->matches), array_values($this->matches))
+                : array_combine(array_keys($this->matches), array_values($this->matches));
+        }
     }
 
     /**

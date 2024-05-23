@@ -333,3 +333,31 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('supports selecting all options', function () {
+    Prompt::fake([Key::DOWN, Key::CTRL_A, Key::ENTER]);
+
+    $result = multisearch(
+        label: 'What are your favorite colors?',
+        options: fn () => [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+    );
+
+    expect($result)->toBe(['red', 'green', 'blue']);
+
+    Prompt::fake([Key::DOWN, Key::CTRL_A, Key::CTRL_A, Key::ENTER]);
+
+    $result = multisearch(
+        label: 'What are your favorite colors?',
+        options: fn () => [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+    );
+
+    expect($result)->toBe([]);
+});
