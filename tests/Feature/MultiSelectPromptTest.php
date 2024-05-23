@@ -170,6 +170,34 @@ it('supports the home and end keys', function () {
     expect($result)->toBe(['blue', 'red']);
 });
 
+it('supports selecting all options', function () {
+    Prompt::fake([Key::CTRL_A, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ]
+    );
+
+    expect($result)->toBe(['red', 'green', 'blue']);
+
+    Prompt::fake([Key::CTRL_A, Key::CTRL_A, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ]
+    );
+
+    expect($result)->toBe([]);
+});
+
 it('returns an empty array when non-interactive', function () {
     Prompt::interactive(false);
 
