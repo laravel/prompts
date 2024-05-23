@@ -163,7 +163,7 @@ class FormBuilder
      *
      * @param  Closure(string): array<int|string, string>  $options
      */
-    public function multisearch(string $label, Closure $options, string $placeholder = '', int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = 'Use the space bar to select options.', ?string $name = null, bool|string $selectAll = false): self
+    public function multisearch(string $label, Closure $options, string $placeholder = '', int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = 'Use the space bar to select options.', ?string $name = null): self
     {
         return $this->runPrompt(multisearch(...), get_defined_vars());
     }
