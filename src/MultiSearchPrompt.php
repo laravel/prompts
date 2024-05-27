@@ -145,7 +145,7 @@ class MultiSearchPrompt extends Prompt
 
         if ($allMatchesSelected) {
             $this->values = array_filter($this->values, fn ($value) => $this->isList()
-                ? ! array_key_exists($value, $this->matches)
+                ? ! in_array($value, $this->matches)
                 : ! array_key_exists(array_search($value, $this->matches), $this->matches)
             );
         } else {
