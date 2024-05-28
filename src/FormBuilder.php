@@ -261,8 +261,6 @@ class FormBuilder
 
     /**
      * Prompt the user for text input with auto-completion of filepath.
-     *
-     * @param  array<string>|Collection<int, string>|Closure(string): array<string>  $options
      */
     public function fileselector(string $label, string $placeholder = '', string $default = '', int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = '', ?string $name = null): self
     {

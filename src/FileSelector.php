@@ -27,8 +27,6 @@ class FileSelector extends Prompt
 
     /**
      * Create a new SuggestPrompt instance.
-     *
-     * @param  array<string>|Collection<int, string>|Closure(string): (array<string>|Collection<int, string>)  $options
      */
     public function __construct(
         public string $label,
@@ -126,7 +124,7 @@ class FileSelector extends Prompt
     /**
      * Returns all entries in the directory as RecursiveDirectoryIterator
      *
-     * @param   string  $value
+     * @param   string  $path
      * @return  \RecursiveDirectoryIterator|\RegexIterator|array{}
      */
     protected function glob(string $path)
@@ -164,7 +162,7 @@ class FileSelector extends Prompt
     /**
      * Returns all entries in the directory as an array
      *
-     * @param   string  $value
+     * @param   string  $path
      * @return  string[]
      */
     protected function entries(string $path)
@@ -177,8 +175,7 @@ class FileSelector extends Prompt
             ->map(
                 fn (string $entry) => is_dir($entry)
                     ? str_replace('//', '/', $entry . '/')
-                    : str_replace('//', '/', $entry),
-                iterator_to_array($this->glob($path))
+                    : str_replace('//', '/', $entry)
             )
             ->sort()
             ->all();
@@ -187,7 +184,7 @@ class FileSelector extends Prompt
     /**
      * automatically complete the text input
      */
-    protected function autoComplete()
+    protected function autoComplete(): void
     {
         $this->selectHighlighted();
         $this->cursorPosition = strlen($this->value());
