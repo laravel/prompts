@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.22...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.23...main)
+
+## [v0.1.23](https://github.com/laravel/prompts/compare/v0.1.22...v0.1.23) - 2024-05-27
+
+* Ignore PHPstan error by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/149
+* Allow selecting all options in a `multiselect` by [@duncanmcclean](https://github.com/duncanmcclean) in https://github.com/laravel/prompts/pull/147
 
 ## [v0.1.22](https://github.com/laravel/prompts/compare/v0.1.21...v0.1.22) - 2024-05-10
 
