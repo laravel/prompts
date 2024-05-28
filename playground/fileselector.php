@@ -5,15 +5,14 @@ use function Laravel\Prompts\fileselector;
 require __DIR__.'/../vendor/autoload.php';
 
 $model = fileselector(
-    label: 'What model should the policy apply to?',
-    placeholder: 'E.g. User',
-    validate: fn ($value) => match (true) {
-        strlen($value) === 0 => 'Please enter a model name.',
+    label: 'Select a file to import.',
+    placeholder: 'E.g. ./vendor/autoload.php',
+    validate: fn (string $value) => match (true) {
+        !is_readable($value) === 0 => 'Cannot read the file.',
         default => null,
     },
-    hint: 'The model name should be singular.',
+    hint: 'Input the file path.',
     extensions: [
-        '.md',
         '.json',
         '.php',
     ],

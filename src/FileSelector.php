@@ -168,7 +168,7 @@ class FileSelector extends Prompt
      * @param   string  $path
      * @return  string[]
      */
-    protected function entries(string $path)
+    protected function entries(string $path): array
     {
         return collect(iterator_to_array($this->glob($path)))
             ->reject(fn (string $entry) => match (true) {
@@ -185,7 +185,12 @@ class FileSelector extends Prompt
             ->all();
     }
 
-    private function isRejectable(string $entry)
+    /**
+     * Ditermines whether the entry should be rejected
+     *
+     * @param   string  $entry
+     */
+    private function isRejectable(string $entry): bool
     {
         if (is_dir($entry)) {
             return false;

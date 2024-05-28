@@ -1,9 +1,9 @@
 <?php
 
-use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
-use Laravel\Prompts\Key;
-use Laravel\Prompts\Prompt;
 use Laravel\Prompts\FileSelector;
+use Laravel\Prompts\Key;
+use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
+use Laravel\Prompts\Prompt;
 
 use function Laravel\Prompts\fileselector;
 
@@ -16,7 +16,7 @@ it('accepts any input', function () {
 });
 
 it('completes the input using the tab key', function () {
-    Prompt::fake(['v', 'e', 'n', 'd', 'o', 'r', Key::DOWN, Key::TAB, Key::ENTER]);
+    Prompt::fake(['v', Key::DOWN, Key::TAB, Key::ENTER]);
 
     $result = fileselector('Select a file.');
 
@@ -24,15 +24,15 @@ it('completes the input using the tab key', function () {
 });
 
 it('completes the input using the arrow keys', function () {
-    Prompt::fake(['s', 'r', 'c', '/', 'C', Key::DOWN, Key::DOWN, Key::UP, Key::ENTER]);
+    Prompt::fake(['.', 'g', Key::DOWN, Key::DOWN, Key::UP, Key::ENTER]);
 
     $result = fileselector('Select a file.');
 
-    expect($result)->toBe('src/Concerns/');
+    expect($result)->toBe('./.git/');
 });
 
 it('supports the home key while navigating options', function () {
-    Prompt::fake([Key::DOWN, Key::DOWN, Key::HOME[0], Key::ENTER]);
+    Prompt::fake([Key::DOWN, Key::DOWN, Key::DOWN, Key::HOME[0], Key::ENTER]);
 
     $result = fileselector('Select a file.');
 
@@ -133,4 +133,17 @@ it('update dir entries after auto complete', function () {
     $result = fileselector('Select a file.');
 
     expect($result)->toBe('./vendor/autoload.php');
+});
+
+it('filter dir entries with specified extensions', function () {
+    Prompt::fake(['c', 'o', 'm', 'p', 'o', 's', 'e', 'r', Key::UP, Key::ENTER]);
+
+    $result = fileselector(
+        label: 'Select a file.',
+        extensions: [
+            '.json',
+        ],
+    );
+
+    expect($result)->toBe('./composer.json');
 });
