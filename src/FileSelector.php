@@ -27,6 +27,8 @@ class FileSelector extends Prompt
 
     /**
      * Create a new SuggestPrompt instance.
+     *
+     * @param   string[]    $extensions
      */
     public function __construct(
         public string $label,
@@ -36,6 +38,7 @@ class FileSelector extends Prompt
         public bool|string $required = false,
         public mixed $validate = null,
         public string $hint = '',
+        public array $extensions = [],
     ) {
         $this->options = fn (string $value) => $this->entries($value);
 
@@ -170,6 +173,7 @@ class FileSelector extends Prompt
         return collect(iterator_to_array($this->glob($path)))
             ->reject(fn (string $entry) => match (true) {
                 str_ends_with($entry, '/.'), str_ends_with($entry, '/..') => true,
+                $this->isRejectable($entry) => true,
                 default => false,
             })
             ->map(
@@ -179,6 +183,22 @@ class FileSelector extends Prompt
             )
             ->sort()
             ->all();
+    }
+
+    private function isRejectable(string $entry)
+    {
+        if (is_dir($entry)) {
+            return false;
+        }
+        if (count($this->extensions) === 0) {
+            return false;
+        }
+        foreach ($this->extensions as $extension) {
+            if (str_ends_with($entry, $extension)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

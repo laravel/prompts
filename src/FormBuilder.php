@@ -261,8 +261,10 @@ class FormBuilder
 
     /**
      * Prompt the user for text input with auto-completion of filepath.
+     *
+     * @param   array<string>   $extensions
      */
-    public function fileselector(string $label, string $placeholder = '', string $default = '', int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = '', ?string $name = null): self
+    public function fileselector(string $label, string $placeholder = '', string $default = '', int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = '', ?string $name = null, array $extensions = []): self
     {
         return $this->runPrompt(fileselector(...), get_defined_vars());
     }

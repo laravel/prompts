@@ -12,6 +12,11 @@ $model = fileselector(
         default => null,
     },
     hint: 'The model name should be singular.',
+    extensions: [
+        '.md',
+        '.json',
+        '.php',
+    ],
 );
 
 var_dump($model);
