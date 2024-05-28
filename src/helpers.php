@@ -247,3 +247,13 @@ if (! function_exists('\Laravel\Prompts\form')) {
         return new FormBuilder();
     }
 }
+
+if (! function_exists('\Laravel\Prompts\fileselector')) {
+    /**
+     * Prompt the user for text input with auto-completion of filepath.
+     */
+    function fileselector(string $label, string $placeholder = '', string $default = '', int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = ''): string
+    {
+        return (new FileSelector(...func_get_args()))->prompt();
+    }
+}

@@ -39,6 +39,11 @@ $responses = form()
         name: 'path'
     )
     ->textarea('Describe your project')
+    ->fileselector(
+        label: 'Select the logo image.',
+        placeholder: './public/img/logo.svg',
+        hint: 'skip to use the default image.',
+    )
     ->pause()
     ->submit();
 

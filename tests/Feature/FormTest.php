@@ -12,18 +12,21 @@ it('can run multiple steps', function () {
         'L', 'u', 'k', 'e', Key::ENTER,
         Key::ENTER,
         Key::ENTER,
+        'v', 'e', 'n', 'd', Key::DOWN, Key::TAB, Key::ENTER,
     ]);
 
     $responses = form()
         ->text('What is your name?')
         ->select('What is your language?', ['PHP', 'JS'])
         ->confirm('Are you sure?')
+        ->fileselector('Select a file.')
         ->submit();
 
     expect($responses)->toBe([
         'Luke',
         'PHP',
         true,
+        './vendor/',
     ]);
 });
 
