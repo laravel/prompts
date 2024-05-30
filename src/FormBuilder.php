@@ -4,10 +4,13 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Traits\Conditionable;
 use Laravel\Prompts\Exceptions\FormRevertedException;
 
 class FormBuilder
 {
+    use Conditionable;
+
     /**
      * Each step that should be executed.
      *

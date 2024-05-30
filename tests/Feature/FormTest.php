@@ -1,5 +1,6 @@
 <?php
 
+use Laravel\Prompts\FormBuilder;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
@@ -178,4 +179,48 @@ it('stops steps at the moment of reverting', function () {
         })->submit();
 
     Prompt::assertOutputDoesntContain('This should not appear!');
+});
+
+it('can conditionally add steps using `when`', function () {
+    Prompt::fake([
+        'L', 'u', 'k', 'e', Key::ENTER,
+        Key::ENTER,
+        Key::ENTER,
+    ]);
+
+    $responses = form()
+        ->text('What is your name?')
+        ->when(
+            true,
+            fn (FormBuilder $form): FormBuilder => $form->select('What is your language?', ['PHP', 'JS'])
+        )
+        ->confirm('Are you sure?')
+        ->submit();
+
+    expect($responses)->toBe([
+        'Luke',
+        'PHP',
+        true,
+    ]);
+});
+
+it('can conditionally not add steps using `when`', function () {
+    Prompt::fake([
+        'L', 'u', 'k', 'e', Key::ENTER,
+        Key::ENTER,
+    ]);
+
+    $responses = form()
+        ->text('What is your name?')
+        ->when(
+            false,
+            fn (FormBuilder $form): FormBuilder => $form->select('What is your language?', ['PHP', 'JS'])
+        )
+        ->confirm('Are you sure?')
+        ->submit();
+
+    expect($responses)->toBe([
+        'Luke',
+        true,
+    ]);
 });
