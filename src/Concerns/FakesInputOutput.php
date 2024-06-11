@@ -2,6 +2,7 @@
 
 namespace Laravel\Prompts\Concerns;
 
+use Closure;
 use Laravel\Prompts\Output\BufferedConsoleOutput;
 use Laravel\Prompts\Terminal;
 use PHPUnit\Framework\Assert;
@@ -29,13 +30,20 @@ trait FakesInputOutput
         $mock->shouldReceive('lines')->byDefault()->andReturn(24);
         $mock->shouldReceive('initDimensions')->byDefault();
 
-        foreach ($keys as $key) {
+        static::fakeKeyPresses($keys, function (string $key) use ($mock) {
             $mock->shouldReceive('read')->once()->andReturn($key);
-        }
+        });
 
         static::$terminal = $mock;
 
         static::setOutput(new BufferedConsoleOutput());
+    }
+
+    public static function fakeKeyPresses(array $keys, Closure $closure): void
+    {
+        foreach ($keys as $key) {
+            $closure($key);
+        }
     }
 
     /**
