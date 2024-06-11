@@ -179,7 +179,7 @@ abstract class Prompt
      */
     public static function setOutput(OutputInterface $output): void
     {
-        self::$output = $output;
+        static::$output = $output;
     }
 
     /**
@@ -187,7 +187,7 @@ abstract class Prompt
      */
     protected static function output(): OutputInterface
     {
-        return self::$output ??= new ConsoleOutput();
+        return static::$output ??= new ConsoleOutput();
     }
 
     /**
