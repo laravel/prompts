@@ -39,6 +39,11 @@ trait FakesInputOutput
         self::setOutput(new BufferedConsoleOutput);
     }
 
+    /**
+     * Implementation of the looping mechanism for simulating key presses.
+     *
+     * @param  array<string>  $keys
+     */
     public static function fakeKeyPresses(array $keys, Closure $closure): void
     {
         foreach ($keys as $key) {
