@@ -5,6 +5,7 @@ namespace Laravel\Prompts;
 use Closure;
 use Laravel\Prompts\Exceptions\FormRevertedException;
 use Laravel\Prompts\Output\ConsoleOutput;
+use Laravel\Prompts\Support\Nothing;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
@@ -127,7 +128,7 @@ abstract class Prompt
             $this->hideCursor();
             $this->render();
 
-            while (($key = static::terminal()->read()) !== null) {
+            $result = $this->runLoop(function (string $key): mixed {
                 $continue = $this->handleKeyPress($key);
 
                 $this->render();
@@ -147,10 +148,36 @@ abstract class Prompt
 
                     return $this->transformedValue();
                 }
-            }
+
+                // `null` is a valid return value for this loop
+                // so we'll return an instance of Nothing to
+                // indicate that the loop should continue.
+                return new Nothing;
+            });
+
+            return $result;
         } finally {
             $this->clearListeners();
         }
+    }
+
+    public function runLoop(callable $callable): mixed
+    {
+        while(($key = static::terminal()->read()) !== null) {
+            $result = $callable($key);
+
+            if (! $this->is_nothing($result)) {
+                return $result;
+            }
+        }
+    }
+
+    /**
+     * Check if the provided item is an instance of Nothing.
+     */
+    public function is_nothing(mixed $item): bool
+    {
+        return is_object($item) && is_a($item, Nothing::class);
     }
 
     /**
