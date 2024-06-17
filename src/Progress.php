@@ -139,15 +139,19 @@ class Progress extends Prompt
     }
 
     /**
+     * Force the progress bar to re-render.
+     */
+    public function render(): void
+    {
+        parent::render();
+    }
+
+    /**
      * Update the label.
      */
-    public function label(string $label, bool $force = false): static
+    public function label(string $label): static
     {
         $this->label = $label;
-
-        if ($force) {
-            $this->render();
-        }
 
         return $this;
     }
@@ -155,13 +159,9 @@ class Progress extends Prompt
     /**
      * Update the hint.
      */
-    public function hint(string $hint, bool $force = false): static
+    public function hint(string $hint): static
     {
         $this->hint = $hint;
-
-        if ($force) {
-            $this->render();
-        }
 
         return $this;
     }
