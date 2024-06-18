@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.23...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.24...main)
+
+## [v0.1.24](https://github.com/laravel/prompts/compare/v0.1.23...v0.1.24) - 2024-06-17
+
+* Allow re-rendering during progress callback by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/155
 
 ## [v0.1.23](https://github.com/laravel/prompts/compare/v0.1.22...v0.1.23) - 2024-05-27
 
