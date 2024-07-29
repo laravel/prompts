@@ -99,6 +99,22 @@ it('accepts default values when the options are keys with labels', function () {
     expect($result)->toBe('green');
 });
 
+it('transforms values', function () {
+    Prompt::fake([Key::DOWN, Key::ENTER]);
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: [
+            'Red',
+            'Green',
+            'Blue',
+        ],
+        transform: fn ($value) => strtolower($value),
+    );
+
+    expect($result)->toBe('green');
+});
+
 it('validates', function () {
     Prompt::fake([Key::ENTER, Key::DOWN, Key::ENTER]);
 

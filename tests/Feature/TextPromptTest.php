@@ -1,11 +1,11 @@
 <?php
 
-use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\TextPrompt;
 
 use function Laravel\Prompts\text;
+use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 
 afterEach(function () {
     Prompt::cancelUsing(null);
@@ -25,6 +25,17 @@ it('accepts a default value', function () {
     $result = text(
         label: 'What is your name?',
         default: 'Jess'
+    );
+
+    expect($result)->toBe('Jess');
+});
+
+it('transforms values', function () {
+    Prompt::fake([Key::SPACE, 'J', 'e', 's', 's', Key::TAB, Key::ENTER]);
+
+    $result = text(
+        label: 'What is your name?',
+        transform: fn ($value) => trim($value),
     );
 
     expect($result)->toBe('Jess');

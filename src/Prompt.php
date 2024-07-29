@@ -51,6 +51,11 @@ abstract class Prompt
     public bool|string $required;
 
     /**
+     * The transformation callback.
+     */
+    public ?Closure $transform = null;
+
+    /**
      * The validator callback or rules.
      */
     public mixed $validate;
@@ -140,7 +145,7 @@ abstract class Prompt
                         throw new FormRevertedException();
                     }
 
-                    return $this->value();
+                    return $this->transformedValue();
                 }
             }
         } finally {
@@ -277,7 +282,7 @@ abstract class Prompt
      */
     protected function submit(): void
     {
-        $this->validate($this->value());
+        $this->validate($this->transformedValue());
 
         if ($this->state !== 'error') {
             $this->state = 'submit';
@@ -322,10 +327,27 @@ abstract class Prompt
         }
 
         if ($this->validated) {
-            $this->validate($this->value());
+            $this->validate($this->transformedValue());
         }
 
         return true;
+    }
+
+    /**
+     * Transform the input.
+     */
+    private function transform(mixed $value): mixed
+    {
+        if (is_null($this->transform)) {
+            return $value;
+        }
+
+        return call_user_func($this->transform, $value);
+    }
+
+    protected function transformedValue(): mixed
+    {
+        return $this->transform($this->value());
     }
 
     /**

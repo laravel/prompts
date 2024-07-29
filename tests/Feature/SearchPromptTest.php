@@ -97,6 +97,25 @@ it('returns the key when an associative array is passed', function () {
     expect($result)->toBe(3);
 });
 
+it('transforms values', function () {
+    Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
+
+    $result = search(
+        label: 'What is your favorite color?',
+        options: fn (string $value) => array_filter(
+            [
+                'red' => 'Red',
+                'green' => 'Green',
+                'blue' => 'Blue',
+            ],
+            fn ($option) => str_contains(strtolower($option), $value),
+        ),
+        transform: fn ($value) => strtoupper($value),
+    );
+
+    expect($result)->toBe('BLUE');
+});
+
 it('validates', function () {
     Prompt::fake([Key::DOWN, Key::ENTER, Key::DOWN, Key::ENTER]);
 

@@ -252,6 +252,22 @@ it('supports no default results', function ($options, $expected) {
     ],
 ]);
 
+it('transforms values', function () {
+    Prompt::fake([Key::DOWN, Key::CTRL_A, Key::ENTER]);
+
+    $result = multisearch(
+        label: 'What are your favorite colors?',
+        options: fn () => [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+        transform: fn ($value) => array_map('strtoupper', $value),
+    );
+
+    expect($result)->toBe(['RED', 'GREEN', 'BLUE']);
+});
+
 it('validates', function () {
     Prompt::fake(['a', Key::DOWN, Key::SPACE, Key::ENTER, Key::DOWN, Key::SPACE, Key::ENTER]);
 

@@ -2,8 +2,9 @@
 
 namespace Laravel\Prompts;
 
-use Illuminate\Support\Collection;
+use Closure;
 use InvalidArgumentException;
+use Illuminate\Support\Collection;
 
 class SelectPrompt extends Prompt
 {
@@ -29,6 +30,7 @@ class SelectPrompt extends Prompt
         public mixed $validate = null,
         public string $hint = '',
         public bool|string $required = true,
+        public ?Closure $transform = null,
     ) {
         if ($this->required === false) {
             throw new InvalidArgumentException('Argument [required] must be true or a string.');

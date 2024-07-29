@@ -65,6 +65,17 @@ it('allows the labels to be changed', function () {
     Prompt::assertOutputContains('No, gracias');
 });
 
+it('transforms values', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $result = confirm(
+        label: 'Are you sure?',
+        transform: fn ($value) => ! $value,
+    );
+
+    expect($result)->toBeFalse();
+});
+
 it('validates', function () {
     Prompt::fake([Key::ENTER, 'y', Key::ENTER]);
 
