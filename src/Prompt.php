@@ -345,6 +345,9 @@ abstract class Prompt
         return call_user_func($this->transform, $value);
     }
 
+    /**
+     * Get the transformed value of the prompt.
+     */
     protected function transformedValue(): mixed
     {
         return $this->transform($this->value());

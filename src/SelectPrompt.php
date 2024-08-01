@@ -3,8 +3,8 @@
 namespace Laravel\Prompts;
 
 use Closure;
-use InvalidArgumentException;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 class SelectPrompt extends Prompt
 {
