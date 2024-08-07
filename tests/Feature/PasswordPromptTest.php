@@ -15,6 +15,19 @@ it('returns the input', function () {
     expect($result)->toBe('pass');
 });
 
+it('transforms values', function () {
+    Prompt::fake(['p', 'a', 's', 's', 'w', 'o', 'r', 'd', Key::ENTER]);
+
+    $dontUseInProduction = md5('password');
+
+    $result = password(
+        label: 'What is the password?',
+        transform: fn ($value) => md5($value)
+    );
+
+    expect($result)->toBe($dontUseInProduction);
+});
+
 it('validates', function () {
     Prompt::fake(['p', 'a', 's', Key::ENTER, 's', Key::ENTER]);
 

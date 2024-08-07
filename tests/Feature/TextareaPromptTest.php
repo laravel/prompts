@@ -26,6 +26,17 @@ it('accepts a default value', function () {
     expect($result)->toBe("Jess\nJoe");
 });
 
+it('transforms values', function () {
+    Prompt::fake([Key::SPACE, 'J', 'e', 's', 's', Key::SPACE, Key::CTRL_D]);
+
+    $result = textarea(
+        label: 'What is your name?',
+        transform: fn ($value) => trim($value),
+    );
+
+    expect($result)->toBe('Jess');
+});
+
 it('validates', function () {
     Prompt::fake(['J', 'e', 's', Key::CTRL_D, 's', Key::CTRL_D]);
 

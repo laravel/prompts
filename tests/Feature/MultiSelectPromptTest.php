@@ -104,6 +104,22 @@ it('accepts collections', function () {
     expect($result)->toBe(['Green']);
 });
 
+it('transforms values', function () {
+    Prompt::fake([Key::DOWN, Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+        transform: fn ($value) => array_map('strtoupper', $value),
+    );
+
+    expect($result)->toBe(['GREEN', 'BLUE']);
+});
+
 it('validates', function () {
     Prompt::fake([Key::ENTER, Key::SPACE, Key::ENTER]);
 
