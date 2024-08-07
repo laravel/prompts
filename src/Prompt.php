@@ -142,7 +142,7 @@ abstract class Prompt
                     }
 
                     if ($key === Key::CTRL_U && self::$revertUsing) {
-                        throw new FormRevertedException();
+                        throw new FormRevertedException;
                     }
 
                     return $this->transformedValue();
@@ -192,7 +192,7 @@ abstract class Prompt
      */
     protected static function output(): OutputInterface
     {
-        return self::$output ??= new ConsoleOutput();
+        return self::$output ??= new ConsoleOutput;
     }
 
     /**
@@ -212,7 +212,7 @@ abstract class Prompt
      */
     public static function terminal(): Terminal
     {
-        return static::$terminal ??= new Terminal();
+        return static::$terminal ??= new Terminal;
     }
 
     /**
