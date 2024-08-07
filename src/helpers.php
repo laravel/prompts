@@ -21,7 +21,7 @@ if (! function_exists('\Laravel\Prompts\textarea')) {
      */
     function textarea(string $label, string $placeholder = '', string $default = '', bool|string $required = false, ?Closure $validate = null, string $hint = '', int $rows = 5, ?Closure $transform = null): string
     {
-        return (new TextareaPrompt($label, $placeholder, $default, $required, $validate, $hint, $rows, $transform))->prompt();
+        return (new TextareaPrompt(...func_get_args()))->prompt();
     }
 }
 
