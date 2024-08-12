@@ -19,7 +19,7 @@ if (! function_exists('\Laravel\Prompts\textarea')) {
     /**
      * Prompt the user for multiline text input.
      */
-    function textarea(string $label, string $placeholder = '', string $default = '', bool|string $required = false, ?Closure $validate = null, string $hint = '', int $rows = 5, ?Closure $transform = null): string
+    function textarea(string $label, string $placeholder = '', string $default = '', bool|string $required = false, mixed $validate = null, string $hint = '', int $rows = 5, ?Closure $transform = null): string
     {
         return (new TextareaPrompt(...func_get_args()))->prompt();
     }
