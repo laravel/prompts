@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.24...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.25...main)
+
+## [v0.1.25](https://github.com/laravel/prompts/compare/v0.1.24...v0.1.25) - 2024-08-12
+
+* Add transformation support by [@emenkens](https://github.com/emenkens) in https://github.com/laravel/prompts/pull/156
+* Fix textarea helper method signature. by [@samrap](https://github.com/samrap) in https://github.com/laravel/prompts/pull/159
 
 ## [v0.1.24](https://github.com/laravel/prompts/compare/v0.1.23...v0.1.24) - 2024-06-17
 
