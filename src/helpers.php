@@ -247,3 +247,10 @@ if (! function_exists('\Laravel\Prompts\form')) {
         return new FormBuilder;
     }
 }
+
+if (! function_exists('\Laravel\Prompts\clear')) {
+    function clear(): void
+    {
+        (new Clear())->display();
+    }
+}
