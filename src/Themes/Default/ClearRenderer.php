@@ -11,6 +11,6 @@ class ClearRenderer extends Renderer
      */
     public function __invoke(Clear $clear): string
     {
-        return $clear->value();
+        return "\033[H\033[J";
     }
 }

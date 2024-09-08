@@ -27,8 +27,8 @@ class Clear extends Prompt
     /**
      * Get the value of the prompt.
      */
-    public function value(): mixed
+    public function value(): bool
     {
-        return "\033[H\033[J";
+        return true;
     }
 }
