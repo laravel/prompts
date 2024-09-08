@@ -5,7 +5,7 @@ namespace Laravel\Prompts;
 use Closure;
 use Laravel\Prompts\Exceptions\FormRevertedException;
 use Laravel\Prompts\Output\ConsoleOutput;
-use Laravel\Prompts\Support\Nothing;
+use Laravel\Prompts\Support\Result;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
@@ -128,7 +128,7 @@ abstract class Prompt
             $this->hideCursor();
             $this->render();
 
-            $result = $this->runLoop(function (string $key): mixed {
+            $result = $this->runLoop(function (string $key): ?Result {
                 $continue = $this->handleKeyPress($key);
 
                 $this->render();
@@ -136,7 +136,7 @@ abstract class Prompt
                 if ($continue === false || $key === Key::CTRL_C) {
                     if ($key === Key::CTRL_C) {
                         if (isset(static::$cancelUsing)) {
-                            return (static::$cancelUsing)();
+                            return Result::from((static::$cancelUsing)());
                         } else {
                             static::terminal()->exit();
                         }
@@ -146,13 +146,10 @@ abstract class Prompt
                         throw new FormRevertedException;
                     }
 
-                    return $this->transformedValue();
+                    return Result::from($this->transformedValue());
                 }
 
-                // `null` is a valid return value for this loop
-                // so we'll return an instance of Nothing to
-                // indicate that the loop should continue.
-                return new Nothing;
+                return null;
             });
 
             return $result;
@@ -161,23 +158,20 @@ abstract class Prompt
         }
     }
 
+    /**
+     * Implementation of the prompt looping mechanism.
+     *
+     * @param callable(string $key):?Result  $callable
+     */
     public function runLoop(callable $callable): mixed
     {
         while(($key = static::terminal()->read()) !== null) {
             $result = $callable($key);
 
-            if (! $this->is_nothing($result)) {
-                return $result;
+            if ($result instanceof Result) {
+                return $result->value;
             }
         }
-    }
-
-    /**
-     * Check if the provided item is an instance of Nothing.
-     */
-    public function is_nothing(mixed $item): bool
-    {
-        return is_object($item) && is_a($item, Nothing::class);
     }
 
     /**
