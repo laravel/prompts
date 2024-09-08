@@ -40,6 +40,10 @@ trait FakesInputOutput
 
     /**
      * Implementation of the looping mechanism for simulating key presses.
+     * 
+     * By ignoring the `$callable` parameter which contains the default logic
+     * for simulating fake key presses, we can use a custom implementation
+     * to emit key presses instead, allowing us to use different inputs. 
      *
      * @param  array<string>  $keys
      * @param  callable(string $key): void  $callable
