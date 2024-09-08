@@ -149,6 +149,7 @@ abstract class Prompt
                     return Result::from($this->transformedValue());
                 }
 
+                // Continue looping.
                 return null;
             });
 
