@@ -161,7 +161,7 @@ abstract class Prompt
     /**
      * Implementation of the prompt looping mechanism.
      *
-     * @param callable(string $key):?Result  $callable
+     * @param  callable(string $key): ?Result  $callable
      */
     public function runLoop(callable $callable): mixed
     {
