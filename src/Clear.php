@@ -9,9 +9,10 @@ class Clear extends Prompt
      */
     public function prompt(): bool
     {
-        $this->capturePreviousNewLines();
+        // Fill the previous newline count so subsequent prompts won't add padding.
+        static::output()->write(PHP_EOL.PHP_EOL);
 
-        static::output()->write($this->renderTheme());
+        $this->writeDirectly($this->renderTheme());
 
         return true;
     }
