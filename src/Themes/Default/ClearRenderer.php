@@ -2,14 +2,12 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use Laravel\Prompts\Clear;
-
 class ClearRenderer extends Renderer
 {
     /**
-     * Clear the console screen.
+     * Clear the terminal.
      */
-    public function __invoke(Clear $clear): string
+    public function __invoke(): string
     {
         return "\033[H\033[J";
     }

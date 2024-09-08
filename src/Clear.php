@@ -5,7 +5,7 @@ namespace Laravel\Prompts;
 class Clear extends Prompt
 {
     /**
-     * Display the note.
+     * Clear the terminal.
      */
     public function prompt(): bool
     {
@@ -18,7 +18,7 @@ class Clear extends Prompt
     }
 
     /**
-     * Display the note.
+     * Clear the terminal.
      */
     public function display(): void
     {
