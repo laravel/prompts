@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  prompts:
+    build:
+      dockerfile: ./docker/php-cli83.Dockerfile
+      context: ./
+    container_name: prompts
+    working_dir: /app
+    volumes:
+      - .:/app
+    stdin_open: true
+    tty: true
