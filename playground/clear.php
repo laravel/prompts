@@ -4,7 +4,7 @@ use function Laravel\Prompts\clear;
 use function Laravel\Prompts\note;
 use function Laravel\Prompts\pause;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 note('This will disappear.');
 

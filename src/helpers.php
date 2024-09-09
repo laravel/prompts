@@ -88,7 +88,7 @@ if (! function_exists('\Laravel\Prompts\clear')) {
      */
     function clear(): void
     {
-        (new Clear())->display();
+        (new Clear)->display();
     }
 }
 
