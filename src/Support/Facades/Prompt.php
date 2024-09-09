@@ -64,10 +64,10 @@ class Prompt
      *
      * @param  string  $name
      *
-     * @return string
+     * @return callable
      * @throws BadMethodCallException
      */
-    protected static function resolveFunction(string $name): string
+    protected static function resolveFunction(string $name): callable
     {
         $function = '\\Laravel\\Prompts\\' . $name;
 
