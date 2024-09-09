@@ -26,8 +26,7 @@
         "phpstan/phpstan": "^1.11",
         "pestphp/pest": "^2.3",
         "mockery/mockery": "^1.5",
-        "phpstan/phpstan-mockery": "^1.1",
-        "symfony/var-dumper": "^7.1"
+        "phpstan/phpstan-mockery": "^1.1"
     },
     "conflict": {
         "illuminate/console": ">=10.17.0 <10.25.0",
@@ -45,10 +44,6 @@
         "branch-alias": {
             "dev-main": "0.1.x-dev"
         }
-    },
-    "scripts": {
-        "test": "vendor/bin/pest",
-        "phpstan": "vendor/bin/phpstan"
     },
     "prefer-stable": true,
     "minimum-stability": "dev"
