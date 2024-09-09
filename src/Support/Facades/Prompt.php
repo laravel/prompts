@@ -32,11 +32,28 @@ use Laravel\Prompts\Progress;
  */
 class Prompt
 {
+    /**
+     * Calls the clss' function statically.
+     *
+     * @param  string  $name
+     * @param  array<int, mixed>  $arguments
+     *
+     * @return mixed
+     */
     public static function __callStatic(string $name, array $arguments): mixed
     {
         return static::callHelperFunction($name, $arguments);
     }
 
+
+    /**
+     * Calls the class' function.
+     *
+     * @param  string  $name
+     * @param  array<int, mixed>  $arguments
+     *
+     * @return mixed
+     */
     public function __call(string $name, array $arguments): mixed
     {
         return $this::callHelperFunction($name, $arguments);
@@ -54,7 +71,7 @@ class Prompt
     {
         $function = '\\Laravel\\Prompts\\' . $name;
 
-        if (!function_exists($function)) {
+        if (!function_exists($function) || !is_callable($function)) {
             throw new BadMethodCallException(
                 sprintf(
                     'Call to undefined method %s::%s()',
