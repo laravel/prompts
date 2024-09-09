@@ -34,6 +34,24 @@ class Prompt
 {
     public static function __callStatic($name, $arguments)
     {
+        return static::callHelperFunction($name, $arguments);
+    }
+
+    public function __call($name, $arguments)
+    {
+        return $this::callHelperFunction($name, $arguments);
+    }
+
+    /**
+     * Returns the qualified name of the function if it exists.
+     *
+     * @param  string  $name
+     *
+     * @return string-class
+     * @throws BadMethodCallException
+     */
+    protected static function resolveFunction(string $name): string
+    {
         $function = '\\Laravel\\Prompts\\' . $name;
 
         if (!function_exists($function)) {
@@ -45,6 +63,16 @@ class Prompt
                 )
             );
         }
+
+        return $function;
+    }
+
+    /**
+     * Calls the helper function.
+     */
+    protected static function callHelperFunction(string $name, array $arguments): mixed
+    {
+        $function = static::resolveFunction($name);
 
         return $function(...$arguments);
     }
