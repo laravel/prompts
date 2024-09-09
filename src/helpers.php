@@ -82,6 +82,16 @@ if (! function_exists('\Laravel\Prompts\pause')) {
     }
 }
 
+if (! function_exists('\Laravel\Prompts\clear')) {
+    /**
+     * Clear the terminal.
+     */
+    function clear(): void
+    {
+        (new Clear())->display();
+    }
+}
+
 if (! function_exists('\Laravel\Prompts\suggest')) {
     /**
      * Prompt the user for text input with auto-completion.
