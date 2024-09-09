@@ -32,12 +32,12 @@ use Laravel\Prompts\Progress;
  */
 class Prompt
 {
-    public static function __callStatic($name, $arguments)
+    public static function __callStatic(string $name, array $arguments): mixed
     {
         return static::callHelperFunction($name, $arguments);
     }
 
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments): mixed
     {
         return $this::callHelperFunction($name, $arguments);
     }
@@ -47,7 +47,7 @@ class Prompt
      *
      * @param  string  $name
      *
-     * @return string-class
+     * @return string
      * @throws BadMethodCallException
      */
     protected static function resolveFunction(string $name): string
@@ -69,6 +69,11 @@ class Prompt
 
     /**
      * Calls the helper function.
+     *
+     * @param  string  $name
+     * @param  array<int, mixed>  $arguments
+     *
+     * @return mixed
      */
     protected static function callHelperFunction(string $name, array $arguments): mixed
     {
