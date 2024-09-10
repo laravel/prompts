@@ -9,10 +9,10 @@ namespace Laravel\Prompts\Support;
  * allow us to differentiate between a `null` return value and
  * a `null` return value that's intended to continue a loop.
  */
-final readonly class Result
+final class Result
 {
     public function __construct(
-        public mixed $value,
+        public readonly mixed $value,
     ) {}
 
     public static function from(mixed $value): self
