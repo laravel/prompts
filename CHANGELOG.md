@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.25...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.2.0...main)
+
+## [v0.2.0](https://github.com/laravel/prompts/compare/v0.1.25...v0.2.0) - 2024-09-11
+
+* Adding "Clear" Function For Cleaning The Terminal by [@TarsisioXavier](https://github.com/TarsisioXavier) in https://github.com/laravel/prompts/pull/160
+* Extract Looping Mechanisms by [@ProjektGopher](https://github.com/ProjektGopher) in https://github.com/laravel/prompts/pull/162
 
 ## [v0.1.25](https://github.com/laravel/prompts/compare/v0.1.24...v0.1.25) - 2024-08-12
 
