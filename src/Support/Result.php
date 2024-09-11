@@ -4,7 +4,7 @@ namespace Laravel\Prompts\Support;
 
 /**
  * Result.
- * 
+ *
  * This is a 'sentinel' value. It wraps a return value, which can
  * allow us to differentiate between a `null` return value and
  * a `null` return value that's intended to continue a loop.

@@ -166,7 +166,7 @@ abstract class Prompt
      */
     public function runLoop(callable $callable): mixed
     {
-        while(($key = static::terminal()->read()) !== null) {
+        while (($key = static::terminal()->read()) !== null) {
             $result = $callable($key);
 
             if ($result instanceof Result) {
