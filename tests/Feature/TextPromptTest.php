@@ -159,3 +159,11 @@ it('allows customizing the cancellation', function () {
 
     text('What is your name?');
 })->throws(Exception::class, 'Cancelled.');
+
+it('handles a failed terminal read gracefully', function () {
+    Prompt::fake(['', Key::ENTER]);
+
+    $result = text('What is your name?');
+
+    expect($result)->toBe('');
+});
