@@ -167,6 +167,15 @@ abstract class Prompt
     public function runLoop(callable $callable): mixed
     {
         while (($key = static::terminal()->read()) !== null) {
+            /**
+             * If $key is an empty string, Terminal::read
+             * has failed. We can continue to the next
+             * iteration of the loop, and try again.
+             */
+            if ($key === '') {
+                continue;
+            }
+
             $result = $callable($key);
 
             if ($result instanceof Result) {
