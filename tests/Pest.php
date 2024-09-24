@@ -42,5 +42,4 @@ expect()->extend('toBeOne', function () {
 function depends_on_collection(): bool
 {
     return Composer\InstalledVersions::isInstalled('illuminate/collections', false);
-    // ..
 }

@@ -43,7 +43,7 @@ it('renders a progress bar', function ($steps) {
     'array' => [['Alabama', 'Alaska', 'Arizona', 'Arkansas']],
     'collection' => [collect(['Alabama', 'Alaska', 'Arizona', 'Arkansas'])],
     'integer' => [4],
-]);
+])->skip(!depends_on_collection());
 
 it('renders a progress bar without a label', function () {
     Prompt::fake();
