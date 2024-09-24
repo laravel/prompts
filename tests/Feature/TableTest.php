@@ -40,8 +40,8 @@ it('renders a table with headers', function ($headers, $rows) {
         ],
     ],
     'collections' => [
-        collect(['Name', 'Twitter']),
-        collect([
+        fn () => collect(['Name', 'Twitter']),
+        fn () => collect([
             ['Taylor Otwell', '@taylorotwell'],
             ['Dries Vints', '@driesvints'],
             ['James Brooks', '@jbrooksuk'],
@@ -53,7 +53,7 @@ it('renders a table with headers', function ($headers, $rows) {
             ['Joe Dixon', '@_joedixon'],
         ]),
     ],
-]);
+])->skip(! depends_on_collection());
 
 it('renders a table without headers', function ($rows) {
     Prompt::fake();
@@ -88,7 +88,7 @@ it('renders a table without headers', function ($rows) {
         ],
     ],
     'collections' => [
-        collect([
+        fn () => collect([
             ['Taylor Otwell', '@taylorotwell'],
             ['Dries Vints', '@driesvints'],
             ['James Brooks', '@jbrooksuk'],
@@ -100,4 +100,4 @@ it('renders a table without headers', function ($rows) {
             ['Joe Dixon', '@_joedixon'],
         ]),
     ],
-]);
+])->skip(! depends_on_collection());
