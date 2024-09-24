@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.2.0...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.2.1...main)
+
+## [v0.2.1](https://github.com/laravel/prompts/compare/v0.2.0...v0.2.1) - 2024-09-19
+
+* [ BugFix ] Handle Failed Terminal Read Gracefully by [@ProjektGopher](https://github.com/ProjektGopher) in https://github.com/laravel/prompts/pull/164
+* Update `dev-main` branch alias to `0.2.x-dev` by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/prompts/pull/166
 
 ## [v0.2.0](https://github.com/laravel/prompts/compare/v0.1.25...v0.2.0) - 2024-09-11
 
