@@ -41,9 +41,9 @@ it('renders a progress bar', function ($steps) {
     OUTPUT);
 })->with([
     'array' => [['Alabama', 'Alaska', 'Arizona', 'Arkansas']],
-    'collection' => [fn () => collect(['Alabama', 'Alaska', 'Arizona', 'Arkansas'])],
+    'collection' => [fn () => collect_or_array(['Alabama', 'Alaska', 'Arizona', 'Arkansas'])],
     'integer' => [4],
-])->skip(! depends_on_collection());
+]);
 
 it('renders a progress bar without a label', function () {
     Prompt::fake();

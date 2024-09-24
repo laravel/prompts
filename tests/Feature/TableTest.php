@@ -88,7 +88,7 @@ it('renders a table without headers', function ($rows) {
         ],
     ],
     'collections' => [
-        fn () => collect([
+        fn () => collect_or_array([
             ['Taylor Otwell', '@taylorotwell'],
             ['Dries Vints', '@driesvints'],
             ['James Brooks', '@jbrooksuk'],
@@ -100,4 +100,4 @@ it('renders a table without headers', function ($rows) {
             ['Joe Dixon', '@_joedixon'],
         ]),
     ],
-])->skip(! depends_on_collection());
+]);
