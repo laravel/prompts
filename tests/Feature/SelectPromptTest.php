@@ -52,20 +52,19 @@ it('accepts an associate array with integer keys', function () {
     expect($result)->toBe(2);
 });
 
-it('accepts a collection', function () {
+it('accepts a collection', function ($options) {
     Prompt::fake([Key::DOWN, Key::ENTER]);
 
     $result = select(
         label: 'What is your favorite color?',
-        options: collect([
-            'Red',
-            'Green',
-            'Blue',
-        ])
+        options: $options,
     );
 
     expect($result)->toBe('Green');
-});
+})->with([
+    'array' => ['Red', 'Green', 'Blue'],
+    'collection' => [fn() => collect('Red', 'Green', 'Blue')],
+])->skip(! depends_on_collection());
 
 it('accepts default values when the options are labels', function () {
     Prompt::fake([Key::ENTER]);

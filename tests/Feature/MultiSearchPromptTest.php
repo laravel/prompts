@@ -128,7 +128,7 @@ it('supports default results', function ($options, $expected) {
         )->values()->all(),
         ['Violet', 'Green'],
     ],
-]);
+])->skip(! depends_on_collection());
 
 it('supports no default results', function ($options, $expected) {
     Prompt::fake([
@@ -250,7 +250,7 @@ it('supports no default results', function ($options, $expected) {
             ->all() : [],
         ['Violet', 'Green'],
     ],
-]);
+])->skip(! depends_on_collection());
 
 it('transforms values', function () {
     Prompt::fake([Key::DOWN, Key::CTRL_A, Key::ENTER]);
