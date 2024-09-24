@@ -63,7 +63,7 @@ it('accepts a collection', function ($options) {
     expect($result)->toBe('Green');
 })->with([
     'array' => ['Red', 'Green', 'Blue'],
-    'collection' => [fn() => collect('Red', 'Green', 'Blue')],
+    'collection' => [fn () => collect('Red', 'Green', 'Blue')],
 ])->skip(! depends_on_collection());
 
 it('accepts default values when the options are labels', function () {
