@@ -104,6 +104,22 @@ it('accepts collections', function () {
     expect($result)->toBe(['Green']);
 });
 
+it('transforms values', function () {
+    Prompt::fake([Key::DOWN, Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+        transform: fn ($value) => array_map('strtoupper', $value),
+    );
+
+    expect($result)->toBe(['GREEN', 'BLUE']);
+});
+
 it('validates', function () {
     Prompt::fake([Key::ENTER, Key::SPACE, Key::ENTER]);
 
@@ -168,6 +184,34 @@ it('supports the home and end keys', function () {
     );
 
     expect($result)->toBe(['blue', 'red']);
+});
+
+it('supports selecting all options', function () {
+    Prompt::fake([Key::CTRL_A, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ]
+    );
+
+    expect($result)->toBe(['red', 'green', 'blue']);
+
+    Prompt::fake([Key::CTRL_A, Key::CTRL_A, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ]
+    );
+
+    expect($result)->toBe([]);
 });
 
 it('returns an empty array when non-interactive', function () {

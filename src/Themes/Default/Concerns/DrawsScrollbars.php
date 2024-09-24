@@ -20,7 +20,7 @@ trait DrawsScrollbars
 
         $scrollPosition = $this->scrollPosition($firstVisible, $height, $total);
 
-        return $visible
+        return $visible // @phpstan-ignore return.type
             ->values()
             ->map(fn ($line) => $this->pad($line, $width))
             ->map(fn ($line, $index) => match ($index) {

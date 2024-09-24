@@ -1,6 +1,7 @@
 {
     "name": "laravel/prompts",
     "type": "library",
+    "description": "Add beautiful and user-friendly forms to your command-line applications.",
     "license": "MIT",
     "autoload": {
         "psr-4": {
@@ -41,7 +42,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "0.1.x-dev"
+            "dev-main": "0.2.x-dev"
         }
     },
     "prefer-stable": true,

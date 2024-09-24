@@ -1,6 +1,51 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.1.18...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.2.1...main)
+
+## [v0.2.1](https://github.com/laravel/prompts/compare/v0.2.0...v0.2.1) - 2024-09-19
+
+* [ BugFix ] Handle Failed Terminal Read Gracefully by [@ProjektGopher](https://github.com/ProjektGopher) in https://github.com/laravel/prompts/pull/164
+* Update `dev-main` branch alias to `0.2.x-dev` by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/prompts/pull/166
+
+## [v0.2.0](https://github.com/laravel/prompts/compare/v0.1.25...v0.2.0) - 2024-09-11
+
+* Adding "Clear" Function For Cleaning The Terminal by [@TarsisioXavier](https://github.com/TarsisioXavier) in https://github.com/laravel/prompts/pull/160
+* Extract Looping Mechanisms by [@ProjektGopher](https://github.com/ProjektGopher) in https://github.com/laravel/prompts/pull/162
+
+## [v0.1.25](https://github.com/laravel/prompts/compare/v0.1.24...v0.1.25) - 2024-08-12
+
+* Add transformation support by [@emenkens](https://github.com/emenkens) in https://github.com/laravel/prompts/pull/156
+* Fix textarea helper method signature. by [@samrap](https://github.com/samrap) in https://github.com/laravel/prompts/pull/159
+
+## [v0.1.24](https://github.com/laravel/prompts/compare/v0.1.23...v0.1.24) - 2024-06-17
+
+* Allow re-rendering during progress callback by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/155
+
+## [v0.1.23](https://github.com/laravel/prompts/compare/v0.1.22...v0.1.23) - 2024-05-27
+
+* Ignore PHPstan error by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/149
+* Allow selecting all options in a `multiselect` by [@duncanmcclean](https://github.com/duncanmcclean) in https://github.com/laravel/prompts/pull/147
+
+## [v0.1.22](https://github.com/laravel/prompts/compare/v0.1.21...v0.1.22) - 2024-05-10
+
+* fix(helper): ensure helpers can't be redeclared by [@NickSdot](https://github.com/NickSdot) in https://github.com/laravel/prompts/pull/146
+
+## [v0.1.21](https://github.com/laravel/prompts/compare/v0.1.20...v0.1.21) - 2024-04-30
+
+* Add description to composer.json by [@edwinvdpol](https://github.com/edwinvdpol) in https://github.com/laravel/prompts/pull/139
+* Add ability to specify character in pad function by [@ProjektGopher](https://github.com/ProjektGopher) in https://github.com/laravel/prompts/pull/141
+* Adds support for additional keys by [@ProjektGopher](https://github.com/ProjektGopher) in https://github.com/laravel/prompts/pull/140
+* Extract string handling methods from DrawsBoxes trait by [@ProjektGopher](https://github.com/ProjektGopher) in https://github.com/laravel/prompts/pull/142
+
+## [v0.1.20](https://github.com/laravel/prompts/compare/v0.1.19...v0.1.20) - 2024-04-18
+
+* Fix for up/down arrows + cursor position when textarea content contains multi-byte strings by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/137
+
+## [v0.1.19](https://github.com/laravel/prompts/compare/v0.1.18...v0.1.19) - 2024-04-16
+
+* Fix `multisearch` array handling by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/132
+* Adds Reversible Forms to Prompts by [@lukeraymonddowning](https://github.com/lukeraymonddowning) in https://github.com/laravel/prompts/pull/118
+* Fix type error in suggest with collection by [@macocci7](https://github.com/macocci7) in https://github.com/laravel/prompts/pull/134
 
 ## [v0.1.18](https://github.com/laravel/prompts/compare/v0.1.17...v0.1.18) - 2024-04-04
 

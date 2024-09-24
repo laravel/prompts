@@ -118,6 +118,18 @@ it('accepts a callback returning a collection', function () {
     expect($result)->toBe('Blue');
 });
 
+it('transforms values', function () {
+    Prompt::fake([Key::SPACE, 'J', 'e', 's', 's', Key::TAB, Key::ENTER]);
+
+    $result = suggest(
+        label: 'What is your name?',
+        options: ['Jess'],
+        transform: fn ($value) => trim($value),
+    );
+
+    expect($result)->toBe('Jess');
+});
+
 it('validates', function () {
     Prompt::fake([Key::ENTER, 'X', Key::ENTER]);
 

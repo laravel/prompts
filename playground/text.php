@@ -13,6 +13,7 @@ $email = text(
         default => null,
     },
     hint: 'We will never share your email address with anyone else.',
+    transform: fn ($value) => strtolower($value),
 );
 
 var_dump($email);

@@ -5,6 +5,7 @@ namespace Laravel\Prompts;
 use Closure;
 use Laravel\Prompts\Exceptions\FormRevertedException;
 use Laravel\Prompts\Output\ConsoleOutput;
+use Laravel\Prompts\Support\Result;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
@@ -49,6 +50,11 @@ abstract class Prompt
      * Whether user input is required.
      */
     public bool|string $required;
+
+    /**
+     * The transformation callback.
+     */
+    public ?Closure $transform = null;
 
     /**
      * The validator callback or rules.
@@ -122,7 +128,7 @@ abstract class Prompt
             $this->hideCursor();
             $this->render();
 
-            while (($key = static::terminal()->read()) !== null) {
+            $result = $this->runLoop(function (string $key): ?Result {
                 $continue = $this->handleKeyPress($key);
 
                 $this->render();
@@ -130,21 +136,51 @@ abstract class Prompt
                 if ($continue === false || $key === Key::CTRL_C) {
                     if ($key === Key::CTRL_C) {
                         if (isset(static::$cancelUsing)) {
-                            return (static::$cancelUsing)();
+                            return Result::from((static::$cancelUsing)());
                         } else {
                             static::terminal()->exit();
                         }
                     }
 
                     if ($key === Key::CTRL_U && self::$revertUsing) {
-                        throw new FormRevertedException();
+                        throw new FormRevertedException;
                     }
 
-                    return $this->value();
+                    return Result::from($this->transformedValue());
                 }
-            }
+
+                // Continue looping.
+                return null;
+            });
+
+            return $result;
         } finally {
             $this->clearListeners();
+        }
+    }
+
+    /**
+     * Implementation of the prompt looping mechanism.
+     *
+     * @param  callable(string $key): ?Result  $callable
+     */
+    public function runLoop(callable $callable): mixed
+    {
+        while (($key = static::terminal()->read()) !== null) {
+            /**
+             * If $key is an empty string, Terminal::read
+             * has failed. We can continue to the next
+             * iteration of the loop, and try again.
+             */
+            if ($key === '') {
+                continue;
+            }
+
+            $result = $callable($key);
+
+            if ($result instanceof Result) {
+                return $result->value;
+            }
         }
     }
 
@@ -187,7 +223,7 @@ abstract class Prompt
      */
     protected static function output(): OutputInterface
     {
-        return self::$output ??= new ConsoleOutput();
+        return self::$output ??= new ConsoleOutput;
     }
 
     /**
@@ -207,7 +243,7 @@ abstract class Prompt
      */
     public static function terminal(): Terminal
     {
-        return static::$terminal ??= new Terminal();
+        return static::$terminal ??= new Terminal;
     }
 
     /**
@@ -277,7 +313,7 @@ abstract class Prompt
      */
     protected function submit(): void
     {
-        $this->validate($this->value());
+        $this->validate($this->transformedValue());
 
         if ($this->state !== 'error') {
             $this->state = 'submit';
@@ -322,10 +358,30 @@ abstract class Prompt
         }
 
         if ($this->validated) {
-            $this->validate($this->value());
+            $this->validate($this->transformedValue());
         }
 
         return true;
+    }
+
+    /**
+     * Transform the input.
+     */
+    private function transform(mixed $value): mixed
+    {
+        if (is_null($this->transform)) {
+            return $value;
+        }
+
+        return call_user_func($this->transform, $value);
+    }
+
+    /**
+     * Get the transformed value of the prompt.
+     */
+    protected function transformedValue(): mixed
+    {
+        return $this->transform($this->value());
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace Laravel\Prompts;
 
+use Closure;
+
 class TextareaPrompt extends Prompt
 {
     use Concerns\Scrolling;
@@ -24,6 +26,7 @@ class TextareaPrompt extends Prompt
         public mixed $validate = null,
         public string $hint = '',
         int $rows = 5,
+        public ?Closure $transform = null,
     ) {
         $this->scroll = $rows;
 
@@ -113,7 +116,7 @@ class TextareaPrompt extends Prompt
         $lines = collect($this->lines());
 
         // Line length + 1 for the newline character
-        $lineLengths = $lines->map(fn ($line, $index) => mb_strwidth($line) + ($index === $lines->count() - 1 ? 0 : 1));
+        $lineLengths = $lines->map(fn ($line, $index) => mb_strlen($line) + ($index === $lines->count() - 1 ? 0 : 1));
 
         $currentLineIndex = $this->currentLineIndex();
 
@@ -145,13 +148,13 @@ class TextareaPrompt extends Prompt
         $lines = collect($this->lines());
 
         // Line length + 1 for the newline character
-        $lineLengths = $lines->map(fn ($line, $index) => mb_strwidth($line) + ($index === $lines->count() - 1 ? 0 : 1));
+        $lineLengths = $lines->map(fn ($line, $index) => mb_strlen($line) + ($index === $lines->count() - 1 ? 0 : 1));
 
         $currentLineIndex = $this->currentLineIndex();
 
         if ($currentLineIndex === $lines->count() - 1) {
             // They're already at the last line, jump them to the last position
-            $this->cursorPosition = mb_strwidth($lines->implode(PHP_EOL));
+            $this->cursorPosition = mb_strlen($lines->implode(PHP_EOL));
 
             return;
         }
@@ -205,7 +208,7 @@ class TextareaPrompt extends Prompt
         $totalLineLength = 0;
 
         return (int) collect($this->lines())->search(function ($line) use (&$totalLineLength) {
-            $totalLineLength += mb_strwidth($line) + 1;
+            $totalLineLength += mb_strlen($line) + 1;
 
             return $totalLineLength > $this->cursorPosition;
         }) ?: 0;

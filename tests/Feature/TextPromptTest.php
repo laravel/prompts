@@ -30,6 +30,17 @@ it('accepts a default value', function () {
     expect($result)->toBe('Jess');
 });
 
+it('transforms values', function () {
+    Prompt::fake([Key::SPACE, 'J', 'e', 's', 's', Key::TAB, Key::ENTER]);
+
+    $result = text(
+        label: 'What is your name?',
+        transform: fn ($value) => trim($value),
+    );
+
+    expect($result)->toBe('Jess');
+});
+
 it('validates', function () {
     Prompt::fake(['J', 'e', 's', Key::ENTER, 's', Key::ENTER]);
 
@@ -148,3 +159,11 @@ it('allows customizing the cancellation', function () {
 
     text('What is your name?');
 })->throws(Exception::class, 'Cancelled.');
+
+it('handles a failed terminal read gracefully', function () {
+    Prompt::fake(['', Key::ENTER]);
+
+    $result = text('What is your name?');
+
+    expect($result)->toBe('');
+});
