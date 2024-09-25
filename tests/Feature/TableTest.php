@@ -53,7 +53,7 @@ it('renders a table with headers', function ($headers, $rows) {
                 ['Tim MacDonald', '@timacdonald87'],
                 ['Joe Dixon', '@_joedixon'],
             ]),
-        ]
+        ],
     ] : [],
 ]);
 
