@@ -39,21 +39,23 @@ it('renders a table with headers', function ($headers, $rows) {
             ['Joe Dixon', '@_joedixon'],
         ],
     ],
-    'collections' => [
-        fn () => collect(['Name', 'Twitter']),
-        fn () => collect([
-            ['Taylor Otwell', '@taylorotwell'],
-            ['Dries Vints', '@driesvints'],
-            ['James Brooks', '@jbrooksuk'],
-            ['Nuno Maduro', '@enunomaduro'],
-            ['Mior Muhammad Zaki', '@crynobone'],
-            ['Jess Archer', '@jessarchercodes'],
-            ['Guus Leeuw', '@phpguus'],
-            ['Tim MacDonald', '@timacdonald87'],
-            ['Joe Dixon', '@_joedixon'],
-        ]),
-    ],
-])->skip(! depends_on_collection());
+    ...depends_on_collection() ? [
+        'collections' => [
+            collect(['Name', 'Twitter']),
+            collect([
+                ['Taylor Otwell', '@taylorotwell'],
+                ['Dries Vints', '@driesvints'],
+                ['James Brooks', '@jbrooksuk'],
+                ['Nuno Maduro', '@enunomaduro'],
+                ['Mior Muhammad Zaki', '@crynobone'],
+                ['Jess Archer', '@jessarchercodes'],
+                ['Guus Leeuw', '@phpguus'],
+                ['Tim MacDonald', '@timacdonald87'],
+                ['Joe Dixon', '@_joedixon'],
+            ]),
+        ]
+    ] : [],
+]);
 
 it('renders a table without headers', function ($rows) {
     Prompt::fake();
