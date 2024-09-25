@@ -87,17 +87,19 @@ it('renders a table without headers', function ($rows) {
             ['Joe Dixon', '@_joedixon'],
         ],
     ],
-    'collections' => [
-        fn () => collect_or_array([
-            ['Taylor Otwell', '@taylorotwell'],
-            ['Dries Vints', '@driesvints'],
-            ['James Brooks', '@jbrooksuk'],
-            ['Nuno Maduro', '@enunomaduro'],
-            ['Mior Muhammad Zaki', '@crynobone'],
-            ['Jess Archer', '@jessarchercodes'],
-            ['Guus Leeuw', '@phpguus'],
-            ['Tim MacDonald', '@timacdonald87'],
-            ['Joe Dixon', '@_joedixon'],
-        ]),
-    ],
+    ...depends_on_collection() ? [
+        'collections' => [
+            collect([
+                ['Taylor Otwell', '@taylorotwell'],
+                ['Dries Vints', '@driesvints'],
+                ['James Brooks', '@jbrooksuk'],
+                ['Nuno Maduro', '@enunomaduro'],
+                ['Mior Muhammad Zaki', '@crynobone'],
+                ['Jess Archer', '@jessarchercodes'],
+                ['Guus Leeuw', '@phpguus'],
+                ['Tim MacDonald', '@timacdonald87'],
+                ['Joe Dixon', '@_joedixon'],
+            ]),
+        ],
+    ] : [],
 ]);

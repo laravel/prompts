@@ -41,8 +41,8 @@ it('renders a progress bar', function ($steps) {
     OUTPUT);
 })->with([
     'array' => [['Alabama', 'Alaska', 'Arizona', 'Arkansas']],
-    'collection' => [fn () => collect_or_array(['Alabama', 'Alaska', 'Arizona', 'Arkansas'])],
     'integer' => [4],
+    ...depends_on_collection() ? ['collection' => [collect(['Alabama', 'Alaska', 'Arizona', 'Arkansas'])]] : [],
 ]);
 
 it('renders a progress bar without a label', function () {

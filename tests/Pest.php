@@ -42,11 +42,6 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function collect_or_array(iterable $value): Collection|iterable
-{
-    return depends_on_collection() ? collect($value) : $value;
-}
-
 function depends_on_collection(): bool
 {
     return InstalledVersions::isInstalled('illuminate/collections');
