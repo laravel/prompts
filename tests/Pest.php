@@ -1,7 +1,6 @@
 <?php
 
 use Composer\InstalledVersions;
-use Illuminate\Support\Collection;
 
 /*
 |--------------------------------------------------------------------------
