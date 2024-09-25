@@ -25,9 +25,9 @@ class FormBuilder
     /**
      * Add a new step.
      */
-    public function add(Closure $step, ?string $name = null, bool $ignoreWhenReverting = false): self
+    public function add(Closure $step, ?string $name = null, bool $ignoreWhenReverting = false, bool|Closure $condition = true): self
     {
-        $this->steps[] = new FormStep($step, true, $name, $ignoreWhenReverting);
+        $this->steps[] = new FormStep($step, $condition, $name, $ignoreWhenReverting);
 
         return $this;
     }
