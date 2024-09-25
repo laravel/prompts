@@ -61,11 +61,11 @@ it('accepts a collection', function () {
             'Red',
             'Green',
             'Blue',
-        ])
+        ]),
     );
 
     expect($result)->toBe('Green');
-});
+})->skip(! depends_on_collection());
 
 it('accepts default values when the options are labels', function () {
     Prompt::fake([Key::ENTER]);
