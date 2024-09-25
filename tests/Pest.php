@@ -49,5 +49,5 @@ function collect_or_array(iterable $value): Collection|iterable
 
 function depends_on_collection(): bool
 {
-    return InstalledVersions::isInstalled('illuminate/collections', false);
+    return InstalledVersions::isInstalled('illuminate/collections');
 }
