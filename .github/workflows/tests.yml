@@ -77,7 +77,7 @@ jobs:
           command: composer remove illuminate/collections --dev --no-interaction --no-update
 
       - name: Install dependencies
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 5
           max_attempts: 5
