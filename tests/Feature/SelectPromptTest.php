@@ -57,11 +57,11 @@ it('accepts a collection', function () {
 
     $result = select(
         label: 'What is your favorite color?',
-        options: collect(
+        options: collect([
             'Red',
             'Green',
             'Blue',
-        ),
+        ]),
     );
 
     expect($result)->toBe('Green');
