@@ -39,20 +39,22 @@ it('renders a table with headers', function ($headers, $rows) {
             ['Joe Dixon', '@_joedixon'],
         ],
     ],
-    'collections' => [
-        collect(['Name', 'Twitter']),
-        collect([
-            ['Taylor Otwell', '@taylorotwell'],
-            ['Dries Vints', '@driesvints'],
-            ['James Brooks', '@jbrooksuk'],
-            ['Nuno Maduro', '@enunomaduro'],
-            ['Mior Muhammad Zaki', '@crynobone'],
-            ['Jess Archer', '@jessarchercodes'],
-            ['Guus Leeuw', '@phpguus'],
-            ['Tim MacDonald', '@timacdonald87'],
-            ['Joe Dixon', '@_joedixon'],
-        ]),
-    ],
+    ...depends_on_collection() ? [
+        'collections' => [
+            collect(['Name', 'Twitter']),
+            collect([
+                ['Taylor Otwell', '@taylorotwell'],
+                ['Dries Vints', '@driesvints'],
+                ['James Brooks', '@jbrooksuk'],
+                ['Nuno Maduro', '@enunomaduro'],
+                ['Mior Muhammad Zaki', '@crynobone'],
+                ['Jess Archer', '@jessarchercodes'],
+                ['Guus Leeuw', '@phpguus'],
+                ['Tim MacDonald', '@timacdonald87'],
+                ['Joe Dixon', '@_joedixon'],
+            ]),
+        ],
+    ] : [],
 ]);
 
 it('renders a table without headers', function ($rows) {
@@ -87,17 +89,19 @@ it('renders a table without headers', function ($rows) {
             ['Joe Dixon', '@_joedixon'],
         ],
     ],
-    'collections' => [
-        collect([
-            ['Taylor Otwell', '@taylorotwell'],
-            ['Dries Vints', '@driesvints'],
-            ['James Brooks', '@jbrooksuk'],
-            ['Nuno Maduro', '@enunomaduro'],
-            ['Mior Muhammad Zaki', '@crynobone'],
-            ['Jess Archer', '@jessarchercodes'],
-            ['Guus Leeuw', '@phpguus'],
-            ['Tim MacDonald', '@timacdonald87'],
-            ['Joe Dixon', '@_joedixon'],
-        ]),
-    ],
+    ...depends_on_collection() ? [
+        'collections' => [
+            collect([
+                ['Taylor Otwell', '@taylorotwell'],
+                ['Dries Vints', '@driesvints'],
+                ['James Brooks', '@jbrooksuk'],
+                ['Nuno Maduro', '@enunomaduro'],
+                ['Mior Muhammad Zaki', '@crynobone'],
+                ['Jess Archer', '@jessarchercodes'],
+                ['Guus Leeuw', '@phpguus'],
+                ['Tim MacDonald', '@timacdonald87'],
+                ['Joe Dixon', '@_joedixon'],
+            ]),
+        ],
+    ] : [],
 ]);

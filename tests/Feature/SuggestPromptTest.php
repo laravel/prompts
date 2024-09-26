@@ -96,7 +96,7 @@ it('accepts a collection', function () {
     ]));
 
     expect($result)->toBe('Blue');
-});
+})->skip(! depends_on_collection());
 
 it('accepts a callback returning a collection', function () {
     Prompt::fake(['b', Key::TAB, Key::ENTER]);
@@ -116,7 +116,7 @@ it('accepts a callback returning a collection', function () {
     );
 
     expect($result)->toBe('Blue');
-});
+})->skip(! depends_on_collection());
 
 it('transforms values', function () {
     Prompt::fake([Key::SPACE, 'J', 'e', 's', 's', Key::TAB, Key::ENTER]);
