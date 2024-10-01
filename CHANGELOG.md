@@ -1,6 +1,13 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.2.1...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.0...main)
+
+## [v0.3.0](https://github.com/laravel/prompts/compare/v0.2.1...v0.3.0) - 2024-09-30
+
+* Update logo to support dark/light theme by [@milewski](https://github.com/milewski) in https://github.com/laravel/prompts/pull/170
+* Uses `nick-fields/retry[@v3](https://github.com/v3)` by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/prompts/pull/169
+* [0.3.0] Remove circular dependency on `illuminate/collections` by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/168
+* Fix default values not being passed by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/174
 
 ## [v0.2.1](https://github.com/laravel/prompts/compare/v0.2.0...v0.2.1) - 2024-09-19
 
