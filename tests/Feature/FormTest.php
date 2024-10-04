@@ -194,7 +194,7 @@ it('can revert steps with conditions', function () {
     $responses = form()
         ->text('What is your name?')
         ->select('What is your language?', ['PHP', 'JS'])
-        ->add(fn ($responses) => text("Which version?"), condition: fn ($responses) => $responses[1] === 'PHP')
+        ->addIf(fn ($responses) => $responses[1] === 'PHP', fn ($responses) => text("Which version?"))
         ->confirm('Are you sure?')
         ->submit();
 
@@ -216,7 +216,7 @@ it('leaves skipped conditional field empty', function () {
     $responses = form()
         ->text('What is your name?')
         ->select('What is your language?', ['PHP', 'JS'])
-        ->add(fn ($responses) => text("Which version?"), condition: fn ($responses) => $responses[1] === 'PHP')
+        ->addIf(fn ($responses) => $responses[1] === 'PHP', fn ($responses) => text("Which version?"))
         ->confirm('Are you sure?')
         ->submit();
 
