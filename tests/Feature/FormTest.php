@@ -6,6 +6,7 @@ use Laravel\Prompts\Prompt;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\form;
 use function Laravel\Prompts\outro;
+use function Laravel\Prompts\text;
 
 it('can run multiple steps', function () {
     Prompt::fake([
@@ -178,4 +179,51 @@ it('stops steps at the moment of reverting', function () {
         })->submit();
 
     Prompt::assertOutputDoesntContain('This should not appear!');
+});
+
+it('can revert steps with conditions', function () {
+    Prompt::fake([
+        'L', 'u', 'k', 'e', Key::ENTER, // name
+        Key::DOWN, Key::ENTER, // JS
+        Key::CTRL_U, // revert
+        Key::UP, Key::ENTER, // PHP
+        '8', '.', '3', Key::ENTER, // version
+        Key::ENTER,
+    ]);
+
+    $responses = form()
+        ->text('What is your name?')
+        ->select('What is your language?', ['PHP', 'JS'])
+        ->addIf(fn ($responses) => $responses[1] === 'PHP', fn ($responses) => text("Which version?"))
+        ->confirm('Are you sure?')
+        ->submit();
+
+    expect($responses)->toBe([
+        'Luke',
+        'PHP',
+        '8.3',
+        true,
+    ]);
+});
+
+it('leaves skipped conditional field empty', function () {
+    Prompt::fake([
+        'L', 'u', 'k', 'e', Key::ENTER, // name
+        Key::DOWN, Key::ENTER, // JS
+        Key::ENTER,
+    ]);
+
+    $responses = form()
+        ->text('What is your name?')
+        ->select('What is your language?', ['PHP', 'JS'])
+        ->addIf(fn ($responses) => $responses[1] === 'PHP', fn ($responses) => text("Which version?"))
+        ->confirm('Are you sure?')
+        ->submit();
+
+    expect($responses)->toBe([
+        'Luke',
+        'JS',
+        null,
+        true,
+    ]);
 });

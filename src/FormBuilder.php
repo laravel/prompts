@@ -33,6 +33,16 @@ class FormBuilder
     }
 
     /**
+     * Add a new conditional step.
+     */
+    public function addIf(Closure|bool $condition, Closure $step, ?string $name = null, bool $ignoreWhenReverting = false): self
+    {
+        $this->steps[] = new FormStep($step, $condition, $name, $ignoreWhenReverting);
+
+        return $this;
+    }
+
+    /**
      * Run all of the given steps.
      *
      * @return array<mixed>
