@@ -1,5 +1,7 @@
 <?php
 
+use Composer\InstalledVersions;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -39,7 +41,7 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function depends_on_collection(): bool
 {
-    // ..
+    return InstalledVersions::isInstalled('illuminate/collections');
 }

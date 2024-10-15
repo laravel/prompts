@@ -107,25 +107,35 @@ it('supports default results', function ($options, $expected) {
     expect($result)->toBe($expected);
 })->with([
     'associative' => [
-        fn ($value) => collect([
-            'red' => 'Red',
-            'orange' => 'Orange',
-            'yellow' => 'Yellow',
-            'green' => 'Green',
-            'blue' => 'Blue',
-            'indigo' => 'Indigo',
-            'violet' => 'Violet',
-        ])->when(
-            strlen($value),
-            fn ($colors) => $colors->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
-        )->all(),
+        function ($value) {
+            $options = [
+                'red' => 'Red',
+                'orange' => 'Orange',
+                'yellow' => 'Yellow',
+                'green' => 'Green',
+                'blue' => 'Blue',
+                'indigo' => 'Indigo',
+                'violet' => 'Violet',
+            ];
+
+            if (strlen($value) === 0) {
+                return $options;
+            }
+
+            return array_filter($options, fn ($label) => str_contains(strtolower($label), strtolower($value)));
+        },
         ['violet', 'green'],
     ],
     'list' => [
-        fn ($value) => collect(['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet'])->when(
-            strlen($value),
-            fn ($colors) => $colors->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
-        )->values()->all(),
+        function ($value) {
+            $options = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet'];
+
+            if (strlen($value) === 0) {
+                return $options;
+            }
+
+            return array_values(array_filter($options, fn ($label) => str_contains(strtolower($label), strtolower($value))));
+        },
         ['Violet', 'Green'],
     ],
 ]);
@@ -232,7 +242,7 @@ it('supports no default results', function ($options, $expected) {
     expect($result)->toBe($expected);
 })->with([
     'associative' => [
-        fn ($value) => strlen($value) > 0 ? collect([
+        fn ($value) => strlen($value) > 0 ? array_filter([
             'red' => 'Red',
             'orange' => 'Orange',
             'yellow' => 'Yellow',
@@ -240,14 +250,11 @@ it('supports no default results', function ($options, $expected) {
             'blue' => 'Blue',
             'indigo' => 'Indigo',
             'violet' => 'Violet',
-        ])->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))->all() : [],
+        ], fn ($label) => str_contains(strtolower($label), strtolower($value))) : [],
         ['violet', 'green'],
     ],
     'list' => [
-        fn ($value) => strlen($value) > 0 ? collect(['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet'])
-            ->filter(fn ($label) => str_contains(strtolower($label), strtolower($value)))
-            ->values()
-            ->all() : [],
+        fn ($value) => strlen($value) > 0 ? array_values(array_filter(['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet'], fn ($label) => str_contains(strtolower($label), strtolower($value)))) : [],
         ['Violet', 'Green'],
     ],
 ]);

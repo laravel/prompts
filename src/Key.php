@@ -99,6 +99,14 @@ class Key
      */
     public static function oneOf(array $keys, string $match): ?string
     {
-        return collect($keys)->flatten()->contains($match) ? $match : null;
+        foreach ($keys as $key) {
+            if (is_array($key) && static::oneOf($key, $match) !== null) {
+                return $match;
+            } elseif ($key === $match) {
+                return $match;
+            }
+        }
+
+        return null;
     }
 }

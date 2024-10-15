@@ -102,7 +102,7 @@ it('accepts collections', function () {
     );
 
     expect($result)->toBe(['Green']);
-});
+})->skip(! depends_on_collection());
 
 it('transforms values', function () {
     Prompt::fake([Key::DOWN, Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);

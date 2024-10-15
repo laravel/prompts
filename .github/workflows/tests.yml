@@ -21,7 +21,7 @@ jobs:
       matrix:
         php: [8.1, 8.2, 8.3, 8.4]
 
-    name: PHP ${{ matrix.php }}
+    name: PHP ${{ matrix.php }} - With Collections
 
     steps:
       - name: Checkout code
@@ -37,7 +37,47 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 5
+          max_attempts: 5
+          command: composer update --prefer-stable --prefer-dist --no-interaction --no-progress
+
+      - name: Execute tests
+        run: vendor/bin/pest
+
+  without_collections:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.1, 8.2, 8.3]
+
+    name: PHP ${{ matrix.php }} - Without Collections
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip
+          ini-values: error_reporting=E_ALL
+          tools: composer:v2
+          coverage: none
+
+      - name: Remove collections
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 5
+          max_attempts: 5
+          command: composer remove illuminate/collections --dev --no-interaction --no-update
+
+      - name: Install dependencies
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 5
           max_attempts: 5
