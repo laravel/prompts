@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.0...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.1...main)
+
+## [v0.3.1](https://github.com/laravel/prompts/compare/v0.3.0...v0.3.1) - 2024-10-09
+
+* Adds support for conditional steps by [@jochem-blok](https://github.com/jochem-blok) in https://github.com/laravel/prompts/pull/171
 
 ## [v0.3.0](https://github.com/laravel/prompts/compare/v0.2.1...v0.3.0) - 2024-09-30
 
