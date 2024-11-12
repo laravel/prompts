@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.1...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.2...main)
+
+## [v0.3.2](https://github.com/laravel/prompts/compare/v0.3.1...v0.3.2) - 2024-11-12
+
+* [0.3.x] Supports PHP 8.4 by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/prompts/pull/167
 
 ## [v0.3.1](https://github.com/laravel/prompts/compare/v0.3.0...v0.3.1) - 2024-10-09
 
