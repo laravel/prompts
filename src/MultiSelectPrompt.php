@@ -59,7 +59,7 @@ class MultiSelectPrompt extends Prompt
             Key::oneOf(Key::END, $key) => $this->highlight(count($this->options) - 1),
             Key::SPACE => $this->toggleHighlighted(),
             Key::CTRL_A => $this->toggleAll(),
-            Key::ENTER => $this->submit(),
+            Key::ENTER, Key::CR => $this->submit(),
             default => null,
         });
     }

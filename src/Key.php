@@ -32,6 +32,8 @@ class Key
 
     const ENTER = "\n";
 
+    const CR = "\r";
+
     const SPACE = ' ';
 
     const TAB = "\t";

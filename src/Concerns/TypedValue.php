@@ -53,7 +53,7 @@ trait TypedValue
                     return;
                 }
 
-                if ($key === Key::ENTER) {
+                if ($key === Key::ENTER || $key === Key::CR) {
                     if ($submit) {
                         $this->submit();
 
