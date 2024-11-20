@@ -57,7 +57,7 @@ class MultiSearchPrompt extends Prompt
             Key::SPACE => $this->highlighted !== null ? $this->toggleHighlighted() : null,
             Key::CTRL_A => $this->highlighted !== null ? $this->toggleAll() : null,
             Key::CTRL_E => null,
-            Key::ENTER => $this->submit(),
+            Key::ENTER, Key::CR => $this->submit(),
             Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW => $this->highlighted = null,
             default => $this->search(),
         });
