@@ -8,9 +8,13 @@ class Key
 
     const SHIFT_UP = "\e[1;2A";
 
+    const PAGE_UP = "\e[5~";
+
     const DOWN = "\e[B";
 
     const SHIFT_DOWN = "\e[1;2B";
+
+    const PAGE_DOWN = "\e[6~";
 
     const RIGHT = "\e[C";
 
