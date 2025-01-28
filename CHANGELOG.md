@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.3...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.4...main)
+
+## [v0.3.4](https://github.com/laravel/prompts/compare/v0.3.3...v0.3.4) - 2025-01-24
+
+* Supports Laravel 12 by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/prompts/pull/182
 
 ## [v0.3.3](https://github.com/laravel/prompts/compare/v0.3.2...v0.3.3) - 2024-12-30
 
