@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.4...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.5...main)
+
+## [v0.3.5](https://github.com/laravel/prompts/compare/v0.3.4...v0.3.5) - 2025-02-11
+
+* Pass name to the FormStep. by [@AlexSkrypnyk](https://github.com/AlexSkrypnyk) in https://github.com/laravel/prompts/pull/183
 
 ## [v0.3.4](https://github.com/laravel/prompts/compare/v0.3.3...v0.3.4) - 2025-01-24
 
