@@ -354,7 +354,7 @@ it('supports custom validation', function () {
 
     Prompt::assertOutputContains('And green?');
 
-    Prompt::validateUsing(fn () => null);
+    Prompt::validateUsing(null);
 });
 
 it('supports selecting all options', function () {

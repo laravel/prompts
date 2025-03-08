@@ -145,5 +145,5 @@ it('supports custom validation', function () {
 
     Prompt::assertOutputContains('Need to be sure!');
 
-    Prompt::validateUsing(fn () => null);
+    Prompt::validateUsing(null);
 });
