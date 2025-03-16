@@ -69,14 +69,6 @@ trait Colors
     }
 
     /**
-     * Set the text color to black.
-     */
-    public function black(string $text): string
-    {
-        return "\e[30m{$text}\e[39m";
-    }
-
-    /**
      * Set the text color to red.
      */
     public function red(string $text): string
@@ -93,27 +85,11 @@ trait Colors
     }
 
     /**
-     * Set the text color to yellow.
-     */
-    public function yellow(string $text): string
-    {
-        return "\e[33m{$text}\e[39m";
-    }
-
-    /**
      * Set the text color to blue.
      */
     public function blue(string $text): string
     {
         return "\e[34m{$text}\e[39m";
-    }
-
-    /**
-     * Set the text color to magenta.
-     */
-    public function magenta(string $text): string
-    {
-        return "\e[35m{$text}\e[39m";
     }
 
     /**
@@ -125,19 +101,43 @@ trait Colors
     }
 
     /**
+     * Set the text color to magenta.
+     */
+    public function magenta(string $text): string
+    {
+        return "\e[35m{$text}\e[39m";
+    }
+
+    /**
+     * Set the text color to yellow.
+     */
+    public function yellow(string $text): string
+    {
+        return "\e[33m{$text}\e[39m";
+    }
+
+    /**
+     * Set the text color to black.
+     */
+    public function black(string $text): string
+    {
+        return "\e[30m{$text}\e[39m";
+    }
+
+    /**
+     * Set the text color to gray.
+     */
+    public function gray(string $text): string
+    {
+        return "\e[90m{$text}\e[39m";
+    }
+
+    /**
      * Set the text color to white.
      */
     public function white(string $text): string
     {
         return "\e[37m{$text}\e[39m";
-    }
-
-    /**
-     * Set the text background to black.
-     */
-    public function bgBlack(string $text): string
-    {
-        return "\e[40m{$text}\e[49m";
     }
 
     /**
@@ -157,27 +157,11 @@ trait Colors
     }
 
     /**
-     * Set the text background to yellow.
-     */
-    public function bgYellow(string $text): string
-    {
-        return "\e[43m{$text}\e[49m";
-    }
-
-    /**
      * Set the text background to blue.
      */
     public function bgBlue(string $text): string
     {
         return "\e[44m{$text}\e[49m";
-    }
-
-    /**
-     * Set the text background to magenta.
-     */
-    public function bgMagenta(string $text): string
-    {
-        return "\e[45m{$text}\e[49m";
     }
 
     /**
@@ -189,18 +173,34 @@ trait Colors
     }
 
     /**
+     * Set the text background to magenta.
+     */
+    public function bgMagenta(string $text): string
+    {
+        return "\e[45m{$text}\e[49m";
+    }
+
+    /**
+     * Set the text background to yellow.
+     */
+    public function bgYellow(string $text): string
+    {
+        return "\e[43m{$text}\e[49m";
+    }
+
+    /**
+     * Set the text background to black.
+     */
+    public function bgBlack(string $text): string
+    {
+        return "\e[40m{$text}\e[49m";
+    }
+
+    /**
      * Set the text background to white.
      */
     public function bgWhite(string $text): string
     {
         return "\e[47m{$text}\e[49m";
-    }
-
-    /**
-     * Set the text color to gray.
-     */
-    public function gray(string $text): string
-    {
-        return "\e[90m{$text}\e[39m";
     }
 }
