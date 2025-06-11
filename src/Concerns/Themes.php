@@ -5,6 +5,7 @@ namespace Laravel\Prompts\Concerns;
 use InvalidArgumentException;
 use Laravel\Prompts\Clear;
 use Laravel\Prompts\ConfirmPrompt;
+use Laravel\Prompts\Link;
 use Laravel\Prompts\MultiSearchPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Note;
@@ -20,6 +21,7 @@ use Laravel\Prompts\TextareaPrompt;
 use Laravel\Prompts\TextPrompt;
 use Laravel\Prompts\Themes\Default\ClearRenderer;
 use Laravel\Prompts\Themes\Default\ConfirmPromptRenderer;
+use Laravel\Prompts\Themes\Default\LinkRenderer;
 use Laravel\Prompts\Themes\Default\MultiSearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\MultiSelectPromptRenderer;
 use Laravel\Prompts\Themes\Default\NoteRenderer;
@@ -63,6 +65,7 @@ trait Themes
             Table::class => TableRenderer::class,
             Progress::class => ProgressRenderer::class,
             Clear::class => ClearRenderer::class,
+            Link::class => LinkRenderer::class,
         ],
     ];
 
