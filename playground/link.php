@@ -23,11 +23,11 @@ link(
 );
 
 link(
-    message: '',
+    message: 'Visit Laravel Documentation:',
     path: 'https://laravel.com/docs'
 );
 
 link(
-    message: 'Visit Laravel Documentation:',
+    message: '',
     path: 'https://laravel.com/docs'
 );
