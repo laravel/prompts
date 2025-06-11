@@ -335,13 +335,13 @@ if (! function_exists('\Laravel\Prompts\form')) {
 if (! function_exists('\Laravel\Prompts\link')) {
     /**
      * Display a link.
+     *
      * @param  string  $message  The message to display for the link.
-     * @param  string  $path     The file path or URL the link points to.
-     * @param  ?string $tooltip  The tooltip text that appears on the link.
+     * @param  string  $path  The file path or URL the link points to.
+     * @param  ?string  $tooltip  The tooltip text that appears on the link.
      */
     function link(string $message, string $path, ?string $tooltip = null): void
     {
         (new Link($message, $path, $tooltip))->display();
     }
 }
-

@@ -18,7 +18,7 @@ link(
 
 link(
     message: '<fg=green;options=bold>Visit Laravel Documentation:</>',
-    path:  'https://laravel.com/docs',
+    path: 'https://laravel.com/docs',
     tooltip: 'Click here'
 );
 

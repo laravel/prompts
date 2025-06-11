@@ -38,13 +38,13 @@ class LinkRenderer extends Renderer
             return $path;
         }
 
-        $path = '/' . ltrim(strtr($path, '\\', '/'), '/');
+        $path = '/'.ltrim(strtr($path, '\\', '/'), '/');
 
         return $this->isVSCode() ? "vscode://file{$path}" : "file://{$path}";
     }
 
     protected function isVSCode(): bool
     {
-        return ($_SERVER['TERM_PROGRAM'] ?? null) === "vscode";
+        return ($_SERVER['TERM_PROGRAM'] ?? null) === 'vscode';
     }
 }
