@@ -38,7 +38,7 @@ class SelectPrompt extends Prompt
 
         $this->options = $options instanceof Collection ? $options->all() : $options;
 
-        if ($this->default) {
+        if ($this->default !== null) {
             if (array_is_list($this->options)) {
                 $this->initializeScrolling(array_search($this->default, $this->options) ?: 0);
             } else {

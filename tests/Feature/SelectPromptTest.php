@@ -371,7 +371,7 @@ it('handles falsy default', function () {
     Prompt::fake([Key::ENTER]);
 
     $result = select(
-        label: 'How many stars would you like to give',
+        label: 'How many stars would you like to give?',
         options: [
             '3',
             '2',
