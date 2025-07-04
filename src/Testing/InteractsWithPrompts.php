@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Laravel\Prompts\Testing;
 
+use Illuminate\Support\Collection;
 use Laravel\Prompts\Note;
 use Laravel\Prompts\Table;
 use Laravel\Prompts\Prompt;
@@ -25,8 +26,6 @@ trait InteractsWithPrompts
     public function setUpInteractsWithPrompts(): void
     {
         $expectOutputFromPrompt = function (Prompt $prompt) {
-            /** @var PendingCommand $this */
-
             $prompt->setOutput($output = new BufferedOutput);
             $prompt->display();
 
@@ -87,7 +86,7 @@ trait InteractsWithPrompts
 
         PendingCommand::macro(
             'expectsPromptTable',
-            fn (array $headers, array $rows) => $expectOutputFromPrompt->call(
+            fn (array|Collection $headers, array|Collection|null $rows = null) => $expectOutputFromPrompt->call(
                 $this,
                 new Table($headers, $rows)
             )
