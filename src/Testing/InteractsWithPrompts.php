@@ -1,0 +1,96 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Laravel\Prompts\Testing;
+
+use Laravel\Prompts\Note;
+use Laravel\Prompts\Table;
+use Laravel\Prompts\Prompt;
+use Illuminate\Testing\PendingCommand;
+use Symfony\Component\Console\Output\BufferedOutput;
+
+trait InteractsWithPrompts
+{
+    /**
+     * This method is automatically called from the setUpTraits method of InteractsWithTestCaseLifecycle
+     * to use the trait and allow for the macros to be set up -
+     *
+     * PHPUnit: add the following to your Test class
+     *   use \Laravel\Prompts\Testing\InteractsWithPrompts;
+     *
+     * Pest: add the following to your test file
+     *   uses()->use(\Laravel\Prompts\Testing\InteractsWithPrompts::class);
+     */
+    public function setUpInteractsWithPrompts(): void
+    {
+        $expectOutputFromPrompt = function (Prompt $prompt) {
+            /** @var PendingCommand $this */
+
+            $prompt->setOutput($output = new BufferedOutput);
+            $prompt->display();
+
+            $tableOutput = trim($output->fetch());
+
+            $this->expectsOutputToContain($tableOutput);
+
+            return $this;
+        };
+
+        PendingCommand::macro(
+            'expectsPromptError',
+            fn (string $message) => $expectOutputFromPrompt->call(
+                $this,
+                new Note($message, 'error')
+            )
+        );
+
+        PendingCommand::macro(
+            'expectsPromptWarning',
+            fn (string $message) => $expectOutputFromPrompt->call(
+                $this,
+                new Note($message, 'warning')
+            )
+        );
+
+        PendingCommand::macro(
+            'expectsPromptAlert',
+            fn (string $message) => $expectOutputFromPrompt->call(
+                $this,
+                new Note($message, 'alert')
+            )
+        );
+
+        PendingCommand::macro(
+            'expectsPromptInfo',
+            fn (string $message) => $expectOutputFromPrompt->call(
+                $this,
+                new Note($message, 'info')
+            )
+        );
+
+        PendingCommand::macro(
+            'expectsPromptIntro',
+            fn (string $message) => $expectOutputFromPrompt->call(
+                $this,
+                new Note($message, 'intro')
+            )
+        );
+
+        PendingCommand::macro(
+            'expectsPromptOutro',
+            fn (string $message) => $expectOutputFromPrompt->call(
+                $this,
+                new Note($message, 'outro')
+            )
+        );
+
+        PendingCommand::macro(
+            'expectsPromptTable',
+            fn (array $headers, array $rows) => $expectOutputFromPrompt->call(
+                $this,
+                new Table($headers, $rows)
+            )
+        );
+    }
+}
