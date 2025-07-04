@@ -249,7 +249,7 @@ abstract class Prompt
     /**
      * Set the custom validation callback.
      */
-    public static function validateUsing(Closure $callback): void
+    public static function validateUsing(?Closure $callback): void
     {
         static::$validateUsing = $callback;
     }
@@ -403,8 +403,8 @@ abstract class Prompt
         }
 
         $error = match (true) {
-            is_callable($this->validate) => ($this->validate)($value),
             isset(static::$validateUsing) => (static::$validateUsing)($this),
+            is_callable($this->validate) => ($this->validate)($value),
             default => throw new RuntimeException('The validation logic is missing.'),
         };
 
