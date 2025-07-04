@@ -4,5 +4,9 @@ parameters:
 
   level: 7
 
+  excludePaths:
+      analyse:
+          - src/Progress.php # Progress causes infinite loop
+
 includes:
     - vendor/phpstan/phpstan-mockery/extension.neon
