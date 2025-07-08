@@ -14,24 +14,16 @@ use Symfony\Component\Console\Output\BufferedOutput;
 trait InteractsWithPrompts
 {
     /**
-     * This method is automatically called from the setUpTraits method of InteractsWithTestCaseLifecycle
-     * to use the trait and allow for the macros to be set up -
-     *
-     * PHPUnit: add the following to your Test class
-     *   use \Laravel\Prompts\Testing\InteractsWithPrompts;
-     *
-     * Pest: add the following to your test file
-     *   uses()->use(\Laravel\Prompts\Testing\InteractsWithPrompts::class);
+     * This method is automatically called from the setUpTraits method of InteractsWithTestCaseLifecycle.
      */
     public function setUpInteractsWithPrompts(): void
     {
         $expectOutputFromPrompt = function (Prompt $prompt) {
             $prompt->setOutput($output = new BufferedOutput);
+
             $prompt->display();
 
-            $tableOutput = trim($output->fetch());
-
-            $this->expectsOutputToContain($tableOutput);
+            $this->expectsOutputToContain(trim($output->fetch()));
 
             return $this;
         };
