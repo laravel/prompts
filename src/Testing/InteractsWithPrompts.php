@@ -3,10 +3,10 @@
 namespace Laravel\Prompts\Testing;
 
 use Illuminate\Support\Collection;
-use Laravel\Prompts\Note;
-use Laravel\Prompts\Table;
-use Laravel\Prompts\Prompt;
 use Illuminate\Testing\PendingCommand;
+use Laravel\Prompts\Note;
+use Laravel\Prompts\Prompt;
+use Laravel\Prompts\Table;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 trait InteractsWithPrompts
@@ -27,10 +27,10 @@ trait InteractsWithPrompts
         };
 
         PendingCommand::macro(
-            'expectsPromptError',
+            'expectsPromptInfo',
             fn (string $message) => $expectOutputFromPrompt->call(
                 $this,
-                new Note($message, 'error')
+                new Note($message, 'info')
             )
         );
 
@@ -43,18 +43,18 @@ trait InteractsWithPrompts
         );
 
         PendingCommand::macro(
-            'expectsPromptAlert',
+            'expectsPromptError',
             fn (string $message) => $expectOutputFromPrompt->call(
                 $this,
-                new Note($message, 'alert')
+                new Note($message, 'error')
             )
         );
 
         PendingCommand::macro(
-            'expectsPromptInfo',
+            'expectsPromptAlert',
             fn (string $message) => $expectOutputFromPrompt->call(
                 $this,
-                new Note($message, 'info')
+                new Note($message, 'alert')
             )
         );
 
