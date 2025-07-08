@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Laravel\Prompts\Testing;
 
 use Illuminate\Support\Collection;
