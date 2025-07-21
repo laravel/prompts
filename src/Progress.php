@@ -55,6 +55,7 @@ class Progress extends Prompt
      *
      * @param  Closure((TSteps is int ? int : value-of<TSteps>), $this): TReturn  $callback
      * @return array<TReturn>
+     *
      * @throws Throwable
      */
     public function map(Closure $callback): array
