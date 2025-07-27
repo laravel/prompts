@@ -186,7 +186,7 @@ it("can show estimated time remaining", function () {
     Prompt::assertOutputContains('Estimated time remaining');
 });
 
-it("can override hint and show estimated time remaining", function () {
+it("can show hint on start and show estimated time remaining", function () {
     Prompt::fake();
 
     $states = [
