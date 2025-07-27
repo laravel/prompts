@@ -159,3 +159,29 @@ it('can update the label and hint in manual mode', function () {
         Prompt::assertOutputContains(strtolower($state));
     }
 });
+
+it("can show estimated time remaining", function () {
+    Prompt::fake();
+
+    $states = [
+        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
+    ];
+
+    $progress = progress(
+        label: 'Adding States',
+        steps: $states,
+        showEstimatedTime: true
+    );
+
+    $progress->start();
+
+    foreach ($states as $state) {
+        usleep(1000);
+        $progress->advance();
+    }
+
+    $progress->finish();
+
+    Prompt::assertOutputContains('Calculating...');
+    Prompt::assertOutputContains('Estimated time remaining');
+});

@@ -53,6 +53,10 @@ class Progress extends Prompt
         }
 
         $this->startTime = microtime(true);
+
+        if ($this->showEstimatedTime && $this->hint === '') {
+            $this->hint = 'Estimated time remaining: Calculating...';
+        }
     }
 
     /**
