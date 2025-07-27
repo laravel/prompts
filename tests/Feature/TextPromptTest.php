@@ -150,7 +150,7 @@ it('supports custom validation', function () {
 
     Prompt::assertOutputContains('Minimum 2 chars!');
 
-    Prompt::validateUsing(fn () => null);
+    Prompt::validateUsing(null);
 });
 
 it('allows customizing the cancellation', function () {

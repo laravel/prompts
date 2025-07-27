@@ -113,5 +113,5 @@ it('supports custom validation', function () {
 
     Prompt::assertOutputContains('Minimum 8 chars!');
 
-    Prompt::validateUsing(fn () => null);
+    Prompt::validateUsing(null);
 });
