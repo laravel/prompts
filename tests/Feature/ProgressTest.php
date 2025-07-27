@@ -185,3 +185,30 @@ it("can show estimated time remaining", function () {
     Prompt::assertOutputContains('Calculating...');
     Prompt::assertOutputContains('Estimated time remaining');
 });
+
+it("can override hint and show estimated time remaining", function () {
+    Prompt::fake();
+
+    $states = [
+        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
+    ];
+
+    $progress = progress(
+        label: 'Adding States',
+        steps: $states,
+        hint: 'Custom hint',
+        showEstimatedTime: true
+    );
+
+    $progress->start();
+
+    foreach ($states as $state) {
+        usleep(1000);
+        $progress->advance();
+    }
+
+    $progress->finish();
+
+    Prompt::assertOutputContains('Custom hint');
+    Prompt::assertOutputContains('Estimated time remaining');
+});
