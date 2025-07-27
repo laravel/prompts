@@ -28,11 +28,16 @@ class Progress extends Prompt
     protected bool $originalAsync;
 
     /**
+     * The time the progress bar started.
+     */
+    protected float $startTime;
+
+    /**
      * Create a new ProgressBar instance.
      *
      * @param  TSteps  $steps
      */
-    public function __construct(public string $label, public iterable|int $steps, public string $hint = '')
+    public function __construct(public string $label, public iterable|int $steps, public string $hint = '', public bool $showEstimatedTime = false)
     {
         /** @phpstan-ignore assign.propertyType (PHPStan doesn't parse that we convert from iterable to int in the below match) */
         $this->total = match (true) {
@@ -46,6 +51,8 @@ class Progress extends Prompt
         if ($this->total === 0) {
             throw new InvalidArgumentException('Progress bar must have at least one item.');
         }
+
+        $this->startTime = microtime(true);
     }
 
     /**
@@ -97,6 +104,21 @@ class Progress extends Prompt
     }
 
     /**
+     * Calculate the estimated time remaining.
+     *
+     * @return void
+     */
+    protected function estimateTime(): void
+    {
+        if ($this->showEstimatedTime) {
+            $elapsed = microtime(true) - $this->startTime;
+            $remainingSteps = $this->total - $this->progress;
+            $etaSeconds = ($this->progress > 0) ? ($elapsed / $this->progress) * $remainingSteps : 0;
+            $this->hint = "Estimated time remaining: " . gmdate('H:i:s', (int) $etaSeconds);
+        }
+    }
+
+    /**
      * Start the progress bar.
      */
     public function start(): void
@@ -128,6 +150,9 @@ class Progress extends Prompt
             $this->progress = $this->total;
         }
 
+        if ($this->showEstimatedTime) {
+            $this->estimateTime();
+        }
         $this->render();
     }
 

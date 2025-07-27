@@ -314,8 +314,9 @@ if (! function_exists('\Laravel\Prompts\progress')) {
         iterable|int $steps,
         ?Closure $callback = null,
         string $hint = '',
+        bool $showEstimatedTime = false,
     ): array|Progress {
-        $progress = new Progress($label, $steps, $hint);
+        $progress = new Progress($label, $steps, $hint, $showEstimatedTime);
 
         if ($callback !== null) {
             return $progress->map($callback);
