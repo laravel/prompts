@@ -40,6 +40,9 @@ $role = select(
         default => null
     },
     hint: 'The country will determine the currency and the timezone of the user.',
+    description: 'Please select your country from the list below. This information will be used to configure your regional settings, including currency format, date format, and default timezone.
+
+Your selection will affect how dates and prices are displayed throughout the application.',
 );
 
 var_dump($role);

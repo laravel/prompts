@@ -38,6 +38,9 @@ $selected = multisearch(
             return 'Jess cannot receive emails';
         }
     },
+    description: 'Search and select multiple users to receive the notification email. Type to filter users dynamically and use the space bar to select recipients.
+
+The search performs a live lookup against the user database. Selected users will receive the email notification immediately.',
 );
 
 var_dump($selected);

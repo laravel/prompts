@@ -147,3 +147,37 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('accepts a single line description', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $result = confirm(
+        label: 'Delete this file?',
+        description: 'This action cannot be undone.',
+        default: false
+    );
+
+    expect($result)->toBe(false);
+    Prompt::assertOutputContains('This action cannot be undone.');
+});
+
+it('accepts a multi-line description', function () {
+    Prompt::fake([Key::UP, Key::ENTER]);
+
+    $result = confirm(
+        label: 'Deploy to production?',
+        description: 'You are about to deploy the current version to the production environment. This will make your changes live and accessible to all users.
+
+Make sure you have tested all functionality and that the database migrations are compatible with the production schema.',
+        default: false
+    );
+
+    expect($result)->toBe(true);
+
+    Prompt::assertOutputContains('You are about to deploy the current version to the');
+    Prompt::assertOutputContains('production environment. This will make your changes live and');
+    Prompt::assertOutputContains('accessible to all users.');
+    Prompt::assertOutputContains('Make sure you have tested all functionality and that the');
+    Prompt::assertOutputContains('database migrations are compatible with the production');
+    Prompt::assertOutputContains('schema.');
+});

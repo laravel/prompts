@@ -13,6 +13,9 @@ $password = password(
         default => null,
     },
     hint: 'Your password will be encrypted and stored securely.',
+    description: 'Create a secure password for your account. Use a combination of uppercase letters, lowercase letters, numbers, and special characters.
+
+Your password should be at least 8 characters long and unique to this account.'
 );
 
 var_dump($password);

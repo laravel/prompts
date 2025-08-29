@@ -11,6 +11,9 @@ $confirmed = confirm(
         default => null,
     },
     hint: 'Dependencies are required to run the application.',
+    description: 'This will install all composer packages and npm dependencies required for the application to function properly.
+
+The installation process may take a few minutes depending on your internet connection.'
 );
 
 var_dump($confirmed);

@@ -2,6 +2,7 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
+use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SearchPrompt;
 use Laravel\Prompts\Themes\Contracts\Scrolling;
 
@@ -9,6 +10,7 @@ class SearchPromptRenderer extends Renderer implements Scrolling
 {
     use Concerns\DrawsBoxes;
     use Concerns\DrawsScrollbars;
+    use Concerns\RendersDescription;
 
     /**
      * Render the suggest prompt.
@@ -16,18 +18,21 @@ class SearchPromptRenderer extends Renderer implements Scrolling
     public function __invoke(SearchPrompt $prompt): string
     {
         $maxWidth = $prompt->terminal()->cols() - 6;
+        $hasDescription = $prompt->description && trim($prompt->description) !== '';
 
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->truncate($prompt->label(), $maxWidth),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->truncate($prompt->label(), $maxWidth),
+                    $hasDescription ? $this->truncate($prompt->label(), $maxWidth) : '',
                 ),
 
             'cancel' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->strikethrough($this->dim($this->truncate($prompt->searchValue() ?: $prompt->placeholder, $maxWidth))),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->strikethrough($this->dim($this->truncate($prompt->searchValue() ?: $prompt->placeholder, $maxWidth))),
+                    $hasDescription ? $this->strikethrough($this->dim($this->truncate($prompt->searchValue() ?: $prompt->placeholder, $maxWidth))) : '',
                     color: 'red',
                 )
                 ->error($prompt->cancelMessage),
@@ -35,8 +40,8 @@ class SearchPromptRenderer extends Renderer implements Scrolling
             'error' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $prompt->valueWithCursor($maxWidth),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $prompt->valueWithCursor($maxWidth),
+                    $hasDescription ? $prompt->valueWithCursor($maxWidth).PHP_EOL.$this->renderOptions($prompt) : $this->renderOptions($prompt),
                     color: 'yellow',
                 )
                 ->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
@@ -44,16 +49,16 @@ class SearchPromptRenderer extends Renderer implements Scrolling
             'searching' => $this
                 ->box(
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->valueWithCursorAndSearchIcon($prompt, $maxWidth),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->valueWithCursorAndSearchIcon($prompt, $maxWidth),
+                    $hasDescription ? $this->valueWithCursorAndSearchIcon($prompt, $maxWidth).PHP_EOL.$this->renderOptions($prompt) : $this->renderOptions($prompt),
                 )
                 ->hint($prompt->hint),
 
             default => $this
                 ->box(
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $prompt->valueWithCursor($maxWidth),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $prompt->valueWithCursor($maxWidth),
+                    $hasDescription ? $prompt->valueWithCursor($maxWidth).PHP_EOL.$this->renderOptions($prompt) : $this->renderOptions($prompt),
                 )
                 ->when(
                     $prompt->hint,
@@ -121,6 +126,21 @@ class SearchPromptRenderer extends Renderer implements Scrolling
             count($prompt->matches()),
             min($this->longest($prompt->matches(), padding: 4), $prompt->terminal()->cols() - 6)
         ));
+    }
+
+    /**
+     * Calculate the width for description text.
+     */
+    protected function calculateDescriptionWidth(Prompt $prompt, int $maxWidth): int
+    {
+        if (! $prompt instanceof SearchPrompt) {
+            return $this->minWidth;
+        }
+
+        $titleWidth = mb_strwidth($this->stripEscapeSequences($prompt->label));
+        $optionsWidth = $this->longest($prompt->matches());
+
+        return max($this->minWidth, max($titleWidth, $optionsWidth));
     }
 
     /**

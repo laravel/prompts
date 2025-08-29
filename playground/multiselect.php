@@ -19,6 +19,9 @@ $permissions = multiselect(
         default => null,
     },
     hint: 'The permissions will determine what the user can do.',
+    description: 'Select the permissions you want to grant to this user. You can choose multiple permissions by using the space bar to toggle each option.
+
+Be careful when granting delete and force-delete permissions as these cannot be undone.'
 );
 
 var_dump($permissions);

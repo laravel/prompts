@@ -2,6 +2,7 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
+use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SuggestPrompt;
 use Laravel\Prompts\Themes\Contracts\Scrolling;
 
@@ -9,6 +10,7 @@ class SuggestPromptRenderer extends Renderer implements Scrolling
 {
     use Concerns\DrawsBoxes;
     use Concerns\DrawsScrollbars;
+    use Concerns\RendersDescription;
 
     /**
      * Render the suggest prompt.
@@ -16,18 +18,21 @@ class SuggestPromptRenderer extends Renderer implements Scrolling
     public function __invoke(SuggestPrompt $prompt): string
     {
         $maxWidth = $prompt->terminal()->cols() - 6;
+        $hasDescription = $prompt->description && trim($prompt->description) !== '';
 
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->truncate($prompt->value(), $maxWidth),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->truncate($prompt->value(), $maxWidth),
+                    $hasDescription ? $this->truncate($prompt->value(), $maxWidth) : '',
                 ),
 
             'cancel' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->strikethrough($this->dim($this->truncate($prompt->value() ?: $prompt->placeholder, $maxWidth))),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->strikethrough($this->dim($this->truncate($prompt->value() ?: $prompt->placeholder, $maxWidth))),
+                    $hasDescription ? $this->strikethrough($this->dim($this->truncate($prompt->value() ?: $prompt->placeholder, $maxWidth))) : '',
                     color: 'red',
                 )
                 ->error($prompt->cancelMessage),
@@ -35,8 +40,8 @@ class SuggestPromptRenderer extends Renderer implements Scrolling
             'error' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $this->valueWithCursorAndArrow($prompt, $maxWidth),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->valueWithCursorAndArrow($prompt, $maxWidth),
+                    $hasDescription ? $this->valueWithCursorAndArrow($prompt, $maxWidth).PHP_EOL.$this->renderOptions($prompt) : $this->renderOptions($prompt),
                     color: 'yellow',
                 )
                 ->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
@@ -44,8 +49,8 @@ class SuggestPromptRenderer extends Renderer implements Scrolling
             default => $this
                 ->box(
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->valueWithCursorAndArrow($prompt, $maxWidth),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->valueWithCursorAndArrow($prompt, $maxWidth),
+                    $hasDescription ? $this->valueWithCursorAndArrow($prompt, $maxWidth).PHP_EOL.$this->renderOptions($prompt) : $this->renderOptions($prompt),
                 )
                 ->when(
                     $prompt->hint,
@@ -111,6 +116,25 @@ class SuggestPromptRenderer extends Renderer implements Scrolling
             min($this->longest($prompt->matches(), padding: 4), $prompt->terminal()->cols() - 6),
             $prompt->state === 'cancel' ? 'dim' : 'cyan'
         ));
+    }
+
+    /**
+     * Calculate the width for description text.
+     */
+    protected function calculateDescriptionWidth(Prompt $prompt, int $maxWidth): int
+    {
+        if (! $prompt instanceof SuggestPrompt) {
+            return $this->minWidth;
+        }
+
+        $titleWidth = mb_strwidth($this->stripEscapeSequences($prompt->label));
+        $inputWidth = max(
+            mb_strwidth($prompt->placeholder),
+            mb_strwidth($prompt->default),
+            $this->longest($prompt->matches())
+        );
+
+        return max($this->minWidth, max($titleWidth, min($inputWidth + 4, $maxWidth)));
     }
 
     /**

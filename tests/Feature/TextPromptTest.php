@@ -167,3 +167,34 @@ it('handles a failed terminal read gracefully', function () {
 
     expect($result)->toBe('');
 });
+
+it('accepts a single line description', function () {
+    Prompt::fake(['J', 'e', 's', 's', Key::ENTER]);
+
+    $result = text(
+        label: 'What is your name?',
+        description: 'Please enter your full name for registration purposes.'
+    );
+
+    expect($result)->toBe('Jess');
+    Prompt::assertOutputContains('Please enter your full name for registration purposes.');
+});
+
+it('accepts a multi-line description', function () {
+    Prompt::fake(['test@example.com', Key::ENTER]);
+
+    $result = text(
+        label: 'What is your email?',
+        description: 'Please provide your email address to create your account. This will be used for account verification and important notifications.
+
+Your email address will be kept secure and will only be used for account-related communications.'
+    );
+
+    expect($result)->toBe('test@example.com');
+
+    Prompt::assertOutputContains('Please provide your email address to create your account.');
+    Prompt::assertOutputContains('This will be used for account verification and important');
+    Prompt::assertOutputContains('notifications.');
+    Prompt::assertOutputContains('Your email address will be kept secure and will only be used');
+    Prompt::assertOutputContains('for account-related communications.');
+});

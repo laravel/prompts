@@ -383,3 +383,38 @@ it('handles falsy default', function () {
 
     expect($result)->toBe('0');
 });
+
+it('accepts a single line description', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $result = select(
+        label: 'What is your favorite color?',
+        options: ['Red', 'Green', 'Blue'],
+        description: 'Please choose your preferred color from the list below.'
+    );
+
+    expect($result)->toBe('Red');
+    Prompt::assertOutputContains('Please choose your preferred color from the list below.');
+});
+
+it('accepts a multi-line description', function () {
+    Prompt::fake([Key::DOWN, Key::ENTER]);
+
+    $result = select(
+        label: 'How your site will be created',
+        options: [
+            'profile' => 'Drupal, installed from profile',
+            'demo' => 'Drupal, loaded from the demo database',
+        ],
+        description: 'Please select how you want to set up your site. Each option creates a different starting point.
+
+Choose "profile" for a fresh installation or "demo" to start with sample content and configuration.'
+    );
+
+    expect($result)->toBe('demo');
+
+    Prompt::assertOutputContains('Please select how you want to set up your site. Each option');
+    Prompt::assertOutputContains('creates a different starting point.');
+    Prompt::assertOutputContains('Choose "profile" for a fresh installation or "demo" to start');
+    Prompt::assertOutputContains('with sample content and configuration.');
+});

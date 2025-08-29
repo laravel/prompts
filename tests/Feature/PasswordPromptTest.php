@@ -115,3 +115,34 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('accepts a single line description', function () {
+    Prompt::fake(['s', 'e', 'c', 'r', 'e', 't', Key::ENTER]);
+
+    $result = password(
+        label: 'What is your password?',
+        description: 'Please enter a secure password for your account.'
+    );
+
+    expect($result)->toBe('secret');
+    Prompt::assertOutputContains('Please enter a secure password for your account.');
+});
+
+it('accepts a multi-line description', function () {
+    Prompt::fake(['m', 'y', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd', '1', '2', '3', Key::ENTER]);
+
+    $result = password(
+        label: 'Create password',
+        description: 'Please create a strong password for your account. Your password should be at least 8 characters long and include a mix of letters and numbers.
+
+For security reasons, your password will be hidden as you type. Make sure to remember it as it cannot be recovered.'
+    );
+
+    expect($result)->toBe('mypassword123');
+
+    Prompt::assertOutputContains('Please create a strong password for your account. Your');
+    Prompt::assertOutputContains('password should be at least 8 characters long and include a');
+    Prompt::assertOutputContains('mix of letters and numbers.');
+    Prompt::assertOutputContains('For security reasons, your password will be hidden as you');
+    Prompt::assertOutputContains('type. Make sure to remember it as it cannot be recovered.');
+});

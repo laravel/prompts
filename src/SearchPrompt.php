@@ -32,6 +32,7 @@ class SearchPrompt extends Prompt
         public string $hint = '',
         public bool|string $required = true,
         public ?Closure $transform = null,
+        public ?string $description = null,
     ) {
         if ($this->required === false) {
             throw new InvalidArgumentException('Argument [required] must be true or a string.');

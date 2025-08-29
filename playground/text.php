@@ -14,6 +14,9 @@ $email = text(
     },
     hint: 'We will never share your email address with anyone else.',
     transform: fn ($value) => strtolower($value),
+    description: 'Please provide your email address to create your account. This will be used for account verification, important notifications, and password recovery.
+
+Your email address will be kept secure and will only be used for account-related communications.',
 );
 
 var_dump($email);

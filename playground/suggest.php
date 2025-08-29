@@ -22,6 +22,9 @@ $model = suggest(
         default => null,
     },
     hint: 'The model name should be singular.',
+    description: 'Select the Eloquent model that the policy should be associated with. The policy will govern access control for this specific model type.
+
+You can type to filter the available options or select from the dropdown list.',
 );
 
 var_dump($model);

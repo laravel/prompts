@@ -23,6 +23,7 @@ class ConfirmPrompt extends Prompt
         public mixed $validate = null,
         public string $hint = '',
         public ?Closure $transform = null,
+        public ?string $description = null,
     ) {
         $this->confirmed = $default;
 

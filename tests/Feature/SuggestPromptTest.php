@@ -232,3 +232,38 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('accepts a single line description', function () {
+    Prompt::fake(['Blue', Key::ENTER]);
+
+    $result = suggest(
+        label: 'Select a color',
+        options: ['Red', 'Green', 'Blue'],
+        description: 'Choose your preferred theme color.',
+    );
+
+    expect($result)->toBe('Blue');
+    Prompt::assertOutputContains('Choose your preferred theme color.');
+});
+
+it('accepts a multi-line description', function () {
+    Prompt::fake(['Framework', Key::ENTER]);
+
+    $description = 'Select the PHP framework you want to use for your project. Laravel is recommended for modern web applications with extensive features and community support.
+
+Framework choice affects development speed and available packages.';
+
+    $result = suggest(
+        label: 'Choose framework',
+        options: ['Laravel', 'Framework', 'CodeIgniter'],
+        description: $description,
+    );
+
+    expect($result)->toBe('Framework');
+
+    Prompt::assertOutputContains('Select the PHP framework you want to use for your project.');
+    Prompt::assertOutputContains('Laravel is recommended for modern web applications with');
+    Prompt::assertOutputContains('extensive features and community support.');
+    Prompt::assertOutputContains('Framework choice affects development speed and available');
+    Prompt::assertOutputContains('packages.');
+});

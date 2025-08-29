@@ -3,27 +3,34 @@
 namespace Laravel\Prompts\Themes\Default;
 
 use Laravel\Prompts\ConfirmPrompt;
+use Laravel\Prompts\Prompt;
 
 class ConfirmPromptRenderer extends Renderer
 {
     use Concerns\DrawsBoxes;
+    use Concerns\RendersDescription;
 
     /**
      * Render the confirm prompt.
      */
     public function __invoke(ConfirmPrompt $prompt): string
     {
+        $maxWidth = $prompt->terminal()->cols() - 6;
+        $hasDescription = $prompt->description && trim($prompt->description) !== '';
+
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->truncate($prompt->label(), $prompt->terminal()->cols() - 6)
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->truncate($prompt->label(), $prompt->terminal()->cols() - 6),
+                    $hasDescription ? $this->truncate($prompt->label(), $prompt->terminal()->cols() - 6) : '',
                 ),
 
             'cancel' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderOptions($prompt) : '',
                     color: 'red'
                 )
                 ->error($prompt->cancelMessage),
@@ -31,7 +38,8 @@ class ConfirmPromptRenderer extends Renderer
             'error' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderOptions($prompt) : '',
                     color: 'yellow',
                 )
                 ->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
@@ -39,7 +47,8 @@ class ConfirmPromptRenderer extends Renderer
             default => $this
                 ->box(
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderOptions($prompt) : '',
                 )
                 ->when(
                     $prompt->hint,
@@ -47,6 +56,21 @@ class ConfirmPromptRenderer extends Renderer
                     fn () => $this->newLine() // Space for errors
                 ),
         };
+    }
+
+    /**
+     * Calculate the description width based on buttons.
+     */
+    protected function calculateDescriptionWidth(Prompt $prompt, int $maxWidth): int
+    {
+        if (! $prompt instanceof ConfirmPrompt) {
+            return $this->minWidth;
+        }
+
+        $titleWidth = mb_strwidth($this->stripEscapeSequences($prompt->label));
+        $buttonsWidth = mb_strwidth($prompt->yes.' / '.$prompt->no) + 10; // padding for buttons
+
+        return max($this->minWidth, max($titleWidth, min($buttonsWidth, $maxWidth)));
     }
 
     /**

@@ -212,3 +212,44 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('accepts a single line description', function () {
+    Prompt::fake(['b', 'l', 'u', 'e', Key::DOWN, Key::ENTER]);
+
+    $result = search(
+        label: 'Choose a color',
+        options: fn (string $value) => array_filter(
+            ['red' => 'Red', 'green' => 'Green', 'blue' => 'Blue'],
+            fn ($option) => str_contains(strtolower($option), strtolower($value)),
+        ),
+        description: 'Select your preferred color from the available options.',
+    );
+
+    expect($result)->toBe('blue');
+    Prompt::assertOutputContains('Select your preferred color from the available options.');
+});
+
+it('accepts a multi-line description', function () {
+    Prompt::fake(['f', 'r', 'a', 'm', 'e', Key::DOWN, Key::ENTER]);
+
+    $description = 'Search for the PHP framework that best suits your project needs. You can type to filter the available options dynamically.
+
+The search will show matching results as you type, making it easy to find the right framework quickly.';
+
+    $result = search(
+        label: 'Choose framework',
+        options: fn (string $value) => array_filter(
+            ['laravel' => 'Laravel', 'symfony' => 'Symfony', 'framework' => 'Framework'],
+            fn ($option) => str_contains(strtolower($option), strtolower($value)),
+        ),
+        description: $description,
+    );
+
+    expect($result)->toBe('framework');
+
+    Prompt::assertOutputContains('Search for the PHP framework that best suits your project');
+    Prompt::assertOutputContains('needs. You can type to filter the available options');
+    Prompt::assertOutputContains('dynamically.');
+    Prompt::assertOutputContains('The search will show matching results as you type, making it');
+    Prompt::assertOutputContains('easy to find the right framework quickly.');
+});

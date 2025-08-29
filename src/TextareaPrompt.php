@@ -28,6 +28,7 @@ class TextareaPrompt extends Prompt
         public string $hint = '',
         int $rows = 5,
         public ?Closure $transform = null,
+        public ?string $description = null,
     ) {
         $this->scroll = $rows;
 

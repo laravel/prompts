@@ -384,3 +384,44 @@ it('supports selecting all options', function () {
 
     expect($result)->toBe([]);
 });
+
+it('accepts a single line description', function () {
+    Prompt::fake(['b', 'l', 'u', 'e', Key::DOWN, Key::SPACE, Key::ENTER]);
+
+    $result = multisearch(
+        label: 'Choose colors',
+        options: fn (string $value) => array_filter(
+            ['red' => 'Red', 'green' => 'Green', 'blue' => 'Blue'],
+            fn ($option) => str_contains(strtolower($option), strtolower($value)),
+        ),
+        description: 'Select multiple colors using the space bar.',
+    );
+
+    expect($result)->toBe(['blue']);
+    Prompt::assertOutputContains('Select multiple colors using the space bar.');
+});
+
+it('accepts a multi-line description', function () {
+    Prompt::fake(['f', 'r', 'a', 'm', 'e', Key::DOWN, Key::SPACE, Key::ENTER]);
+
+    $description = 'Search and select multiple PHP frameworks for your project comparison. Type to filter the available options dynamically.
+
+Use the space bar to select or deselect options. You can select as many frameworks as needed for your evaluation.';
+
+    $result = multisearch(
+        label: 'Choose frameworks',
+        options: fn (string $value) => array_filter(
+            ['laravel' => 'Laravel', 'symfony' => 'Symfony', 'framework' => 'Framework'],
+            fn ($option) => str_contains(strtolower($option), strtolower($value)),
+        ),
+        description: $description,
+    );
+
+    expect($result)->toBe(['framework']);
+
+    Prompt::assertOutputContains('Search and select multiple PHP frameworks for your project');
+    Prompt::assertOutputContains('comparison. Type to filter the available options');
+    Prompt::assertOutputContains('dynamically.');
+    Prompt::assertOutputContains('Use the space bar to select or deselect options. You can');
+    Prompt::assertOutputContains('select as many frameworks as needed for your evaluation.');
+});

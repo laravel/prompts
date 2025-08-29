@@ -275,3 +275,41 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('accepts a single line description', function () {
+    Prompt::fake([Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: ['Red', 'Green', 'Blue'],
+        description: 'Please select one or more colors that you prefer.'
+    );
+
+    expect($result)->toBe(['Red', 'Green']);
+    Prompt::assertOutputContains('Please select one or more colors that you prefer.');
+});
+
+it('accepts a multi-line description', function () {
+    Prompt::fake([Key::SPACE, Key::DOWN, Key::SPACE, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'Select your skills',
+        options: [
+            'php' => 'PHP Development',
+            'js' => 'JavaScript Development',
+            'python' => 'Python Development',
+            'design' => 'UI/UX Design',
+        ],
+        description: 'Please select all the skills that apply to your professional experience. You can choose multiple options using the space bar to toggle selections.
+
+Use the arrow keys to navigate between options and press Enter when you have finished making your selections.'
+    );
+
+    expect($result)->toBe(['php', 'js']);
+
+    Prompt::assertOutputContains('Please select all the skills that apply to your professional');
+    Prompt::assertOutputContains('experience. You can choose multiple options using the space');
+    Prompt::assertOutputContains('bar to toggle selections.');
+    Prompt::assertOutputContains('Use the arrow keys to navigate between options and press');
+    Prompt::assertOutputContains('Enter when you have finished making your selections.');
+});

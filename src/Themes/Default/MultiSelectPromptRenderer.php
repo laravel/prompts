@@ -3,29 +3,36 @@
 namespace Laravel\Prompts\Themes\Default;
 
 use Laravel\Prompts\MultiSelectPrompt;
+use Laravel\Prompts\Prompt;
 use Laravel\Prompts\Themes\Contracts\Scrolling;
 
 class MultiSelectPromptRenderer extends Renderer implements Scrolling
 {
     use Concerns\DrawsBoxes;
     use Concerns\DrawsScrollbars;
+    use Concerns\RendersDescription;
 
     /**
      * Render the multiselect prompt.
      */
     public function __invoke(MultiSelectPrompt $prompt): string
     {
+        $maxWidth = $prompt->terminal()->cols() - 6;
+        $hasDescription = $prompt->description && trim($prompt->description) !== '';
+
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->renderSelectedOptions($prompt)
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->renderSelectedOptions($prompt),
+                    $hasDescription ? $this->renderSelectedOptions($prompt) : '',
                 ),
 
             'cancel' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderOptions($prompt) : '',
                     color: 'red',
                 )
                 ->error($prompt->cancelMessage),
@@ -33,7 +40,8 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
             'error' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderOptions($prompt) : '',
                     color: 'yellow',
                     info: count($prompt->options) > $prompt->scroll ? (count($prompt->value()).' selected') : '',
                 )
@@ -42,7 +50,8 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
             default => $this
                 ->box(
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderOptions($prompt) : '',
                     info: count($prompt->options) > $prompt->scroll ? (count($prompt->value()).' selected') : '',
                 )
                 ->when(
@@ -51,6 +60,21 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
                     fn () => $this->newLine() // Space for errors
                 ),
         };
+    }
+
+    /**
+     * Calculate the description width based on options.
+     */
+    protected function calculateDescriptionWidth(Prompt $prompt, int $maxWidth): int
+    {
+        if (! $prompt instanceof MultiSelectPrompt) {
+            return $this->minWidth;
+        }
+
+        $optionsWidth = min($this->longest($prompt->options, padding: 6), $prompt->terminal()->cols() - 6);
+        $titleWidth = mb_strwidth($this->stripEscapeSequences($prompt->label));
+
+        return max($this->minWidth, max($titleWidth, $optionsWidth));
     }
 
     /**

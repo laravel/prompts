@@ -31,6 +31,9 @@ $model = search(
         }
     },
     hint: 'An email will be sent to the user.',
+    description: 'Type to search for users in the system. The search is performed dynamically as you type and will show matching results.
+
+Select the user who should receive the notification email.',
 );
 
 var_dump($model);

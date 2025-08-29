@@ -2,6 +2,7 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
+use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SelectPrompt;
 use Laravel\Prompts\Themes\Contracts\Scrolling;
 
@@ -9,6 +10,7 @@ class SelectPromptRenderer extends Renderer implements Scrolling
 {
     use Concerns\DrawsBoxes;
     use Concerns\DrawsScrollbars;
+    use Concerns\RendersDescription;
 
     /**
      * Render the select prompt.
@@ -17,17 +19,21 @@ class SelectPromptRenderer extends Renderer implements Scrolling
     {
         $maxWidth = $prompt->terminal()->cols() - 6;
 
+        $hasDescription = $prompt->description && trim($prompt->description) !== '';
+
         return match ($prompt->state) {
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->truncate($prompt->label(), $maxWidth),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->truncate($prompt->label(), $maxWidth),
+                    $hasDescription ? $this->truncate($prompt->label(), $maxWidth) : '',
                 ),
 
             'cancel' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderOptions($prompt) : '',
                     color: 'red',
                 )
                 ->error($prompt->cancelMessage),
@@ -35,7 +41,8 @@ class SelectPromptRenderer extends Renderer implements Scrolling
             'error' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderOptions($prompt) : '',
                     color: 'yellow',
                 )
                 ->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
@@ -43,7 +50,8 @@ class SelectPromptRenderer extends Renderer implements Scrolling
             default => $this
                 ->box(
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderDescription($prompt, $maxWidth, fn () => $this->calculateDescriptionWidth($prompt, $maxWidth)) : $this->renderOptions($prompt),
+                    $hasDescription ? $this->renderOptions($prompt) : '',
                 )
                 ->when(
                     $prompt->hint,
@@ -51,6 +59,21 @@ class SelectPromptRenderer extends Renderer implements Scrolling
                     fn () => $this->newLine() // Space for errors
                 ),
         };
+    }
+
+    /**
+     * Calculate the description width based on options.
+     */
+    protected function calculateDescriptionWidth(Prompt $prompt, int $maxWidth): int
+    {
+        if (! $prompt instanceof SelectPrompt) {
+            return $maxWidth;
+        }
+
+        $optionsWidth = min($this->longest($prompt->options, padding: 6), $prompt->terminal()->cols() - 6);
+        $titleWidth = mb_strwidth($this->stripEscapeSequences($prompt->label));
+
+        return max($this->minWidth, max($titleWidth, $optionsWidth));
     }
 
     /**

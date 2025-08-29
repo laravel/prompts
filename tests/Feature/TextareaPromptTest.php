@@ -256,3 +256,34 @@ it('correctly handles multi-byte strings for the up arrow', function () {
         "ａyoｂ\nｃｄｅｆ\nｇｈｉjklmnnopqrs\ntuvwxyz"
     );
 });
+
+it('accepts a single line description', function () {
+    Prompt::fake(['J', 'e', 's', 's', Key::CTRL_D]);
+
+    $result = textarea(
+        label: 'What is your bio?',
+        description: 'Please enter your professional biography for your profile.'
+    );
+
+    expect($result)->toBe('Jess');
+    Prompt::assertOutputContains('Please enter your professional biography for your profile.');
+});
+
+it('accepts a multi-line description', function () {
+    Prompt::fake(['S', 'o', 'f', 't', 'w', 'a', 'r', 'e', ' ', 'e', 'n', 'g', 'i', 'n', 'e', 'e', 'r', Key::CTRL_D]);
+
+    $result = textarea(
+        label: 'What is your bio?',
+        description: 'Please provide a detailed biography that will appear on your public profile. This should include your professional background, skills, and experience.
+
+You can use multiple paragraphs to organize your information effectively.'
+    );
+
+    expect($result)->toBe('Software engineer');
+
+    Prompt::assertOutputContains('Please provide a detailed biography that will appear on your public');
+    Prompt::assertOutputContains('profile. This should include your professional background, skills, and');
+    Prompt::assertOutputContains('experience.');
+    Prompt::assertOutputContains('You can use multiple paragraphs to organize your information');
+    Prompt::assertOutputContains('effectively.');
+});
