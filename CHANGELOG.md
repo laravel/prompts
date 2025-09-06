@@ -1,6 +1,12 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.5...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.6...main)
+
+## [v0.3.6](https://github.com/laravel/prompts/compare/v0.3.5...v0.3.6) - 2025-07-07
+
+* use multiline signatures by [@browner12](https://github.com/browner12) in https://github.com/laravel/prompts/pull/190
+* Fix: Select Default Falsy by [@liamduckett](https://github.com/liamduckett) in https://github.com/laravel/prompts/pull/194
+* Fix: Exclude Progress from phpstan as causes infinite loop by [@BinaryKitten](https://github.com/BinaryKitten) in https://github.com/laravel/prompts/pull/197
 
 ## [v0.3.5](https://github.com/laravel/prompts/compare/v0.3.4...v0.3.5) - 2025-02-11
 

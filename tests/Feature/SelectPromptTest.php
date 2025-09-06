@@ -366,3 +366,20 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('handles falsy default', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $result = select(
+        label: 'How many stars would you like to give?',
+        options: [
+            '3',
+            '2',
+            '1',
+            '0',
+        ],
+        default: '0',
+    );
+
+    expect($result)->toBe('0');
+});
