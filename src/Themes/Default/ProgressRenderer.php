@@ -60,4 +60,13 @@ class ProgressRenderer extends Renderer
                 )
         };
     }
+
+    /**
+     * Render the output with consistent spacing for progress bars.
+     */
+    public function __toString()
+    {
+        return str_repeat(PHP_EOL, max(2 - $this->prompt->newLinesWritten(), 0))
+            .$this->output;
+    }
 }
