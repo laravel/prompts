@@ -67,6 +67,7 @@ class ProgressRenderer extends Renderer
     public function __toString()
     {
         return str_repeat(PHP_EOL, max(2 - $this->prompt->newLinesWritten(), 0))
-            .$this->output;
+            .$this->output
+            .(in_array($this->prompt->state, ['submit', 'cancel']) ? PHP_EOL : '');
     }
 }
