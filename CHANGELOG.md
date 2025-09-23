@@ -1,6 +1,12 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.6...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.7...main)
+
+## [v0.3.7](https://github.com/laravel/prompts/compare/v0.3.6...v0.3.7) - 2025-09-19
+
+* FIX: update phpstan to latest and remove ignored file by [@BinaryKitten](https://github.com/BinaryKitten) in https://github.com/laravel/prompts/pull/198
+* Fix spacing before progress bars by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/203
+* Improve display of progress bars with high step counts by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/204
 
 ## [v0.3.6](https://github.com/laravel/prompts/compare/v0.3.5...v0.3.6) - 2025-07-07
 
