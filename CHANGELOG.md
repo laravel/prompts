@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.7...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.8...main)
+
+## [v0.3.8](https://github.com/laravel/prompts/compare/v0.3.7...v0.3.8) - 2025-11-21
+
+* Exclude `phpunit.xml` from Git export by [@ash-jc-allen](https://github.com/ash-jc-allen) in https://github.com/laravel/prompts/pull/205
+* [0.3.x] PHP 8.4 Compatibility by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/prompts/pull/207
 
 ## [v0.3.7](https://github.com/laravel/prompts/compare/v0.3.6...v0.3.7) - 2025-09-19
 
