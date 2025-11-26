@@ -25,6 +25,10 @@ class Link extends Prompt
      */
     public function prompt(): bool
     {
+        $this->capturePreviousNewLines();
+
+        $this->state = 'submit';
+
         static::output()->write($this->renderTheme());
 
         return true;

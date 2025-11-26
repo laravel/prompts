@@ -20,9 +20,9 @@ class LinkRenderer extends Renderer
         );
 
         if ($link->message) {
-            $this->line("{$link->message} {$value}");
+            $this->line(" {$this->blue(" {$link->message} {$value}")}");
         } else {
-            $this->line("{$value}");
+            $this->line(" {$this->blue(" {$value}")}");
         }
 
         return $this;

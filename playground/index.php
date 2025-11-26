@@ -13,6 +13,7 @@ use function Laravel\Prompts\spin;
 use function Laravel\Prompts\suggest;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\warning;
+use function Laravel\Prompts\link;
 
 require __DIR__.'/../vendor/autoload.php';
 
@@ -92,6 +93,10 @@ if ($install) {
 error('Error');
 warning('Warning');
 alert('Alert');
+link(
+    message: '<fg=green;options=bold>Visit Laravel Documentation:</>',
+    path: 'https://laravel.com/docs',
+);
 
 note(<<<EOT
     Installation complete!
