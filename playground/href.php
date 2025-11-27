@@ -1,33 +1,33 @@
 <?php
 
-use function Laravel\Prompts\link;
+use function Laravel\Prompts\href;
 
 require __DIR__.'/../vendor/autoload.php';
 
-link(
+href(
     message: 'Visit Laravel documentation:',
     path: 'https://laravel.com/docs',
     tooltip: 'Click here'
 );
 
-link(
+href(
     message: 'Open current file:',
     path: __FILE__,
     tooltip: 'Click here'
 );
 
-link(
+href(
     message: '<fg=green;options=bold>Visit Laravel Documentation:</>',
     path: 'https://laravel.com/docs',
     tooltip: 'Click here'
 );
 
-link(
+href(
     message: 'Visit Laravel Documentation:',
     path: 'https://laravel.com/docs'
 );
 
-link(
+href(
     message: '',
     path: 'https://laravel.com/docs'
 );

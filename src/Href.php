@@ -2,10 +2,10 @@
 
 namespace Laravel\Prompts;
 
-class Link extends Prompt
+class Href extends Prompt
 {
     /**
-     * Create a new link prompt instance.
+     * Create a new href prompt instance.
      */
     public function __construct(public string $message, public string $path, public ?string $tooltip = '')
     {

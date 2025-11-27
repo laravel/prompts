@@ -2,25 +2,25 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use Laravel\Prompts\Concerns\Href;
-use Laravel\Prompts\Link;
+use Laravel\Prompts\Concerns\Href as HrefConcern;
+use Laravel\Prompts\Href;
 
-class LinkRenderer extends Renderer
+class HrefRenderer extends Renderer
 {
-    use Href;
+    use HrefConcern;
 
     /**
-     * Render the link.
+     * Render the href.
      */
-    public function __invoke(Link $link): string
+    public function __invoke(Href $href): string
     {
         $value = $this->href(
-            $this->convertPathToUri($link->path),
-            $link->tooltip
+            $this->convertPathToUri($href->path),
+            $href->tooltip
         );
 
-        if ($link->message) {
-            $this->line(" {$this->blue(" {$link->message} {$value}")}");
+        if ($href->message) {
+            $this->line(" {$this->blue(" {$href->message} {$value}")}");
         } else {
             $this->line(" {$this->blue(" {$value}")}");
         }
