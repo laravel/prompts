@@ -12,6 +12,8 @@ class GridRenderer extends Renderer
 {
     use Concerns\InteractsWithStrings;
 
+    protected int $minWidth = 60;
+
     /**
      * Render the grid.
      */
