@@ -298,6 +298,18 @@ if (! function_exists('\Laravel\Prompts\table')) {
     }
 }
 
+if (! function_exists('\Laravel\Prompts\grid')) {
+    /**
+     * Display a grid.
+     *
+     * @param  array<int, string>|Collection<int, string>  $items
+     */
+    function grid(array|Collection $items = [], ?int $maxWidth = null): void
+    {
+        (new Grid($items, $maxWidth))->display();
+    }
+}
+
 if (! function_exists('\Laravel\Prompts\progress')) {
     /**
      * Display a progress bar.
