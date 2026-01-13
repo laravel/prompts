@@ -2,7 +2,7 @@
 
 use function Laravel\Prompts\grid;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 grid(
     [
@@ -11,6 +11,6 @@ grid(
         'really-really-long-text',
         'small text',
         'really-really-really-long-text',
-        'text'
+        'text',
     ],
 );
