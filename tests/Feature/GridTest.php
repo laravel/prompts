@@ -16,7 +16,7 @@ it('renders a grid with multiple items from arrays', function ($items): void {
     Prompt::assertStrippedOutputContains('rector');
 })->with([
     'arrays' => [['pest', 'phpstan', 'pint', 'rector']],
-    'collections' => [collect(['pest', 'phpstan', 'pint', 'rector'])],
+    ...depends_on_collection() ? ['collections' => [collect(['pest', 'phpstan', 'pint', 'rector'])]] : [],
 ]);
 
 it('renders a grid with a single item', function ($items): void {
@@ -27,7 +27,7 @@ it('renders a grid with a single item', function ($items): void {
     Prompt::assertStrippedOutputContains('laravel');
 })->with([
     'arrays' => [['laravel']],
-    'collections' => [collect(['laravel'])],
+    ...depends_on_collection() ? ['collections' => [collect(['laravel'])]] : [],
 ]);
 
 it('renders an empty grid without any output', function ($items): void {
@@ -38,7 +38,7 @@ it('renders an empty grid without any output', function ($items): void {
     expect(Prompt::content())->toBe('');
 })->with([
     'arrays' => [[]],
-    'collections' => [collect()],
+    ...depends_on_collection() ? ['collections' => [collect()]] : [],
 ]);
 
 it('renders a grid containing unicode characters', function ($items): void {
@@ -51,7 +51,7 @@ it('renders a grid containing unicode characters', function ($items): void {
     Prompt::assertStrippedOutputContains('🚀');
 })->with([
     'arrays' => [['測試', 'café', '🚀']],
-    'collections' => [collect(['測試', 'café', '🚀'])],
+    ...depends_on_collection() ? ['collections' => [collect(['測試', 'café', '🚀'])]] : [],
 ]);
 
 it('renders box drawing characters for grid borders', function (): void {
