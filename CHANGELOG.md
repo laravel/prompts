@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.8...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.9...main)
+
+## [v0.3.9](https://github.com/laravel/prompts/compare/v0.3.8...v0.3.9) - 2026-01-07
+
+* fix: NoteRenderer padding for multibyte characters by [@Azizoff](https://github.com/Azizoff) in https://github.com/laravel/prompts/pull/208
+* Add fallback to `Note` for test expectation support by [@stevebauman](https://github.com/stevebauman) in https://github.com/laravel/prompts/pull/209
 
 ## [v0.3.8](https://github.com/laravel/prompts/compare/v0.3.7...v0.3.8) - 2025-11-21
 
