@@ -1,6 +1,26 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.6...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.10...main)
+
+## [v0.3.10](https://github.com/laravel/prompts/compare/v0.3.9...v0.3.10) - 2026-01-13
+
+* Add Grid Component by [@pushpak1300](https://github.com/pushpak1300) in https://github.com/laravel/prompts/pull/210
+
+## [v0.3.9](https://github.com/laravel/prompts/compare/v0.3.8...v0.3.9) - 2026-01-07
+
+* fix: NoteRenderer padding for multibyte characters by [@Azizoff](https://github.com/Azizoff) in https://github.com/laravel/prompts/pull/208
+* Add fallback to `Note` for test expectation support by [@stevebauman](https://github.com/stevebauman) in https://github.com/laravel/prompts/pull/209
+
+## [v0.3.8](https://github.com/laravel/prompts/compare/v0.3.7...v0.3.8) - 2025-11-21
+
+* Exclude `phpunit.xml` from Git export by [@ash-jc-allen](https://github.com/ash-jc-allen) in https://github.com/laravel/prompts/pull/205
+* [0.3.x] PHP 8.4 Compatibility by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/prompts/pull/207
+
+## [v0.3.7](https://github.com/laravel/prompts/compare/v0.3.6...v0.3.7) - 2025-09-19
+
+* FIX: update phpstan to latest and remove ignored file by [@BinaryKitten](https://github.com/BinaryKitten) in https://github.com/laravel/prompts/pull/198
+* Fix spacing before progress bars by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/203
+* Improve display of progress bars with high step counts by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/prompts/pull/204
 
 ## [v0.3.6](https://github.com/laravel/prompts/compare/v0.3.5...v0.3.6) - 2025-07-07
 
