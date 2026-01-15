@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.9...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.10...main)
+
+## [v0.3.10](https://github.com/laravel/prompts/compare/v0.3.9...v0.3.10) - 2026-01-13
+
+* Add Grid Component by [@pushpak1300](https://github.com/pushpak1300) in https://github.com/laravel/prompts/pull/210
 
 ## [v0.3.9](https://github.com/laravel/prompts/compare/v0.3.8...v0.3.9) - 2026-01-07
 
