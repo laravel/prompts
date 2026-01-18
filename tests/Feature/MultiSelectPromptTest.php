@@ -275,3 +275,35 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('selects all options when a default is provided', function () {
+    Prompt::fake([Key::CTRL_A, Key::ENTER]);
+
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+        default: ['red']
+    );
+
+    expect($result)->toBe(['red', 'green', 'blue']);
+});
+
+it('deselects all when all options are already default', function () {
+    Prompt::fake([Key::CTRL_A, Key::ENTER]);
+    
+    $result = multiselect(
+        label: 'What are your favorite colors?',
+        options: [
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ],
+        default: ['red', 'green', 'blue']
+    );
+    
+    expect($result)->toBe([]);
+});
