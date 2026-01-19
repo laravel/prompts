@@ -162,12 +162,12 @@ if (! function_exists('\Laravel\Prompts\search')) {
     /**
      * Allow the user to search for an option.
      *
-     * @param  Closure(string): array<int|string, string>  $options
+     * @param  array<int|string, string>|Collection<int|string, string>|Closure(string): array<int|string, string>  $options
      * @param  true|string  $required
      */
     function search(
         string $label,
-        Closure $options,
+        array|Collection|Closure $options,
         string $placeholder = '',
         int $scroll = 5,
         mixed $validate = null,

@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 class SearchPrompt extends Prompt
@@ -10,6 +11,13 @@ class SearchPrompt extends Prompt
     use Concerns\Scrolling;
     use Concerns\Truncation;
     use Concerns\TypedValue;
+
+    /**
+     * The options for the search prompt.
+     *
+     * @var array<int|string, string>|Closure(string): array<int|string, string>
+     */
+    public array|Closure $options;
 
     /**
      * The cached matches.
@@ -21,11 +29,11 @@ class SearchPrompt extends Prompt
     /**
      * Create a new SearchPrompt instance.
      *
-     * @param  Closure(string): array<int|string, string>  $options
+     * @param  array<int|string, string>|Collection<int|string, string>|Closure(string): array<int|string, string>  $options
      */
     public function __construct(
         public string $label,
-        public Closure $options,
+        array|Collection|Closure $options,
         public string $placeholder = '',
         public int $scroll = 5,
         public mixed $validate = null,
@@ -33,6 +41,8 @@ class SearchPrompt extends Prompt
         public bool|string $required = true,
         public ?Closure $transform = null,
     ) {
+        $this->options = $options instanceof Collection ? $options->all() : $options;
+
         if ($this->required === false) {
             throw new InvalidArgumentException('Argument [required] must be true or a string.');
         }
@@ -94,6 +104,12 @@ class SearchPrompt extends Prompt
             return $this->matches;
         }
 
+        if (is_array($this->options)) {
+            return $this->matches = array_filter($this->options, function ($label) {
+                return str_contains(strtolower($label), strtolower($this->typedValue));
+            });
+        }
+
         return $this->matches = ($this->options)($this->typedValue);
     }
 
@@ -124,9 +140,16 @@ class SearchPrompt extends Prompt
             return null;
         }
 
+        $keys = array_keys($this->matches);
+        $key = $keys[$this->highlighted];
+
+        if (is_array($this->options)) {
+            return array_is_list($this->options) ? $this->matches[$key] : $key;
+        }
+
         return array_is_list($this->matches)
             ? $this->matches[$this->highlighted]
-            : array_keys($this->matches)[$this->highlighted];
+            : $key;
     }
 
     /**
@@ -134,6 +157,10 @@ class SearchPrompt extends Prompt
      */
     public function label(): ?string
     {
+        if ($this->matches === null || $this->highlighted === null) {
+            return null;
+        }
+
         return $this->matches[array_keys($this->matches)[$this->highlighted]] ?? null;
     }
 }

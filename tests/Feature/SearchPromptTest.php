@@ -212,3 +212,95 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('accepts a static array list and returns the value', function () {
+    Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
+
+    $result = search(
+        label: 'What is your favorite color?',
+        options: ['Red', 'Green', 'Blue'],
+    );
+
+    expect($result)->toBe('Blue');
+});
+
+it('accepts a static array with numeric keys and returns the key', function () {
+    Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
+
+    $result = search(
+        label: 'What is your favorite color?',
+        options: [
+            1 => 'Red',
+            2 => 'Green',
+            3 => 'Blue',
+        ],
+    );
+
+    expect($result)->toBe(3);
+});
+
+it('accepts a Collection', function () {
+    Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
+
+    $result = search(
+        label: 'What is your favorite color?',
+        options: collect(['Red', 'Green', 'Blue']),
+    );
+
+    expect($result)->toBe('Blue');
+});
+
+it('accepts a Collection with keys', function () {
+    Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
+
+    $result = search(
+        label: 'What is your favorite color?',
+        options: collect([
+            'red' => 'Red',
+            'green' => 'Green',
+            'blue' => 'Blue',
+        ]),
+    );
+
+    expect($result)->toBe('blue');
+});
+
+it('shows all options when no search input with static array', function () {
+    Prompt::fake([Key::DOWN,Key::DOWN, Key::ENTER]);
+
+    $result = search(
+        label: 'What is your favorite color?',
+        options: ['Red', 'Green', 'Blue'],
+    );
+
+    expect($result)->toBe('Green');
+});
+
+
+it('filters static arrays case-insensitively', function () {
+    Prompt::fake(['G', 'R', Key::DOWN, Key::ENTER]);
+
+    $result = search(
+        label: 'What is your favorite color?',
+        options: ['Red', 'Green', 'Blue', 'Gray'],
+    );
+
+    expect($result)->toBe('Green');
+});
+
+it('handles non-sequential keys correctly after static array filtering', function () {
+    Prompt::fake(['na', Key::DOWN, Key::ENTER]);
+
+    $result = search(
+        label: 'Pick a fruit',
+        options: [
+            10 => 'Apple',
+            20 => 'Banana',
+            30 => 'Cherry',
+            40 => 'Grape',
+            50 => 'Pineapple',
+        ],
+    );
+
+    expect($result)->toBe(20);
+});
