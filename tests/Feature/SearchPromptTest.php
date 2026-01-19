@@ -248,7 +248,7 @@ it('accepts a Collection', function () {
     );
 
     expect($result)->toBe('Blue');
-});
+})->skip(! depends_on_collection());
 
 it('accepts a Collection with keys', function () {
     Prompt::fake(['u', 'e', Key::DOWN, Key::ENTER]);
@@ -263,7 +263,7 @@ it('accepts a Collection with keys', function () {
     );
 
     expect($result)->toBe('blue');
-});
+})->skip(! depends_on_collection());
 
 it('shows all options when no search input with static array', function () {
     Prompt::fake([Key::DOWN,Key::DOWN, Key::ENTER]);
