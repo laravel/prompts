@@ -294,7 +294,7 @@ it('selects all options when a default is provided', function () {
 
 it('deselects all when all options are already default', function () {
     Prompt::fake([Key::CTRL_A, Key::ENTER]);
-    
+
     $result = multiselect(
         label: 'What are your favorite colors?',
         options: [
@@ -304,6 +304,6 @@ it('deselects all when all options are already default', function () {
         ],
         default: ['red', 'green', 'blue']
     );
-    
+
     expect($result)->toBe([]);
 });
