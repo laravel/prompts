@@ -8,9 +8,9 @@ class NumberPromptRenderer extends Renderer
 {
     use Concerns\DrawsBoxes;
 
-    protected $upArrow = '▲';
+    protected string $upArrow = '▲';
 
-    protected $downArrow = '▼';
+    protected string $downArrow = '▼';
 
     /**
      * Render the number prompt.
@@ -23,13 +23,13 @@ class NumberPromptRenderer extends Renderer
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
-                    $this->truncate($prompt->value(), $maxWidth),
+                    $this->truncate((string) $prompt->value(), $maxWidth),
                 ),
 
             'cancel' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->terminal()->cols() - 6),
-                    $this->strikethrough($this->dim($this->truncate($prompt->value() ?: $prompt->placeholder, $maxWidth))),
+                    $this->strikethrough($this->dim($this->truncate((string) $prompt->value() ?: $prompt->placeholder, $maxWidth))),
                     color: 'red',
                 )
                 ->error('Cancelled.'),
@@ -55,10 +55,10 @@ class NumberPromptRenderer extends Renderer
         };
     }
 
-    protected function withArrows(NumberPrompt $prompt, string $value): string
+    protected function withArrows(NumberPrompt $prompt, int|string $value, ?string $color = null): string
     {
-        $arrows = $this->getArrows($prompt);
-        $valueLength = mb_strwidth($this->stripEscapeSequences($value));
+        $arrows = $this->getArrows($prompt, $color);
+        $valueLength = mb_strwidth($this->stripEscapeSequences((string) $value));
         $padding = $this->minWidth - $valueLength - mb_strwidth($this->stripEscapeSequences($arrows));
 
         return $value . str_repeat(' ', $padding) . $arrows;

@@ -68,7 +68,7 @@ class NumberPrompt extends Prompt
     protected function increaseValue(): void
     {
         if ($this->typedValue === '') {
-            $this->typedValue = $this->min;
+            $this->typedValue = (string) $this->min;
             $this->cursorPosition++;
             return;
         }
@@ -76,7 +76,7 @@ class NumberPrompt extends Prompt
         if (is_numeric($this->typedValue)) {
             $previousValueLength = mb_strlen($this->typedValue);
 
-            $this->typedValue = min($this->max, (int) $this->typedValue + $this->step);
+            $this->typedValue = (string) min($this->max, (int) $this->typedValue + $this->step);
 
             if (mb_strlen($this->typedValue) > $previousValueLength) {
                 $this->cursorPosition++;
@@ -90,7 +90,7 @@ class NumberPrompt extends Prompt
     protected function decreaseValue(): void
     {
         if ($this->typedValue === '') {
-            $this->typedValue = $this->max;
+            $this->typedValue = (string) $this->max;
             $this->cursorPosition++;
             return;
         }
@@ -98,7 +98,7 @@ class NumberPrompt extends Prompt
         if (is_numeric($this->typedValue)) {
             $previousValueLength = mb_strlen($this->typedValue);
 
-            $this->typedValue = max($this->min, (int) $this->typedValue - $this->step);
+            $this->typedValue = (string) max($this->min, (int) $this->typedValue - $this->step);
 
             if (mb_strlen($this->typedValue) < $previousValueLength) {
                 $this->cursorPosition--;
@@ -124,6 +124,6 @@ class NumberPrompt extends Prompt
             return $this->dim($this->addCursor($this->placeholder, 0, $maxWidth));
         }
 
-        return $this->addCursor($this->value(), $this->cursorPosition, $maxWidth);
+        return $this->addCursor((string) $this->value(), $this->cursorPosition, $maxWidth);
     }
 }
