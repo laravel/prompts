@@ -38,11 +38,11 @@ class NumberPrompt extends Prompt
 
             if (is_numeric($value)) {
                 if ($value < $this->min) {
-                    return 'Must be at least ' . $this->min;
+                    return 'Must be at least '.$this->min;
                 }
 
                 if ($value > $this->max) {
-                    return 'Must be less than ' . $this->max;
+                    return 'Must be less than '.$this->max;
                 }
             }
 
@@ -70,6 +70,7 @@ class NumberPrompt extends Prompt
         if ($this->typedValue === '') {
             $this->typedValue = $this->min;
             $this->cursorPosition++;
+
             return;
         }
 
@@ -92,6 +93,7 @@ class NumberPrompt extends Prompt
         if ($this->typedValue === '') {
             $this->typedValue = $this->max;
             $this->cursorPosition++;
+
             return;
         }
 

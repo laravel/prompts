@@ -2,12 +2,12 @@
 
 use function Laravel\Prompts\number;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 $value = number(
     label: 'How many items do you want to buy?',
     placeholder: 'E.g. 10',
-    validate: fn($value) => match (true) {
+    validate: fn ($value) => match (true) {
         $value !== 6 => 'Actually you have to buy 6 items.',
         default => null,
     },
