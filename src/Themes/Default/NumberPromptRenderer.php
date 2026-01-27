@@ -49,8 +49,8 @@ class NumberPromptRenderer extends Renderer
                 )
                 ->when(
                     $prompt->hint,
-                    fn() => $this->hint($prompt->hint),
-                    fn() => $this->newLine() // Space for errors
+                    fn () => $this->hint($prompt->hint),
+                    fn () => $this->newLine() // Space for errors
                 )
         };
     }
@@ -61,7 +61,7 @@ class NumberPromptRenderer extends Renderer
         $valueLength = mb_strwidth($this->stripEscapeSequences((string) $value));
         $padding = $this->minWidth - $valueLength - mb_strwidth($this->stripEscapeSequences($arrows));
 
-        return $value . str_repeat(' ', $padding) . $arrows;
+        return $value.str_repeat(' ', $padding).$arrows;
     }
 
     protected function getArrows(NumberPrompt $prompt, ?string $color = null): string
@@ -83,13 +83,13 @@ class NumberPromptRenderer extends Renderer
                 $upArrow = $this->dim($upArrow);
             }
 
-            return $upArrow .  $downArrow;
+            return $upArrow.$downArrow;
         }
 
         if ($prompt->value() === '') {
-            return $upArrow . $downArrow;
+            return $upArrow.$downArrow;
         }
 
-        return $this->dim($upArrow) . $this->dim($downArrow);
+        return $this->dim($upArrow).$this->dim($downArrow);
     }
 }
