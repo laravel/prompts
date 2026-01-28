@@ -68,7 +68,7 @@ class NumberPrompt extends Prompt
     protected function increaseValue(): void
     {
         if ($this->typedValue === '') {
-            $this->typedValue = (string) $this->min;
+            $this->typedValue = (string) ($this->min === PHP_INT_MIN ? 1 : $this->min);
             $this->cursorPosition++;
 
             return;
@@ -91,7 +91,7 @@ class NumberPrompt extends Prompt
     protected function decreaseValue(): void
     {
         if ($this->typedValue === '') {
-            $this->typedValue = (string) $this->max;
+            $this->typedValue = (string) ($this->max === PHP_INT_MAX ? 0 : $this->max);
             $this->cursorPosition++;
 
             return;
