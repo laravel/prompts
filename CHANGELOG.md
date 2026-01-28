@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.10...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.11...main)
+
+## [v0.3.11](https://github.com/laravel/prompts/compare/v0.3.10...v0.3.11) - 2026-01-27
+
+* Add tests for multiselect behavior with default selections by [@sakshamgorey](https://github.com/sakshamgorey) in https://github.com/laravel/prompts/pull/211
+* Add `number` prompt by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/214
 
 ## [v0.3.10](https://github.com/laravel/prompts/compare/v0.3.9...v0.3.10) - 2026-01-13
 
