@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use RuntimeException;
 
 class NumberPrompt extends Prompt
 {
@@ -31,27 +32,7 @@ class NumberPrompt extends Prompt
 
         $originalValidate = $this->validate;
 
-        $this->validate = function ($value) use ($originalValidate) {
-            if ($value !== '' && ! is_numeric($value)) {
-                return 'Must be a number';
-            }
-
-            if (is_numeric($value)) {
-                if ($value < $this->min) {
-                    return 'Must be at least '.$this->min;
-                }
-
-                if ($value > $this->max) {
-                    return 'Must be less than '.$this->max;
-                }
-            }
-
-            if ($originalValidate) {
-                return ($originalValidate)($value);
-            }
-
-            return null;
-        };
+        $this->validate = $this->wrapValidation($this->validate);
 
         $this->on('key', function (string $key) {
             match ($key) {
@@ -60,6 +41,35 @@ class NumberPrompt extends Prompt
                 default => null,
             };
         });
+    }
+
+    protected function wrapValidation(mixed $validate): callable
+    {
+        return function ($value) use ($validate) {
+            if ($value !== '' && ! is_numeric($value)) {
+                return 'Must be a number';
+            }
+
+            if (is_numeric($value)) {
+                if ($value < $this->min) {
+                    return 'Must be at least ' . $this->min;
+                }
+
+                if ($value > $this->max) {
+                    return 'Must be less than ' . $this->max;
+                }
+            }
+
+            if (!$validate && !isset(static::$validateUsing)) {
+                return null;
+            }
+
+            return match (true) {
+                is_callable($validate) => ($validate)($value),
+                isset(static::$validateUsing) => (static::$validateUsing)($this),
+                default => throw new RuntimeException('The validation logic is missing.'),
+            };
+        };
     }
 
     /**
