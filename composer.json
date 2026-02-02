@@ -23,7 +23,7 @@
         "symfony/console": "^6.2|^7.0"
     },
     "require-dev": {
-        "illuminate/collections": "^10.0|^11.0|^12.0",
+        "illuminate/collections": "^10.0|^11.0|^12.0|^13.0",
         "phpstan/phpstan": "^1.12.28",
         "pestphp/pest": "^2.3|^3.4|^4.0",
         "mockery/mockery": "^1.5",
