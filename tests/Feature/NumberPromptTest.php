@@ -56,7 +56,18 @@ it('validates the minimum value', function () {
 });
 
 it('validates the maximum value', function () {
-    Prompt::fake(['100', Key::ENTER, Key::BACKSPACE,  Key::BACKSPACE, Key::BACKSPACE, '9', '9', Key::ENTER]);
+    Prompt::fake([
+        '1',
+        '0',
+        '0',
+        Key::ENTER,
+        Key::BACKSPACE,
+        Key::BACKSPACE,
+        Key::BACKSPACE,
+        '9',
+        '9',
+        Key::ENTER,
+    ]);
 
     $result = number(
         label: 'How many items do you want to buy?',
@@ -70,7 +81,9 @@ it('validates the maximum value', function () {
 
 it('falls through to the original validation', function () {
     Prompt::fake([
-        '100',
+        '1',
+        '0',
+        '0',
         Key::ENTER,
         Key::BACKSPACE,
         Key::BACKSPACE,
@@ -93,6 +106,33 @@ it('falls through to the original validation', function () {
 
     Prompt::assertOutputContains('Must be less than 99');
     Prompt::assertOutputContains('Must be 99');
+});
+
+it('falls through to the original validation with validation using', function () {
+    Prompt::validateUsing(function (Prompt $prompt) {
+        return $prompt->value() !== 99 ? 'Must be 99' : null;
+    });
+
+    Prompt::fake([
+        '9',
+        '8',
+        Key::ENTER,
+        Key::BACKSPACE,
+        '9',
+        Key::ENTER,
+    ]);
+
+    $result = number(
+        label: 'How many items do you want to buy?',
+        max: 99,
+        validate: 'required|int|min:99',
+    );
+
+    expect($result)->toBe(99);
+
+    Prompt::assertOutputContains('Must be 99');
+
+    Prompt::validateUsing(fn () => null);
 });
 
 it('starts with the minimum value when the up arrow is pressed and value is empty', function () {

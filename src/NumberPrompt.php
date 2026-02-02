@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use RuntimeException;
 
 class NumberPrompt extends Prompt
 {
@@ -31,7 +32,20 @@ class NumberPrompt extends Prompt
 
         $originalValidate = $this->validate;
 
-        $this->validate = function ($value) use ($originalValidate) {
+        $this->validate = $this->wrapValidation($this->validate);
+
+        $this->on('key', function (string $key) {
+            match ($key) {
+                Key::UP, Key::UP_ARROW => $this->increaseValue(),
+                Key::DOWN, Key::DOWN_ARROW => $this->decreaseValue(),
+                default => null,
+            };
+        });
+    }
+
+    protected function wrapValidation(mixed $validate): callable
+    {
+        return function ($value) use ($validate) {
             if ($value !== '' && ! is_numeric($value)) {
                 return 'Must be a number';
             }
@@ -46,20 +60,16 @@ class NumberPrompt extends Prompt
                 }
             }
 
-            if ($originalValidate) {
-                return ($originalValidate)($value);
+            if (! $validate && ! isset(static::$validateUsing)) {
+                return null;
             }
 
-            return null;
-        };
-
-        $this->on('key', function (string $key) {
-            match ($key) {
-                Key::UP, Key::UP_ARROW => $this->increaseValue(),
-                Key::DOWN, Key::DOWN_ARROW => $this->decreaseValue(),
-                default => null,
+            return match (true) {
+                is_callable($validate) => ($validate)($value),
+                isset(static::$validateUsing) => (static::$validateUsing)($this),
+                default => throw new RuntimeException('The validation logic is missing.'),
             };
-        });
+        };
     }
 
     /**
