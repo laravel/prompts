@@ -52,15 +52,15 @@ class NumberPrompt extends Prompt
 
             if (is_numeric($value)) {
                 if ($value < $this->min) {
-                    return 'Must be at least ' . $this->min;
+                    return 'Must be at least '.$this->min;
                 }
 
                 if ($value > $this->max) {
-                    return 'Must be less than ' . $this->max;
+                    return 'Must be less than '.$this->max;
                 }
             }
 
-            if (!$validate && !isset(static::$validateUsing)) {
+            if (! $validate && ! isset(static::$validateUsing)) {
                 return null;
             }
 

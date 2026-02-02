@@ -99,7 +99,7 @@ it('falls through to the original validation', function () {
     $result = number(
         label: 'How many items do you want to buy?',
         max: 99,
-        validate: fn($value) => $value !== 99 ? 'Must be 99' : null,
+        validate: fn ($value) => $value !== 99 ? 'Must be 99' : null,
     );
 
     expect($result)->toBe(99);
@@ -132,7 +132,7 @@ it('falls through to the original validation with validation using', function ()
 
     Prompt::assertOutputContains('Must be 99');
 
-    Prompt::validateUsing(fn() => null);
+    Prompt::validateUsing(fn () => null);
 });
 
 it('starts with the minimum value when the up arrow is pressed and value is empty', function () {
@@ -287,7 +287,7 @@ it('validates the default value when non-interactive', function () {
 })->throws(NonInteractiveValidationException::class, 'Required.');
 
 it('allows customizing the cancellation', function () {
-    Prompt::cancelUsing(fn() => throw new Exception('Cancelled.'));
+    Prompt::cancelUsing(fn () => throw new Exception('Cancelled.'));
     Prompt::fake([Key::CTRL_C]);
 
     number(label: 'How many items do you want to buy?');
