@@ -1,6 +1,12 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.11...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.12...main)
+
+## [v0.3.12](https://github.com/laravel/prompts/compare/v0.3.11...v0.3.12) - 2026-02-03
+
+* Fix for increase/decrease without a min/max specified by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/215
+* Fix for non-closure original validation in `number` prompt by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/217
+* Supports Laravel 13 by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/prompts/pull/216
 
 ## [v0.3.11](https://github.com/laravel/prompts/compare/v0.3.10...v0.3.11) - 2026-01-27
 
