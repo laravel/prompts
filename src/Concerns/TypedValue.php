@@ -71,7 +71,7 @@ trait TypedValue
 
                     $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition - 1).mb_substr($this->typedValue, $this->cursorPosition);
                     $this->cursorPosition--;
-                } elseif (ord($key) >= 32) {
+                } elseif (mb_ord($key) >= 32) {
                     $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition).$key.mb_substr($this->typedValue, $this->cursorPosition);
                     $this->cursorPosition++;
                 }
