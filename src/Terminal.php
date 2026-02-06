@@ -97,7 +97,7 @@ class Terminal
      */
     protected function exec(string $command): string
     {
-        $process = proc_open($command, [
+        $process = proc_open($command.' < /dev/tty', [
             1 => ['pipe', 'w'],
             2 => ['pipe', 'w'],
         ], $pipes);
