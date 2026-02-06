@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Laravel\Prompts\Clear;
 use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\Grid;
+use Laravel\Prompts\Href;
 use Laravel\Prompts\MultiSearchPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Note;
@@ -23,6 +24,7 @@ use Laravel\Prompts\TextPrompt;
 use Laravel\Prompts\Themes\Default\ClearRenderer;
 use Laravel\Prompts\Themes\Default\ConfirmPromptRenderer;
 use Laravel\Prompts\Themes\Default\GridRenderer;
+use Laravel\Prompts\Themes\Default\HrefRenderer;
 use Laravel\Prompts\Themes\Default\MultiSearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\MultiSelectPromptRenderer;
 use Laravel\Prompts\Themes\Default\NoteRenderer;
@@ -69,6 +71,7 @@ trait Themes
             Progress::class => ProgressRenderer::class,
             Clear::class => ClearRenderer::class,
             Grid::class => GridRenderer::class,
+            Href::class => HrefRenderer::class,
         ],
     ];
 
