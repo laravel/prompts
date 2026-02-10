@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.12...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.13...main)
+
+## [v0.3.13](https://github.com/laravel/prompts/compare/v0.3.12...v0.3.13) - 2026-02-06
+
+* fix: deprecation of non-ASCII keys in TypedValue by [@gbespyatykh](https://github.com/gbespyatykh) in https://github.com/laravel/prompts/pull/218
 
 ## [v0.3.12](https://github.com/laravel/prompts/compare/v0.3.11...v0.3.12) - 2026-02-03
 
