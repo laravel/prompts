@@ -3,6 +3,7 @@
 use function Laravel\Prompts\alert;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\error;
+use function Laravel\Prompts\href;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\note;
@@ -92,6 +93,10 @@ if ($install) {
 error('Error');
 warning('Warning');
 alert('Alert');
+href(
+    message: '<fg=green;options=bold>Visit Laravel Documentation:</>',
+    path: 'https://laravel.com/docs',
+);
 
 note(<<<EOT
     Installation complete!

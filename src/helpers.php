@@ -353,3 +353,17 @@ if (! function_exists('\Laravel\Prompts\form')) {
         return new FormBuilder;
     }
 }
+
+if (! function_exists('\Laravel\Prompts\href')) {
+    /**
+     * Display a link to the given file path or URL.
+     *
+     * @param  string  $message  The message to display for the link.
+     * @param  string  $path  The file path or URL the link points to.
+     * @param  ?string  $tooltip  The tooltip text that appears on the link.
+     */
+    function href(string $message, string $path, ?string $tooltip = null): void
+    {
+        (new Href($message, $path, $tooltip))->display();
+    }
+}
