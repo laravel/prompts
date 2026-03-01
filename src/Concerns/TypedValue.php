@@ -23,7 +23,7 @@ trait TypedValue
     {
         $this->typedValue = $default;
 
-        if ($this->typedValue) {
+        if (strlen($this->typedValue) > 0) {
             $this->cursorPosition = mb_strlen($this->typedValue);
         }
 
