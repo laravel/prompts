@@ -429,3 +429,20 @@ if (! function_exists('\Laravel\Prompts\task')) {
         return (new Task($label, $limit ?? 10))->run($callback);
     }
 }
+
+if (! function_exists('\Laravel\Prompts\datatable')) {
+    /**
+     * Display a data table.
+     *
+     * @param  array<int, string|array<int, string>>|Collection<int, string|array<int, string>>  $headers
+     * @param  array<int, array<int, string>>|Collection<int, array<int, string>>  $rows
+     * @param  array<int, array<int, string>>|Collection<int, array<int, string>>  $actions
+     */
+    function datatable(
+        array|Collection $headers = [],
+        array|Collection|null $rows = null,
+        array|Collection|null $actions = null
+    ): void {
+        (new DataTable(headers: $headers, rows: $rows, actions: $actions))->display();
+    }
+}
