@@ -13,6 +13,7 @@ use Laravel\Prompts\NumberPrompt;
 use Laravel\Prompts\PasswordPrompt;
 use Laravel\Prompts\PausePrompt;
 use Laravel\Prompts\Progress;
+use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SearchPrompt;
 use Laravel\Prompts\SelectPrompt;
 use Laravel\Prompts\Spinner;
@@ -37,6 +38,8 @@ use Laravel\Prompts\Themes\Default\SuggestPromptRenderer;
 use Laravel\Prompts\Themes\Default\TableRenderer;
 use Laravel\Prompts\Themes\Default\TextareaPromptRenderer;
 use Laravel\Prompts\Themes\Default\TextPromptRenderer;
+use Laravel\Prompts\Themes\Default\TitleRenderer;
+use Laravel\Prompts\Title;
 
 trait Themes
 {
@@ -48,7 +51,7 @@ trait Themes
     /**
      * The available themes.
      *
-     * @var array<string, array<class-string<\Laravel\Prompts\Prompt>, class-string<object&callable>>>
+     * @var array<string, array<class-string<Prompt>, class-string<object&callable>>>
      */
     protected static array $themes = [
         'default' => [
@@ -69,13 +72,14 @@ trait Themes
             Progress::class => ProgressRenderer::class,
             Clear::class => ClearRenderer::class,
             Grid::class => GridRenderer::class,
+            Title::class => TitleRenderer::class,
         ],
     ];
 
     /**
      * Get or set the active theme.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function theme(?string $name = null): string
     {
@@ -93,7 +97,7 @@ trait Themes
     /**
      * Add a new theme.
      *
-     * @param  array<class-string<\Laravel\Prompts\Prompt>, class-string<object&callable>>  $renderers
+     * @param  array<class-string<Prompt>, class-string<object&callable>>  $renderers
      */
     public static function addTheme(string $name, array $renderers): void
     {
