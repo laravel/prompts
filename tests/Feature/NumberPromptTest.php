@@ -257,7 +257,7 @@ it('can fall back', function () {
 });
 
 test('support emacs style key binding', function () {
-    Prompt::fake(['1', 's', '0',  Key::CTRL_B, Key::CTRL_H, key::CTRL_F, Key::ENTER]);
+    Prompt::fake(['1', 's', '0',  Key::CTRL_B, Key::CTRL_H, Key::CTRL_F, Key::ENTER]);
 
     $result = number(label: 'How many items do you want to buy?');
 

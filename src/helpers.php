@@ -216,7 +216,7 @@ if (! function_exists('\Laravel\Prompts\spin')) {
      *
      * @template TReturn of mixed
      *
-     * @param  \Closure(): TReturn  $callback
+     * @param  Closure(): TReturn  $callback
      * @return TReturn
      */
     function spin(Closure $callback, string $message = ''): mixed

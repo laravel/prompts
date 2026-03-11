@@ -13,6 +13,7 @@ use Laravel\Prompts\NumberPrompt;
 use Laravel\Prompts\PasswordPrompt;
 use Laravel\Prompts\PausePrompt;
 use Laravel\Prompts\Progress;
+use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SearchPrompt;
 use Laravel\Prompts\SelectPrompt;
 use Laravel\Prompts\Spinner;
@@ -50,7 +51,7 @@ trait Themes
     /**
      * The available themes.
      *
-     * @var array<string, array<class-string<\Laravel\Prompts\Prompt>, class-string<object&callable>>>
+     * @var array<string, array<class-string<Prompt>, class-string<object&callable>>>
      */
     protected static array $themes = [
         'default' => [
@@ -78,7 +79,7 @@ trait Themes
     /**
      * Get or set the active theme.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function theme(?string $name = null): string
     {
@@ -96,7 +97,7 @@ trait Themes
     /**
      * Add a new theme.
      *
-     * @param  array<class-string<\Laravel\Prompts\Prompt>, class-string<object&callable>>  $renderers
+     * @param  array<class-string<Prompt>, class-string<object&callable>>  $renderers
      */
     public static function addTheme(string $name, array $renderers): void
     {

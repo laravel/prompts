@@ -93,7 +93,7 @@ it('can fall back', function () {
 });
 
 test('support emacs style key binding', function () {
-    Prompt::fake(['J', 'z', 'e', Key::CTRL_B, Key::CTRL_H, key::CTRL_F, 's', 's', Key::ENTER]);
+    Prompt::fake(['J', 'z', 'e', Key::CTRL_B, Key::CTRL_H, Key::CTRL_F, 's', 's', Key::ENTER]);
 
     $result = text(label: 'What is your name?');
 
@@ -101,7 +101,7 @@ test('support emacs style key binding', function () {
 });
 
 test('move to the beginning and end of line', function () {
-    Prompt::fake(['A', 'r', Key::HOME[0], 's', KEY::END[0], 'c', Key::HOME[1], 's', Key::END[1], 'h', Key::HOME[2], 'e', Key::END[2], 'e', Key::HOME[3], 'J', Key::END[3], 'r', Key::ENTER]);
+    Prompt::fake(['A', 'r', Key::HOME[0], 's', Key::END[0], 'c', Key::HOME[1], 's', Key::END[1], 'h', Key::HOME[2], 'e', Key::END[2], 'e', Key::HOME[3], 'J', Key::END[3], 'r', Key::ENTER]);
 
     $result = text(label: 'What is your name?');
 
