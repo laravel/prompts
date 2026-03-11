@@ -22,6 +22,16 @@ if (! function_exists('\Laravel\Prompts\text')) {
     }
 }
 
+if (! function_exists('\Laravel\Prompts\autocomplete')) {
+    /**
+     * Prompt the user for text input with auto-completion.
+     */
+    function autocomplete(string $label, array $options, string $placeholder = '', string $default = '', bool|string $required = false, mixed $validate = null, string $hint = '', ?Closure $transform = null): string
+    {
+        return (new AutoCompletePrompt(...get_defined_vars()))->prompt();
+    }
+}
+
 if (! function_exists('\Laravel\Prompts\number')) {
     /**
      * Prompt the user for number input.
