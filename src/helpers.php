@@ -353,3 +353,13 @@ if (! function_exists('\Laravel\Prompts\form')) {
         return new FormBuilder;
     }
 }
+
+if (! function_exists('\Laravel\Prompts\title')) {
+    /**
+     * Display a title.
+     */
+    function title(string $title): void
+    {
+        (new Title($title))->display();
+    }
+}

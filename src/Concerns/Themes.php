@@ -37,6 +37,8 @@ use Laravel\Prompts\Themes\Default\SuggestPromptRenderer;
 use Laravel\Prompts\Themes\Default\TableRenderer;
 use Laravel\Prompts\Themes\Default\TextareaPromptRenderer;
 use Laravel\Prompts\Themes\Default\TextPromptRenderer;
+use Laravel\Prompts\Themes\Default\TitleRenderer;
+use Laravel\Prompts\Title;
 
 trait Themes
 {
@@ -69,6 +71,7 @@ trait Themes
             Progress::class => ProgressRenderer::class,
             Clear::class => ClearRenderer::class,
             Grid::class => GridRenderer::class,
+            Title::class => TitleRenderer::class,
         ],
     ];
 
