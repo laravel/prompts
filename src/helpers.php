@@ -380,7 +380,7 @@ if (! function_exists('\Laravel\Prompts\task')) {
      *
      * @template TReturn of mixed
      *
-     * @param  Closure(Logger): TReturn  $callback
+     * @param  Closure(Support\Logger): TReturn  $callback
      * @return TReturn
      */
     function task(string $label, Closure $callback, ?int $limit = null): mixed

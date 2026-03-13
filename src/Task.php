@@ -12,6 +12,11 @@ class Task extends Prompt
     use InteractsWithStrings;
 
     /**
+     * The minimum width for the longest line calculation.
+     */
+    protected int $minWidth = 0;
+
+    /**
      * How long to wait between rendering each frame.
      */
     public int $interval = 100;
