@@ -9,7 +9,6 @@ use RuntimeException;
 
 class ProcessLog extends Prompt
 {
-    use Concerns\Truncation;
     use InteractsWithStrings;
 
     /**
@@ -40,16 +39,14 @@ class ProcessLog extends Prompt
     protected $socket;
 
     /**
-     * Messages received from the parent process.
+     * Pre-wrapped log lines for the scrolling output area.
      *
      * @var array<int, string>
      */
     public array $logs = [];
 
-    protected string $fullMessage = '';
-
     /**
-     * Messages received from the parent process.
+     * Stable status messages (success, warning, error).
      *
      * @var list<array{type: string, message: string}>
      */
@@ -71,14 +68,14 @@ class ProcessLog extends Prompt
     public bool $finished = false;
 
     /**
-     * The partial line.
+     * Buffer for incomplete lines from non-blocking socket reads.
      */
-    public string $partialLine = '';
+    protected string $buffer = '';
 
     /**
-     * The partial line timeout.
+     * The log index where the current stream started, or null if not streaming.
      */
-    public int $partialLineLogsCount = 0;
+    protected ?int $streamStartIndex = null;
 
     /**
      * Create a new ProcessLog instance.
@@ -172,111 +169,118 @@ class ProcessLog extends Prompt
      */
     protected function receiveMessages($socket): void
     {
-        while (($line = fgets($socket)) !== false) {
-            $lines = $this->processLine($line);
+        $prefix = preg_quote($this->identifier, '/');
 
-            foreach ($lines as $line) {
-                preg_match('/^' . $this->identifier . '_(success|warning|error|label|reset|partial|commit):/', $line, $matches);
+        while (($data = fgets($socket)) !== false) {
+            // Buffer incomplete lines from non-blocking reads.
+            if (! str_ends_with($data, PHP_EOL)) {
+                $this->buffer .= $data;
 
-                if (count($matches) > 0 && ! in_array($matches[1], ['partial', 'commit'])) {
-                    $this->partialLine = '';
-
-                    $stableLine = str_replace($this->identifier . '_' . $matches[1] . ':', '', $line);
-
-                    if ($matches[1] === 'reset') {
-                        $this->resetTerminal((bool) $stableLine);
-
-                        continue;
-                    }
-
-                    if ($matches[1] === 'label') {
-                        $this->message = $stableLine;
-                    } else {
-                        $this->stableMessages[] = ['type' => $matches[1], 'message' => $stableLine];
-                        $this->logs = [];
-                    }
-                } elseif ($matches[1] === 'commit') {
-                    $this->fullMessage .= PHP_EOL;
-                    $this->logs = $this->ansiWordwrap($this->fullMessage, $this->terminal()->cols() - 10);
-                } elseif ($matches[1] === 'partial') {
-                    $partialLine = str_replace($this->identifier . '_' . $matches[1] . ':', '', $line);
-
-                    $this->fullMessage .= $partialLine;
-                    $this->logs = $this->ansiWordwrap($this->fullMessage, $this->terminal()->cols() - 10);
-
-                    // if (strlen($this->partialLine) === 0) {
-                    //     // We're starting a new partial line, so we need to capture the current number of logs.
-                    //     $this->partialLineLogsCount = count($this->logs);
-                    // }
-
-                    // $this->partialLine .= $partialLine;
-                    // $this->logs = array_slice($this->logs, 0, $this->partialLineLogsCount);
-
-                    // $lines = $this->processLine($this->partialLine);
-
-                    // foreach ($lines as $line) {
-                    //     // Ensure a leading space after every "move to start + erase line"
-                    //     if (preg_match('/\e\[(?:1)?G\e\[2K(?! )/', $line)) {
-                    //         $line = preg_replace(
-                    //             '/\e\[(?:1)?G\e\[2K(?! )/',
-                    //             "\e[1G\e[2K ",
-                    //             $line
-                    //         );
-                    //     } else {
-                    //         $line = ' ' . $line;
-                    //     }
-
-                    //     $this->logs[] = $line;
-                    // }
-                } else {
-                    $this->partialLine = '';
-                    // Ensure a leading space after every "move to start + erase line"
-                    if (preg_match('/\e\[(?:1)?G\e\[2K(?! )/', $line)) {
-                        $line = preg_replace(
-                            '/\e\[(?:1)?G\e\[2K(?! )/',
-                            "\e[1G\e[2K ",
-                            $line
-                        );
-                    } else {
-                        $line = ' ' . $line;
-                    }
-
-                    // $this->logs[] = $line;
-                    $this->fullMessage .= $line;
-                    $this->logs = $this->ansiWordwrap($this->fullMessage, $this->terminal()->cols() - 10);
-                }
+                continue;
             }
 
-            // while (count($this->stableMessages) > $this->maxStableMessages) {
-            //     array_shift($this->stableMessages);
-            // }
+            $line = rtrim($this->buffer . $data, PHP_EOL);
+            $this->buffer = '';
 
-            // while (count($this->logs) > $this->limit) {
-            //     array_shift($this->logs);
-            // }
+            if ($line === '') {
+                continue;
+            }
+
+            // Check for typed messages: {id}_{type}:{content}
+            if (preg_match('/^' . $prefix . '_(success|warning|error|label|reset|stream|endstream):(.*)/', $line, $matches)) {
+                $type = $matches[1];
+                $content = $matches[2];
+
+                if ($type === 'reset') {
+                    $this->resetTerminal((bool) $content);
+
+                    continue;
+                }
+
+                if ($type === 'stream') {
+                    $this->replaceStreamLines($content);
+
+                    continue;
+                }
+
+                if ($type === 'endstream') {
+                    $this->streamStartIndex = null;
+
+                    continue;
+                }
+
+                if ($type === 'label') {
+                    $this->message = $content;
+                } else {
+                    $this->stableMessages[] = ['type' => $type, 'message' => $content];
+                    $this->logs = [];
+                    $this->streamStartIndex = null;
+                }
+
+                while (count($this->stableMessages) > $this->maxStableMessages) {
+                    array_shift($this->stableMessages);
+                }
+
+                continue;
+            }
+
+            // Regular log line — strip cursor-reset control sequences.
+            $line = preg_replace('/\e\[(?:1)?G\e\[2K/', '', $line);
+
+            // Wrap and add to ring buffer.
+            $this->addLogLines($line);
         }
     }
 
     /**
-     * Process a line by stripping ANSI codes, word wrapping, and re-applying styles.
-     *
-     * @return list<string>
+     * Wrap a log line and append to the ring buffer, trimming to the limit.
      */
-    protected function processLine(string $line): array
+    protected function addLogLines(string $line): void
     {
-        $line = rtrim($line, PHP_EOL);
-
-        if (empty($line)) {
-            return [];
-        }
-
+        $width = $this->terminal()->cols() - 10;
         $plainText = $this->stripEscapeSequences($line);
 
-        if (mb_strwidth($plainText) <= $this->terminal()->cols() - 10) {
-            return [$line];
+        if (mb_strwidth($plainText) > $width) {
+            $wrapped = $this->ansiWordwrap($line, $width);
+        } else {
+            $wrapped = [$line];
         }
 
-        return $this->ansiWordwrap($line, 60);
+        array_push($this->logs, ...$wrapped);
+
+        while (count($this->logs) > $this->limit) {
+            array_shift($this->logs);
+        }
+    }
+
+    /**
+     * Replace the in-progress stream lines with the full accumulated text.
+     */
+    protected function replaceStreamLines(string $text): void
+    {
+        if ($this->streamStartIndex === null) {
+            $this->streamStartIndex = count($this->logs);
+        }
+
+        // Truncate back to where the stream started.
+        $this->logs = array_slice($this->logs, 0, $this->streamStartIndex);
+
+        // Wrap and append the full accumulated stream text.
+        $width = $this->terminal()->cols() - 10;
+        $plainText = $this->stripEscapeSequences($text);
+
+        if (mb_strwidth($plainText) > $width) {
+            $wrapped = $this->ansiWordwrap($text, $width);
+        } else {
+            $wrapped = [$text];
+        }
+
+        array_push($this->logs, ...$wrapped);
+
+        while (count($this->logs) > $this->limit) {
+            array_shift($this->logs);
+            $this->streamStartIndex = max(0, $this->streamStartIndex - 1);
+        }
     }
 
     /**
@@ -329,7 +333,7 @@ class ProcessLog extends Prompt
      */
     public function prompt(): never
     {
-        throw new RuntimeException('Spinner cannot be prompted.');
+        throw new RuntimeException('ProcessLog cannot be prompted.');
     }
 
     /**

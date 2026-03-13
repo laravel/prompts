@@ -15,6 +15,11 @@ class Logger
     }
 
     /**
+     * The buffer for streaming text.
+     */
+    protected string $streamBuffer = '';
+
+    /**
      * Log a line to the process log.
      */
     public function line(string $message): void
@@ -22,14 +27,22 @@ class Logger
         $this->write(rtrim($message));
     }
 
-    public function partialLine(string $message): void
+    /**
+     * Stream a chunk of text, accumulating on the current line(s).
+     */
+    public function stream(string $chunk): void
     {
-        $this->write($message, 'partial');
+        $this->streamBuffer .= $chunk;
+        $this->write($this->streamBuffer, 'stream');
     }
 
-    public function commitPartialLine(): void
+    /**
+     * Commit the streamed text and start fresh.
+     */
+    public function endStream(): void
     {
-        $this->write('', 'commit');
+        $this->streamBuffer = '';
+        $this->write('', 'endstream');
     }
 
     /**
