@@ -2,41 +2,25 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
+use Laravel\Prompts\Concerns\HasSpinner;
 use Laravel\Prompts\ProcessLog;
 
 class ProcessLogRenderer extends Renderer
 {
-    /**
-     * The frames of the spinner (single dot moving around the perimeter).
-     *
-     * @var array<string>
-     */
-    protected array $frames = ['⠂', '⠒', '⠐', '⠰', '⠠', '⠤', '⠄', '⠆'];
+    use HasSpinner;
 
     /**
-     * The frame to render when the spinner is static.
-     */
-    protected string $staticFrame = '⠶';
-
-    /**
-     * The interval between frames.
-     */
-    protected int $interval = 75;
-
-    /**
-     * Render the spinner.
+     * Render the process log.
      */
     public function __invoke(ProcessLog $processLog): string
     {
         if ($processLog->static) {
-            return $this->line(" {$this->cyan($this->staticFrame)} {$processLog->message}");
+            return $this->line(" {$this->cyan($this->staticFrame)} {$processLog->label}");
         }
 
         $processLog->interval = $this->interval;
 
-        $frame = $this->frames[$processLog->count % count($this->frames)];
-
-        $this->line(" {$this->cyan($frame)} {$processLog->message}");
+        $this->line(" {$this->cyan($this->spinnerFrame($processLog->count))} {$processLog->label}");
 
         $leadPadding = str_repeat(' ', 3);
 

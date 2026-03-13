@@ -28,21 +28,21 @@ class Logger
     }
 
     /**
-     * Stream a chunk of text, accumulating on the current line(s).
+     * Append a chunk of text, accumulating on the current line(s).
      */
-    public function stream(string $chunk): void
+    public function partial(string $chunk): void
     {
         $this->streamBuffer .= $chunk;
-        $this->write($this->streamBuffer, 'stream');
+        $this->write($this->streamBuffer, 'partial');
     }
 
     /**
-     * Commit the streamed text and start fresh.
+     * Commit the accumulated partial text and start fresh.
      */
-    public function endStream(): void
+    public function commitPartial(): void
     {
         $this->streamBuffer = '';
-        $this->write('', 'endstream');
+        $this->write('', 'commitpartial');
     }
 
     /**

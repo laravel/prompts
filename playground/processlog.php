@@ -147,11 +147,11 @@ match ($mode) {
             $logger->line('START');
 
             foreach ($streamWords as $word) {
-                $logger->stream($word . ' ');
+                $logger->partial($word . ' ');
                 usleep(100_000);
             }
 
-            $logger->endStream();
+            $logger->commitPartial();
             $logger->line('END');
 
             usleep(300_000);
@@ -173,11 +173,11 @@ match ($mode) {
             $logger->label('Generating output...');
 
             foreach ($streamWords as $word) {
-                $logger->stream($word . ' ');
+                $logger->partial($word . ' ');
                 usleep(100_000);
             }
 
-            $logger->endStream();
+            $logger->commitPartial();
 
             $logger->label('Cleaning up...');
 

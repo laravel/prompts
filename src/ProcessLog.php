@@ -81,7 +81,7 @@ class ProcessLog extends Prompt
      * Create a new ProcessLog instance.
      */
     public function __construct(
-        public string $message = '',
+        public string $label = '',
         public int $limit = 10,
     ) {
         $this->identifier = uniqid();
@@ -187,7 +187,7 @@ class ProcessLog extends Prompt
             }
 
             // Check for typed messages: {id}_{type}:{content}
-            if (preg_match('/^' . $prefix . '_(success|warning|error|label|reset|stream|endstream):(.*)/', $line, $matches)) {
+            if (preg_match('/^' . $prefix . '_(success|warning|error|label|reset|partial|commitpartial):(.*)/', $line, $matches)) {
                 $type = $matches[1];
                 $content = $matches[2];
 
@@ -197,20 +197,20 @@ class ProcessLog extends Prompt
                     continue;
                 }
 
-                if ($type === 'stream') {
-                    $this->replaceStreamLines($content);
+                if ($type === 'partial') {
+                    $this->replacePartialLines($content);
 
                     continue;
                 }
 
-                if ($type === 'endstream') {
+                if ($type === 'commitpartial') {
                     $this->streamStartIndex = null;
 
                     continue;
                 }
 
                 if ($type === 'label') {
-                    $this->message = $content;
+                    $this->label = $content;
                 } else {
                     $this->stableMessages[] = ['type' => $type, 'message' => $content];
                     $this->logs = [];
@@ -254,9 +254,9 @@ class ProcessLog extends Prompt
     }
 
     /**
-     * Replace the in-progress stream lines with the full accumulated text.
+     * Replace the in-progress partial lines with the full accumulated text.
      */
-    protected function replaceStreamLines(string $text): void
+    protected function replacePartialLines(string $text): void
     {
         if ($this->streamStartIndex === null) {
             $this->streamStartIndex = count($this->logs);
