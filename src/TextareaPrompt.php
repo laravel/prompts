@@ -9,8 +9,8 @@ use Laravel\Prompts\Themes\Default\Concerns\InteractsWithStrings;
 class TextareaPrompt extends Prompt
 {
     use Concerns\Scrolling;
-    use InteractsWithStrings;
     use Concerns\TypedValue;
+    use InteractsWithStrings;
 
     protected int $minWidth = 0;
 
@@ -120,7 +120,7 @@ class TextareaPrompt extends Prompt
         $lines = $this->lines();
 
         // Line length + 1 for the newline character
-        $lineLengths = array_map(fn($line, $index) => mb_strlen($line) + ($index === count($lines) - 1 ? 0 : 1), $lines, range(0, count($lines) - 1));
+        $lineLengths = array_map(fn ($line, $index) => mb_strlen($line) + ($index === count($lines) - 1 ? 0 : 1), $lines, range(0, count($lines) - 1));
 
         $currentLineIndex = $this->currentLineIndex();
 
@@ -152,7 +152,7 @@ class TextareaPrompt extends Prompt
         $lines = $this->lines();
 
         // Line length + 1 for the newline character
-        $lineLengths = array_map(fn($line, $index) => mb_strlen($line) + ($index === count($lines) - 1 ? 0 : 1), $lines, range(0, count($lines) - 1));
+        $lineLengths = array_map(fn ($line, $index) => mb_strlen($line) + ($index === count($lines) - 1 ? 0 : 1), $lines, range(0, count($lines) - 1));
 
         $currentLineIndex = $this->currentLineIndex();
 
@@ -225,7 +225,7 @@ class TextareaPrompt extends Prompt
     {
         $cursorOffset = 0;
 
-        preg_match_all('/\S{' . $this->width . ',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
+        preg_match_all('/\S{'.$this->width.',}/u', $this->value(), $matches, PREG_OFFSET_CAPTURE);
 
         foreach ($matches[0] as $match) {
             if ($this->cursorPosition + $cursorOffset >= $match[1] + mb_strwidth($match[0])) {

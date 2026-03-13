@@ -203,5 +203,4 @@ trait Colors
     {
         return "\e[90m{$text}\e[39m";
     }
-
 }

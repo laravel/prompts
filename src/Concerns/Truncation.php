@@ -15,6 +15,6 @@ trait Truncation
             throw new InvalidArgumentException("Width [{$width}] must be greater than zero.");
         }
 
-        return mb_strwidth($string) <= $width ? $string : (mb_strimwidth($string, 0, $width - 1) . '…');
+        return mb_strwidth($string) <= $width ? $string : (mb_strimwidth($string, 0, $width - 1).'…');
     }
 }

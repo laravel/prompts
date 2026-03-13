@@ -13,7 +13,7 @@ trait InteractsWithStrings
     {
         return max(
             $this->minWidth,
-            count($lines) > 0 ? max(array_map(fn($line) => mb_strwidth($this->stripEscapeSequences($line)) + $padding, $lines)) : null
+            count($lines) > 0 ? max(array_map(fn ($line) => mb_strwidth($this->stripEscapeSequences($line)) + $padding, $lines)) : null
         );
     }
 
@@ -74,7 +74,7 @@ trait InteractsWithStrings
                     $str = '';
 
                     foreach ($characters as $character) {
-                        $tmp = $str . $character;
+                        $tmp = $str.$character;
 
                         if (mb_strwidth($tmp) > $width) {
                             $strings[] = $str;
@@ -95,7 +95,7 @@ trait InteractsWithStrings
             }
 
             foreach ($words as $word) {
-                $tmp = ($line === null) ? $word : $line . ' ' . $word;
+                $tmp = ($line === null) ? $word : $line.' '.$word;
 
                 // Look for zero-width joiner characters (combined emojis)
                 preg_match('/\p{Cf}/u', $word, $joinerMatches);
