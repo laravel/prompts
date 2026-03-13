@@ -356,7 +356,7 @@ if (! function_exists('\Laravel\Prompts\form')) {
 
 if (! function_exists('\Laravel\Prompts\title')) {
     /**
-     * Display a title.
+     * Update the title of the terminal.
      */
     function title(string $title): void
     {
@@ -380,7 +380,7 @@ if (! function_exists('\Laravel\Prompts\task')) {
      *
      * @template TReturn of mixed
      *
-     * @param  Closure(Logger): TReturn  $callback
+     * @param  Closure(Support\Logger): TReturn  $callback
      * @return TReturn
      */
     function task(string $label, Closure $callback, ?int $limit = null): mixed
