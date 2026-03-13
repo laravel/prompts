@@ -3,28 +3,28 @@
 namespace Laravel\Prompts\Themes\Default;
 
 use Laravel\Prompts\Concerns\HasSpinner;
-use Laravel\Prompts\ProcessLog;
+use Laravel\Prompts\Task;
 
-class ProcessLogRenderer extends Renderer
+class TaskRenderer extends Renderer
 {
     use HasSpinner;
 
     /**
-     * Render the process log.
+     * Render the task.
      */
-    public function __invoke(ProcessLog $processLog): string
+    public function __invoke(Task $task): string
     {
-        if ($processLog->static) {
-            return $this->line(" {$this->cyan($this->staticFrame)} {$processLog->label}");
+        if ($task->static) {
+            return $this->line(" {$this->cyan($this->staticFrame)} {$task->label}");
         }
 
-        $processLog->interval = $this->interval;
+        $task->interval = $this->interval;
 
-        $this->line(" {$this->cyan($this->spinnerFrame($processLog->count))} {$processLog->label}");
+        $this->line(" {$this->cyan($this->spinnerFrame($task->count))} {$task->label}");
 
         $leadPadding = str_repeat(' ', 3);
 
-        $stableMessages = array_slice($processLog->stableMessages, -$processLog->maxStableMessages);
+        $stableMessages = array_slice($task->stableMessages, -$task->maxStableMessages);
 
         foreach ($stableMessages as $stableMessage) {
             $symbol = match ($stableMessage['type']) {
@@ -37,19 +37,19 @@ class ProcessLogRenderer extends Renderer
             $this->line($leadPadding . $symbol . ' ' . $stableMessage['message']);
         }
 
-        if (count($processLog->stableMessages) > 0 || count($processLog->logs) > 0) {
+        if (count($task->stableMessages) > 0 || count($task->logs) > 0) {
             $this->line($this->gray(' ' . str_repeat('─', $this->prompt->terminal()->cols() - 10)));
         } else {
             $this->newLine();
         }
 
-        $logs = array_slice($processLog->logs, -$processLog->limit);
+        $logs = array_slice($task->logs, -$task->limit);
 
         foreach ($logs as $log) {
             $this->line(' ' . $this->dim($log));
         }
 
-        $remaining = $processLog->limit - count($processLog->logs);
+        $remaining = $task->limit - count($task->logs);
 
         while ($remaining > 0) {
             $this->line('');

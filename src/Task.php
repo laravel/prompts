@@ -7,7 +7,7 @@ use Laravel\Prompts\Support\Logger;
 use Laravel\Prompts\Themes\Default\Concerns\InteractsWithStrings;
 use RuntimeException;
 
-class ProcessLog extends Prompt
+class Task extends Prompt
 {
     use InteractsWithStrings;
 
@@ -58,12 +58,12 @@ class ProcessLog extends Prompt
     public int $maxStableMessages = 10;
 
     /**
-     * The identifier for the task log.
+     * The identifier for the task.
      */
     public string $identifier = '';
 
     /**
-     * Whether the process log has finished.
+     * Whether the task has finished.
      */
     public bool $finished = false;
 
@@ -73,12 +73,12 @@ class ProcessLog extends Prompt
     protected string $buffer = '';
 
     /**
-     * The log index where the current stream started, or null if not streaming.
+     * The log index where the current partial started, or null if not streaming.
      */
-    protected ?int $streamStartIndex = null;
+    protected ?int $partialStartIndex = null;
 
     /**
-     * Create a new ProcessLog instance.
+     * Create a new Task instance.
      */
     public function __construct(
         public string $label = '',
@@ -204,7 +204,7 @@ class ProcessLog extends Prompt
                 }
 
                 if ($type === 'commitpartial') {
-                    $this->streamStartIndex = null;
+                    $this->partialStartIndex = null;
 
                     continue;
                 }
@@ -214,7 +214,7 @@ class ProcessLog extends Prompt
                 } else {
                     $this->stableMessages[] = ['type' => $type, 'message' => $content];
                     $this->logs = [];
-                    $this->streamStartIndex = null;
+                    $this->partialStartIndex = null;
                 }
 
                 while (count($this->stableMessages) > $this->maxStableMessages) {
@@ -258,14 +258,14 @@ class ProcessLog extends Prompt
      */
     protected function replacePartialLines(string $text): void
     {
-        if ($this->streamStartIndex === null) {
-            $this->streamStartIndex = count($this->logs);
+        if ($this->partialStartIndex === null) {
+            $this->partialStartIndex = count($this->logs);
         }
 
-        // Truncate back to where the stream started.
-        $this->logs = array_slice($this->logs, 0, $this->streamStartIndex);
+        // Truncate back to where the partial started.
+        $this->logs = array_slice($this->logs, 0, $this->partialStartIndex);
 
-        // Wrap and append the full accumulated stream text.
+        // Wrap and append the full accumulated partial text.
         $width = $this->terminal()->cols() - 10;
         $plainText = $this->stripEscapeSequences($text);
 
@@ -279,7 +279,7 @@ class ProcessLog extends Prompt
 
         while (count($this->logs) > $this->limit) {
             array_shift($this->logs);
-            $this->streamStartIndex = max(0, $this->streamStartIndex - 1);
+            $this->partialStartIndex = max(0, $this->partialStartIndex - 1);
         }
     }
 
@@ -333,7 +333,7 @@ class ProcessLog extends Prompt
      */
     public function prompt(): never
     {
-        throw new RuntimeException('ProcessLog cannot be prompted.');
+        throw new RuntimeException('Task cannot be prompted.');
     }
 
     /**
@@ -355,7 +355,7 @@ class ProcessLog extends Prompt
     }
 
     /**
-     * Clean up after the spinner.
+     * Clean up after the task.
      */
     public function __destruct()
     {

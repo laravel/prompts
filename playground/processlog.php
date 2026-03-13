@@ -3,7 +3,7 @@
 use Laravel\Prompts\Support\Logger;
 
 use function Laravel\Prompts\info;
-use function Laravel\Prompts\processLog;
+use function Laravel\Prompts\task;
 use function Laravel\Prompts\select;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -124,7 +124,7 @@ $mode = select('Which demo?', [
 ]);
 
 match ($mode) {
-    'standard' => processLog(
+    'standard' => task(
         label: $commands[0][1],
         callback: function (Logger $logger) use ($commands) {
             foreach ($commands as $data) {
@@ -141,7 +141,7 @@ match ($mode) {
         },
     ),
 
-    'stream' => processLog(
+    'stream' => task(
         label: 'Streaming text...',
         callback: function (Logger $logger) use ($streamWords) {
             $logger->line('START');
@@ -158,7 +158,7 @@ match ($mode) {
         },
     ),
 
-    'mixed' => processLog(
+    'mixed' => task(
         label: 'Running mixed demo...',
         callback: function (Logger $logger) use ($plainOutput, $streamWords) {
             $logger->label('Installing dependencies...');

@@ -374,17 +374,17 @@ if (! function_exists('\Laravel\Prompts\stream')) {
     }
 }
 
-if (! function_exists('\Laravel\Prompts\processLog')) {
+if (! function_exists('\Laravel\Prompts\task')) {
     /**
-     * Display a process log with a spinner.
+     * Display a task with a spinner and live output.
      *
      * @template TReturn of mixed
      *
      * @param  \Closure(Logger): TReturn  $callback
      * @return TReturn
      */
-    function processLog(string $label, Closure $callback, ?int $limit = null): mixed
+    function task(string $label, Closure $callback, ?int $limit = null): mixed
     {
-        return (new ProcessLog($label, $limit ?? 10))->run($callback);
+        return (new Task($label, $limit ?? 10))->run($callback);
     }
 }
