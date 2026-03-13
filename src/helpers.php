@@ -356,7 +356,7 @@ if (! function_exists('\Laravel\Prompts\form')) {
 
 if (! function_exists('\Laravel\Prompts\title')) {
     /**
-     * Display a title.
+     * Update the title of the terminal.
      */
     function title(string $title): void
     {
