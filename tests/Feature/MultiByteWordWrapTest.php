@@ -1,10 +1,10 @@
 <?php
 
-use Laravel\Prompts\Concerns\Truncation;
+use Laravel\Prompts\Themes\Default\Concerns\InteractsWithStrings;
 
 $instance = new class
 {
-    use Truncation;
+    use InteractsWithStrings;
 
     public function wordwrap(...$args)
     {
