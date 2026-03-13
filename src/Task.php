@@ -92,7 +92,7 @@ class Task extends Prompt
      *
      * @template TReturn of mixed
      *
-     * @param  \Closure(Logger): TReturn  $callback
+     * @param  Closure(Logger): TReturn  $callback
      * @return TReturn
      */
     public function run(Closure $callback): mixed
@@ -111,7 +111,7 @@ class Task extends Prompt
 
         $originalAsync = pcntl_async_signals(true);
 
-        pcntl_signal(SIGINT, fn() => exit());
+        pcntl_signal(SIGINT, fn () => exit());
 
         try {
             $this->hideCursor();
@@ -149,7 +149,7 @@ class Task extends Prompt
 
                 if ($this->socket !== null) {
                     // Send a reset message to the parent process to reset the terminal.
-                    fwrite($this->socket, $this->identifier . '_' . 'reset:' . ($originalAsync ? 1 : 0) . PHP_EOL);
+                    fwrite($this->socket, $this->identifier.'_'.'reset:'.($originalAsync ? 1 : 0).PHP_EOL);
                     usleep($this->interval * 2000);
                 }
 
@@ -179,7 +179,7 @@ class Task extends Prompt
                 continue;
             }
 
-            $line = rtrim($this->buffer . $data, PHP_EOL);
+            $line = rtrim($this->buffer.$data, PHP_EOL);
             $this->buffer = '';
 
             if ($line === '') {
@@ -187,7 +187,7 @@ class Task extends Prompt
             }
 
             // Check for typed messages: {id}_{type}:{content}
-            if (preg_match('/^' . $prefix . '_(success|warning|error|label|reset|partial|commitpartial):(.*)/', $line, $matches)) {
+            if (preg_match('/^'.$prefix.'_(success|warning|error|label|reset|partial|commitpartial):(.*)/', $line, $matches)) {
                 $type = $matches[1];
                 $content = $matches[2];
 
@@ -306,7 +306,7 @@ class Task extends Prompt
      *
      * @template TReturn of mixed
      *
-     * @param  \Closure(Logger): TReturn  $callback
+     * @param  Closure(Logger): TReturn  $callback
      * @return TReturn
      */
     protected function renderStatically(Closure $callback): mixed
@@ -329,7 +329,7 @@ class Task extends Prompt
     /**
      * Disable prompting for input.
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function prompt(): never
     {
