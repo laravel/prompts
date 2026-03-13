@@ -79,6 +79,6 @@ class Stream extends Prompt
      */
     public function value(): string
     {
-        return $this->message;
+        return $this->message . implode('', $this->currentlyFading);
     }
 }
