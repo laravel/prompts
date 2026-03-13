@@ -185,12 +185,20 @@ class Terminal
         fflush(STDOUT);
 
         $ttyIn = fopen('/dev/tty', 'r');
+
+        if ($ttyIn === false) {
+            static::$foregroundColor = [204, 204, 204];
+            static::$backgroundColor = [0, 0, 0];
+
+            return;
+        }
+
         $response = fread($ttyIn, 200);
         fclose($ttyIn);
 
         shell_exec("stty {$savedStty} < /dev/tty");
 
-        preg_match_all('/rgb:([0-9a-f]+)\/([0-9a-f]+)\/([0-9a-f]+)/i', $response ?? '', $matches, PREG_SET_ORDER);
+        preg_match_all('/rgb:([0-9a-f]+)\/([0-9a-f]+)\/([0-9a-f]+)/i', $response ?: '', $matches, PREG_SET_ORDER);
 
         $parse = fn (array $m) => [
             (int) (hexdec($m[1]) / (strlen($m[1]) === 4 ? 257 : 1)),

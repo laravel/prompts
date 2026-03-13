@@ -12,6 +12,8 @@ class TextareaPrompt extends Prompt
     use InteractsWithStrings;
     use Concerns\TypedValue;
 
+    protected int $minWidth = 0;
+
     /**
      * The width of the textarea.
      */

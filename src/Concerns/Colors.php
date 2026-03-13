@@ -204,35 +204,4 @@ trait Colors
         return "\e[90m{$text}\e[39m";
     }
 
-    /**
-     * Get an array of closures that progressively fade text from full color to nearly invisible.
-     *
-     * @return array<int, \Closure(string): string>
-     */
-    public function fadeOut($steps = 10): array
-    {
-        $terminal = static::terminal();
-
-        if (!$terminal->supportsTrueColor()) {
-            return [
-                fn(string $text) => $text,
-                fn(string $text) => $this->dim($text),
-            ];
-        }
-
-        $fg = $terminal->foregroundColor();
-        $bg = $terminal->backgroundColor();
-
-        return array_map(
-            function (int $step) use ($fg, $bg, $steps) {
-                $factor = 1 - ($step / $steps); // 1.0 → 0.2
-                $r = (int) ($bg[0] + ($fg[0] - $bg[0]) * $factor);
-                $g = (int) ($bg[1] + ($fg[1] - $bg[1]) * $factor);
-                $b = (int) ($bg[2] + ($fg[2] - $bg[2]) * $factor);
-
-                return fn(string $text) => "\e[38;2;{$r};{$g};{$b}m{$text}\e[0m";
-            },
-            range(0, $steps - 1),
-        );
-    }
 }
