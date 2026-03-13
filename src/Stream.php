@@ -39,10 +39,14 @@ class Stream extends Prompt
 
     public function close(): void
     {
-        while (count($this->currentlyFading) > 0) {
-            $this->message .= array_shift($this->currentlyFading);
-            $this->render();
-            usleep(25_000);
+        try {
+            while (count($this->currentlyFading) > 0) {
+                $this->message .= array_shift($this->currentlyFading);
+                $this->render();
+                usleep(25_000);
+            }
+        } finally {
+            $this->showCursor();
         }
     }
 
