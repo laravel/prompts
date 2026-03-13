@@ -66,7 +66,7 @@ class Stream extends Prompt
         foreach ($lines as $line) {
             $finalLines = array_merge(
                 $finalLines,
-                $this->wordwrapWithAnsi($line, $this->maxWidth),
+                $this->ansiWordwrap($line, $this->maxWidth),
             );
         }
 

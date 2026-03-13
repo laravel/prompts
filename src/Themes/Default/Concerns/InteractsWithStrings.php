@@ -133,7 +133,7 @@ trait InteractsWithStrings
      *
      * @return array<int, string>
      */
-    protected function wordwrapWithAnsi(string $text, int $width): array
+    protected function ansiWordwrap(string $text, int $width): array
     {
         // Parse segments and build character array with codes
         $segments = $this->parseAnsiText($text);
