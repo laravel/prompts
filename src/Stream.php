@@ -8,13 +8,13 @@ class Stream extends Prompt
 {
     use InteractsWithStrings;
 
-    public string $message = '';
+    protected string $message = '';
 
-    public array $currentlyFading = [];
+    protected array $currentlyFading = [];
 
-    public int $maxWidth = 0;
+    protected int $maxWidth = 0;
 
-    public array $fadingOutColors = [];
+    protected array $fadingOutColors = [];
 
     /**
      * Create a new Stream instance.
@@ -26,7 +26,7 @@ class Stream extends Prompt
         $this->fadingOutColors = $this->fadeOut();
     }
 
-    public function append(string $message): void
+    public function append(string $message): self
     {
         $this->currentlyFading[] = $message;
 
@@ -35,6 +35,8 @@ class Stream extends Prompt
         }
 
         $this->render();
+
+        return $this;
     }
 
     public function close(): void
@@ -50,7 +52,7 @@ class Stream extends Prompt
         }
     }
 
-    public function lines()
+    public function lines(): array
     {
         $toFadeIn = [];
 
@@ -62,8 +64,10 @@ class Stream extends Prompt
         $finalLines = [];
 
         foreach ($lines as $line) {
-            $wrapped = $this->wordwrapWithAnsi($line, $this->maxWidth);
-            $finalLines = array_merge($finalLines,  $wrapped);
+            $finalLines = array_merge(
+                $finalLines,
+                $this->wordwrapWithAnsi($line, $this->maxWidth),
+            );
         }
 
         return $finalLines;
