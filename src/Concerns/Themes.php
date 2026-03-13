@@ -20,6 +20,7 @@ use Laravel\Prompts\Spinner;
 use Laravel\Prompts\Stream;
 use Laravel\Prompts\SuggestPrompt;
 use Laravel\Prompts\Table;
+use Laravel\Prompts\Task;
 use Laravel\Prompts\TextareaPrompt;
 use Laravel\Prompts\TextPrompt;
 use Laravel\Prompts\Themes\Default\ClearRenderer;
@@ -38,6 +39,7 @@ use Laravel\Prompts\Themes\Default\SpinnerRenderer;
 use Laravel\Prompts\Themes\Default\StreamRenderer;
 use Laravel\Prompts\Themes\Default\SuggestPromptRenderer;
 use Laravel\Prompts\Themes\Default\TableRenderer;
+use Laravel\Prompts\Themes\Default\TaskRenderer;
 use Laravel\Prompts\Themes\Default\TextareaPromptRenderer;
 use Laravel\Prompts\Themes\Default\TextPromptRenderer;
 use Laravel\Prompts\Themes\Default\TitleRenderer;
@@ -76,6 +78,7 @@ trait Themes
             Grid::class => GridRenderer::class,
             Title::class => TitleRenderer::class,
             Stream::class => StreamRenderer::class,
+            Task::class => TaskRenderer::class,
         ],
     ];
 

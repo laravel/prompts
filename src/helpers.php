@@ -373,3 +373,18 @@ if (! function_exists('\Laravel\Prompts\stream')) {
         return new Stream;
     }
 }
+
+if (! function_exists('\Laravel\Prompts\task')) {
+    /**
+     * Display a task with a spinner and live output.
+     *
+     * @template TReturn of mixed
+     *
+     * @param  Closure(Logger): TReturn  $callback
+     * @return TReturn
+     */
+    function task(string $label, Closure $callback, ?int $limit = null): mixed
+    {
+        return (new Task($label, $limit ?? 10))->run($callback);
+    }
+}
