@@ -2,9 +2,11 @@
 
 namespace Laravel\Prompts;
 
+use Laravel\Prompts\Themes\Default\Concerns\InteractsWithStrings;
+
 class Stream extends Prompt
 {
-    use Concerns\Truncation;
+    use InteractsWithStrings;
 
     public string $message = '';
 
@@ -25,7 +27,7 @@ class Stream extends Prompt
     {
         $this->fadingIn[] = $message;
 
-        if (count($this->fadingIn) > 3) {
+        while (count($this->fadingIn) > 3) {
             $this->message .= array_shift($this->fadingIn);
         }
 
