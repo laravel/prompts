@@ -363,3 +363,13 @@ if (! function_exists('\Laravel\Prompts\title')) {
         (new Title($title))->display();
     }
 }
+
+if (! function_exists('\Laravel\Prompts\stream')) {
+    /**
+     * Display a stream of text.
+     */
+    function stream(): Stream
+    {
+        return new Stream;
+    }
+}
