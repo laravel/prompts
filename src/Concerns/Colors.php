@@ -4,14 +4,6 @@ namespace Laravel\Prompts\Concerns;
 
 trait Colors
 {
-    protected static ?bool $trueColorSupport = null;
-
-    protected static ?array $terminalForeground = null;
-
-    protected static ?array $terminalBackground = null;
-
-
-
     /**
      * Reset all colors and styles.
      */
@@ -219,15 +211,17 @@ trait Colors
      */
     public function fadeOut($steps = 10): array
     {
-        if (!$this->supportsTrueColor()) {
+        $terminal = static::terminal();
+
+        if (!$terminal->supportsTrueColor()) {
             return [
                 fn(string $text) => $text,
                 fn(string $text) => $this->dim($text),
             ];
         }
 
-        $fg = $this->terminalForeground();
-        $bg = $this->terminalBackground();
+        $fg = $terminal->foregroundColor();
+        $bg = $terminal->backgroundColor();
 
         return array_map(
             function (int $step) use ($fg, $bg, $steps) {
@@ -240,77 +234,5 @@ trait Colors
             },
             range(0, $steps - 1),
         );
-    }
-
-    /**
-     * Determine if the terminal supports true color (24-bit).
-     */
-    public function supportsTrueColor(): bool
-    {
-        if (static::$trueColorSupport !== null) {
-            return static::$trueColorSupport;
-        }
-
-        $colorterm = getenv('COLORTERM');
-
-        return static::$trueColorSupport = in_array($colorterm, ['truecolor', '24bit']);
-    }
-
-    /**
-     * Get the terminal's foreground color as an RGB array.
-     *
-     * @return array{int, int, int}
-     */
-    protected function terminalForeground(): array
-    {
-        if (static::$terminalForeground === null) {
-            $this->queryTerminalColors();
-        }
-
-        return static::$terminalForeground;
-    }
-
-    /**
-     * Get the terminal's background color as an RGB array.
-     *
-     * @return array{int, int, int}
-     */
-    protected function terminalBackground(): array
-    {
-        if (static::$terminalBackground === null) {
-            $this->queryTerminalColors();
-        }
-
-        return static::$terminalBackground;
-    }
-
-    /**
-     * Query the terminal for foreground and background colors in a single shot.
-     */
-    protected function queryTerminalColors(): void
-    {
-        $savedStty = trim((string) shell_exec('stty -g < /dev/tty'));
-
-        shell_exec('stty raw -echo min 0 time 1 < /dev/tty');
-
-        fwrite(STDOUT, "\e]10;?\e\\\e]11;?\e\\");
-        fflush(STDOUT);
-
-        $ttyIn = fopen('/dev/tty', 'r');
-        $response = fread($ttyIn, 200);
-        fclose($ttyIn);
-
-        shell_exec("stty {$savedStty} < /dev/tty");
-
-        preg_match_all('/rgb:([0-9a-f]+)\/([0-9a-f]+)\/([0-9a-f]+)/i', $response ?? '', $matches, PREG_SET_ORDER);
-
-        $parse = fn(array $m) => [
-            (int) (hexdec($m[1]) / (strlen($m[1]) === 4 ? 257 : 1)),
-            (int) (hexdec($m[2]) / (strlen($m[2]) === 4 ? 257 : 1)),
-            (int) (hexdec($m[3]) / (strlen($m[3]) === 4 ? 257 : 1)),
-        ];
-
-        static::$terminalForeground = isset($matches[0]) ? $parse($matches[0]) : [204, 204, 204];
-        static::$terminalBackground = isset($matches[1]) ? $parse($matches[1]) : [0, 0, 0];
     }
 }
