@@ -6,7 +6,7 @@ use function Laravel\Prompts\info;
 use function Laravel\Prompts\processLog;
 use function Laravel\Prompts\select;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 $ansiOutput = [
     "\e[32mInstalling dependencies from lock file (including require-dev)\e[39m",
@@ -49,43 +49,43 @@ $ansiOutput = [
 ];
 
 $plainOutput = [
-    "Installing dependencies from lock file (including require-dev)",
-    "Verifying lock file contents can be installed on current platform.",
-    "Package operations: 31 installs, 0 updates, 0 removals",
-    "  - Installing illuminate/conditionable (v12.49.0): Extracting archive",
-    "  - Installing illuminate/macroable (v12.49.0): Extracting archive",
-    "  - Installing symfony/polyfill-mbstring (v1.33.0): Extracting archive",
-    "  - Installing symfony/polyfill-intl-normalizer (v1.33.0): Extracting archive",
-    "  - Installing symfony/polyfill-intl-grapheme (v1.33.0): Extracting archive",
-    "  - Installing symfony/polyfill-ctype (v1.33.0): Extracting archive",
-    "  - Installing symfony/string (v8.0.4): Extracting archive",
-    "  - Installing symfony/deprecation-contracts (v3.6.0): Extracting archive",
-    "  - Installing psr/container (2.0.2): Extracting archive",
-    "  - Installing symfony/service-contracts (v3.6.1): Extracting archive",
-    "  - Installing symfony/console (v7.4.4): Extracting archive",
-    "  - Installing laravel/prompts (v0.3.11): Extracting archive",
-    "  - Installing nikic/php-parser (v5.7.0): Extracting archive",
-    "  - Installing webmozart/assert (1.12.1): Extracting archive",
-    "  - Installing phpstan/phpdoc-parser (2.3.2): Extracting archive",
-    "  - Installing phpdocumentor/reflection-common (2.2.0): Extracting archive",
-    "  - Installing doctrine/deprecations (1.1.5): Extracting archive",
-    "  - Installing phpdocumentor/type-resolver (1.12.0): Extracting archive",
-    "  - Installing phpdocumentor/reflection-docblock (5.6.6): Extracting archive",
-    "  - Installing psr/simple-cache (3.0.0): Extracting archive",
-    "  - Installing symfony/finder (v8.0.5): Extracting archive",
-    "  - Installing illuminate/contracts (v12.49.0): Extracting archive",
-    "  - Installing spatie/laravel-package-tools (1.92.7): Extracting archive",
-    "  - Installing symfony/polyfill-php85 (v1.33.0): Extracting archive",
-    "  - Installing symfony/polyfill-php84 (v1.33.0): Extracting archive",
-    "  - Installing symfony/polyfill-php83 (v1.33.0): Extracting archive",
-    "  - Installing illuminate/collections (v12.49.0): Extracting archive",
-    "  - Installing spatie/php-structure-discoverer (2.3.3): Extracting archive",
-    "  - Installing symfony/polyfill-php80 (v1.33.0): Extracting archive",
-    "  - Installing phpdocumentor/reflection (6.4.4): Extracting archive",
-    "  - Installing spatie/laravel-data (4.19.1): Extracting archive",
-    "Generating autoload files",
-    "16 packages you are using are looking for funding.",
-    "Use the `composer fund` command to find out more!",
+    'Installing dependencies from lock file (including require-dev)',
+    'Verifying lock file contents can be installed on current platform.',
+    'Package operations: 31 installs, 0 updates, 0 removals',
+    '  - Installing illuminate/conditionable (v12.49.0): Extracting archive',
+    '  - Installing illuminate/macroable (v12.49.0): Extracting archive',
+    '  - Installing symfony/polyfill-mbstring (v1.33.0): Extracting archive',
+    '  - Installing symfony/polyfill-intl-normalizer (v1.33.0): Extracting archive',
+    '  - Installing symfony/polyfill-intl-grapheme (v1.33.0): Extracting archive',
+    '  - Installing symfony/polyfill-ctype (v1.33.0): Extracting archive',
+    '  - Installing symfony/string (v8.0.4): Extracting archive',
+    '  - Installing symfony/deprecation-contracts (v3.6.0): Extracting archive',
+    '  - Installing psr/container (2.0.2): Extracting archive',
+    '  - Installing symfony/service-contracts (v3.6.1): Extracting archive',
+    '  - Installing symfony/console (v7.4.4): Extracting archive',
+    '  - Installing laravel/prompts (v0.3.11): Extracting archive',
+    '  - Installing nikic/php-parser (v5.7.0): Extracting archive',
+    '  - Installing webmozart/assert (1.12.1): Extracting archive',
+    '  - Installing phpstan/phpdoc-parser (2.3.2): Extracting archive',
+    '  - Installing phpdocumentor/reflection-common (2.2.0): Extracting archive',
+    '  - Installing doctrine/deprecations (1.1.5): Extracting archive',
+    '  - Installing phpdocumentor/type-resolver (1.12.0): Extracting archive',
+    '  - Installing phpdocumentor/reflection-docblock (5.6.6): Extracting archive',
+    '  - Installing psr/simple-cache (3.0.0): Extracting archive',
+    '  - Installing symfony/finder (v8.0.5): Extracting archive',
+    '  - Installing illuminate/contracts (v12.49.0): Extracting archive',
+    '  - Installing spatie/laravel-package-tools (1.92.7): Extracting archive',
+    '  - Installing symfony/polyfill-php85 (v1.33.0): Extracting archive',
+    '  - Installing symfony/polyfill-php84 (v1.33.0): Extracting archive',
+    '  - Installing symfony/polyfill-php83 (v1.33.0): Extracting archive',
+    '  - Installing illuminate/collections (v12.49.0): Extracting archive',
+    '  - Installing spatie/php-structure-discoverer (2.3.3): Extracting archive',
+    '  - Installing symfony/polyfill-php80 (v1.33.0): Extracting archive',
+    '  - Installing phpdocumentor/reflection (6.4.4): Extracting archive',
+    '  - Installing spatie/laravel-data (4.19.1): Extracting archive',
+    'Generating autoload files',
+    '16 packages you are using are looking for funding.',
+    'Use the `composer fund` command to find out more!',
 ];
 
 $commands = [
@@ -147,7 +147,7 @@ match ($mode) {
             $logger->line('START');
 
             foreach ($streamWords as $word) {
-                $logger->partial($word . ' ');
+                $logger->partial($word.' ');
                 usleep(100_000);
             }
 
@@ -173,7 +173,7 @@ match ($mode) {
             $logger->label('Generating output...');
 
             foreach ($streamWords as $word) {
-                $logger->partial($word . ' ');
+                $logger->partial($word.' ');
                 usleep(100_000);
             }
 

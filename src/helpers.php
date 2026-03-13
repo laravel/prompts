@@ -380,7 +380,7 @@ if (! function_exists('\Laravel\Prompts\processLog')) {
      *
      * @template TReturn of mixed
      *
-     * @param  \Closure(Logger): TReturn  $callback
+     * @param  Closure(Logger): TReturn  $callback
      * @return TReturn
      */
     function processLog(string $label, Closure $callback, ?int $limit = null): mixed

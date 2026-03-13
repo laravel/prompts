@@ -83,9 +83,9 @@ class Logger
     protected function write(string $message, ?string $type = null): void
     {
         if ($type !== null) {
-            fwrite($this->socket, $this->prefix($type, $message) . PHP_EOL);
+            fwrite($this->socket, $this->prefix($type, $message).PHP_EOL);
         } else {
-            fwrite($this->socket, $message . PHP_EOL);
+            fwrite($this->socket, $message.PHP_EOL);
         }
     }
 
@@ -94,6 +94,6 @@ class Logger
      */
     protected function prefix(string $type, string $message): string
     {
-        return $this->identifier . '_' . $type . ':' . rtrim($message, PHP_EOL);
+        return $this->identifier.'_'.$type.':'.rtrim($message, PHP_EOL);
     }
 }
