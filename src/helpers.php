@@ -373,3 +373,18 @@ if (! function_exists('\Laravel\Prompts\stream')) {
         return new Stream;
     }
 }
+
+if (! function_exists('\Laravel\Prompts\processLog')) {
+    /**
+     * Display a process log with a spinner.
+     *
+     * @template TReturn of mixed
+     *
+     * @param  \Closure(Logger): TReturn  $callback
+     * @return TReturn
+     */
+    function processLog(string $label, Closure $callback, ?int $limit = null): mixed
+    {
+        return (new ProcessLog($label, $limit ?? 10))->run($callback);
+    }
+}
