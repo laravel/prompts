@@ -10,9 +10,11 @@ class Stream extends Prompt
 
     public string $message = '';
 
-    public array $fadingIn = [];
+    public array $currentlyFading = [];
 
     public int $maxWidth = 0;
+
+    public array $fadingOutColors = [];
 
     /**
      * Create a new Stream instance.
@@ -21,14 +23,15 @@ class Stream extends Prompt
     {
         $this->maxWidth = static::terminal()->cols() - 20;
         $this->hideCursor();
+        $this->fadingOutColors = $this->fadeOut();
     }
 
     public function append(string $message): void
     {
-        $this->fadingIn[] = $message;
+        $this->currentlyFading[] = $message;
 
-        while (count($this->fadingIn) > 3) {
-            $this->message .= array_shift($this->fadingIn);
+        while (count($this->currentlyFading) > count($this->fadingOutColors)) {
+            $this->message .= array_shift($this->currentlyFading);
         }
 
         $this->render();
@@ -36,8 +39,8 @@ class Stream extends Prompt
 
     public function close(): void
     {
-        while (count($this->fadingIn) > 0) {
-            $this->message .= array_shift($this->fadingIn);
+        while (count($this->currentlyFading) > 0) {
+            $this->message .= array_shift($this->currentlyFading);
             $this->render();
             usleep(25_000);
         }
@@ -45,8 +48,13 @@ class Stream extends Prompt
 
     public function lines()
     {
-        $toFadeIn = implode('', $this->fadingIn);
-        $lines = explode(PHP_EOL, $this->message . $this->dim($toFadeIn));
+        $toFadeIn = [];
+
+        foreach ($this->currentlyFading as $index => $message) {
+            $toFadeIn[] = $this->fadingOutColors[$index]($message);
+        }
+
+        $lines = explode(PHP_EOL, $this->message . implode('', $toFadeIn));
         $finalLines = [];
 
         foreach ($lines as $line) {
