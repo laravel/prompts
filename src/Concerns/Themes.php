@@ -12,6 +12,7 @@ use Laravel\Prompts\Note;
 use Laravel\Prompts\NumberPrompt;
 use Laravel\Prompts\PasswordPrompt;
 use Laravel\Prompts\PausePrompt;
+use Laravel\Prompts\ProcessLog;
 use Laravel\Prompts\Progress;
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SearchPrompt;
@@ -31,6 +32,7 @@ use Laravel\Prompts\Themes\Default\NoteRenderer;
 use Laravel\Prompts\Themes\Default\NumberPromptRenderer;
 use Laravel\Prompts\Themes\Default\PasswordPromptRenderer;
 use Laravel\Prompts\Themes\Default\PausePromptRenderer;
+use Laravel\Prompts\Themes\Default\ProcessLogRenderer;
 use Laravel\Prompts\Themes\Default\ProgressRenderer;
 use Laravel\Prompts\Themes\Default\SearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\SelectPromptRenderer;
@@ -76,6 +78,7 @@ trait Themes
             Grid::class => GridRenderer::class,
             Title::class => TitleRenderer::class,
             Stream::class => StreamRenderer::class,
+            ProcessLog::class => ProcessLogRenderer::class,
         ],
     ];
 

@@ -4,11 +4,13 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Laravel\Prompts\Support\Logger;
+use Laravel\Prompts\Themes\Default\Concerns\InteractsWithStrings;
 use RuntimeException;
 
 class ProcessLog extends Prompt
 {
     use Concerns\Truncation;
+    use InteractsWithStrings;
 
     /**
      * How long to wait between rendering each frame.
@@ -195,12 +197,12 @@ class ProcessLog extends Prompt
                     }
                 } elseif ($matches[1] === 'commit') {
                     $this->fullMessage .= PHP_EOL;
-                    $this->logs = $this->wordwrapWithAnsi($this->fullMessage, $this->terminal()->cols() - 10);
+                    $this->logs = $this->ansiWordwrap($this->fullMessage, $this->terminal()->cols() - 10);
                 } elseif ($matches[1] === 'partial') {
                     $partialLine = str_replace($this->identifier . '_' . $matches[1] . ':', '', $line);
 
                     $this->fullMessage .= $partialLine;
-                    $this->logs = $this->wordwrapWithAnsi($this->fullMessage, $this->terminal()->cols() - 10);
+                    $this->logs = $this->ansiWordwrap($this->fullMessage, $this->terminal()->cols() - 10);
 
                     // if (strlen($this->partialLine) === 0) {
                     //     // We're starting a new partial line, so we need to capture the current number of logs.
@@ -241,7 +243,7 @@ class ProcessLog extends Prompt
 
                     // $this->logs[] = $line;
                     $this->fullMessage .= $line;
-                    $this->logs = $this->wordwrapWithAnsi($this->fullMessage, $this->terminal()->cols() - 10);
+                    $this->logs = $this->ansiWordwrap($this->fullMessage, $this->terminal()->cols() - 10);
                 }
             }
 
@@ -274,7 +276,7 @@ class ProcessLog extends Prompt
             return [$line];
         }
 
-        return $this->wordwrapWithAnsi($line, 60);
+        return $this->ansiWordwrap($line, 60);
     }
 
     /**
