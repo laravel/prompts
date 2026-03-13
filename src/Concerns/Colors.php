@@ -213,10 +213,10 @@ trait Colors
     {
         $terminal = static::terminal();
 
-        if (!$terminal->supportsTrueColor()) {
+        if (! $terminal->supportsTrueColor()) {
             return [
-                fn(string $text) => $text,
-                fn(string $text) => $this->dim($text),
+                fn (string $text) => $text,
+                fn (string $text) => $this->dim($text),
             ];
         }
 
@@ -230,7 +230,7 @@ trait Colors
                 $g = (int) ($bg[1] + ($fg[1] - $bg[1]) * $factor);
                 $b = (int) ($bg[2] + ($fg[2] - $bg[2]) * $factor);
 
-                return fn(string $text) => "\e[38;2;{$r};{$g};{$b}m{$text}\e[0m";
+                return fn (string $text) => "\e[38;2;{$r};{$g};{$b}m{$text}\e[0m";
             },
             range(0, $steps - 1),
         );
