@@ -22,12 +22,12 @@ class Task extends Prompt
     public int $interval = 100;
 
     /**
-     * The number of times the spinner has been rendered.
+     * The number of times the task has been rendered.
      */
     public int $count = 0;
 
     /**
-     * Whether the spinner can only be rendered once.
+     * Whether the task can only be rendered once.
      */
     public bool $static = false;
 
@@ -93,7 +93,7 @@ class Task extends Prompt
     }
 
     /**
-     * Render the spinner and execute the callback.
+     * Render the task and execute the callback.
      *
      * @template TReturn of mixed
      *
@@ -105,7 +105,7 @@ class Task extends Prompt
         $maxHeight = $this->terminal()->lines() - 10;
 
         $this->limit = min($this->limit, $maxHeight);
-        // Max height - limit - divider - spinner message
+        // Max height - limit - divider - task label
         $this->maxStableMessages = max(0, $maxHeight - $this->limit - 2);
 
         $this->capturePreviousNewLines();
@@ -307,7 +307,7 @@ class Task extends Prompt
     }
 
     /**
-     * Render a static version of the spinner.
+     * Render a static version of the task.
      *
      * @template TReturn of mixed
      *
@@ -350,7 +350,7 @@ class Task extends Prompt
     }
 
     /**
-     * Clear the lines rendered by the spinner.
+     * Clear the lines rendered by the task.
      */
     protected function eraseRenderedLines(): void
     {
