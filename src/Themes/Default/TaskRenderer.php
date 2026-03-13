@@ -34,11 +34,11 @@ class TaskRenderer extends Renderer
                 default => '',
             };
 
-            $this->line($leadPadding . $symbol . ' ' . $stableMessage['message']);
+            $this->line($leadPadding.$symbol.' '.$stableMessage['message']);
         }
 
         if (count($task->stableMessages) > 0 || count($task->logs) > 0) {
-            $this->line($this->gray(' ' . str_repeat('─', $this->prompt->terminal()->cols() - 10)));
+            $this->line($this->gray(' '.str_repeat('─', $this->prompt->terminal()->cols() - 10)));
         } else {
             $this->newLine();
         }
@@ -46,7 +46,7 @@ class TaskRenderer extends Renderer
         $logs = array_slice($task->logs, -$task->limit);
 
         foreach ($logs as $log) {
-            $this->line(' ' . $this->dim($log));
+            $this->line(' '.$this->dim($log));
         }
 
         $remaining = $task->limit - count($task->logs);
