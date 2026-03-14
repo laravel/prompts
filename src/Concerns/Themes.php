@@ -3,6 +3,7 @@
 namespace Laravel\Prompts\Concerns;
 
 use InvalidArgumentException;
+use Laravel\Prompts\Box;
 use Laravel\Prompts\Clear;
 use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\Grid;
@@ -23,6 +24,7 @@ use Laravel\Prompts\Table;
 use Laravel\Prompts\Task;
 use Laravel\Prompts\TextareaPrompt;
 use Laravel\Prompts\TextPrompt;
+use Laravel\Prompts\Themes\Default\BoxRenderer;
 use Laravel\Prompts\Themes\Default\ClearRenderer;
 use Laravel\Prompts\Themes\Default\ConfirmPromptRenderer;
 use Laravel\Prompts\Themes\Default\GridRenderer;
@@ -72,6 +74,7 @@ trait Themes
             SuggestPrompt::class => SuggestPromptRenderer::class,
             Spinner::class => SpinnerRenderer::class,
             Note::class => NoteRenderer::class,
+            Box::class => BoxRenderer::class,
             Table::class => TableRenderer::class,
             Progress::class => ProgressRenderer::class,
             Clear::class => ClearRenderer::class,

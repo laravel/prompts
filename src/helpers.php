@@ -235,6 +235,16 @@ if (! function_exists('\Laravel\Prompts\note')) {
     }
 }
 
+if (! function_exists('\Laravel\Prompts\box')) {
+    /**
+     * Display a box.
+     */
+    function box(string $message, string $title = '', string $footer = '', string $color = 'gray', string $info = ''): void
+    {
+        (new Box($message, $title, $footer, $color, $info))->display();
+    }
+}
+
 if (! function_exists('\Laravel\Prompts\error')) {
     /**
      * Display an error.
