@@ -160,8 +160,10 @@ class DataTableRenderer extends Renderer implements Scrolling
             $message = $prompt->searchValue() !== '' ? 'No results found.' : 'No rows.';
             $dataLines[] = $this->pad(' ' . $this->dim($message), $tableWidth);
         } else {
+            $isSearching = $prompt->state === 'search';
+
             foreach ($visible as $key => $row) {
-                $isHighlighted = $key === $highlightedKey;
+                $isHighlighted = ! $isSearching && $key === $highlightedKey;
 
                 // Split each cell by newlines
                 $cellLines = [];
@@ -180,17 +182,19 @@ class DataTableRenderer extends Renderer implements Scrolling
 
                     foreach ($widths as $i => $w) {
                         $text = $cellLines[$i][$subRow] ?? '';
-                        $content = ' ' . $this->pad($this->truncate($text, $w), $w) . ' ';
+                        $content = ' '.$this->pad($this->truncate($text, $w), $w).' ';
 
                         if ($isHighlighted) {
                             $content = $this->inverse($content);
+                        } elseif ($isSearching) {
+                            $content = $this->dim($content);
                         }
 
                         $cells[] = $content;
                     }
 
                     $separator = $isHighlighted ? $this->inverse('│') : $this->gray('│');
-                    $dataLines[] = implode($separator, $cells) . '  ';
+                    $dataLines[] = implode($separator, $cells).'  ';
                 }
             }
         }

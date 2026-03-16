@@ -100,11 +100,7 @@ class DataTablePrompt extends Prompt
      */
     protected function handleSearchKey(string $key): void
     {
-        $total = count($this->filteredRows());
-
         match ($key) {
-            Key::UP, Key::UP_ARROW, Key::CTRL_P => $this->highlightPrevious($total),
-            Key::DOWN, Key::DOWN_ARROW, Key::CTRL_N => $this->highlightNext($total),
             Key::ENTER => $this->exitSearch(),
             Key::ESCAPE => $this->cancelSearch(),
             default => $this->search(),
@@ -127,6 +123,8 @@ class DataTablePrompt extends Prompt
     protected function exitSearch(): void
     {
         $this->state = 'active';
+        $this->highlighted = 0;
+        $this->firstVisible = 0;
     }
 
     /**
