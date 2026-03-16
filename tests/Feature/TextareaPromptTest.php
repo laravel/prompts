@@ -89,7 +89,7 @@ it('can fall back', function () {
 });
 
 it('supports emacs style key bindings', function () {
-    Prompt::fake(['J', 'z', 'e', Key::CTRL_B, Key::CTRL_H, key::CTRL_F, 's', 's', Key::CTRL_D]);
+    Prompt::fake(['J', 'z', 'e', Key::CTRL_B, Key::CTRL_H, Key::CTRL_F, 's', 's', Key::CTRL_D]);
 
     $result = textarea(label: 'What is your name?');
 
@@ -97,7 +97,7 @@ it('supports emacs style key bindings', function () {
 });
 
 it('moves to the beginning and end of line', function () {
-    Prompt::fake(['e', 's', Key::HOME[0], 'J', KEY::END[0], 's', Key::CTRL_D]);
+    Prompt::fake(['e', 's', Key::HOME[0], 'J', Key::END[0], 's', Key::CTRL_D]);
 
     $result = textarea(label: 'What is your name?');
 
@@ -107,8 +107,8 @@ it('moves to the beginning and end of line', function () {
 it('moves up and down lines', function () {
     Prompt::fake([
         'e', 's', 's', Key::ENTER, 'o', 'e',
-        KEY::UP_ARROW, KEY::LEFT_ARROW, Key::LEFT_ARROW,
-        'J', KEY::DOWN_ARROW, KEY::LEFT_ARROW, 'J', Key::CTRL_D,
+        Key::UP_ARROW, Key::LEFT_ARROW, Key::LEFT_ARROW,
+        'J', Key::DOWN_ARROW, Key::LEFT_ARROW, 'J', Key::CTRL_D,
     ]);
 
     $result = textarea(label: 'What is your name?');
@@ -119,7 +119,7 @@ it('moves up and down lines', function () {
 it('moves to the start of the line if up is pressed twice on the first line', function () {
     Prompt::fake([
         'e', 's', 's', Key::ENTER, 'J', 'o', 'e',
-        KEY::UP_ARROW, KEY::UP_ARROW, 'J', Key::CTRL_D,
+        Key::UP_ARROW, Key::UP_ARROW, 'J', Key::CTRL_D,
     ]);
 
     $result = textarea(label: 'What is your name?');
@@ -130,7 +130,7 @@ it('moves to the start of the line if up is pressed twice on the first line', fu
 it('moves to the end of the line if down is pressed twice on the last line', function () {
     Prompt::fake([
         'J', 'e', 's', 's', Key::ENTER, 'J', 'o',
-        KEY::UP_ARROW, KEY::UP_ARROW, Key::DOWN_ARROW,
+        Key::UP_ARROW, Key::UP_ARROW, Key::DOWN_ARROW,
         Key::DOWN_ARROW, 'e', Key::CTRL_D,
     ]);
 
