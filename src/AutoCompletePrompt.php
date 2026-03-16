@@ -3,38 +3,86 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Illuminate\Support\Collection;
 
 class AutoCompletePrompt extends Prompt
 {
     use Concerns\TypedValue;
 
+    /**
+     * The options for the autocomplete prompt.
+     *
+     * @var array<string>|Closure(string): (array<string>|Collection<int, string>)
+     */
+    public array|Closure $options;
+
     protected string $match = '';
 
+    protected int $highlighted = 0;
+
     /**
-     * Create a new TextPrompt instance.
+     * @var array<string>|null
+     */
+    protected ?array $matches = null;
+
+    /**
+     * Create a new AutoCompletePrompt instance.
+     *
+     * @param  array<string>|Collection<int, string>|Closure(string): (array<string>|Collection<int, string>)  $options
      */
     public function __construct(
         public string $label,
+        array|Collection|Closure $options = [],
         public string $placeholder = '',
         public string $default = '',
         public bool|string $required = false,
         public mixed $validate = null,
         public string $hint = '',
         public ?Closure $transform = null,
-        public array $options = [],
     ) {
-        $this->trackTypedValue($default);
+        $this->options = $options instanceof Collection ? $options->all() : $options;
 
         $this->on('key', function ($key) {
-            if (in_array($key, [Key::TAB, Key::RIGHT, Key::RIGHT_ARROW, Key::OPTION_BACKSPACE])) {
+            if (in_array($key, [Key::UP, Key::UP_ARROW])) {
+                $matches = $this->matches();
+
+                if (count($matches) > 0) {
+                    $this->highlighted = ($this->highlighted - 1 + count($matches)) % count($matches);
+                }
+
+                return;
+            }
+
+            if (in_array($key, [Key::DOWN, Key::DOWN_ARROW])) {
+                $matches = $this->matches();
+
+                if (count($matches) > 0) {
+                    $this->highlighted = ($this->highlighted + 1) % count($matches);
+                }
+
+                return;
+            }
+
+            if (in_array($key, [Key::TAB, Key::RIGHT, Key::RIGHT_ARROW])) {
                 $match = $this->getMatch();
 
                 if ($match !== '') {
                     $this->typedValue = $match;
                     $this->cursorPosition = mb_strlen($match);
                 }
+
+                return;
             }
+
+            // Any other key resets the highlight and match cache
+            $this->highlighted = 0;
+            $this->matches = null;
         });
+
+        $this->trackTypedValue(
+            $default,
+            ignore: fn ($key) => in_array($key, [Key::UP, Key::UP_ARROW, Key::DOWN, Key::DOWN_ARROW]),
+        );
     }
 
     /**
@@ -46,63 +94,59 @@ class AutoCompletePrompt extends Prompt
             return $this->dim($this->addCursor($this->placeholder, 0, $maxWidth));
         }
 
-        $match = $this->match = $this->getMatch();
+        $this->match = $this->getMatch();
 
-        if ($this->match !== '') {
-            if ($this->cursorPosition > strlen($this->value())) {
-                $match = substr($this->match, strlen($this->value()));
-            } else {
-                $match = substr($this->match, strlen($this->value()) + 1);
-            }
+        $ghostText = '';
+
+        if ($this->match !== '' && mb_strlen($this->match) > mb_strlen($this->value())) {
+            $ghostText = mb_substr($this->match, mb_strlen($this->value()));
+        }
+
+        // When cursor is at the end and there's ghost text, make the first
+        // ghost character the inverted cursor so it flows naturally.
+        if ($ghostText !== '' && $this->cursorPosition >= mb_strlen($this->value())) {
+            $cursorChar = mb_substr($ghostText, 0, 1);
+            $remainingGhost = mb_substr($ghostText, 1);
+
+            return $this->value()
+                . $this->inverse($cursorChar)
+                . $this->dim($remainingGhost);
         }
 
         return $this->addCursor(
             $this->value(),
             $this->cursorPosition,
             $maxWidth
-        ) . $this->dim($match);
+        ) . $this->dim($ghostText);
     }
 
     /**
-     * Add a virtual cursor to the value and truncate if necessary.
+     * Get the current matches for the typed value.
+     *
+     * @return array<string>
      */
-    protected function addCursor(string $value, int $cursorPosition, ?int $maxWidth = null): string
+    public function matches(): array
     {
-        $before = mb_substr($value, 0, $cursorPosition);
-        $current = mb_substr($value, $cursorPosition, 1);
-        $after = mb_substr($value, $cursorPosition + 1);
-
-        $cursor = mb_strlen($current) && $current !== PHP_EOL ? $current : ' ';
-
-        if ($value !== $this->match && $this->match !== '' && $cursor === ' ') {
-            $cursor = substr($this->match, $cursorPosition, 1);
+        if (is_array($this->matches)) {
+            return $this->matches;
         }
 
-        $spaceBefore = $maxWidth < 0 || $maxWidth === null ? mb_strwidth($before) : $maxWidth - mb_strwidth($cursor) - (mb_strwidth($after) > 0 ? 1 : 0);
-        [$truncatedBefore, $wasTruncatedBefore] = mb_strwidth($before) > $spaceBefore
-            ? [$this->trimWidthBackwards($before, 0, $spaceBefore - 1), true]
-            : [$before, false];
+        if ($this->options instanceof Closure) {
+            $options = ($this->options)($this->value());
 
-        $spaceAfter = $maxWidth < 0 || $maxWidth === null ? mb_strwidth($after) : $maxWidth - ($wasTruncatedBefore ? 1 : 0) - mb_strwidth($truncatedBefore) - mb_strwidth($cursor);
-        [$truncatedAfter, $wasTruncatedAfter] = mb_strwidth($after) > $spaceAfter
-            ? [mb_strimwidth($after, 0, $spaceAfter - 1), true]
-            : [$after, false];
+            return $this->matches = array_values($options instanceof Collection ? $options->all() : $options);
+        }
 
-        return ($wasTruncatedBefore ? $this->dim('…') : '')
-            . $truncatedBefore
-            . $this->inverse($cursor)
-            . ($current === PHP_EOL ? PHP_EOL : '')
-            . $truncatedAfter
-            . ($wasTruncatedAfter ? $this->dim('…') : '');
+        return $this->matches = array_values(array_filter(
+            $this->options,
+            fn ($option) => str_starts_with(strtolower($option), strtolower($this->value())),
+        ));
     }
 
     protected function getMatch(): string
     {
-        return collect($this->options)->first(
-            fn($option) => str_starts_with(
-                strtolower($option),
-                strtolower($this->value()),
-            ),
-        ) ?? '';
+        $matches = $this->matches();
+
+        return $matches[$this->highlighted] ?? '';
     }
 }

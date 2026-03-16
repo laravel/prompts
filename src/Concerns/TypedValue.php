@@ -181,7 +181,7 @@ trait TypedValue
      */
     protected function findLastWordStartByLettersAndNumbers(string $before): int
     {
-        if (preg_match_all('/(\p{L}\p{M}*|\p{N}+)/u', $before, $m, PREG_OFFSET_CAPTURE) && $m[1] !== []) {
+        if (preg_match_all('/((?:\p{L}\p{M}*|\p{N})+)/u', $before, $m, PREG_OFFSET_CAPTURE) && $m[1] !== []) {
             $last = end($m[1]);
 
             return mb_strlen(substr($before, 0, $last[1]), 'UTF-8');

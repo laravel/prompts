@@ -4,26 +4,38 @@ use function Laravel\Prompts\autocomplete;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$email = autocomplete(
-    label: 'What is your email address',
-    placeholder: 'E.g. taylor@laravel.com',
-    validate: fn($value) => match (true) {
-        strlen($value) === 0 => 'Please enter an email address.',
-        ! filter_var($value, FILTER_VALIDATE_EMAIL) => 'Please enter a valid email address.',
-        default => null,
-    },
-    hint: 'We will never share your email address with anyone else.',
-    transform: fn($value) => strtolower($value),
-    options: [
-        'taylor@laravel.com',
-        'dries@laravel.com',
-        'james@laravel.com',
-        'nuno@laravel.com',
-        'mior@laravel.com',
-        'jess@laravel.com',
-    ],
+$files = [
+    'app/Http/Controllers/UserController.php',
+    'app/Http/Controllers/PostController.php',
+    'app/Http/Controllers/CommentController.php',
+    'app/Http/Middleware/Authenticate.php',
+    'app/Http/Middleware/TrustProxies.php',
+    'app/Models/User.php',
+    'app/Models/Post.php',
+    'app/Models/Comment.php',
+    'app/Providers/AppServiceProvider.php',
+    'app/Providers/RouteServiceProvider.php',
+    'config/app.php',
+    'config/database.php',
+    'config/logging.php',
+    'database/migrations/create_users_table.php',
+    'database/migrations/create_posts_table.php',
+    'resources/views/welcome.blade.php',
+    'resources/views/layouts/app.blade.php',
+    'routes/web.php',
+    'routes/api.php',
+];
+
+$path = autocomplete(
+    label: 'Which file?',
+    options: fn (string $value) => array_values(array_filter(
+        $files,
+        fn ($file) => str_starts_with(strtolower($file), strtolower($value)),
+    )),
+    placeholder: 'E.g. app/Models/User.php',
+    hint: 'Use tab to accept a suggestion.',
 );
 
-var_dump($email);
+var_dump($path);
 
 echo str_repeat(PHP_EOL, 5);

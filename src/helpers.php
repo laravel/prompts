@@ -25,9 +25,19 @@ if (! function_exists('\Laravel\Prompts\text')) {
 if (! function_exists('\Laravel\Prompts\autocomplete')) {
     /**
      * Prompt the user for text input with auto-completion.
+     *
+     * @param  array<string>|Collection<int, string>|Closure(string): (array<string>|Collection<int, string>)  $options
      */
-    function autocomplete(string $label, array $options, string $placeholder = '', string $default = '', bool|string $required = false, mixed $validate = null, string $hint = '', ?Closure $transform = null): string
-    {
+    function autocomplete(
+        string $label,
+        array|Collection|Closure $options = [],
+        string $placeholder = '',
+        string $default = '',
+        bool|string $required = false,
+        mixed $validate = null,
+        string $hint = '',
+        ?Closure $transform = null,
+    ): string {
         return (new AutoCompletePrompt(...get_defined_vars()))->prompt();
     }
 }
