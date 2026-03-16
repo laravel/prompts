@@ -67,31 +67,29 @@ class DataTableRenderer extends Renderer implements Scrolling
         $total = count($filtered);
         $visible = $prompt->visible();
 
-        $body = $this->renderSearchLine($prompt, $maxWidth).PHP_EOL
-            .$this->renderTable($prompt, $filtered, $visible, $maxWidth);
-
         $firstRow = $prompt->firstVisible + 1;
         $lastRow = min($prompt->firstVisible + $prompt->scroll, $total);
         $info = '';
 
         if ($total > 0) {
             $suffix = $prompt->searchValue() !== '' ? ' results' : '';
-            $info = $this->dim('Viewing ').$firstRow.'-'.$lastRow.$this->dim(' of ').$total.$suffix;
+            $info = $this->dim('Viewing ') . $firstRow . '-' . $lastRow . $this->dim(' of ') . $total . $suffix;
         }
 
         return $this
             ->box(
                 $this->cyan($this->truncate($prompt->label, $maxWidth)),
-                $body,
+                body: $this->renderTable($prompt, $filtered, $visible, $maxWidth),
+                footer: $this->renderSearchLine($prompt, $maxWidth),
                 info: $info,
             )
             ->when(
                 $prompt->state === 'error',
-                fn () => $this->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
-                fn () => $this->when(
+                fn() => $this->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
+                fn() => $this->when(
                     $prompt->hint,
-                    fn () => $this->hint($prompt->hint),
-                    fn () => $this->newLine(),
+                    fn() => $this->hint($prompt->hint),
+                    fn() => $this->newLine(),
                 ),
             );
     }
@@ -102,11 +100,11 @@ class DataTableRenderer extends Renderer implements Scrolling
     protected function renderSearchLine(DataTablePrompt $prompt, int $maxWidth): string
     {
         if ($prompt->state === 'search') {
-            return $this->cyan('/').' '.$prompt->searchWithCursor($maxWidth - 4);
+            return $this->cyan('/') . ' ' . $prompt->searchWithCursor($maxWidth - 4);
         }
 
         if ($prompt->searchValue() !== '') {
-            return $this->dim('/').' '.$prompt->searchValue();
+            return $this->dim('/') . ' ' . $prompt->searchValue();
         }
 
         return $this->dim('/ to search');
@@ -146,41 +144,57 @@ class DataTableRenderer extends Renderer implements Scrolling
             foreach ($widths as $i => $w) {
                 $header = $prompt->headers[$i] ?? '';
                 $text = is_array($header) ? implode(' ', $header) : $header;
-                $headerCells[] = ' '.$this->pad($this->truncate($text, $w), $w).' ';
+                $headerCells[] = $this->dim(' ' . $this->pad($this->truncate($text, $w), $w) . ' ');
             }
 
-            $lines[] = $this->dim(implode('│', $headerCells)).' ';
-            $lines[] = $this->dim(implode('┼', array_map(fn ($w) => str_repeat('─', $w + 2), $widths))).' ';
+            $lines[] = implode($this->gray('│'), $headerCells) . ' ';
+            $lines[] = $this->gray(implode('┼', array_map(fn($w) => str_repeat('─', $w + 2), $widths))) . ' ';
         }
 
-        // Data rows
+        // Data rows — expand multiline cells into sub-rows
         $dataLines = [];
 
         foreach ($visible as $key => $row) {
             $isHighlighted = $key === $highlightedKey;
-            $cells = [];
+
+            // Split each cell by newlines
+            $cellLines = [];
+            $maxSubRows = 1;
 
             foreach ($widths as $i => $w) {
                 $text = $row[$i] ?? '';
-                $content = ' '.$this->pad($this->truncate($text, $w), $w).' ';
-
-                if ($isHighlighted) {
-                    $content = $this->inverse($content);
-                }
-
-                $cells[] = $content;
+                $subLines = explode(PHP_EOL, $text);
+                $cellLines[$i] = $subLines;
+                $maxSubRows = max($maxSubRows, count($subLines));
             }
 
-            $separator = $isHighlighted ? $this->inverse('│') : $this->dim('│');
-            $dataLines[] = implode($separator, $cells).' ';
+            // Render each sub-row
+            for ($subRow = 0; $subRow < $maxSubRows; $subRow++) {
+                $cells = [];
+
+                foreach ($widths as $i => $w) {
+                    $text = $cellLines[$i][$subRow] ?? '';
+                    $content = ' ' . $this->pad($this->truncate($text, $w), $w) . ' ';
+
+                    if ($isHighlighted) {
+                        $content = $this->inverse($content);
+                    }
+
+                    $cells[] = $content;
+                }
+
+                $separator = $isHighlighted ? $this->inverse('│') : $this->dim('│');
+                $dataLines[] = implode($separator, $cells) . ' ';
+            }
         }
 
         // Apply scrollbar to data lines
         $tableWidth = array_sum($widths) + ($numCols - 1) + ($numCols * 2) + 1;
+        $visibleDataLineCount = count($dataLines);
         $dataLines = $this->scrollbar(
             $dataLines,
             $prompt->firstVisible,
-            $prompt->scroll,
+            $visibleDataLineCount,
             $total,
             $tableWidth,
         );
@@ -212,7 +226,10 @@ class DataTableRenderer extends Renderer implements Scrolling
 
         foreach ($allRows as $row) {
             foreach ($row as $i => $cell) {
-                $natural[$i] = max($natural[$i], mb_strwidth($cell));
+                // Measure each line individually for multiline cells
+                foreach (explode(PHP_EOL, $cell) as $line) {
+                    $natural[$i] = max($natural[$i], mb_strwidth($line));
+                }
             }
         }
 
@@ -252,7 +269,7 @@ class DataTableRenderer extends Renderer implements Scrolling
 
             if (empty($newlyResolved)) {
                 // All remaining columns overflow — split proportionally
-                $totalNatural = array_sum(array_map(fn ($i) => $natural[$i], $unresolved));
+                $totalNatural = array_sum(array_map(fn($i) => $natural[$i], $unresolved));
 
                 foreach ($unresolved as $i) {
                     $widths[$i] = max(1, (int) floor($remaining * $natural[$i] / $totalNatural));

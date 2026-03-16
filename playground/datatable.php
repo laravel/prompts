@@ -10,7 +10,7 @@ $result = datatable(
     headers: ['Name', 'Twitter', 'Role'],
     rows: [
         'longueng' => ['A very very long one that is too long for the table to be honest and also this should never fit because it is actually wild but here we are', '@longun', 'Developer'],
-        'taylor' => ['Taylor Otwell', '@taylorotwell', 'Developer' . PHP_EOL . 'CEO'],
+        'taylor' => ['Taylor Otwell', '@taylorotwell', 'CEO' . PHP_EOL . 'Developer'],
         'dries' => ['Dries Vints', '@driesvints', 'Developer'],
         'james' => ['James Brooks', '@jbrooksuk', 'Developer'],
         'nuno' => ['Nuno Maduro', '@enunomaduro', 'Developer'],
@@ -22,7 +22,6 @@ $result = datatable(
         'wendell' => ['Wendell Adriel', '@wendelladriel', 'Developer'],
         'pushpak' => ['Pushpak Patel', '@pushpak1300', 'Developer'],
     ],
-    hint: 'Press / to search, Enter to select',
 );
 
 info("You selected: {$result}");
