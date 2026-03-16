@@ -373,3 +373,38 @@ if (! function_exists('\Laravel\Prompts\form')) {
         return new FormBuilder;
     }
 }
+
+if (! function_exists('\Laravel\Prompts\title')) {
+    /**
+     * Update the title of the terminal.
+     */
+    function title(string $title): void
+    {
+        (new Title($title))->display();
+    }
+}
+
+if (! function_exists('\Laravel\Prompts\stream')) {
+    /**
+     * Display a stream of text.
+     */
+    function stream(): Stream
+    {
+        return new Stream;
+    }
+}
+
+if (! function_exists('\Laravel\Prompts\task')) {
+    /**
+     * Display a task with a spinner and live output.
+     *
+     * @template TReturn of mixed
+     *
+     * @param  Closure(Support\Logger): TReturn  $callback
+     * @return TReturn
+     */
+    function task(string $label, Closure $callback, ?int $limit = null): mixed
+    {
+        return (new Task($label, $limit ?? 10))->run($callback);
+    }
+}

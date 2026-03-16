@@ -18,8 +18,10 @@ use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SearchPrompt;
 use Laravel\Prompts\SelectPrompt;
 use Laravel\Prompts\Spinner;
+use Laravel\Prompts\Stream;
 use Laravel\Prompts\SuggestPrompt;
 use Laravel\Prompts\Table;
+use Laravel\Prompts\Task;
 use Laravel\Prompts\TextareaPrompt;
 use Laravel\Prompts\TextPrompt;
 use Laravel\Prompts\Themes\Default\AutoCompletePromptRenderer;
@@ -36,10 +38,14 @@ use Laravel\Prompts\Themes\Default\ProgressRenderer;
 use Laravel\Prompts\Themes\Default\SearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\SelectPromptRenderer;
 use Laravel\Prompts\Themes\Default\SpinnerRenderer;
+use Laravel\Prompts\Themes\Default\StreamRenderer;
 use Laravel\Prompts\Themes\Default\SuggestPromptRenderer;
 use Laravel\Prompts\Themes\Default\TableRenderer;
+use Laravel\Prompts\Themes\Default\TaskRenderer;
 use Laravel\Prompts\Themes\Default\TextareaPromptRenderer;
 use Laravel\Prompts\Themes\Default\TextPromptRenderer;
+use Laravel\Prompts\Themes\Default\TitleRenderer;
+use Laravel\Prompts\Title;
 
 trait Themes
 {
@@ -73,6 +79,9 @@ trait Themes
             Clear::class => ClearRenderer::class,
             Grid::class => GridRenderer::class,
             AutoCompletePrompt::class => AutoCompletePromptRenderer::class,
+            Title::class => TitleRenderer::class,
+            Stream::class => StreamRenderer::class,
+            Task::class => TaskRenderer::class,
         ],
     ];
 
