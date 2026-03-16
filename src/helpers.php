@@ -82,6 +82,7 @@ if (! function_exists('\Laravel\Prompts\select')) {
         string $hint = '',
         bool|string $required = true,
         ?Closure $transform = null,
+        string|Closure $info = '',
     ): int|string {
         return (new SelectPrompt(...get_defined_vars()))->prompt();
     }
@@ -104,6 +105,7 @@ if (! function_exists('\Laravel\Prompts\multiselect')) {
         mixed $validate = null,
         string $hint = 'Use the space bar to select options.',
         ?Closure $transform = null,
+        string|Closure $info = '',
     ): array {
         return (new MultiSelectPrompt(...get_defined_vars()))->prompt();
     }
@@ -163,6 +165,7 @@ if (! function_exists('\Laravel\Prompts\suggest')) {
         mixed $validate = null,
         string $hint = '',
         ?Closure $transform = null,
+        string|Closure $info = '',
     ): string {
         return (new SuggestPrompt(...get_defined_vars()))->prompt();
     }
@@ -184,6 +187,7 @@ if (! function_exists('\Laravel\Prompts\search')) {
         string $hint = '',
         bool|string $required = true,
         ?Closure $transform = null,
+        string|Closure $info = '',
     ): int|string {
         return (new SearchPrompt(...get_defined_vars()))->prompt();
     }
@@ -205,6 +209,7 @@ if (! function_exists('\Laravel\Prompts\multisearch')) {
         mixed $validate = null,
         string $hint = 'Use the space bar to select options.',
         ?Closure $transform = null,
+        string|Closure $info = '',
     ): array {
         return (new MultiSearchPrompt(...get_defined_vars()))->prompt();
     }
