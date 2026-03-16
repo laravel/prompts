@@ -120,18 +120,20 @@ class DataTableRenderer extends Renderer implements Scrolling
     {
         $total = count($filtered);
 
-        if ($total === 0) {
-            $message = $prompt->searchValue() !== '' ? 'No results found.' : 'No rows.';
-
-            return $this->dim($message);
-        }
-
         $numCols = ! empty($prompt->headers)
             ? count($prompt->headers)
             : max(array_map('count', $prompt->rows));
 
         // Compute column widths from ALL rows (not filtered) to prevent layout shift when searching
         $widths = $this->computeColumnWidths($prompt->headers, $prompt->rows, $numCols, $maxWidth);
+
+        $tableWidth = array_sum($widths) + ($numCols - 1) + ($numCols * 2) + 2;
+
+        // Build an empty row template for padding
+        $emptyRow = implode($this->gray('│'), array_map(
+            fn($w) => str_repeat(' ', $w + 2),
+            $widths,
+        )) . '  ';
 
         $highlightedKey = array_keys($filtered)[$prompt->highlighted] ?? null;
 
@@ -147,54 +149,81 @@ class DataTableRenderer extends Renderer implements Scrolling
                 $headerCells[] = $this->dim(' ' . $this->pad($this->truncate($text, $w), $w) . ' ');
             }
 
-            $lines[] = implode($this->gray('│'), $headerCells) . ' ';
-            $lines[] = $this->gray(implode('┼', array_map(fn($w) => str_repeat('─', $w + 2), $widths))) . ' ';
+            $lines[] = implode($this->gray('│'), $headerCells) . '  ';
+            $lines[] = $this->gray(implode('┼', array_map(fn($w) => str_repeat('─', $w + 2), $widths))) . '  ';
         }
 
         // Data rows — expand multiline cells into sub-rows
         $dataLines = [];
 
-        foreach ($visible as $key => $row) {
-            $isHighlighted = $key === $highlightedKey;
+        if ($total === 0) {
+            $message = $prompt->searchValue() !== '' ? 'No results found.' : 'No rows.';
+            $dataLines[] = $this->pad(' ' . $this->dim($message), $tableWidth);
+        } else {
+            foreach ($visible as $key => $row) {
+                $isHighlighted = $key === $highlightedKey;
 
-            // Split each cell by newlines
-            $cellLines = [];
-            $maxSubRows = 1;
-
-            foreach ($widths as $i => $w) {
-                $text = $row[$i] ?? '';
-                $subLines = explode(PHP_EOL, $text);
-                $cellLines[$i] = $subLines;
-                $maxSubRows = max($maxSubRows, count($subLines));
-            }
-
-            // Render each sub-row
-            for ($subRow = 0; $subRow < $maxSubRows; $subRow++) {
-                $cells = [];
+                // Split each cell by newlines
+                $cellLines = [];
+                $maxSubRows = 1;
 
                 foreach ($widths as $i => $w) {
-                    $text = $cellLines[$i][$subRow] ?? '';
-                    $content = ' ' . $this->pad($this->truncate($text, $w), $w) . ' ';
-
-                    if ($isHighlighted) {
-                        $content = $this->inverse($content);
-                    }
-
-                    $cells[] = $content;
+                    $text = $row[$i] ?? '';
+                    $subLines = explode(PHP_EOL, $text);
+                    $cellLines[$i] = $subLines;
+                    $maxSubRows = max($maxSubRows, count($subLines));
                 }
 
-                $separator = $isHighlighted ? $this->inverse('│') : $this->dim('│');
-                $dataLines[] = implode($separator, $cells) . ' ';
+                // Render each sub-row
+                for ($subRow = 0; $subRow < $maxSubRows; $subRow++) {
+                    $cells = [];
+
+                    foreach ($widths as $i => $w) {
+                        $text = $cellLines[$i][$subRow] ?? '';
+                        $content = ' ' . $this->pad($this->truncate($text, $w), $w) . ' ';
+
+                        if ($isHighlighted) {
+                            $content = $this->inverse($content);
+                        }
+
+                        $cells[] = $content;
+                    }
+
+                    $separator = $isHighlighted ? $this->inverse('│') : $this->gray('│');
+                    $dataLines[] = implode($separator, $cells) . '  ';
+                }
             }
         }
 
+        // Compute fixed minimum height from ALL rows to prevent layout shift.
+        // For each row, count how many visual lines it produces (multiline cells expand a row).
+        // The minimum height must accommodate the worst-case scroll window.
+        $extraLines = [];
+
+        foreach ($prompt->rows as $row) {
+            $rowLines = 1;
+
+            foreach ($row as $cell) {
+                $rowLines = max($rowLines, substr_count($cell, PHP_EOL) + 1);
+            }
+
+            $extraLines[] = $rowLines - 1;
+        }
+
+        // Sort descending and take the top `scroll` entries to find the worst-case window
+        rsort($extraLines);
+        $worstCaseExtra = array_sum(array_slice($extraLines, 0, $prompt->scroll));
+        $minHeight = $prompt->scroll + $worstCaseExtra;
+
+        while (count($dataLines) < $minHeight) {
+            $dataLines[] = $emptyRow;
+        }
+
         // Apply scrollbar to data lines
-        $tableWidth = array_sum($widths) + ($numCols - 1) + ($numCols * 2) + 1;
-        $visibleDataLineCount = count($dataLines);
         $dataLines = $this->scrollbar(
             $dataLines,
             $prompt->firstVisible,
-            $visibleDataLineCount,
+            count($dataLines),
             $total,
             $tableWidth,
         );
