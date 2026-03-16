@@ -3,7 +3,7 @@
 use function Laravel\Prompts\autocomplete;
 use function Laravel\Prompts\select;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 $files = [
     'app/Http/Controllers/UserController.php',
@@ -56,7 +56,7 @@ $path = match ($type) {
                 $nextSlash = strpos($remaining, '/');
 
                 if ($nextSlash !== false) {
-                    return $value . substr($remaining, 0, $nextSlash + 1);
+                    return $value.substr($remaining, 0, $nextSlash + 1);
                 }
 
                 return $file;

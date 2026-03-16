@@ -125,15 +125,15 @@ class AutoCompletePrompt extends Prompt
             $remainingGhost = mb_substr($ghostText, 1);
 
             return $this->value()
-                . $this->inverse($cursorChar)
-                . $this->dim($remainingGhost);
+                .$this->inverse($cursorChar)
+                .$this->dim($remainingGhost);
         }
 
         return $this->addCursor(
             $this->value(),
             $this->cursorPosition,
             $maxWidth
-        ) . $this->dim($ghostText);
+        ).$this->dim($ghostText);
     }
 
     /**
