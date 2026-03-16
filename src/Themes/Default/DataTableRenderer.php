@@ -3,12 +3,9 @@
 namespace Laravel\Prompts\Themes\Default;
 
 use Laravel\Prompts\DataTablePrompt;
-use Laravel\Prompts\Output\BufferedConsoleOutput;
 use Laravel\Prompts\Themes\Contracts\Scrolling;
 use Laravel\Prompts\Themes\Default\Concerns\DrawsBoxes;
 use Laravel\Prompts\Themes\Default\Concerns\DrawsScrollbars;
-use Symfony\Component\Console\Helper\Table as SymfonyTable;
-use Symfony\Component\Console\Helper\TableStyle;
 
 class DataTableRenderer extends Renderer implements Scrolling
 {
@@ -71,7 +68,7 @@ class DataTableRenderer extends Renderer implements Scrolling
         $visible = $prompt->visible();
 
         $body = $this->renderSearchLine($prompt, $maxWidth);
-        $tableBody = $this->renderTable($prompt, $visible, $total);
+        $tableBody = $this->renderTable($prompt, $filtered, $visible, $maxWidth);
 
         if ($body !== '') {
             $body .= PHP_EOL;
@@ -85,7 +82,7 @@ class DataTableRenderer extends Renderer implements Scrolling
 
         if ($total > 0) {
             $suffix = $prompt->searchValue() !== '' ? ' results' : '';
-            $info = $this->dim("Viewing ") . "{$firstRow}-{$lastRow}" . $this->dim(" of ") . "{$total}{$suffix}";
+            $info = $this->dim('Viewing ').$firstRow.'-'.$lastRow.$this->dim(' of ').$total.$suffix;
         }
 
         return $this
@@ -96,11 +93,11 @@ class DataTableRenderer extends Renderer implements Scrolling
             )
             ->when(
                 $prompt->state === 'error',
-                fn() => $this->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
-                fn() => $this->when(
+                fn () => $this->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
+                fn () => $this->when(
                     $prompt->hint,
-                    fn() => $this->hint($prompt->hint),
-                    fn() => $this->newLine(),
+                    fn () => $this->hint($prompt->hint),
+                    fn () => $this->newLine(),
                 ),
             );
     }
@@ -111,11 +108,11 @@ class DataTableRenderer extends Renderer implements Scrolling
     protected function renderSearchLine(DataTablePrompt $prompt, int $maxWidth): string
     {
         if ($prompt->state === 'search') {
-            return $this->cyan('/') . ' ' . $prompt->searchWithCursor($maxWidth - 4);
+            return $this->cyan('/').' '.$prompt->searchWithCursor($maxWidth - 4);
         }
 
         if ($prompt->searchValue() !== '') {
-            return $this->dim('/') . ' ' . $prompt->searchValue();
+            return $this->dim('/').' '.$prompt->searchValue();
         }
 
         return '';
@@ -124,148 +121,156 @@ class DataTableRenderer extends Renderer implements Scrolling
     /**
      * Render the table with visible rows.
      *
+     * @param  array<int|string, array<int, string>>  $filtered
      * @param  array<int|string, array<int, string>>  $visible
      */
-    protected function renderTable(DataTablePrompt $prompt, array $visible, int $total): string
+    protected function renderTable(DataTablePrompt $prompt, array $filtered, array $visible, int $maxWidth): string
     {
+        $total = count($filtered);
+
         if ($total === 0) {
             $message = $prompt->searchValue() !== '' ? 'No results found.' : 'No rows.';
 
             return $this->dim($message);
         }
 
-        $tableLines = $this->table($prompt, $visible, $prompt->headers);
+        $numCols = ! empty($prompt->headers)
+            ? count($prompt->headers)
+            : max(array_map('count', $filtered));
 
-        // Identify the data row lines (not border/header lines) for scrollbar
-        $dataLineIndices = $this->getDataLineIndices($tableLines, count($visible));
-        $dataLines = [];
-        $borderLines = [];
+        // Compute column widths from ALL filtered rows (not just visible) to prevent layout jumping
+        $widths = $this->computeColumnWidths($prompt->headers, $filtered, $numCols, $maxWidth);
 
-        foreach ($tableLines as $i => $line) {
-            if (in_array($i, $dataLineIndices)) {
-                $dataLines[$i] = $line;
-            } else {
-                $borderLines[$i] = $line;
+        $highlightedKey = array_keys($filtered)[$prompt->highlighted] ?? null;
+
+        $lines = [];
+
+        // Header
+        if (! empty($prompt->headers)) {
+            $headerCells = [];
+
+            foreach ($widths as $i => $w) {
+                $header = $prompt->headers[$i] ?? '';
+                $text = is_array($header) ? implode(' ', $header) : $header;
+                $headerCells[] = ' '.$this->pad($this->truncate($text, $w), $w).' ';
             }
+
+            $lines[] = $this->dim(implode('│', $headerCells)).' ';
+            $lines[] = $this->dim(implode('┼', array_map(fn ($w) => str_repeat('─', $w + 2), $widths))).' ';
+        }
+
+        // Data rows
+        $dataLines = [];
+
+        foreach ($visible as $key => $row) {
+            $isHighlighted = $key === $highlightedKey;
+            $cells = [];
+
+            foreach ($widths as $i => $w) {
+                $text = $row[$i] ?? '';
+                $content = ' '.$this->pad($this->truncate($text, $w), $w).' ';
+
+                if ($isHighlighted) {
+                    $content = $this->inverse($content);
+                }
+
+                $cells[] = $content;
+            }
+
+            $separator = $isHighlighted ? $this->inverse('│') : $this->dim('│');
+            $dataLines[] = implode($separator, $cells).' ';
         }
 
         // Apply scrollbar to data lines
-        if (count($dataLines) > 0) {
-            $width = mb_strwidth($this->stripEscapeSequences($tableLines[0]));
-            $scrolled = $this->scrollbar(
-                array_values($dataLines),
-                $prompt->firstVisible,
-                count($dataLines),
-                $this->getTotalDataLines($prompt, $total),
-                $width,
-            );
+        $tableWidth = array_sum($widths) + ($numCols - 1) + ($numCols * 2) + 1;
+        $dataLines = $this->scrollbar(
+            $dataLines,
+            $prompt->firstVisible,
+            $prompt->scroll,
+            $total,
+            $tableWidth,
+        );
 
-            $scrolledIndex = 0;
-            foreach ($dataLineIndices as $i) {
-                $tableLines[$i] = $scrolled[$scrolledIndex++];
-            }
-        }
+        $lines = array_merge($lines, $dataLines);
 
-        return implode(PHP_EOL, $tableLines);
+        return implode(PHP_EOL, $lines);
     }
 
     /**
-     * Get the total number of data lines (accounting for all rows, not just visible).
-     */
-    protected function getTotalDataLines(DataTablePrompt $prompt, int $totalRows): int
-    {
-        // Each row contributes at least one data line.
-        // For simple cases, this is just the total number of rows.
-        // The scroll height is the number of visible data lines.
-        return $totalRows;
-    }
-
-    /**
-     * Get the indices of data row lines in the table output.
+     * Compute column widths that fit within maxWidth.
      *
-     * @param  array<int, string>  $tableLines
-     * @return array<int>
-     */
-    protected function getDataLineIndices(array $tableLines, int $visibleCount): array
-    {
-        $indices = [];
-
-        // Data lines are lines containing │ that are not border lines (─, ┼, etc.)
-        foreach ($tableLines as $i => $line) {
-            $stripped = $this->stripEscapeSequences($line);
-            if (str_contains($stripped, '│') && ! preg_match('/[─┼┬┴╭╮╰╯├┤┘└┌┐]/', $stripped)) {
-                $indices[] = $i;
-            }
-        }
-
-        // If we have headers, the first data-like lines are headers, not data rows.
-        // We need to figure out how many are actual data rows.
-        // Simple heuristic: take only the last $visibleCount lines.
-        if (count($indices) > $visibleCount) {
-            $indices = array_slice($indices, -$visibleCount);
-        }
-
-        return $indices;
-    }
-
-    /**
-     * Render a Symfony table to an array of lines.
+     * Columns that fit at their natural width get it; overflowing columns
+     * share the remaining space proportionally.
      *
-     * @param  array<int, array<int, string>>  $rows
      * @param  array<int, string|array<int, string>>  $headers
-     * @return array<int, string>
+     * @param  array<int|string, array<int, string>>  $allRows
+     * @return array<int, int>
      */
-    protected function table(DataTablePrompt $prompt, array $rows, array $headers): array
+    protected function computeColumnWidths(array $headers, array $allRows, int $numCols, int $maxWidth): array
     {
-        $formattedRows = collect($rows)
-            ->map(
-                fn($row) => collect($row)
-                    ->map(fn($cell) => ' ' . $cell . ' ')
-                    ->map(
-                        fn($cell, $index) =>
-                        mb_strlen($this->stripEscapeSequences($cell)) >= $prompt->columnWidths[$index]
-                            ? $this->truncate($cell, $prompt->columnWidths[$index])
-                            : $this->pad($cell, $prompt->columnWidths[$index])
-                    ),
-            );
+        // Natural width = max cell content width per column (across all rows + header)
+        $natural = array_fill(0, $numCols, 0);
 
-        $table = [];
-        $table[] = $this->dim(collect($headers)->map(fn($header, $index) => $this->pad(' ' . $header . ' ', $prompt->columnWidths[$index]))->implode('│'));
-        $table[] = $this->dim(collect($headers)->map(fn($header, $index) => str_repeat('─', $prompt->columnWidths[$index]))->implode('┼'));
-
-        $highlightedKey = array_keys($prompt->filteredRows())[$prompt->highlighted] ?? null;
-
-        foreach ($formattedRows as $key => $row) {
-            $table[] = collect($row)
-                ->when($key === $highlightedKey, fn($cells) => $cells->map(fn($cell) => $this->inverse($cell)))
-                ->implode($key === $highlightedKey ? $this->inverse('│') : $this->dim('│'));
+        foreach ($headers as $i => $header) {
+            $headerText = is_array($header) ? implode(' ', $header) : $header;
+            $natural[$i] = max($natural[$i], mb_strwidth($headerText));
         }
 
-        return $table;
+        foreach ($allRows as $row) {
+            foreach ($row as $i => $cell) {
+                $natural[$i] = max($natural[$i], mb_strwidth($cell));
+            }
+        }
 
+        // Available width for cell content:
+        // Each column has 1 space padding on each side = 2 per column
+        // Columns separated by │ = numCols - 1 separators
+        // Scrollbar takes 1 char on the right
+        $overhead = ($numCols * 2) + ($numCols - 1) + 1;
+        $available = $maxWidth - $overhead;
 
+        if ($available <= 0) {
+            return array_fill(0, $numCols, 1);
+        }
 
-        // $tableStyle = (new TableStyle)
-        //     ->setHorizontalBorderChars('─')
-        //     ->setVerticalBorderChars('│', '│')
-        //     ->setCellHeaderFormat('<fg=default>%s</>')
-        //     ->setCellRowFormat('<fg=default>%s</>');
+        // If everything fits, use natural widths
+        if (array_sum($natural) <= $available) {
+            return $natural;
+        }
 
-        // if (empty($headers)) {
-        //     $tableStyle->setCrossingChars('┼', '', '', '', '┤', '┘', '┴', '└', '├', '╭', '┬', '╮');
-        // } else {
-        //     $tableStyle->setCrossingChars('┼', '╭', '┬', '╮', '┤', '╯', '┴', '╰', '├');
-        // }
+        // Smart allocation: give fitting columns their natural width,
+        // then split remaining space proportionally among overflowing columns
+        $widths = $natural;
+        $remaining = $available;
+        $unresolved = range(0, $numCols - 1);
 
-        // $buffered = new BufferedConsoleOutput;
+        while (count($unresolved) > 0) {
+            $fairShare = $remaining / count($unresolved);
+            $newlyResolved = [];
 
-        // (new SymfonyTable($buffered))
-        //     ->setHeaders($headers)
-        //     ->setRows($rows)
-        //     ->setStyle($tableStyle)
-        //     ->render();
+            foreach ($unresolved as $i) {
+                if ($natural[$i] <= $fairShare) {
+                    $widths[$i] = $natural[$i];
+                    $remaining -= $natural[$i];
+                    $newlyResolved[] = $i;
+                }
+            }
 
-        // return explode(PHP_EOL, trim($buffered->content(), PHP_EOL));
+            if (empty($newlyResolved)) {
+                // All remaining columns overflow — split proportionally
+                $totalNatural = array_sum(array_map(fn ($i) => $natural[$i], $unresolved));
+
+                foreach ($unresolved as $i) {
+                    $widths[$i] = max(1, (int) floor($remaining * $natural[$i] / $totalNatural));
+                }
+
+                break;
+            }
+
+            $unresolved = array_values(array_diff($unresolved, $newlyResolved));
+        }
+
+        return $widths;
     }
 
     /**

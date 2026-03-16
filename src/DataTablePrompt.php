@@ -4,14 +4,11 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
-use Laravel\Prompts\Themes\Default\Concerns\InteractsWithStrings;
 
 class DataTablePrompt extends Prompt
 {
     use Concerns\Scrolling;
     use Concerns\TypedValue;
-    use InteractsWithStrings;
-    use Concerns\Truncation;
 
     /**
      * The table headers.
@@ -38,10 +35,6 @@ class DataTablePrompt extends Prompt
      * The previous search query (for cache invalidation).
      */
     protected string $previousQuery = '';
-
-    public array $columnWidths = [];
-
-    protected int $minWidth = 0;
 
     /**
      * Create a new DataTable instance.
@@ -80,15 +73,6 @@ class DataTablePrompt extends Prompt
             'search' => $this->handleSearchKey($key),
             default => $this->handleBrowseKey($key),
         });
-
-        $columnWidths = [];
-
-        foreach ($headers as $key => $header) {
-            $columnWidths[$key] = $this->longest([$header, ...array_column($rows, $key)], 2);
-        }
-
-        $columnPercentages = collect($columnWidths)->map(fn($width) => $width / collect($columnWidths)->sum());
-        $this->columnWidths = collect($columnWidths)->map(fn($width, $index) => (int) floor(60 * $columnPercentages[$index]))->toArray();
     }
 
     /**
