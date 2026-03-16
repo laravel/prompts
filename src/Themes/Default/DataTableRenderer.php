@@ -67,14 +67,8 @@ class DataTableRenderer extends Renderer implements Scrolling
         $total = count($filtered);
         $visible = $prompt->visible();
 
-        $body = $this->renderSearchLine($prompt, $maxWidth);
-        $tableBody = $this->renderTable($prompt, $filtered, $visible, $maxWidth);
-
-        if ($body !== '') {
-            $body .= PHP_EOL;
-        }
-
-        $body .= $tableBody;
+        $body = $this->renderSearchLine($prompt, $maxWidth).PHP_EOL
+            .$this->renderTable($prompt, $filtered, $visible, $maxWidth);
 
         $firstRow = $prompt->firstVisible + 1;
         $lastRow = min($prompt->firstVisible + $prompt->scroll, $total);
@@ -115,7 +109,7 @@ class DataTableRenderer extends Renderer implements Scrolling
             return $this->dim('/').' '.$prompt->searchValue();
         }
 
-        return '';
+        return $this->dim('/ to search');
     }
 
     /**
@@ -136,10 +130,10 @@ class DataTableRenderer extends Renderer implements Scrolling
 
         $numCols = ! empty($prompt->headers)
             ? count($prompt->headers)
-            : max(array_map('count', $filtered));
+            : max(array_map('count', $prompt->rows));
 
-        // Compute column widths from ALL filtered rows (not just visible) to prevent layout jumping
-        $widths = $this->computeColumnWidths($prompt->headers, $filtered, $numCols, $maxWidth);
+        // Compute column widths from ALL rows (not filtered) to prevent layout shift when searching
+        $widths = $this->computeColumnWidths($prompt->headers, $prompt->rows, $numCols, $maxWidth);
 
         $highlightedKey = array_keys($filtered)[$prompt->highlighted] ?? null;
 

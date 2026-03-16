@@ -9,8 +9,8 @@ $result = datatable(
     label: 'Select a team member',
     headers: ['Name', 'Twitter', 'Role'],
     rows: [
-        'longueng' => ['A very very long one that is too long for the table to be honest and also this should never fit because it is actually wild but here we are', '@longun'],
-        'taylor' => ['Taylor Otwell', '@taylorotwell', 'Developer'],
+        'longueng' => ['A very very long one that is too long for the table to be honest and also this should never fit because it is actually wild but here we are', '@longun', 'Developer'],
+        'taylor' => ['Taylor Otwell', '@taylorotwell', 'Developer' . PHP_EOL . 'CEO'],
         'dries' => ['Dries Vints', '@driesvints', 'Developer'],
         'james' => ['James Brooks', '@jbrooksuk', 'Developer'],
         'nuno' => ['Nuno Maduro', '@enunomaduro', 'Developer'],
