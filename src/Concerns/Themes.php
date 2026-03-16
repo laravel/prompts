@@ -7,6 +7,7 @@ use Laravel\Prompts\AutoCompletePrompt;
 use Laravel\Prompts\Clear;
 use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\DataTable;
+use Laravel\Prompts\DataTablePrompt;
 use Laravel\Prompts\Grid;
 use Laravel\Prompts\MultiSearchPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
@@ -84,7 +85,7 @@ trait Themes
             Title::class => TitleRenderer::class,
             Stream::class => StreamRenderer::class,
             Task::class => TaskRenderer::class,
-            DataTable::class => DataTableRenderer::class,
+            DataTablePrompt::class => DataTableRenderer::class,
         ],
     ];
 

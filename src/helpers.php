@@ -432,17 +432,30 @@ if (! function_exists('\Laravel\Prompts\task')) {
 
 if (! function_exists('\Laravel\Prompts\datatable')) {
     /**
-     * Display a data table.
+     * Display an interactive data table.
      *
      * @param  array<int, string|array<int, string>>|Collection<int, string|array<int, string>>  $headers
-     * @param  array<int, array<int, string>>|Collection<int, array<int, string>>  $rows
-     * @param  array<int, array<int, string>>|Collection<int, array<int, string>>  $actions
+     * @param  array<int|string, array<int, string>>|Collection<int|string, array<int, string>>|null  $rows
      */
     function datatable(
         array|Collection $headers = [],
         array|Collection|null $rows = null,
-        array|Collection|null $actions = null
-    ): void {
-        (new DataTable(headers: $headers, rows: $rows, actions: $actions))->display();
+        int $scroll = 10,
+        string $label = '',
+        string $hint = '',
+        bool|string $required = false,
+        mixed $validate = null,
+        ?Closure $transform = null,
+    ): mixed {
+        return (new DataTablePrompt(
+            headers: $headers,
+            rows: $rows,
+            scroll: $scroll,
+            label: $label,
+            hint: $hint,
+            required: $required,
+            validate: $validate,
+            transform: $transform,
+        ))->prompt();
     }
 }

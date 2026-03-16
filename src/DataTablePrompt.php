@@ -2,311 +2,272 @@
 
 namespace Laravel\Prompts;
 
+use Closure;
 use Illuminate\Support\Collection;
-use Laravel\Prompts\Concerns\TypedValue;
-use Laravel\Prompts\KeyBindingsHelp;
-use Laravel\Prompts\KeyPressListener;
-use Laravel\Prompts\Key;
-use Laravel\Prompts\Prompt;
-use Throwable;
+use Laravel\Prompts\Themes\Default\Concerns\InteractsWithStrings;
 
-class DataTable extends Prompt
+class DataTablePrompt extends Prompt
 {
-    use TypedValue;
+    use Concerns\Scrolling;
+    use Concerns\TypedValue;
+    use InteractsWithStrings;
+    use Concerns\Truncation;
 
     /**
-     * The paginated table headers.
+     * The table headers.
      *
      * @var array<int, string|array<int, string>>
      */
     public array $headers;
 
     /**
-     * The paginated table rows.
+     * The table rows.
      *
-     * @var array<int, array<int, string>>
+     * @var array<int|string, array<int, string>>
      */
     public array $rows;
 
-    public int $page = 1;
-
-    public int $perPage = 10;
-
-    public int $index = 0;
-
-    public string $query = '';
-
-    public int $totalPages;
-
-    public string $jumpToPage = '';
+    /**
+     * The cached filtered rows.
+     *
+     * @var array<int|string, array<int, string>>|null
+     */
+    protected ?array $filteredCache = null;
 
     /**
-     * Create a new PaginatedTable instance.
+     * The previous search query (for cache invalidation).
+     */
+    protected string $previousQuery = '';
+
+    public array $columnWidths = [];
+
+    protected int $minWidth = 0;
+
+    /**
+     * Create a new DataTable instance.
      *
      * @param  array<int, string|array<int, string>>|Collection<int, string|array<int, string>>  $headers
-     * @param  array<int, array<int, string>>|Collection<int, array<int, string>>  $rows
-     * @param  array<string, array<callable, string>>  $actions
+     * @param  array<int|string, array<int, string>>|Collection<int|string, array<int, string>>|null  $rows
      *
      * @phpstan-param ($rows is null ? list<list<string>>|Collection<int, list<string>> : list<string|list<string>>|Collection<int, string|list<string>>) $headers
      */
-    public function __construct(array|Collection $headers = [], array|Collection|null $rows = null, protected array $actions = [])
-    {
+    public function __construct(
+        array|Collection $headers = [],
+        array|Collection|null $rows = null,
+        public int $scroll = 10,
+        public string $label = '',
+        public string $hint = '',
+        public bool|string $required = false,
+        public mixed $validate = null,
+        public ?Closure $transform = null,
+    ) {
         if ($rows === null) {
             $rows = $headers;
             $headers = [];
         }
 
-        $this->required = false;
-        $this->validate = null;
         $this->headers = $headers instanceof Collection ? $headers->all() : $headers;
         $this->rows = $rows instanceof Collection ? $rows->all() : $rows;
-        $this->totalPages = $this->getTotalPages($rows);
-        $this->perPage = $this->calculatePerPage($rows);
-    }
 
-    protected function getTotalPages(array $records): int
-    {
-        return (int) ceil(count($records) / $this->perPage);
-    }
+        $this->initializeScrolling(0);
 
-    protected function calculatePerPage(array $rows): int
-    {
-        $highestRow = collect($rows)->map(fn($row) => collect($row)->map(fn($cell) => substr_count($cell, PHP_EOL))->max())->max();
-        $terminalHeight = $this->terminal()->lines();
-        $availableHeight = $terminalHeight - 10;
-        $perPage = floor($availableHeight / ($highestRow + 1));
-
-        return max(1, min($this->perPage, $perPage, count($rows)));
-    }
-
-    public function visible(): array
-    {
-        if ($this->query === '') {
-            $this->totalPages = $this->getTotalPages($this->rows);
-
-            return array_slice($this->rows, ($this->page - 1) * $this->perPage, $this->perPage);
-        }
-
-        $filtered = array_filter(
-            $this->rows,
-            fn($row) => str_contains(
-                mb_strtolower(implode(' ', $row)),
-                mb_strtolower($this->query),
-            ),
+        $this->trackTypedValue(
+            submit: false,
+            ignore: fn($key) => $this->state !== 'search',
         );
 
-        $this->totalPages = $this->getTotalPages($filtered);
+        $this->on('key', fn($key) => match ($this->state) {
+            'search' => $this->handleSearchKey($key),
+            default => $this->handleBrowseKey($key),
+        });
 
-        $results = array_slice($filtered, 0, $this->perPage);
+        $columnWidths = [];
 
-        if (count($results) > 0) {
-            return $results;
+        foreach ($headers as $key => $header) {
+            $columnWidths[$key] = $this->longest([$header, ...array_column($rows, $key)], 2);
         }
 
-        return [];
-    }
-
-    public function valueWithCursor(int $maxWidth): string
-    {
-        return $this->getValueWithCursor($this->query, $maxWidth);
-    }
-
-    public function jumpValueWithCursor(int $maxWidth): string
-    {
-        return $this->getValueWithCursor($this->jumpToPage, $maxWidth);
-    }
-
-    protected function getValueWithCursor(string $value, int $maxWidth): string
-    {
-        if ($value === '') {
-            return $this->dim($this->addCursor('', 0, $maxWidth));
-        }
-
-        return $this->addCursor($value, $this->cursorPosition, $maxWidth);
+        $columnPercentages = collect($columnWidths)->map(fn($width) => $width / collect($columnWidths)->sum());
+        $this->columnWidths = collect($columnWidths)->map(fn($width, $index) => (int) floor(60 * $columnPercentages[$index]))->toArray();
     }
 
     /**
-     * Display the table.
+     * Handle key presses in browse mode.
      */
-    public function display(): bool
+    protected function handleBrowseKey(string $key): void
     {
-        $this->capturePreviousNewLines();
+        $total = count($this->filteredRows());
 
-        if (static::shouldFallback()) {
-            return false;
-        }
-
-        static::$interactive ??= stream_isatty(STDIN);
-
-        if (! static::$interactive) {
-            return false;
-        }
-
-        try {
-            static::terminal()->setTty('-icanon -isig -echo');
-        } catch (Throwable $e) {
-            static::output()->writeln("<comment>{$e->getMessage()}</comment>");
-            static::fallbackWhen(true);
-
-            return false;
-        }
-
-        $this->hideCursor();
-
-        $this->browse();
-        $this->addDefaultKeyBindings();
-        $this->render();
-
-        $this->listener->afterEveryKey(function () {
-            $this->addDefaultKeyBindings();
-            $this->render();
-        })->listenNow();
-
-        return true;
+        match ($key) {
+            Key::UP, Key::UP_ARROW, Key::CTRL_P => $this->highlightPrevious($total),
+            Key::DOWN, Key::DOWN_ARROW, Key::CTRL_N => $this->highlightNext($total),
+            Key::PAGE_UP => $this->highlight(max(0, $this->highlighted - $this->scroll)),
+            Key::PAGE_DOWN => $this->highlight(min($total - 1, $this->highlighted + $this->scroll)),
+            Key::oneOf([Key::HOME, Key::CTRL_A], $key) => $this->highlight(0),
+            Key::oneOf([Key::END, Key::CTRL_E], $key) => $this->highlight(max(0, $total - 1)),
+            Key::ENTER => $total > 0 ? $this->submit() : null,
+            '/' => $this->enterSearch(),
+            default => null,
+        };
     }
 
-    protected function browse(): void
+    /**
+     * Handle key presses in search mode.
+     */
+    protected function handleSearchKey(string $key): void
     {
-        $this->state = 'browse';
+        $total = count($this->filteredRows());
 
-        $this->listener
-            ->clearExisting()
-            ->listenForQuit()
-            ->onUp(
-                fn() => $this->index = max(0, $this->index - 1),
-            )
-            ->onDown(
-                fn() => $this->index = min($this->perPage - 1, count($this->visible()) - 1, $this->index + 1),
-            )
-            ->onRight(
-                function () {
-                    $prevPage = $this->page;
-                    $this->page = min($this->totalPages, $this->page + 1);
-
-                    if ($prevPage !== $this->page) {
-                        $this->index = 0;
-                    }
-                },
-            )
-            ->onLeft(
-                function () {
-                    $prevPage = $this->page;
-                    $this->page = max(1, $this->page - 1);
-
-                    if ($prevPage !== $this->page) {
-                        $this->index = 0;
-                    }
-                },
-            )
-            ->on(Key::ENTER, $this->submit(...))
-            ->on('/', $this->search(...))
-            ->on('j', $this->jump(...))
-            ->listen();
+        match ($key) {
+            Key::UP, Key::UP_ARROW, Key::CTRL_P => $this->highlightPrevious($total),
+            Key::DOWN, Key::DOWN_ARROW, Key::CTRL_N => $this->highlightNext($total),
+            Key::ENTER => $this->exitSearch(),
+            Key::ESCAPE => $this->cancelSearch(),
+            default => $this->search(),
+        };
     }
 
-    protected function addCustomKeyBindings(): void
-    {
-        foreach ($this->actions as $key => [$action, $description]) {
-            $this->listener->on($key, fn() => $this->runCustomAction($action));
-            $this->keyBindingsHelp->add($key, $description);
-        }
-
-        if (! in_array(Key::ENTER, array_keys($this->actions))) {
-            $this->listener->on(Key::ENTER, fn() => false);
-        }
-    }
-
-    protected function addDefaultKeyBindings(): void
-    {
-        $this->keyBindingsHelp->clear();
-
-        if ($this->state === 'search') {
-            $this->keyBindingsHelp->add('Enter', 'Submit');
-        } elseif ($this->state === 'jump') {
-            $this->keyBindingsHelp->add('Enter', 'Jump to page');
-        } else {
-            $upArrow = $this->index === 0 ? $this->dim('↑') : '↑';
-            $downArrow = $this->index === count($this->visible()) - 1 ? $this->dim('↓') : '↓';
-            $leftArrow = $this->page === 1 ? $this->dim('←') : '←';
-            $rightArrow = $this->page === $this->totalPages ? $this->dim('→') : '→';
-
-            $this->keyBindingsHelp->add($upArrow . ' ' . $downArrow, 'Row');
-            $this->keyBindingsHelp->add($leftArrow . ' ' . $rightArrow, 'Page');
-            $this->keyBindingsHelp->add('/', 'Search');
-            $this->keyBindingsHelp->add('j', 'Jump to page');
-            $this->addCustomKeyBindings();
-        }
-    }
-
-    protected function search(): void
+    /**
+     * Enter search mode.
+     */
+    protected function enterSearch(): void
     {
         $this->state = 'search';
-        $this->index = 0;
-        $this->page = 1;
-
-        $this->listener
-            ->clearExisting()
-            ->listenForQuit()
-            ->listenToInput($this->query, $this->cursorPosition)
-            ->on(
-                Key::ENTER,
-                function () {
-                    if (count($this->visible()) === 0) {
-                        return;
-                    }
-
-                    $this->browse();
-                },
-            )
-            ->listen();
+        $this->typedValue = '';
+        $this->cursorPosition = 0;
     }
 
-    protected function jump(): void
+    /**
+     * Exit search mode, keeping the filtered results.
+     */
+    protected function exitSearch(): void
     {
-        $this->state = 'jump';
-        $this->index = 0;
-
-        $this->listener
-            ->clearExisting()
-            ->listenForQuit()
-            ->listenToInput($this->jumpToPage, $this->cursorPosition)
-            ->on(
-                Key::ENTER,
-                function () {
-                    if ($this->jumpToPage === '') {
-                        $this->browse();
-
-                        return;
-                    }
-
-                    if (! is_numeric($this->jumpToPage)) {
-                        return;
-                    }
-
-                    if ($this->jumpToPage < 1 || $this->jumpToPage > $this->totalPages) {
-                        return;
-                    }
-
-                    $this->page = (int) $this->jumpToPage;
-                    $this->jumpToPage = '';
-                    $this->browse();
-                },
-            )
-            ->listen();
+        $this->state = 'active';
     }
 
-    public function runCustomAction(callable $action): bool
+    /**
+     * Cancel search, clearing the query and showing all rows.
+     */
+    protected function cancelSearch(): void
     {
-        $action($this->visible()[$this->index]);
+        $this->state = 'active';
+        $this->typedValue = '';
+        $this->cursorPosition = 0;
+        $this->filteredCache = null;
+        $this->previousQuery = '';
+        $this->highlighted = 0;
+        $this->firstVisible = 0;
+    }
 
-        return false;
+    /**
+     * Handle typing in search mode.
+     */
+    protected function search(): void
+    {
+        $this->filteredCache = null;
+        $this->highlighted = 0;
+        $this->firstVisible = 0;
+    }
+
+    /**
+     * Get the filtered rows based on the current search query.
+     *
+     * @return array<int|string, array<int, string>>
+     */
+    public function filteredRows(): array
+    {
+        if ($this->filteredCache !== null && $this->previousQuery === $this->typedValue) {
+            return $this->filteredCache;
+        }
+
+        $this->previousQuery = $this->typedValue;
+
+        if ($this->typedValue === '') {
+            return $this->filteredCache = $this->rows;
+        }
+
+        return $this->filteredCache = array_filter(
+            $this->rows,
+            fn($row) => str_contains(
+                mb_strtolower(implode(' ', $row)),
+                mb_strtolower($this->typedValue),
+            ),
+        );
+    }
+
+    /**
+     * The currently visible rows.
+     *
+     * @return array<int|string, array<int, string>>
+     */
+    public function visible(): array
+    {
+        return array_slice($this->filteredRows(), $this->firstVisible, $this->scroll, preserve_keys: true);
+    }
+
+    /**
+     * Get the current search query.
+     */
+    public function searchValue(): string
+    {
+        return $this->typedValue;
+    }
+
+    /**
+     * Get the search query with a virtual cursor.
+     */
+    public function searchWithCursor(int $maxWidth): string
+    {
+        if ($this->typedValue === '') {
+            return $this->dim($this->addCursor('', 0, $maxWidth));
+        }
+
+        return $this->addCursor($this->typedValue, $this->cursorPosition, $maxWidth);
     }
 
     /**
      * Get the value of the prompt.
      */
-    public function value(): bool
+    public function value(): mixed
     {
-        return true;
+        if ($this->highlighted === null) {
+            return null;
+        }
+
+        $filtered = $this->filteredRows();
+        $keys = array_keys($filtered);
+
+        if (! isset($keys[$this->highlighted])) {
+            return null;
+        }
+
+        $key = $keys[$this->highlighted];
+
+        if (array_is_list($this->rows)) {
+            return $filtered[$key];
+        }
+
+        return $key;
+    }
+
+    /**
+     * Get the selected row for display purposes.
+     *
+     * @return array<int, string>|null
+     */
+    public function selectedRow(): ?array
+    {
+        if ($this->highlighted === null) {
+            return null;
+        }
+
+        $filtered = $this->filteredRows();
+        $keys = array_keys($filtered);
+
+        if (! isset($keys[$this->highlighted])) {
+            return null;
+        }
+
+        return $filtered[$keys[$this->highlighted]];
     }
 }
