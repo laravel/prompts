@@ -97,7 +97,7 @@ class AutoCompletePrompt extends Prompt
 
         $this->trackTypedValue(
             $default,
-            ignore: fn ($key) => in_array($key, [Key::UP, Key::UP_ARROW, Key::DOWN, Key::DOWN_ARROW]),
+            ignore: fn($key) => in_array($key, [Key::UP, Key::UP_ARROW, Key::DOWN, Key::DOWN_ARROW]),
         );
     }
 
@@ -155,14 +155,15 @@ class AutoCompletePrompt extends Prompt
 
         return $this->matches = array_values(array_filter(
             $this->options,
-            fn ($option) => str_starts_with(strtolower($option), strtolower($this->value())),
+            fn($option) => str_starts_with(strtolower($option), strtolower($this->value())),
         ));
     }
 
+    /**
+     * Get the current match.
+     */
     protected function getMatch(): string
     {
-        $matches = $this->matches();
-
-        return $matches[$this->highlighted] ?? '';
+        return $this->matches()[$this->highlighted] ?? '';
     }
 }
