@@ -63,7 +63,23 @@ class AutoCompletePrompt extends Prompt
                 return;
             }
 
-            if (in_array($key, [Key::TAB, Key::RIGHT, Key::RIGHT_ARROW])) {
+            if ($key === Key::TAB && $this->cursorPosition >= mb_strlen($this->typedValue)) {
+                $match = $this->getMatch();
+
+                if ($match !== '' && mb_strlen($match) > mb_strlen($this->value())) {
+                    // Ghost text is showing — accept it
+                    $this->typedValue = $match;
+                    $this->cursorPosition = mb_strlen($match);
+                } else {
+                    // No ghost text — request suggestions
+                    $this->matches = null;
+                    $this->highlighted = 0;
+                }
+
+                return;
+            }
+
+            if (in_array($key, [Key::RIGHT, Key::RIGHT_ARROW]) && $this->cursorPosition >= mb_strlen($this->typedValue)) {
                 $match = $this->getMatch();
 
                 if ($match !== '') {
