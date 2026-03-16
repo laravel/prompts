@@ -3,6 +3,7 @@
 namespace Laravel\Prompts\Concerns;
 
 use InvalidArgumentException;
+use Laravel\Prompts\AutoCompletePrompt;
 use Laravel\Prompts\Clear;
 use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\Grid;
@@ -23,6 +24,7 @@ use Laravel\Prompts\Table;
 use Laravel\Prompts\Task;
 use Laravel\Prompts\TextareaPrompt;
 use Laravel\Prompts\TextPrompt;
+use Laravel\Prompts\Themes\Default\AutoCompletePromptRenderer;
 use Laravel\Prompts\Themes\Default\ClearRenderer;
 use Laravel\Prompts\Themes\Default\ConfirmPromptRenderer;
 use Laravel\Prompts\Themes\Default\GridRenderer;
@@ -76,6 +78,7 @@ trait Themes
             Progress::class => ProgressRenderer::class,
             Clear::class => ClearRenderer::class,
             Grid::class => GridRenderer::class,
+            AutoCompletePrompt::class => AutoCompletePromptRenderer::class,
             Title::class => TitleRenderer::class,
             Stream::class => StreamRenderer::class,
             Task::class => TaskRenderer::class,
