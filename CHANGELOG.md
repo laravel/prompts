@@ -1,6 +1,16 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.14...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.15...main)
+
+## [v0.3.15](https://github.com/laravel/prompts/compare/v0.3.14...v0.3.15) - 2026-03-17
+
+* Title Prompt by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/221
+* Stream Prompt by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/222
+* Task Prompt by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/223
+* PHPStan cleanup by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/224
+* Autocomplete Prompt by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/226
+* Allow for dynamic secondary info on select-type prompts by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/227
+* Notify Prompt by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/228
 
 ## [v0.3.14](https://github.com/laravel/prompts/compare/v0.3.13...v0.3.14) - 2026-03-01
 
