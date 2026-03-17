@@ -320,6 +320,22 @@ if (! function_exists('\Laravel\Prompts\outro')) {
     }
 }
 
+if (! function_exists('\Laravel\Prompts\notify')) {
+    /**
+     * Send a notification to the user. (macOS and Linux only)
+     *
+     * The icon option is Linux only. The subtitle and sound options are macOS only.
+     *
+     * @param string $subtitle macOS only
+     * @param string $sound macOS only
+     * @param string $icon Linux only
+     */
+    function notify(string $title, string $body = '', string $subtitle = '', string $sound = '', string $icon = ''): void
+    {
+        (new NotifyPrompt(...get_defined_vars()))->display();
+    }
+}
+
 if (! function_exists('\Laravel\Prompts\table')) {
     /**
      * Display a table.
