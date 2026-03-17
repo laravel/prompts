@@ -3,7 +3,7 @@
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\notify;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 notify('Basic Notification', 'Just a title and body');
 

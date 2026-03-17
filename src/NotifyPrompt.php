@@ -37,15 +37,15 @@ class NotifyPrompt extends Prompt
      */
     protected function sendMacOS(): bool
     {
-        $script = 'display notification ' . $this->escapeAppleScript($this->body);
-        $script .= ' with title ' . $this->escapeAppleScript($this->title);
+        $script = 'display notification '.$this->escapeAppleScript($this->body);
+        $script .= ' with title '.$this->escapeAppleScript($this->title);
 
         if ($this->subtitle !== '') {
-            $script .= ' subtitle ' . $this->escapeAppleScript($this->subtitle);
+            $script .= ' subtitle '.$this->escapeAppleScript($this->subtitle);
         }
 
         if ($this->sound !== '') {
-            $script .= ' sound name ' . $this->escapeAppleScript($this->sound);
+            $script .= ' sound name '.$this->escapeAppleScript($this->sound);
         }
 
         return $this->execute(['osascript', '-e', $script]);
@@ -118,7 +118,7 @@ class NotifyPrompt extends Prompt
      */
     protected function escapeAppleScript(string $value): string
     {
-        return '"' . str_replace(['\\', '"'], ['\\\\', '\\"'], $value) . '"';
+        return '"'.str_replace(['\\', '"'], ['\\\\', '\\"'], $value).'"';
     }
 
     /**
