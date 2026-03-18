@@ -38,8 +38,12 @@ trait InteractsWithStrings
         // Strip Symfony named style tags.
         $text = preg_replace("/<(info|comment|question|error)>(.*?)<\/\\1>/", '$2', $text);
 
-        // Strip Symfony inline style tags.
-        return preg_replace("/<(?:(?:[fb]g|options)=[a-z,;]+)+>(.*?)<\/>/i", '$1', $text);
+        // Strip Symfony inline style tags (apply repeatedly to handle nested tags).
+        do {
+            $text = preg_replace("/<(?:(?:[fb]g|options)=[a-z,;]+)+>(.*?)<\/>/i", '$1', $text, -1, $count);
+        } while ($count > 0);
+
+        return $text;
     }
 
     /**
