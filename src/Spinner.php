@@ -47,7 +47,7 @@ class Spinner extends Prompt
     {
         $this->capturePreviousNewLines();
 
-        if (! function_exists('pcntl_fork')) {
+        if (! function_exists('pcntl_fork') || ! static::output()->isDecorated()) {
             return $this->renderStatically($callback);
         }
 
