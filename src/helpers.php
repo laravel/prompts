@@ -429,3 +429,35 @@ if (! function_exists('\Laravel\Prompts\task')) {
         return (new Task($label, $limit ?? 10))->run($callback);
     }
 }
+
+if (! function_exists('\Laravel\Prompts\datatable')) {
+    /**
+     * Display an interactive data table.
+     *
+     * @param  array<int, string|array<int, string>>|Collection<int, string|array<int, string>>  $headers
+     * @param  array<int|string, array<int, string>>|Collection<int|string, array<int, string>>|null  $rows
+     */
+    function datatable(
+        array|Collection $headers = [],
+        array|Collection|null $rows = null,
+        int $scroll = 10,
+        string $label = '',
+        string $hint = '',
+        bool|string $required = false,
+        mixed $validate = null,
+        ?Closure $transform = null,
+        ?Closure $filter = null,
+    ): mixed {
+        return (new DataTablePrompt(
+            headers: $headers,
+            rows: $rows,
+            scroll: $scroll,
+            label: $label,
+            hint: $hint,
+            required: $required,
+            validate: $validate,
+            transform: $transform,
+            filter: $filter,
+        ))->prompt();
+    }
+}

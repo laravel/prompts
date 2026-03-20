@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Laravel\Prompts\AutoCompletePrompt;
 use Laravel\Prompts\Clear;
 use Laravel\Prompts\ConfirmPrompt;
+use Laravel\Prompts\DataTablePrompt;
 use Laravel\Prompts\Grid;
 use Laravel\Prompts\MultiSearchPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
@@ -27,6 +28,7 @@ use Laravel\Prompts\TextPrompt;
 use Laravel\Prompts\Themes\Default\AutoCompletePromptRenderer;
 use Laravel\Prompts\Themes\Default\ClearRenderer;
 use Laravel\Prompts\Themes\Default\ConfirmPromptRenderer;
+use Laravel\Prompts\Themes\Default\DataTableRenderer;
 use Laravel\Prompts\Themes\Default\GridRenderer;
 use Laravel\Prompts\Themes\Default\MultiSearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\MultiSelectPromptRenderer;
@@ -82,6 +84,7 @@ trait Themes
             Title::class => TitleRenderer::class,
             Stream::class => StreamRenderer::class,
             Task::class => TaskRenderer::class,
+            DataTablePrompt::class => DataTableRenderer::class,
         ],
     ];
 
