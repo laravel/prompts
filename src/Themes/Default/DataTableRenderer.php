@@ -254,14 +254,33 @@ class DataTableRenderer extends Renderer implements Scrolling
             $dataLines[] = $emptyRow;
         }
 
-        // Apply scrollbar to data lines
-        $dataLines = $this->scrollbar(
-            $dataLines,
-            $prompt->firstVisible,
-            count($dataLines),
-            $total,
-            $innerWidth,
-        );
+        // Apply scrollbar to data lines.
+        // We can't use the trait's scrollbar() directly because it compares visual
+        // line count against logical row count — multiline rows inflate visual lines
+        // beyond $total, causing the scrollbar to disappear. Instead, determine
+        // scrollability from logical counts and map the indicator to visual space.
+        $shouldScroll = $total > $prompt->scroll;
+
+        if ($shouldScroll) {
+            $numVisual = count($dataLines);
+            $maxFirst = $total - $prompt->scroll;
+
+            if ($prompt->firstVisible === 0) {
+                $visualPos = 0;
+            } elseif ($prompt->firstVisible >= $maxFirst) {
+                $visualPos = $numVisual - 1;
+            } elseif ($numVisual <= 2) {
+                $visualPos = -1;
+            } else {
+                $percent = $prompt->firstVisible / $maxFirst;
+                $visualPos = (int) round($percent * ($numVisual - 3)) + 1;
+            }
+
+            $dataLines = array_map(fn ($line, $index) => match ($index) {
+                $visualPos => preg_replace('/.$/', $this->cyan('┃'), $this->pad($line, $innerWidth)) ?? '',
+                default => preg_replace('/.$/', $this->gray('│'), $this->pad($line, $innerWidth)) ?? '',
+            }, array_values($dataLines), range(0, $numVisual - 1));
+        }
 
         return $dataLines;
     }
