@@ -60,14 +60,14 @@ class DataTableRenderer extends Renderer implements Scrolling
         $titleText = $this->truncate($prompt->label, $maxWidth);
         $titleLength = mb_strwidth($this->stripEscapeSequences($titleText));
         $topBorderFill = max(0, $innerWidth - $titleLength - 2);
-        $this->line($this->red(' ┌') . " {$titleText} " . $this->red(str_repeat('─', $topBorderFill) . '┐'));
+        $this->line($this->red(' ┌')." {$titleText} ".$this->red(str_repeat('─', $topBorderFill).'┐'));
 
         // Search line (dimmed, to prevent layout shift)
         $searchContent = $this->renderSearchLine($prompt, $innerWidth - 2);
-        $this->line($this->red(' │') . ' ' . $this->dim($this->pad($searchContent, $innerWidth - 2)) . ' ' . $this->red('│'));
+        $this->line($this->red(' │').' '.$this->dim($this->pad($searchContent, $innerWidth - 2)).' '.$this->red('│'));
 
         // Column separator
-        $this->line(' ' . $this->renderBorder('├', '┬', '┤', $widths, 'red'));
+        $this->line(' '.$this->renderBorder('├', '┬', '┤', $widths, 'red'));
 
         // Header cells (strikethrough + dim)
         if (! empty($prompt->headers)) {
@@ -76,24 +76,24 @@ class DataTableRenderer extends Renderer implements Scrolling
             foreach ($widths as $i => $w) {
                 $header = $prompt->headers[$i] ?? '';
                 $text = is_array($header) ? implode(' ', $header) : $header;
-                $headerCells[] = $this->dim(' ' . $this->pad($this->strikethrough($this->truncate($text, $w)), $w) . ' ');
+                $headerCells[] = $this->dim(' '.$this->pad($this->strikethrough($this->truncate($text, $w)), $w).' ');
             }
 
-            $headerLine = implode($this->red('│'), $headerCells) . '  ';
-            $this->line($this->red(' │') . $this->pad($headerLine, $innerWidth) . $this->red('│'));
+            $headerLine = implode($this->red('│'), $headerCells).'  ';
+            $this->line($this->red(' │').$this->pad($headerLine, $innerWidth).$this->red('│'));
 
-            $this->line(' ' . $this->renderBorder('├', '┼', '┤', $widths, 'red'));
+            $this->line(' '.$this->renderBorder('├', '┼', '┤', $widths, 'red'));
         }
 
         // Data rows (strikethrough + dim)
         $dataLines = $this->renderDataRows($prompt, $filtered, $visible, $widths, $numCols, $innerWidth, strikethrough: true);
 
         foreach ($dataLines as $dataLine) {
-            $this->line($this->red(' │') . $this->pad($dataLine, $innerWidth) . $this->red('│'));
+            $this->line($this->red(' │').$this->pad($dataLine, $innerWidth).$this->red('│'));
         }
 
         // Bottom border (red)
-        $this->line(' ' . $this->renderBorder('└', '┴', '┘', $widths, 'red'));
+        $this->line(' '.$this->renderBorder('└', '┴', '┘', $widths, 'red'));
 
         return $this->error($prompt->cancelMessage);
     }
@@ -122,24 +122,24 @@ class DataTableRenderer extends Renderer implements Scrolling
         $titleText = $this->cyan($this->truncate($prompt->label, $maxWidth));
         $titleLength = mb_strwidth($this->stripEscapeSequences($titleText));
         $topBorderFill = max(0, $innerWidth - $titleLength - 2);
-        $this->line($this->gray(' ┌') . " {$titleText} " . $this->gray(str_repeat('─', $topBorderFill) . '┐'));
+        $this->line($this->gray(' ┌')." {$titleText} ".$this->gray(str_repeat('─', $topBorderFill).'┐'));
 
         // Search line: │ / Search              │
         $searchContent = $this->renderSearchLine($prompt, $innerWidth - 2);
-        $this->line($this->gray(' │') . ' ' . $this->pad($searchContent, $innerWidth - 2) . ' ' . $this->gray('│'));
+        $this->line($this->gray(' │').' '.$this->pad($searchContent, $innerWidth - 2).' '.$this->gray('│'));
 
         if ($total === 0) {
             // No results: simple box without column separators
-            $this->line(' ' . $this->renderSimpleBorder('├', '┤', $innerWidth));
+            $this->line(' '.$this->renderSimpleBorder('├', '┤', $innerWidth));
 
             $message = $prompt->searchValue() !== '' ? 'No results found.' : 'No rows.';
-            $emptyLine = $this->pad(' ' . $this->dim($message), $innerWidth);
-            $this->line($this->gray(' │') . $this->pad($emptyLine, $innerWidth) . $this->gray('│'));
+            $emptyLine = $this->pad(' '.$this->dim($message), $innerWidth);
+            $this->line($this->gray(' │').$this->pad($emptyLine, $innerWidth).$this->gray('│'));
 
-            $this->line(' ' . $this->renderSimpleBorder('└', '┘', $innerWidth));
+            $this->line(' '.$this->renderSimpleBorder('└', '┘', $innerWidth));
         } else {
             // Column separator: ├──────┬────────┤
-            $this->line(' ' . $this->renderBorder('├', '┬', '┤', $widths));
+            $this->line(' '.$this->renderBorder('├', '┬', '┤', $widths));
 
             // Header cells: │ Header │ Header   │
             if (! empty($prompt->headers)) {
@@ -148,32 +148,32 @@ class DataTableRenderer extends Renderer implements Scrolling
                 foreach ($widths as $i => $w) {
                     $header = $prompt->headers[$i] ?? '';
                     $text = is_array($header) ? implode(' ', $header) : $header;
-                    $headerCells[] = $this->dim(' ' . $this->pad($this->truncate($text, $w), $w) . ' ');
+                    $headerCells[] = $this->dim(' '.$this->pad($this->truncate($text, $w), $w).' ');
                 }
 
-                $headerLine = implode($this->gray('│'), $headerCells) . '  ';
-                $this->line($this->gray(' │') . $this->pad($headerLine, $innerWidth) . $this->gray('│'));
+                $headerLine = implode($this->gray('│'), $headerCells).'  ';
+                $this->line($this->gray(' │').$this->pad($headerLine, $innerWidth).$this->gray('│'));
 
                 // Header separator: ├──────┼────────┤
-                $this->line(' ' . $this->renderBorder('├', '┼', '┤', $widths));
+                $this->line(' '.$this->renderBorder('├', '┼', '┤', $widths));
             }
 
             // Data rows
             $dataLines = $this->renderDataRows($prompt, $filtered, $visible, $widths, $numCols, $innerWidth);
 
             foreach ($dataLines as $dataLine) {
-                $this->line($this->gray(' │') . $this->pad($dataLine, $innerWidth) . $this->gray('│'));
+                $this->line($this->gray(' │').$this->pad($dataLine, $innerWidth).$this->gray('│'));
             }
 
             // Bottom border: └──────┴────────┘
-            $this->line(' ' . $this->renderBorder('└', '┴', '┘', $widths));
+            $this->line(' '.$this->renderBorder('└', '┴', '┘', $widths));
 
             // Info line below the box (only when not all rows are visible)
             if ($total > $prompt->scroll) {
                 $firstRow = $prompt->firstVisible + 1;
                 $lastRow = min($prompt->firstVisible + $prompt->scroll, $total);
                 $suffix = $prompt->searchValue() !== '' ? ' results' : '';
-                $info = $this->dim('  Viewing ') . $firstRow . '-' . $lastRow . $this->dim(' of ') . $total . $suffix;
+                $info = $this->dim('  Viewing ').$firstRow.'-'.$lastRow.$this->dim(' of ').$total.$suffix;
                 $this->line($info);
             }
         }
@@ -199,7 +199,7 @@ class DataTableRenderer extends Renderer implements Scrolling
     {
         $segments = array_map(fn ($w) => str_repeat('─', $w + 2), $widths);
 
-        return $this->{$color}($left . implode($mid, $segments) . '──' . $right);
+        return $this->{$color}($left.implode($mid, $segments).'──'.$right);
     }
 
     /**
@@ -207,7 +207,7 @@ class DataTableRenderer extends Renderer implements Scrolling
      */
     protected function renderSimpleBorder(string $left, string $right, int $innerWidth, string $color = 'gray'): string
     {
-        return $this->{$color}($left . str_repeat('─', $innerWidth) . $right);
+        return $this->{$color}($left.str_repeat('─', $innerWidth).$right);
     }
 
     /**
@@ -216,11 +216,11 @@ class DataTableRenderer extends Renderer implements Scrolling
     protected function renderSearchLine(DataTablePrompt $prompt, int $maxWidth): string
     {
         if ($prompt->state === 'search') {
-            return $this->cyan('/') . ' ' . $prompt->searchWithCursor($maxWidth - 4);
+            return $this->cyan('/').' '.$prompt->searchWithCursor($maxWidth - 4);
         }
 
         if ($prompt->searchValue() !== '') {
-            return $this->dim('/') . ' ' . $prompt->searchValue();
+            return $this->dim('/').' '.$prompt->searchValue();
         }
 
         return $this->dim('/ Search');
@@ -242,7 +242,7 @@ class DataTableRenderer extends Renderer implements Scrolling
         $emptyRow = implode($this->gray('│'), array_map(
             fn ($w) => str_repeat(' ', $w + 2),
             $widths,
-        )) . '  ';
+        )).'  ';
 
         $highlightedKey = array_keys($filtered)[$prompt->highlighted] ?? null;
         $isSearching = $prompt->state === 'search';
@@ -272,10 +272,10 @@ class DataTableRenderer extends Renderer implements Scrolling
 
                 foreach ($widths as $i => $w) {
                     $text = $cellLines[$i][$subRow] ?? '';
-                    $content = ' ' . $this->pad($this->truncate($text, $w), $w) . ' ';
+                    $content = ' '.$this->pad($this->truncate($text, $w), $w).' ';
 
                     if ($strikethrough) {
-                        $content = ' ' . $this->pad($this->dim($this->strikethrough($this->truncate($text, $w))), $w) . ' ';
+                        $content = ' '.$this->pad($this->dim($this->strikethrough($this->truncate($text, $w))), $w).' ';
                     } elseif ($isHighlighted) {
                         $content = $this->inverse($content);
                     } elseif ($isSearching) {
@@ -287,7 +287,7 @@ class DataTableRenderer extends Renderer implements Scrolling
 
                 $separator = $isHighlighted ? $this->inverse('│') : $this->gray('│');
                 $taggedLines[] = [
-                    'line' => implode($separator, $cells) . '  ',
+                    'line' => implode($separator, $cells).'  ',
                     'highlighted' => $isHighlighted,
                 ];
             }
@@ -405,6 +405,7 @@ class DataTableRenderer extends Renderer implements Scrolling
         foreach ($columnWidths as $i => $widths) {
             if (empty($widths)) {
                 $natural[$i] = $headerWidths[$i];
+
                 continue;
             }
 

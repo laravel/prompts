@@ -67,10 +67,10 @@ class DataTablePrompt extends Prompt
 
         $this->trackTypedValue(
             submit: false,
-            ignore: fn($key) => $this->state !== 'search',
+            ignore: fn ($key) => $this->state !== 'search',
         );
 
-        $this->on('key', fn($key) => match ($this->state) {
+        $this->on('key', fn ($key) => match ($this->state) {
             'search' => $this->handleSearchKey($key),
             default => $this->handleBrowseKey($key),
         });
@@ -172,13 +172,13 @@ class DataTablePrompt extends Prompt
         if ($this->filter !== null) {
             return $this->filteredCache = array_filter(
                 $this->rows,
-                fn($row) => ($this->filter)($row, $this->typedValue),
+                fn ($row) => ($this->filter)($row, $this->typedValue),
             );
         }
 
         return $this->filteredCache = array_filter(
             $this->rows,
-            fn($row) => str_contains(
+            fn ($row) => str_contains(
                 mb_strtolower(implode(' ', $row)),
                 mb_strtolower($this->typedValue),
             ),
