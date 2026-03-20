@@ -397,7 +397,9 @@ class DataTableRenderer extends Renderer implements Scrolling
             }
         }
 
-        // Natural width = P85 of cell widths, floored at header width
+        // Per-column width strategy:
+        // - Uniform columns (max <= P90 * 2): use max — all values are reasonable
+        // - Outlier columns (max > P90 * 2): use P90 — ignore extreme values
         $natural = array_fill(0, $numCols, 0);
 
         foreach ($columnWidths as $i => $widths) {
@@ -407,9 +409,11 @@ class DataTableRenderer extends Renderer implements Scrolling
             }
 
             sort($widths);
-            $p85Index = (int) ceil(count($widths) * 0.85) - 1;
-            $p85 = $widths[max(0, $p85Index)];
-            $natural[$i] = max($headerWidths[$i], $p85);
+            $p90Index = (int) ceil(count($widths) * 0.90) - 1;
+            $p90 = $widths[max(0, $p90Index)];
+            $colMax = end($widths);
+
+            $natural[$i] = max($headerWidths[$i], $colMax <= $p90 * 2 ? $colMax : $p90);
         }
 
         // Available width for cell content:
