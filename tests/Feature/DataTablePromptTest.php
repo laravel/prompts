@@ -26,7 +26,7 @@ it('renders a table with headers and search line', function () {
     Prompt::assertStrippedOutputContains('Bob');
 });
 
-it('returns the selected row value for list arrays', function () {
+it('returns the index for list arrays', function () {
     Prompt::fake([Key::DOWN, Key::ENTER]);
 
     $result = datatable(
@@ -40,7 +40,7 @@ it('returns the selected row value for list arrays', function () {
         scroll: 5,
     );
 
-    expect($result)->toBe(['Bob']);
+    expect($result)->toBe(1);
 });
 
 it('returns the key for associative arrays', function () {
@@ -145,6 +145,24 @@ it('enters search mode with slash and filters rows', function () {
     );
 
     expect($result)->toBe('b');
+});
+
+it('returns the original key after filtering a list array', function () {
+    Prompt::fake(['/', 'c', 'h', Key::ENTER, Key::ENTER]);
+
+    $result = datatable(
+        label: 'Pick one',
+        headers: ['Name'],
+        rows: [
+            ['Alice'],
+            ['Bob'],
+            ['Charlie'],
+        ],
+        scroll: 5,
+    );
+
+    // "Charlie" is at original index 2, search should preserve that
+    expect($result)->toBe(2);
 });
 
 it('cancels search with escape', function () {
@@ -426,7 +444,7 @@ it('works without headers', function () {
         scroll: 5,
     );
 
-    expect($result)->toBe(['Alice', 'Designer']);
+    expect($result)->toBe(0);
     Prompt::assertStrippedOutputContains('Alice');
     Prompt::assertStrippedOutputContains('Designer');
 });

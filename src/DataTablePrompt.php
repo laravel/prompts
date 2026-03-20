@@ -231,13 +231,7 @@ class DataTablePrompt extends Prompt
             return null;
         }
 
-        $key = $keys[$this->highlighted];
-
-        if (array_is_list($this->rows)) {
-            return $filtered[$key];
-        }
-
-        return $key;
+        return $keys[$this->highlighted];
     }
 
     /**
