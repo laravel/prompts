@@ -67,35 +67,93 @@ class DataTableRenderer extends Renderer implements Scrolling
         $total = count($filtered);
         $visible = $prompt->visible();
 
+        $numCols = ! empty($prompt->headers)
+            ? count($prompt->headers)
+            : max(array_map('count', $prompt->rows));
+
+        // Compute column widths from ALL rows (not filtered) to prevent layout shift when searching
+        $widths = $this->computeColumnWidths($prompt->headers, $prompt->rows, $numCols, $maxWidth);
+
+        // Inner width between the outer │ chars:
+        // cells (sum of w+2 padding each) + separators (numCols-1) + 2 (scrollbar area)
+        $innerWidth = array_sum($widths) + ($numCols * 2) + ($numCols - 1) + 2;
+
+        // Top border: ┌ Title ───┐
+        $titleText = $this->cyan($this->truncate($prompt->label, $maxWidth));
+        $titleLength = mb_strwidth($this->stripEscapeSequences($titleText));
+        $topBorderFill = max(0, $innerWidth - $titleLength - 2);
+        $this->line($this->gray(' ┌') . " {$titleText} " . $this->gray(str_repeat('─', $topBorderFill) . '┐'));
+
+        // Search line: │ / Search              │
+        $searchContent = $this->renderSearchLine($prompt, $innerWidth - 2);
+        $this->line($this->gray(' │') . ' ' . $this->pad($searchContent, $innerWidth - 2) . ' ' . $this->gray('│'));
+
+        // Column separator: ├──────┬────────┤
+        $this->line(' ' . $this->renderBorder('├', '┬', '┤', $widths));
+
+        // Header cells: │ Header │ Header   │
+        if (! empty($prompt->headers)) {
+            $headerCells = [];
+
+            foreach ($widths as $i => $w) {
+                $header = $prompt->headers[$i] ?? '';
+                $text = is_array($header) ? implode(' ', $header) : $header;
+                $headerCells[] = $this->dim(' ' . $this->pad($this->truncate($text, $w), $w) . ' ');
+            }
+
+            $headerLine = implode($this->gray('│'), $headerCells) . '  ';
+            $this->line($this->gray(' │') . $this->pad($headerLine, $innerWidth) . $this->gray('│'));
+
+            // Header separator: ├──────┼────────┤
+            $this->line(' ' . $this->renderBorder('├', '┼', '┤', $widths));
+        }
+
+        // Data rows
+        $dataLines = $this->renderDataRows($prompt, $filtered, $visible, $widths, $numCols, $innerWidth);
+
+        foreach ($dataLines as $dataLine) {
+            $this->line($this->gray(' │') . $this->pad($dataLine, $innerWidth) . $this->gray('│'));
+        }
+
+        // Bottom border: └──────┴────────┘
+        $this->line(' ' . $this->renderBorder('└', '┴', '┘', $widths));
+
+        // Info line below the box
         $firstRow = $prompt->firstVisible + 1;
         $lastRow = min($prompt->firstVisible + $prompt->scroll, $total);
-        $info = '';
 
         if ($total > 0) {
             $suffix = $prompt->searchValue() !== '' ? ' results' : '';
-            $info = $this->dim('Viewing ') . $firstRow . '-' . $lastRow . $this->dim(' of ') . $total . $suffix;
+            $info = $this->dim('  Viewing ') . $firstRow . '-' . $lastRow . $this->dim(' of ') . $total . $suffix;
+            $this->line($info);
         }
 
         return $this
-            ->box(
-                $this->cyan($this->truncate($prompt->label, $maxWidth)),
-                body: $this->renderTable($prompt, $filtered, $visible, $maxWidth),
-                footer: $this->renderSearchLine($prompt, $maxWidth),
-                info: $info,
-            )
             ->when(
                 $prompt->state === 'error',
-                fn() => $this->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
-                fn() => $this->when(
+                fn () => $this->warning($this->truncate($prompt->error, $prompt->terminal()->cols() - 5)),
+                fn () => $this->when(
                     $prompt->hint,
-                    fn() => $this->hint($prompt->hint),
-                    fn() => $this->newLine(),
+                    fn () => $this->hint($prompt->hint),
+                    fn () => $this->newLine(),
                 ),
             );
     }
 
     /**
-     * Render the search line above the table.
+     * Render a column-aware border line.
+     *
+     * @param  array<int, int>  $widths
+     */
+    protected function renderBorder(string $left, string $mid, string $right, array $widths): string
+    {
+        $segments = array_map(fn ($w) => str_repeat('─', $w + 2), $widths);
+
+        return $this->gray($left . implode($mid, $segments) . '──' . $right);
+    }
+
+    /**
+     * Render the search line content.
      */
     protected function renderSearchLine(DataTablePrompt $prompt, int $maxWidth): string
     {
@@ -107,58 +165,34 @@ class DataTableRenderer extends Renderer implements Scrolling
             return $this->dim('/') . ' ' . $prompt->searchValue();
         }
 
-        return $this->dim('/ to search');
+        return $this->dim('/ Search');
     }
 
     /**
-     * Render the table with visible rows.
+     * Render data rows with scrollbar support.
      *
      * @param  array<int|string, array<int, string>>  $filtered
      * @param  array<int|string, array<int, string>>  $visible
+     * @param  array<int, int>  $widths
+     * @return array<int, string>
      */
-    protected function renderTable(DataTablePrompt $prompt, array $filtered, array $visible, int $maxWidth): string
+    protected function renderDataRows(DataTablePrompt $prompt, array $filtered, array $visible, array $widths, int $numCols, int $innerWidth): array
     {
         $total = count($filtered);
 
-        $numCols = ! empty($prompt->headers)
-            ? count($prompt->headers)
-            : max(array_map('count', $prompt->rows));
-
-        // Compute column widths from ALL rows (not filtered) to prevent layout shift when searching
-        $widths = $this->computeColumnWidths($prompt->headers, $prompt->rows, $numCols, $maxWidth);
-
-        $tableWidth = array_sum($widths) + ($numCols - 1) + ($numCols * 2) + 2;
-
         // Build an empty row template for padding
         $emptyRow = implode($this->gray('│'), array_map(
-            fn($w) => str_repeat(' ', $w + 2),
+            fn ($w) => str_repeat(' ', $w + 2),
             $widths,
         )) . '  ';
 
         $highlightedKey = array_keys($filtered)[$prompt->highlighted] ?? null;
 
-        $lines = [];
-
-        // Header
-        if (! empty($prompt->headers)) {
-            $headerCells = [];
-
-            foreach ($widths as $i => $w) {
-                $header = $prompt->headers[$i] ?? '';
-                $text = is_array($header) ? implode(' ', $header) : $header;
-                $headerCells[] = $this->dim(' ' . $this->pad($this->truncate($text, $w), $w) . ' ');
-            }
-
-            $lines[] = implode($this->gray('│'), $headerCells) . '  ';
-            $lines[] = $this->gray(implode('┼', array_map(fn($w) => str_repeat('─', $w + 2), $widths))) . '  ';
-        }
-
-        // Data rows — expand multiline cells into sub-rows
         $dataLines = [];
 
         if ($total === 0) {
             $message = $prompt->searchValue() !== '' ? 'No results found.' : 'No rows.';
-            $dataLines[] = $this->pad(' ' . $this->dim($message), $tableWidth);
+            $dataLines[] = $this->pad(' ' . $this->dim($message), $innerWidth);
         } else {
             $isSearching = $prompt->state === 'search';
 
@@ -182,7 +216,7 @@ class DataTableRenderer extends Renderer implements Scrolling
 
                     foreach ($widths as $i => $w) {
                         $text = $cellLines[$i][$subRow] ?? '';
-                        $content = ' '.$this->pad($this->truncate($text, $w), $w).' ';
+                        $content = ' ' . $this->pad($this->truncate($text, $w), $w) . ' ';
 
                         if ($isHighlighted) {
                             $content = $this->inverse($content);
@@ -194,14 +228,12 @@ class DataTableRenderer extends Renderer implements Scrolling
                     }
 
                     $separator = $isHighlighted ? $this->inverse('│') : $this->gray('│');
-                    $dataLines[] = implode($separator, $cells).'  ';
+                    $dataLines[] = implode($separator, $cells) . '  ';
                 }
             }
         }
 
         // Compute fixed minimum height from ALL rows to prevent layout shift.
-        // For each row, count how many visual lines it produces (multiline cells expand a row).
-        // The minimum height must accommodate the worst-case scroll window.
         $extraLines = [];
 
         foreach ($prompt->rows as $row) {
@@ -214,7 +246,6 @@ class DataTableRenderer extends Renderer implements Scrolling
             $extraLines[] = $rowLines - 1;
         }
 
-        // Sort descending and take the top `scroll` entries to find the worst-case window
         rsort($extraLines);
         $worstCaseExtra = array_sum(array_slice($extraLines, 0, $prompt->scroll));
         $minHeight = $prompt->scroll + $worstCaseExtra;
@@ -229,19 +260,17 @@ class DataTableRenderer extends Renderer implements Scrolling
             $prompt->firstVisible,
             count($dataLines),
             $total,
-            $tableWidth,
+            $innerWidth,
         );
 
-        $lines = array_merge($lines, $dataLines);
-
-        return implode(PHP_EOL, $lines);
+        return $dataLines;
     }
 
     /**
      * Compute column widths that fit within maxWidth.
      *
-     * Columns that fit at their natural width get it; overflowing columns
-     * share the remaining space proportionally.
+     * Columns get their natural (P80) width. Only shrink proportionally
+     * if the total exceeds available terminal space.
      *
      * @param  array<int, string|array<int, string>>  $headers
      * @param  array<int|string, array<int, string>>  $allRows
@@ -249,69 +278,82 @@ class DataTableRenderer extends Renderer implements Scrolling
      */
     protected function computeColumnWidths(array $headers, array $allRows, int $numCols, int $maxWidth): array
     {
-        // Natural width = max cell content width per column (across all rows + header)
-        $natural = array_fill(0, $numCols, 0);
+        // Header widths serve as the floor for each column
+        $headerWidths = array_fill(0, $numCols, 0);
 
         foreach ($headers as $i => $header) {
             $headerText = is_array($header) ? implode(' ', $header) : $header;
-            $natural[$i] = max($natural[$i], mb_strwidth($headerText));
+            $headerWidths[$i] = mb_strwidth($headerText);
         }
+
+        // Collect all cell widths per column
+        $columnWidths = array_fill(0, $numCols, []);
 
         foreach ($allRows as $row) {
             foreach ($row as $i => $cell) {
-                // Measure each line individually for multiline cells
+                $cellMax = 0;
                 foreach (explode(PHP_EOL, $cell) as $line) {
-                    $natural[$i] = max($natural[$i], mb_strwidth($line));
+                    $cellMax = max($cellMax, mb_strwidth($line));
                 }
+                $columnWidths[$i][] = $cellMax;
             }
+        }
+
+        // Natural width = P80 of cell widths, floored at header width
+        $natural = array_fill(0, $numCols, 0);
+
+        foreach ($columnWidths as $i => $widths) {
+            if (empty($widths)) {
+                $natural[$i] = $headerWidths[$i];
+                continue;
+            }
+
+            sort($widths);
+            $p85Index = (int) ceil(count($widths) * 0.85) - 1;
+            $p85 = $widths[max(0, $p85Index)];
+            $natural[$i] = max($headerWidths[$i], $p85);
         }
 
         // Available width for cell content:
         // Each column has 1 space padding on each side = 2 per column
         // Columns separated by │ = numCols - 1 separators
-        // Scrollbar takes 1 char on the right
-        $overhead = ($numCols * 2) + ($numCols - 1) + 1;
+        // Scrollbar area = 2 chars on the right
+        // Outer frame = 4 chars (` │` left + ` │` right)
+        $overhead = ($numCols * 2) + ($numCols - 1) + 2 + 4;
         $available = $maxWidth - $overhead;
 
         if ($available <= 0) {
             return array_fill(0, $numCols, 1);
         }
 
-        // If everything fits, use natural widths
-        if (array_sum($natural) <= $available) {
+        $totalNatural = array_sum($natural);
+
+        // If natural widths fit, use them directly (comfortable width)
+        if ($totalNatural <= $available) {
             return $natural;
         }
 
-        // Smart allocation: give fitting columns their natural width,
-        // then split remaining space proportionally among overflowing columns
-        $widths = $natural;
-        $remaining = $available;
-        $unresolved = range(0, $numCols - 1);
+        // Otherwise, shrink proportionally
+        $widths = array_fill(0, $numCols, 0);
 
-        while (count($unresolved) > 0) {
-            $fairShare = $remaining / count($unresolved);
-            $newlyResolved = [];
+        foreach ($natural as $i => $w) {
+            $widths[$i] = max($headerWidths[$i], (int) floor($available * $w / $totalNatural));
+        }
 
-            foreach ($unresolved as $i) {
-                if ($natural[$i] <= $fairShare) {
-                    $widths[$i] = $natural[$i];
-                    $remaining -= $natural[$i];
-                    $newlyResolved[] = $i;
+        // Distribute any remaining pixels from rounding
+        $remainder = $available - array_sum($widths);
+
+        if ($remainder > 0) {
+            $order = range(0, $numCols - 1);
+            usort($order, fn ($a, $b) => $natural[$b] <=> $natural[$a]);
+
+            foreach ($order as $i) {
+                if ($remainder <= 0) {
+                    break;
                 }
+                $widths[$i]++;
+                $remainder--;
             }
-
-            if (empty($newlyResolved)) {
-                // All remaining columns overflow — split proportionally
-                $totalNatural = array_sum(array_map(fn($i) => $natural[$i], $unresolved));
-
-                foreach ($unresolved as $i) {
-                    $widths[$i] = max(1, (int) floor($remaining * $natural[$i] / $totalNatural));
-                }
-
-                break;
-            }
-
-            $unresolved = array_values(array_diff($unresolved, $newlyResolved));
         }
 
         return $widths;
