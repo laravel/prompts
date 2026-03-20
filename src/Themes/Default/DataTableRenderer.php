@@ -245,9 +245,12 @@ class DataTableRenderer extends Renderer implements Scrolling
         )) . '  ';
 
         $highlightedKey = array_keys($filtered)[$prompt->highlighted] ?? null;
-
-        $dataLines = [];
         $isSearching = $prompt->state === 'search';
+        $fixedHeight = $prompt->scroll;
+
+        // Render all visible logical rows into visual lines, tracking which
+        // logical row each visual line belongs to so we can clip intelligently.
+        $taggedLines = [];
 
         foreach ($visible as $key => $row) {
             $isHighlighted = ! $isSearching && ! $strikethrough && $key === $highlightedKey;
@@ -283,28 +286,48 @@ class DataTableRenderer extends Renderer implements Scrolling
                 }
 
                 $separator = $isHighlighted ? $this->inverse('│') : $this->gray('│');
-                $dataLines[] = implode($separator, $cells) . '  ';
+                $taggedLines[] = [
+                    'line' => implode($separator, $cells) . '  ',
+                    'highlighted' => $isHighlighted,
+                ];
             }
         }
 
-        // Compute fixed minimum height from ALL rows to prevent layout shift.
-        $extraLines = [];
+        // Fixed visual height: always exactly `scroll` lines.
+        // The highlighted row must be fully visible. If multiline rows cause
+        // overflow, clip partial rows at the top or bottom edge.
+        $totalVisual = count($taggedLines);
 
-        foreach ($prompt->rows as $row) {
-            $rowLines = 1;
+        if ($totalVisual <= $fixedHeight) {
+            $dataLines = array_column($taggedLines, 'line');
+        } else {
+            // Find the highlighted row's visual line range
+            $hlStart = null;
+            $hlEnd = null;
 
-            foreach ($row as $cell) {
-                $rowLines = max($rowLines, substr_count($cell, PHP_EOL) + 1);
+            foreach ($taggedLines as $i => $tagged) {
+                if ($tagged['highlighted']) {
+                    $hlStart ??= $i;
+                    $hlEnd = $i;
+                }
             }
 
-            $extraLines[] = $rowLines - 1;
+            // Pick a window of fixedHeight lines that includes the full highlighted row.
+            // Prefer keeping the highlighted row near the bottom (natural scroll feel).
+            if ($hlStart !== null) {
+                $startLine = max(0, $hlEnd - $fixedHeight + 1);
+                $startLine = min($startLine, $hlStart);
+            } else {
+                $startLine = 0;
+            }
+
+            $startLine = min($startLine, $totalVisual - $fixedHeight);
+            $startLine = max(0, $startLine);
+
+            $dataLines = array_column(array_slice($taggedLines, $startLine, $fixedHeight), 'line');
         }
 
-        rsort($extraLines);
-        $worstCaseExtra = array_sum(array_slice($extraLines, 0, $prompt->scroll));
-        $minHeight = $prompt->scroll + $worstCaseExtra;
-
-        while (count($dataLines) < $minHeight) {
+        while (count($dataLines) < $fixedHeight) {
             $dataLines[] = $emptyRow;
         }
 
