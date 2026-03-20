@@ -53,6 +53,7 @@ class DataTablePrompt extends Prompt
         public bool|string $required = false,
         public mixed $validate = null,
         public ?Closure $transform = null,
+        public ?Closure $filter = null,
     ) {
         if ($rows === null) {
             $rows = $headers;
@@ -166,6 +167,13 @@ class DataTablePrompt extends Prompt
 
         if ($this->typedValue === '') {
             return $this->filteredCache = $this->rows;
+        }
+
+        if ($this->filter !== null) {
+            return $this->filteredCache = array_filter(
+                $this->rows,
+                fn($row) => ($this->filter)($row, $this->typedValue),
+            );
         }
 
         return $this->filteredCache = array_filter(

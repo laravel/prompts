@@ -446,6 +446,7 @@ if (! function_exists('\Laravel\Prompts\datatable')) {
         bool|string $required = false,
         mixed $validate = null,
         ?Closure $transform = null,
+        ?Closure $filter = null,
     ): mixed {
         return (new DataTablePrompt(
             headers: $headers,
@@ -456,6 +457,7 @@ if (! function_exists('\Laravel\Prompts\datatable')) {
             required: $required,
             validate: $validate,
             transform: $transform,
+            filter: $filter,
         ))->prompt();
     }
 }
