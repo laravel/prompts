@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\StreamOutput;
  */
 function createSilentOutput(): ConsoleOutput
 {
-    $output = new ConsoleOutput();
+    $output = new ConsoleOutput;
     $stream = fopen('php://memory', 'rw');
 
     // Replace the underlying stream so output doesn't leak to stdout
