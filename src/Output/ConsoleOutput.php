@@ -31,6 +31,7 @@ class ConsoleOutput extends SymfonyConsoleOutput
         }
 
         preg_match('/(?:\r?\n)*$/', $message, $matches);
+
         $trailingNewLines = substr_count($matches[0] ?? '', "\n");
 
         if (trim($message) === '') {
