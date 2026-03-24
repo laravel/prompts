@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.15...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.16...main)
+
+## [v0.3.16](https://github.com/laravel/prompts/compare/v0.3.15...v0.3.16) - 2026-03-23
+
+* DataTable Prompt by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/231
+* Fix trailing newline calculation for Windows PHP_EOL by [@JoshSalway](https://github.com/JoshSalway) in https://github.com/laravel/prompts/pull/232
 
 ## [v0.3.15](https://github.com/laravel/prompts/compare/v0.3.14...v0.3.15) - 2026-03-17
 
