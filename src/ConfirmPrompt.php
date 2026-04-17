@@ -23,7 +23,10 @@ class ConfirmPrompt extends Prompt
         public mixed $validate = null,
         public string $hint = '',
         public ?Closure $transform = null,
+        mixed $skipWhen = null,
     ) {
+        parent::__construct($skipWhen);
+
         $this->confirmed = $default;
 
         $this->on('key', fn ($key) => match ($key) {
@@ -49,5 +52,23 @@ class ConfirmPrompt extends Prompt
     public function label(): string
     {
         return $this->confirmed ? $this->yes : $this->no;
+    }
+
+    /**
+     * Coerce a pre-supplied skip value into a boolean.
+     */
+    protected function coerceSkipped(mixed $value): mixed
+    {
+        if (is_bool($value) || $value === null) {
+            return $value;
+        }
+
+        if (is_string($value)) {
+            $parsed = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+            return $parsed ?? $value;
+        }
+
+        return (bool) $value;
     }
 }

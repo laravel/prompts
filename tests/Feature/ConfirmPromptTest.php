@@ -2,6 +2,7 @@
 
 use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
+use Laravel\Prompts\Exceptions\SkippedValueValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
@@ -147,3 +148,45 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('skips the prompt when skipWhen is true', function () {
+    Prompt::fake([]);
+
+    $result = confirm(label: 'Are you sure?', skipWhen: true);
+
+    expect($result)->toBeTrue();
+});
+
+it('skips the prompt when skipWhen is false', function () {
+    Prompt::fake([]);
+
+    $result = confirm(label: 'Are you sure?', skipWhen: false);
+
+    expect($result)->toBeFalse();
+});
+
+it('throws when a skipWhen value fails validation', function () {
+    Prompt::fake([]);
+
+    confirm(
+        label: 'Are you sure?',
+        validate: fn ($value) => $value === false ? 'Must agree.' : null,
+        skipWhen: false,
+    );
+})->throws(SkippedValueValidationException::class, 'Must agree.');
+
+it('coerces truthy string skipWhen values to bool', function (string $input) {
+    Prompt::fake([]);
+
+    $result = confirm(label: 'Are you sure?', skipWhen: $input);
+
+    expect($result)->toBeTrue();
+})->with(['1', 'true', 'yes', 'on', 'TRUE', 'Yes']);
+
+it('coerces falsy string skipWhen values to bool', function (string $input) {
+    Prompt::fake([]);
+
+    $result = confirm(label: 'Are you sure?', skipWhen: $input);
+
+    expect($result)->toBeFalse();
+})->with(['0', 'false', 'no', 'off', 'FALSE', 'No']);

@@ -39,7 +39,10 @@ class AutoCompletePrompt extends Prompt
         public mixed $validate = null,
         public string $hint = '',
         public ?Closure $transform = null,
+        mixed $skipWhen = null,
     ) {
+        parent::__construct($skipWhen);
+
         $this->options = $options instanceof Collection ? $options->all() : $options;
 
         $this->on('key', function ($key) {

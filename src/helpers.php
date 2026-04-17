@@ -17,6 +17,7 @@ if (! function_exists('\Laravel\Prompts\text')) {
         mixed $validate = null,
         string $hint = '',
         ?Closure $transform = null,
+        mixed $skipWhen = null,
     ): string {
         return (new TextPrompt(...get_defined_vars()))->prompt();
     }
@@ -37,6 +38,7 @@ if (! function_exists('\Laravel\Prompts\autocomplete')) {
         mixed $validate = null,
         string $hint = '',
         ?Closure $transform = null,
+        mixed $skipWhen = null,
     ): string {
         return (new AutoCompletePrompt(...get_defined_vars()))->prompt();
     }
@@ -46,7 +48,7 @@ if (! function_exists('\Laravel\Prompts\number')) {
     /**
      * Prompt the user for number input.
      */
-    function number(string $label, string $placeholder = '', string $default = '', bool|string $required = false, mixed $validate = null, string $hint = '', ?int $min = null, ?int $max = null, ?int $step = null): int|string
+    function number(string $label, string $placeholder = '', string $default = '', bool|string $required = false, mixed $validate = null, string $hint = '', ?int $min = null, ?int $max = null, ?int $step = null, mixed $skipWhen = null): int|string
     {
         return (new NumberPrompt(...get_defined_vars()))->prompt();
     }
@@ -65,6 +67,7 @@ if (! function_exists('\Laravel\Prompts\textarea')) {
         string $hint = '',
         int $rows = 5,
         ?Closure $transform = null,
+        mixed $skipWhen = null,
     ): string {
         return (new TextareaPrompt(...get_defined_vars()))->prompt();
     }
@@ -81,6 +84,7 @@ if (! function_exists('\Laravel\Prompts\password')) {
         mixed $validate = null,
         string $hint = '',
         ?Closure $transform = null,
+        mixed $skipWhen = null,
     ): string {
         return (new PasswordPrompt(...get_defined_vars()))->prompt();
     }
@@ -103,6 +107,7 @@ if (! function_exists('\Laravel\Prompts\select')) {
         bool|string $required = true,
         ?Closure $transform = null,
         string|Closure $info = '',
+        mixed $skipWhen = null,
     ): int|string {
         return (new SelectPrompt(...get_defined_vars()))->prompt();
     }
@@ -126,6 +131,7 @@ if (! function_exists('\Laravel\Prompts\multiselect')) {
         string $hint = 'Use the space bar to select options.',
         ?Closure $transform = null,
         string|Closure $info = '',
+        mixed $skipWhen = null,
     ): array {
         return (new MultiSelectPrompt(...get_defined_vars()))->prompt();
     }
@@ -144,6 +150,7 @@ if (! function_exists('\Laravel\Prompts\confirm')) {
         mixed $validate = null,
         string $hint = '',
         ?Closure $transform = null,
+        mixed $skipWhen = null,
     ): bool {
         return (new ConfirmPrompt(...get_defined_vars()))->prompt();
     }
@@ -186,6 +193,7 @@ if (! function_exists('\Laravel\Prompts\suggest')) {
         string $hint = '',
         ?Closure $transform = null,
         string|Closure $info = '',
+        mixed $skipWhen = null,
     ): string {
         return (new SuggestPrompt(...get_defined_vars()))->prompt();
     }
@@ -208,6 +216,7 @@ if (! function_exists('\Laravel\Prompts\search')) {
         bool|string $required = true,
         ?Closure $transform = null,
         string|Closure $info = '',
+        mixed $skipWhen = null,
     ): int|string {
         return (new SearchPrompt(...get_defined_vars()))->prompt();
     }
@@ -230,6 +239,7 @@ if (! function_exists('\Laravel\Prompts\multisearch')) {
         string $hint = 'Use the space bar to select options.',
         ?Closure $transform = null,
         string|Closure $info = '',
+        mixed $skipWhen = null,
     ): array {
         return (new MultiSearchPrompt(...get_defined_vars()))->prompt();
     }
@@ -447,6 +457,7 @@ if (! function_exists('\Laravel\Prompts\datatable')) {
         mixed $validate = null,
         ?Closure $transform = null,
         ?Closure $filter = null,
+        mixed $skipWhen = null,
     ): mixed {
         return (new DataTablePrompt(
             headers: $headers,
@@ -458,6 +469,7 @@ if (! function_exists('\Laravel\Prompts\datatable')) {
             validate: $validate,
             transform: $transform,
             filter: $filter,
+            skipWhen: $skipWhen,
         ))->prompt();
     }
 }
