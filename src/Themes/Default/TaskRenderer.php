@@ -14,8 +14,10 @@ class TaskRenderer extends Renderer
      */
     public function __invoke(Task $task): string
     {
+        $maxWidth = $task->terminal()->cols() - 6;
+
         if ($task->static) {
-            return $this->line(" {$this->cyan($this->staticFrame)} {$task->label}");
+            return $this->line(" {$this->cyan($this->staticFrame)} {$this->truncate($task->label, $maxWidth)}");
         }
 
         $task->interval = $this->interval;
@@ -25,10 +27,10 @@ class TaskRenderer extends Renderer
         $stableMessages = array_slice($task->stableMessages, -$task->maxStableMessages);
 
         if ($task->finished && $task->keepSummary && count($stableMessages) > 0) {
-            $this->line(" {$this->cyan('•')} {$task->label}");
+            $this->line(" {$this->cyan('•')} {$this->truncate($task->label, $maxWidth)}");
 
             foreach ($stableMessages as $stableMessage) {
-                $this->line($leadPadding.$this->stableMessageSymbol($stableMessage['type']).' '.$stableMessage['message']);
+                $this->line($leadPadding.$this->stableMessageSymbol($stableMessage['type']).' '.$this->truncate($stableMessage['message'], $maxWidth));
             }
 
             $this->newLine();
@@ -36,10 +38,10 @@ class TaskRenderer extends Renderer
             return $this;
         }
 
-        $this->line(" {$this->cyan($this->spinnerFrame($task->count))} {$task->label}");
+        $this->line(" {$this->cyan($this->spinnerFrame($task->count))} {$this->truncate($task->label, $maxWidth)}");
 
         foreach ($stableMessages as $stableMessage) {
-            $this->line($leadPadding.$this->stableMessageSymbol($stableMessage['type']).' '.$stableMessage['message']);
+            $this->line($leadPadding.$this->stableMessageSymbol($stableMessage['type']).' '.$this->truncate($stableMessage['message'], $maxWidth));
         }
 
         if (count($task->stableMessages) > 0 || count($task->logs) > 0) {
