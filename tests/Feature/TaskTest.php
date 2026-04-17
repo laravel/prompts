@@ -253,7 +253,7 @@ it('does not keep the summary by default', function () {
     expect($task->keepSummary)->toBeFalse();
 });
 
-it('renders only stable messages when finished with retain enabled', function () {
+it('renders the label and stable messages when finished with retain enabled', function () {
     Prompt::fake();
 
     $task = new Task(label: 'Running', limit: 10, keepSummary: true);
@@ -264,9 +264,11 @@ it('renders only stable messages when finished with retain enabled', function ()
     $renderer = new Laravel\Prompts\Themes\Default\TaskRenderer($task);
     $output = (string) $renderer($task);
 
+    expect($output)->toContain('Running');
     expect($output)->toContain('Step one done');
     expect($output)->toContain('Step two failed');
-    expect($output)->not->toContain('Running');
+    expect($output)->not->toContain('─');
+    expect($output)->toEndWith(PHP_EOL.PHP_EOL);
 });
 
 it('renders nothing special when finished with no stable messages', function () {

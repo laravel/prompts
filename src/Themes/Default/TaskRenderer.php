@@ -25,9 +25,13 @@ class TaskRenderer extends Renderer
         $stableMessages = array_slice($task->stableMessages, -$task->maxStableMessages);
 
         if ($task->finished && $task->keepSummary && count($stableMessages) > 0) {
+            $this->line(" {$this->cyan('•')} {$task->label}");
+
             foreach ($stableMessages as $stableMessage) {
-                $this->line(' '.$this->stableMessageSymbol($stableMessage['type']).' '.$stableMessage['message']);
+                $this->line($leadPadding.$this->stableMessageSymbol($stableMessage['type']).' '.$stableMessage['message']);
             }
+
+            $this->newLine();
 
             return $this;
         }
