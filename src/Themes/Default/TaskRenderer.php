@@ -20,21 +20,22 @@ class TaskRenderer extends Renderer
 
         $task->interval = $this->interval;
 
-        $this->line(" {$this->cyan($this->spinnerFrame($task->count))} {$task->label}");
-
         $leadPadding = str_repeat(' ', 3);
 
         $stableMessages = array_slice($task->stableMessages, -$task->maxStableMessages);
 
-        foreach ($stableMessages as $stableMessage) {
-            $symbol = match ($stableMessage['type']) {
-                'success' => $this->green('✔'),
-                'error' => $this->red('✘'),
-                'warning' => $this->yellow('⚠'),
-                default => '',
-            };
+        if ($task->finished && $task->keepSummary && count($stableMessages) > 0) {
+            foreach ($stableMessages as $stableMessage) {
+                $this->line(' '.$this->stableMessageSymbol($stableMessage['type']).' '.$stableMessage['message']);
+            }
 
-            $this->line($leadPadding.$symbol.' '.$stableMessage['message']);
+            return $this;
+        }
+
+        $this->line(" {$this->cyan($this->spinnerFrame($task->count))} {$task->label}");
+
+        foreach ($stableMessages as $stableMessage) {
+            $this->line($leadPadding.$this->stableMessageSymbol($stableMessage['type']).' '.$stableMessage['message']);
         }
 
         if (count($task->stableMessages) > 0 || count($task->logs) > 0) {
@@ -57,5 +58,15 @@ class TaskRenderer extends Renderer
         }
 
         return $this;
+    }
+
+    protected function stableMessageSymbol(string $type): string
+    {
+        return match ($type) {
+            'success' => $this->green('✔'),
+            'error' => $this->red('✘'),
+            'warning' => $this->yellow('⚠'),
+            default => '',
+        };
     }
 }

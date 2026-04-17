@@ -246,3 +246,51 @@ it('updates the label through the socket protocol', function () {
 
     expect($task->label)->toBe('Updated Label');
 });
+
+it('does not keep the summary by default', function () {
+    $task = new Task(label: 'Running', limit: 10);
+
+    expect($task->keepSummary)->toBeFalse();
+});
+
+it('renders only stable messages when finished with retain enabled', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'Running', limit: 10, keepSummary: true);
+    $task->finished = true;
+    $task->stableMessages[] = ['type' => 'success', 'message' => 'Step one done'];
+    $task->stableMessages[] = ['type' => 'error', 'message' => 'Step two failed'];
+
+    $renderer = new Laravel\Prompts\Themes\Default\TaskRenderer($task);
+    $output = (string) $renderer($task);
+
+    expect($output)->toContain('Step one done');
+    expect($output)->toContain('Step two failed');
+    expect($output)->not->toContain('Running');
+});
+
+it('renders nothing special when finished with no stable messages', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'Running', limit: 10, keepSummary: true);
+    $task->finished = true;
+
+    $renderer = new Laravel\Prompts\Themes\Default\TaskRenderer($task);
+    $output = (string) $renderer($task);
+
+    expect($output)->toContain('Running');
+});
+
+it('does not take the retain branch when keepSummary is disabled', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'Running', limit: 10, keepSummary: false);
+    $task->finished = true;
+    $task->stableMessages[] = ['type' => 'success', 'message' => 'Step one done'];
+
+    $renderer = new Laravel\Prompts\Themes\Default\TaskRenderer($task);
+    $output = (string) $renderer($task);
+
+    expect($output)->toContain('Running');
+    expect($output)->toContain('Step one done');
+});

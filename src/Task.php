@@ -88,6 +88,7 @@ class Task extends Prompt
     public function __construct(
         public string $label = '',
         public int $limit = 10,
+        public bool $keepSummary = false,
     ) {
         $this->identifier = uniqid();
     }
@@ -301,6 +302,12 @@ class Task extends Prompt
         if ($this->socket !== null) {
             fclose($this->socket);
             $this->socket = null;
+        }
+
+        if ($this->keepSummary && count($this->stableMessages) > 0) {
+            $this->render();
+
+            return;
         }
 
         $this->eraseRenderedLines();
