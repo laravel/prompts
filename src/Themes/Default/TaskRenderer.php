@@ -15,22 +15,23 @@ class TaskRenderer extends Renderer
     public function __invoke(Task $task): string
     {
         $maxWidth = $task->terminal()->cols() - 6;
+        $labelMaxWidth = $maxWidth - 3;
+        $leadPadding = str_repeat(' ', 3);
+        $stableLineMaxWidth = $maxWidth - strlen($leadPadding) - 2;
 
         if ($task->static) {
-            return $this->line(" {$this->cyan($this->staticFrame)} {$this->truncate($task->label, $maxWidth)}");
+            return $this->line(" {$this->cyan($this->staticFrame)} {$this->truncate($task->label,$maxWidth)}");
         }
 
         $task->interval = $this->interval;
 
-        $leadPadding = str_repeat(' ', 3);
-
         $stableMessages = array_slice($task->stableMessages, -$task->maxStableMessages);
 
         if ($task->finished && $task->keepSummary && count($stableMessages) > 0) {
-            $this->line(" {$this->cyan('•')} {$this->truncate($task->label, $maxWidth)}");
+            $this->line(" {$this->cyan('•')} {$this->truncate($task->label,$stableLineMaxWidth)}");
 
             foreach ($stableMessages as $stableMessage) {
-                $this->line($leadPadding.$this->stableMessageSymbol($stableMessage['type']).' '.$this->truncate($stableMessage['message'], $maxWidth));
+                $this->line($leadPadding . $this->stableMessageSymbol($stableMessage['type']) . ' ' . $this->truncate($stableMessage['message'], $stableLineMaxWidth));
             }
 
             $this->newLine();
@@ -38,14 +39,14 @@ class TaskRenderer extends Renderer
             return $this;
         }
 
-        $this->line(" {$this->cyan($this->spinnerFrame($task->count))} {$this->truncate($task->label, $maxWidth)}");
+        $this->line(" {$this->cyan($this->spinnerFrame($task->count))} {$this->truncate($task->label,$labelMaxWidth)}");
 
         foreach ($stableMessages as $stableMessage) {
-            $this->line($leadPadding.$this->stableMessageSymbol($stableMessage['type']).' '.$this->truncate($stableMessage['message'], $maxWidth));
+            $this->line($leadPadding . $this->stableMessageSymbol($stableMessage['type']) . ' ' . $this->truncate($stableMessage['message'], $stableLineMaxWidth));
         }
 
         if (count($task->stableMessages) > 0 || count($task->logs) > 0) {
-            $this->line($this->gray(' '.str_repeat('─', $this->prompt->terminal()->cols() - 10)));
+            $this->line($this->gray(' ' . str_repeat('─', $maxWidth)));
         } else {
             $this->newLine();
         }
@@ -53,7 +54,7 @@ class TaskRenderer extends Renderer
         $logs = array_slice($task->logs, -$task->limit);
 
         foreach ($logs as $log) {
-            $this->line(' '.$this->dim($log));
+            $this->line(' ' . $this->dim($log));
         }
 
         $remaining = $task->limit - count($task->logs);
