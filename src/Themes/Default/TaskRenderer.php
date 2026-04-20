@@ -17,7 +17,7 @@ class TaskRenderer extends Renderer
         $maxWidth = $task->terminal()->cols() - 6;
         $labelMaxWidth = $maxWidth - 3;
         $leadPadding = str_repeat(' ', 3);
-        $stableLineMaxWidth = $maxWidth - strlen($leadPadding) - 2;
+        $stableLineMaxWidth = $maxWidth - strlen($leadPadding) - 2; // symbol + space
 
         if ($task->static) {
             return $this->line(" {$this->cyan($this->staticFrame)} {$this->truncate($task->label,$maxWidth)}");
