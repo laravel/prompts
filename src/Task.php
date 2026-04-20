@@ -89,6 +89,7 @@ class Task extends Prompt
         public string $label = '',
         public int $limit = 10,
         public bool $keepSummary = false,
+        public ?string $subLabel = null,
     ) {
         $this->identifier = uniqid();
     }
@@ -106,8 +107,9 @@ class Task extends Prompt
         $maxHeight = $this->terminal()->lines() - 10;
 
         $this->limit = min($this->limit, $maxHeight);
-        // Max height - limit - divider - task label
-        $this->maxStableMessages = max(0, $maxHeight - $this->limit - 2);
+        // Max height - limit - divider - task label (- subLabel when set)
+        $reserved = 2 + ($this->subLabel !== null && $this->subLabel !== '' ? 1 : 0);
+        $this->maxStableMessages = max(0, $maxHeight - $this->limit - $reserved);
 
         $this->capturePreviousNewLines();
 
@@ -193,7 +195,7 @@ class Task extends Prompt
             }
 
             // Check for typed messages: {id}_{type}:{content}
-            if (preg_match('/^'.$prefix.'_(success|warning|error|label|reset|partial|commitpartial):(.*)/', $line, $matches)) {
+            if (preg_match('/^'.$prefix.'_(success|warning|error|label|sublabel|reset|partial|commitpartial):(.*)/', $line, $matches)) {
                 $type = $matches[1];
                 $content = $matches[2];
 
@@ -217,6 +219,8 @@ class Task extends Prompt
 
                 if ($type === 'label') {
                     $this->label = $content;
+                } elseif ($type === 'sublabel') {
+                    $this->subLabel = $content;
                 } else {
                     $this->stableMessages[] = ['type' => $type, 'message' => $content];
                     $this->logs = [];

@@ -41,6 +41,10 @@ class TaskRenderer extends Renderer
 
         $this->line(" {$this->cyan($this->spinnerFrame($task->count))} {$this->truncate($task->label,$labelMaxWidth)}");
 
+        if ($task->subLabel !== null && $task->subLabel !== '') {
+            $this->line($leadPadding . $this->dim($this->truncate($task->subLabel, $stableLineMaxWidth)));
+        }
+
         foreach ($stableMessages as $stableMessage) {
             $this->line($leadPadding . $this->stableMessageSymbol($stableMessage['type']) . ' ' . $this->truncate($stableMessage['message'], $stableLineMaxWidth));
         }
