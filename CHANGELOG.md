@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.16...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.17...main)
+
+## [v0.3.17](https://github.com/laravel/prompts/compare/v0.3.16...v0.3.17) - 2026-04-20
+
+* Added `keepSummary`, `subLabel`, truncated labels and stable messages by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/235
 
 ## [v0.3.16](https://github.com/laravel/prompts/compare/v0.3.15...v0.3.16) - 2026-03-23
 
