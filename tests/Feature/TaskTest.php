@@ -283,6 +283,46 @@ it('renders nothing special when finished with no stable messages', function () 
     expect($output)->toContain('Running');
 });
 
+it('shrinks the stable-message budget when a sub-label appears mid-task', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'Running', limit: 10);
+    $task->maxStableMessages = 3;
+
+    $task->stableMessages = [
+        ['type' => 'success', 'message' => 'one'],
+        ['type' => 'success', 'message' => 'two'],
+        ['type' => 'success', 'message' => 'three'],
+    ];
+
+    $receiveMessages = new ReflectionMethod($task, 'receiveMessages');
+    $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
+
+    $id = $task->identifier;
+    fwrite($sockets[1], "{$id}_sublabel:Now doing a thing\n");
+    fclose($sockets[1]);
+
+    stream_set_blocking($sockets[0], false);
+    $receiveMessages->invoke($task, $sockets[0]);
+    fclose($sockets[0]);
+
+    expect($task->subLabel)->toBe('Now doing a thing');
+    expect($task->maxStableMessages)->toBeLessThan(3);
+    expect(count($task->stableMessages))->toBeLessThanOrEqual($task->maxStableMessages);
+
+    $previousBudget = $task->maxStableMessages;
+
+    $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
+    fwrite($sockets[1], "{$id}_sublabel:\n");
+    fclose($sockets[1]);
+    stream_set_blocking($sockets[0], false);
+    $receiveMessages->invoke($task, $sockets[0]);
+    fclose($sockets[0]);
+
+    expect($task->subLabel)->toBe('');
+    expect($task->maxStableMessages)->toBe($previousBudget + 1);
+});
+
 it('does not take the retain branch when keepSummary is disabled', function () {
     Prompt::fake();
 

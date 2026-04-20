@@ -104,12 +104,8 @@ class Task extends Prompt
      */
     public function run(Closure $callback): mixed
     {
-        $maxHeight = $this->terminal()->lines() - 10;
-
-        $this->limit = min($this->limit, $maxHeight);
-        // Max height - limit - divider - task label (- subLabel when set)
-        $reserved = 2 + ($this->subLabel !== null && $this->subLabel !== '' ? 1 : 0);
-        $this->maxStableMessages = max(0, $maxHeight - $this->limit - $reserved);
+        $this->limit = min($this->limit, $this->terminal()->lines() - 10);
+        $this->recalculateMaxStableMessages();
 
         $this->capturePreviousNewLines();
 
@@ -221,6 +217,7 @@ class Task extends Prompt
                     $this->label = $content;
                 } elseif ($type === 'sublabel') {
                     $this->subLabel = $content;
+                    $this->recalculateMaxStableMessages();
                 } else {
                     $this->stableMessages[] = ['type' => $type, 'message' => $content];
                     $this->logs = [];
@@ -291,6 +288,15 @@ class Task extends Prompt
             array_shift($this->logs);
             $this->partialStartIndex = max(0, $this->partialStartIndex - 1);
         }
+    }
+
+    /**
+     * Recompute the stable-message budget based on the current sub-label state.
+     */
+    protected function recalculateMaxStableMessages(): void
+    {
+        $reserved = 2 + ($this->subLabel !== null && $this->subLabel !== '' ? 1 : 0);
+        $this->maxStableMessages = max(0, $this->terminal()->lines() - 10 - $this->limit - $reserved);
     }
 
     /**
