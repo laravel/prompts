@@ -3,6 +3,7 @@
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\Support\Logger;
 use Laravel\Prompts\Task;
+use Laravel\Prompts\Themes\Default\TaskRenderer;
 
 use function Laravel\Prompts\task;
 
@@ -261,7 +262,7 @@ it('renders the label and stable messages when finished with retain enabled', fu
     $task->stableMessages[] = ['type' => 'success', 'message' => 'Step one done'];
     $task->stableMessages[] = ['type' => 'error', 'message' => 'Step two failed'];
 
-    $renderer = new Laravel\Prompts\Themes\Default\TaskRenderer($task);
+    $renderer = new TaskRenderer($task);
     $output = (string) $renderer($task);
 
     expect($output)->toContain('Running');
@@ -277,7 +278,7 @@ it('renders nothing special when finished with no stable messages', function () 
     $task = new Task(label: 'Running', limit: 10, keepSummary: true);
     $task->finished = true;
 
-    $renderer = new Laravel\Prompts\Themes\Default\TaskRenderer($task);
+    $renderer = new TaskRenderer($task);
     $output = (string) $renderer($task);
 
     expect($output)->toContain('Running');
@@ -330,7 +331,7 @@ it('does not take the retain branch when keepSummary is disabled', function () {
     $task->finished = true;
     $task->stableMessages[] = ['type' => 'success', 'message' => 'Step one done'];
 
-    $renderer = new Laravel\Prompts\Themes\Default\TaskRenderer($task);
+    $renderer = new TaskRenderer($task);
     $output = (string) $renderer($task);
 
     expect($output)->toContain('Running');

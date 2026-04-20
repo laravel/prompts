@@ -20,7 +20,7 @@ class TaskRenderer extends Renderer
         $stableLineMaxWidth = $maxWidth - strlen($leadPadding) - 2; // symbol + space
 
         if ($task->static) {
-            return $this->line(" {$this->cyan($this->staticFrame)} {$this->truncate($task->label,$maxWidth)}");
+            return $this->line(" {$this->cyan($this->staticFrame)} {$this->truncate($task->label, $maxWidth)}");
         }
 
         $task->interval = $this->interval;
@@ -28,10 +28,10 @@ class TaskRenderer extends Renderer
         $stableMessages = array_slice($task->stableMessages, -$task->maxStableMessages);
 
         if ($task->finished && $task->keepSummary && count($stableMessages) > 0) {
-            $this->line(" {$this->cyan('•')} {$this->truncate($task->label,$labelMaxWidth)}");
+            $this->line(" {$this->cyan('•')} {$this->truncate($task->label, $labelMaxWidth)}");
 
             foreach ($stableMessages as $stableMessage) {
-                $this->line($leadPadding . $this->stableMessageSymbol($stableMessage['type']) . ' ' . $this->truncate($stableMessage['message'], $stableLineMaxWidth));
+                $this->line($leadPadding.$this->stableMessageSymbol($stableMessage['type']).' '.$this->truncate($stableMessage['message'], $stableLineMaxWidth));
             }
 
             $this->newLine();
@@ -39,18 +39,18 @@ class TaskRenderer extends Renderer
             return $this;
         }
 
-        $this->line(" {$this->cyan($this->spinnerFrame($task->count))} {$this->truncate($task->label,$labelMaxWidth)}");
+        $this->line(" {$this->cyan($this->spinnerFrame($task->count))} {$this->truncate($task->label, $labelMaxWidth)}");
 
         if ($task->subLabel !== null && $task->subLabel !== '') {
-            $this->line($leadPadding . $this->dim($this->truncate($task->subLabel, $stableLineMaxWidth)));
+            $this->line($leadPadding.$this->dim($this->truncate($task->subLabel, $stableLineMaxWidth)));
         }
 
         foreach ($stableMessages as $stableMessage) {
-            $this->line($leadPadding . $this->stableMessageSymbol($stableMessage['type']) . ' ' . $this->truncate($stableMessage['message'], $stableLineMaxWidth));
+            $this->line($leadPadding.$this->stableMessageSymbol($stableMessage['type']).' '.$this->truncate($stableMessage['message'], $stableLineMaxWidth));
         }
 
         if (count($task->stableMessages) > 0 || count($task->logs) > 0) {
-            $this->line($this->gray(' ' . str_repeat('─', $maxWidth)));
+            $this->line($this->gray(' '.str_repeat('─', $maxWidth)));
         } else {
             $this->newLine();
         }
@@ -58,7 +58,7 @@ class TaskRenderer extends Renderer
         $logs = array_slice($task->logs, -$task->limit);
 
         foreach ($logs as $log) {
-            $this->line(' ' . $this->dim($log));
+            $this->line(' '.$this->dim($log));
         }
 
         $remaining = $task->limit - count($task->logs);
