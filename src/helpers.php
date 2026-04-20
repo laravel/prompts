@@ -424,9 +424,9 @@ if (! function_exists('\Laravel\Prompts\task')) {
      * @param  Closure(Support\Logger): TReturn  $callback
      * @return TReturn
      */
-    function task(string $label, Closure $callback, ?int $limit = null): mixed
+    function task(string $label, Closure $callback, ?int $limit = null, bool $keepSummary = false, ?string $subLabel = null): mixed
     {
-        return (new Task($label, $limit ?? 10))->run($callback);
+        return (new Task($label, $limit ?? 10, $keepSummary, $subLabel))->run($callback);
     }
 }
 

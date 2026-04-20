@@ -3,6 +3,7 @@
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\Support\Logger;
 use Laravel\Prompts\Task;
+use Laravel\Prompts\Themes\Default\TaskRenderer;
 
 use function Laravel\Prompts\task;
 
@@ -245,4 +246,94 @@ it('updates the label through the socket protocol', function () {
     fclose($sockets[0]);
 
     expect($task->label)->toBe('Updated Label');
+});
+
+it('does not keep the summary by default', function () {
+    $task = new Task(label: 'Running', limit: 10);
+
+    expect($task->keepSummary)->toBeFalse();
+});
+
+it('renders the label and stable messages when finished with retain enabled', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'Running', limit: 10, keepSummary: true);
+    $task->finished = true;
+    $task->stableMessages[] = ['type' => 'success', 'message' => 'Step one done'];
+    $task->stableMessages[] = ['type' => 'error', 'message' => 'Step two failed'];
+
+    $renderer = new TaskRenderer($task);
+    $output = (string) $renderer($task);
+
+    expect($output)->toContain('Running');
+    expect($output)->toContain('Step one done');
+    expect($output)->toContain('Step two failed');
+    expect($output)->not->toContain('─');
+    expect($output)->toEndWith(PHP_EOL.PHP_EOL);
+});
+
+it('renders nothing special when finished with no stable messages', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'Running', limit: 10, keepSummary: true);
+    $task->finished = true;
+
+    $renderer = new TaskRenderer($task);
+    $output = (string) $renderer($task);
+
+    expect($output)->toContain('Running');
+});
+
+it('shrinks the stable-message budget when a sub-label appears mid-task', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'Running', limit: 10);
+    $task->maxStableMessages = 3;
+
+    $task->stableMessages = [
+        ['type' => 'success', 'message' => 'one'],
+        ['type' => 'success', 'message' => 'two'],
+        ['type' => 'success', 'message' => 'three'],
+    ];
+
+    $receiveMessages = new ReflectionMethod($task, 'receiveMessages');
+    $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
+
+    $id = $task->identifier;
+    fwrite($sockets[1], "{$id}_sublabel:Now doing a thing\n");
+    fclose($sockets[1]);
+
+    stream_set_blocking($sockets[0], false);
+    $receiveMessages->invoke($task, $sockets[0]);
+    fclose($sockets[0]);
+
+    expect($task->subLabel)->toBe('Now doing a thing');
+    expect($task->maxStableMessages)->toBeLessThan(3);
+    expect(count($task->stableMessages))->toBeLessThanOrEqual($task->maxStableMessages);
+
+    $previousBudget = $task->maxStableMessages;
+
+    $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
+    fwrite($sockets[1], "{$id}_sublabel:\n");
+    fclose($sockets[1]);
+    stream_set_blocking($sockets[0], false);
+    $receiveMessages->invoke($task, $sockets[0]);
+    fclose($sockets[0]);
+
+    expect($task->subLabel)->toBe('');
+    expect($task->maxStableMessages)->toBe($previousBudget + 1);
+});
+
+it('does not take the retain branch when keepSummary is disabled', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'Running', limit: 10, keepSummary: false);
+    $task->finished = true;
+    $task->stableMessages[] = ['type' => 'success', 'message' => 'Step one done'];
+
+    $renderer = new TaskRenderer($task);
+    $output = (string) $renderer($task);
+
+    expect($output)->toContain('Running');
+    expect($output)->toContain('Step one done');
 });

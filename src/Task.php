@@ -88,6 +88,8 @@ class Task extends Prompt
     public function __construct(
         public string $label = '',
         public int $limit = 10,
+        public bool $keepSummary = false,
+        public ?string $subLabel = null,
     ) {
         $this->identifier = uniqid();
     }
@@ -102,11 +104,8 @@ class Task extends Prompt
      */
     public function run(Closure $callback): mixed
     {
-        $maxHeight = $this->terminal()->lines() - 10;
-
-        $this->limit = min($this->limit, $maxHeight);
-        // Max height - limit - divider - task label
-        $this->maxStableMessages = max(0, $maxHeight - $this->limit - 2);
+        $this->limit = min($this->limit, $this->terminal()->lines() - 10);
+        $this->recalculateMaxStableMessages();
 
         $this->capturePreviousNewLines();
 
@@ -192,7 +191,7 @@ class Task extends Prompt
             }
 
             // Check for typed messages: {id}_{type}:{content}
-            if (preg_match('/^'.$prefix.'_(success|warning|error|label|reset|partial|commitpartial):(.*)/', $line, $matches)) {
+            if (preg_match('/^'.$prefix.'_(success|warning|error|label|sublabel|reset|partial|commitpartial):(.*)/', $line, $matches)) {
                 $type = $matches[1];
                 $content = $matches[2];
 
@@ -216,6 +215,9 @@ class Task extends Prompt
 
                 if ($type === 'label') {
                     $this->label = $content;
+                } elseif ($type === 'sublabel') {
+                    $this->subLabel = $content;
+                    $this->recalculateMaxStableMessages();
                 } else {
                     $this->stableMessages[] = ['type' => $type, 'message' => $content];
                     $this->logs = [];
@@ -289,6 +291,15 @@ class Task extends Prompt
     }
 
     /**
+     * Recompute the stable-message budget based on the current sub-label state.
+     */
+    protected function recalculateMaxStableMessages(): void
+    {
+        $reserved = 2 + ($this->subLabel !== null && $this->subLabel !== '' ? 1 : 0);
+        $this->maxStableMessages = max(0, $this->terminal()->lines() - 10 - $this->limit - $reserved);
+    }
+
+    /**
      * Reset the terminal.
      */
     protected function resetTerminal(bool $originalAsync): void
@@ -301,6 +312,12 @@ class Task extends Prompt
         if ($this->socket !== null) {
             fclose($this->socket);
             $this->socket = null;
+        }
+
+        if ($this->keepSummary && count($this->stableMessages) > 0) {
+            $this->render();
+
+            return;
         }
 
         $this->eraseRenderedLines();
