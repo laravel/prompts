@@ -2,6 +2,7 @@
 
 use Laravel\Prompts\AutoCompletePrompt;
 use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
+use Laravel\Prompts\Exceptions\SkippedValueValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
@@ -233,3 +234,26 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('skips the prompt when skipWhen is provided', function () {
+    Prompt::fake([]);
+
+    $result = autocomplete(
+        label: 'Pick',
+        options: ['Alpha', 'Beta'],
+        skipWhen: 'Alpha',
+    );
+
+    expect($result)->toBe('Alpha');
+});
+
+it('throws when a skipWhen value is invalid', function () {
+    Prompt::fake([]);
+
+    autocomplete(
+        label: 'Pick',
+        options: ['Alpha'],
+        required: true,
+        skipWhen: '',
+    );
+})->throws(SkippedValueValidationException::class, 'Required.');

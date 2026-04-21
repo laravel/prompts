@@ -31,7 +31,10 @@ class TextareaPrompt extends Prompt
         public string $hint = '',
         int $rows = 5,
         public ?Closure $transform = null,
+        mixed $skipWhen = null,
     ) {
+        parent::__construct($skipWhen);
+
         $this->scroll = $rows;
 
         $this->initializeScrolling();
