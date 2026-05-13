@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use Illuminate\Support\Collection;
 use Laravel\Prompts\Support\Utils;
 
 class MultiSearchPrompt extends Prompt
@@ -35,6 +36,7 @@ class MultiSearchPrompt extends Prompt
      * Create a new MultiSearchPrompt instance.
      *
      * @param  Closure(string): array<int|string, string>  $options
+     * @param  array<int|string>|Collection<int, int|string>  $default
      */
     public function __construct(
         public string $label,
@@ -46,7 +48,10 @@ class MultiSearchPrompt extends Prompt
         public string $hint = '',
         public ?Closure $transform = null,
         public string|Closure $info = '',
+        array|Collection $default = [],
     ) {
+        $this->setDefaultValues($default);
+
         $this->trackTypedValue(submit: false, ignore: fn ($key) => Key::oneOf([Key::SPACE, Key::HOME, Key::END, Key::CTRL_A, Key::CTRL_E], $key) && $this->highlighted !== null);
 
         $this->initializeScrolling(null);
@@ -63,6 +68,30 @@ class MultiSearchPrompt extends Prompt
             Key::LEFT, Key::LEFT_ARROW, Key::RIGHT, Key::RIGHT_ARROW => $this->highlighted = null,
             default => $this->search(),
         });
+    }
+
+    /**
+     * Set the initially selected values.
+     *
+     * @param  array<int|string>|Collection<int, int|string>  $default
+     */
+    protected function setDefaultValues(array|Collection $default): void
+    {
+        $default = $default instanceof Collection ? $default->all() : $default;
+
+        if ($default === []) {
+            return;
+        }
+
+        $matches = ($this->options)('');
+
+        if (count($matches) > 0) {
+            $this->isList = array_is_list($matches);
+        }
+
+        $this->values = array_is_list($matches)
+            ? array_combine($default, $default)
+            : array_intersect_key($matches, array_flip($default));
     }
 
     /**

@@ -218,6 +218,7 @@ if (! function_exists('\Laravel\Prompts\multisearch')) {
      * Allow the user to search for multiple option.
      *
      * @param  Closure(string): array<int|string, string>  $options
+     * @param  array<int|string>|Collection<int, int|string>  $default
      * @return array<int|string>
      */
     function multisearch(
@@ -230,6 +231,7 @@ if (! function_exists('\Laravel\Prompts\multisearch')) {
         string $hint = 'Use the space bar to select options.',
         ?Closure $transform = null,
         string|Closure $info = '',
+        array|Collection $default = [],
     ): array {
         return (new MultiSearchPrompt(...get_defined_vars()))->prompt();
     }

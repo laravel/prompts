@@ -172,8 +172,9 @@ class FormBuilder
      * Allow the user to search for multiple option.
      *
      * @param  Closure(string): array<int|string, string>  $options
+     * @param  array<int|string>|Collection<int, int|string>  $default
      */
-    public function multisearch(string $label, Closure $options, string $placeholder = '', int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = 'Use the space bar to select options.', ?string $name = null, ?Closure $transform = null): self
+    public function multisearch(string $label, Closure $options, string $placeholder = '', int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = 'Use the space bar to select options.', ?string $name = null, ?Closure $transform = null, array|Collection $default = []): self
     {
         return $this->runPrompt(multisearch(...), get_defined_vars());
     }
