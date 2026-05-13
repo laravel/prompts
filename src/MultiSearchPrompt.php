@@ -90,7 +90,7 @@ class MultiSearchPrompt extends Prompt
         }
 
         $this->values = array_is_list($matches)
-            ? array_combine($default, $default)
+            ? array_combine($default, array_map(fn (int|string $value) => (string) $value, $default))
             : array_intersect_key($matches, array_flip($default));
     }
 
