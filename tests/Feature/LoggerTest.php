@@ -17,5 +17,5 @@ it('does not throw when constructed without a socket', function () {
         $logger->error('broken');
         $logger->label('Updated');
         $logger->subLabel('detail');
-    })->not->toThrow(\Exception::class);
+    })->not->toThrow(Exception::class);
 });
