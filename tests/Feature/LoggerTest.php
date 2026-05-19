@@ -17,5 +17,5 @@ it('does not throw when constructed without a socket', function () {
     $logger->label('Updated');
     $logger->subLabel('detail');
 
-    expect(true)->toBeTrue();
+    expect(fn() => $logger->line('hello'))->not->toThrow();
 });
