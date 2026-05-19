@@ -1,6 +1,20 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.17...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.18...main)
+
+## [v0.3.18](https://github.com/laravel/prompts/compare/v0.3.17...v0.3.18) - 2026-05-19
+
+### What's Changed
+
+* Pin GitHub Actions to commit SHAs and add Dependabot config by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/237
+* Fix Spinner & Task prompt to use static rendering when POSIX extension is not available by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/prompts/pull/239
+* Fix Logger to Return when constructed without a socket (Windows Laravel New Fix) by [@joshcirre](https://github.com/joshcirre) in https://github.com/laravel/prompts/pull/240
+
+### New Contributors
+
+* [@joshcirre](https://github.com/joshcirre) made their first contribution in https://github.com/laravel/prompts/pull/240
+
+**Full Changelog**: https://github.com/laravel/prompts/compare/v0.3.17...v0.3.18
 
 ## [v0.3.17](https://github.com/laravel/prompts/compare/v0.3.16...v0.3.17) - 2026-04-20
 
