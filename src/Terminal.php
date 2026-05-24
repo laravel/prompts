@@ -2,6 +2,7 @@
 
 namespace Laravel\Prompts;
 
+use Closure;
 use ReflectionClass;
 use RuntimeException;
 use Symfony\Component\Console\Terminal as SymfonyTerminal;
@@ -12,6 +13,11 @@ class Terminal
      * The initial TTY mode.
      */
     protected ?string $initialTtyMode;
+
+    /**
+     * The initial native terminal mode.
+     */
+    protected ?string $initialNativeTtyMode;
 
     /**
      * Whether the terminal supports true color.
@@ -50,6 +56,12 @@ class Terminal
      */
     public function read(): string
     {
+        if ($this->hasNativeTerminal()) {
+            $key = $this->readNativeKey();
+
+            return is_string($key) ? $this->normalizeNativeKey($key) : '';
+        }
+
         $input = fread(STDIN, 1024);
 
         return $input !== false ? $input : '';
@@ -60,6 +72,20 @@ class Terminal
      */
     public function setTty(string $mode): void
     {
+        if ($this->hasNativeTerminal()) {
+            if (! isset($this->initialNativeTtyMode)) {
+                $nativeMode = $this->enableNativeRawMode();
+
+                if (! is_string($nativeMode)) {
+                    throw new RuntimeException('Failed to enable terminal raw mode.');
+                }
+
+                $this->initialNativeTtyMode = $nativeMode;
+            }
+
+            return;
+        }
+
         $this->initialTtyMode ??= $this->exec('stty -g');
 
         $this->exec("stty $mode");
@@ -70,6 +96,14 @@ class Terminal
      */
     public function restoreTty(): void
     {
+        if (isset($this->initialNativeTtyMode)) {
+            $this->restoreNativeMode($this->initialNativeTtyMode);
+
+            $this->initialNativeTtyMode = null;
+
+            return;
+        }
+
         if (isset($this->initialTtyMode)) {
             $this->exec("stty {$this->initialTtyMode}");
 
@@ -82,6 +116,10 @@ class Terminal
      */
     public function cols(): int
     {
+        if ($this->hasNativeTerminal() && ($size = $this->nativeSize()) !== false) {
+            return $size['columns'];
+        }
+
         return $this->terminal->getWidth();
     }
 
@@ -90,6 +128,10 @@ class Terminal
      */
     public function lines(): int
     {
+        if ($this->hasNativeTerminal() && ($size = $this->nativeSize()) !== false) {
+            return $size['rows'];
+        }
+
         return $this->terminal->getHeight();
     }
 
@@ -98,9 +140,39 @@ class Terminal
      */
     public function initDimensions(): void
     {
+        if ($this->hasNativeTerminal()) {
+            return;
+        }
+
         (new ReflectionClass($this->terminal))
             ->getMethod('initDimensions')
             ->invoke($this->terminal);
+    }
+
+    /**
+     * Determine if the terminal is interactive.
+     */
+    public function interactive(): bool
+    {
+        if ($this->hasNativeTerminal()) {
+            return $this->nativeStdinIsTty();
+        }
+
+        return stream_isatty(STDIN);
+    }
+
+    /**
+     * Determine if the native terminal extension is available.
+     */
+    public function hasNativeTerminal(): bool
+    {
+        return extension_loaded('terminal')
+            && function_exists('terminal_read_key')
+            && function_exists('terminal_enable_raw_mode')
+            && function_exists('terminal_restore_mode')
+            && function_exists('terminal_is_tty')
+            && function_exists('terminal_get_size')
+            && defined('TERMINAL_STDIN');
     }
 
     /**
@@ -134,6 +206,111 @@ class Terminal
         }
 
         return $stdout;
+    }
+
+    /**
+     * Read a key from the native terminal extension.
+     */
+    protected function readNativeKey(): string|false
+    {
+        $readKey = $this->nativeFunction('terminal_read_key');
+
+        if ($readKey === null) {
+            return false;
+        }
+
+        $key = $readKey();
+
+        return is_string($key) ? $key : false;
+    }
+
+    /**
+     * Enable raw mode through the native terminal extension.
+     */
+    protected function enableNativeRawMode(): string|false
+    {
+        $enableRawMode = $this->nativeFunction('terminal_enable_raw_mode');
+
+        if ($enableRawMode === null) {
+            return false;
+        }
+
+        $mode = $enableRawMode();
+
+        return is_string($mode) ? $mode : false;
+    }
+
+    /**
+     * Restore the native terminal mode.
+     */
+    protected function restoreNativeMode(string $mode): bool
+    {
+        $restoreMode = $this->nativeFunction('terminal_restore_mode');
+
+        return $restoreMode !== null && $restoreMode($mode) === true;
+    }
+
+    /**
+     * Determine if native standard input is a TTY.
+     */
+    protected function nativeStdinIsTty(): bool
+    {
+        $isTty = $this->nativeFunction('terminal_is_tty');
+
+        return $isTty !== null && $isTty((int) constant('TERMINAL_STDIN')) === true;
+    }
+
+    /**
+     * Get the native terminal size.
+     *
+     * @return array{columns:int, rows:int}|false
+     */
+    protected function nativeSize(): array|false
+    {
+        $getSize = $this->nativeFunction('terminal_get_size');
+
+        if ($getSize === null) {
+            return false;
+        }
+
+        $size = $getSize();
+
+        if (! is_array($size) || ! isset($size['columns'], $size['rows'])) {
+            return false;
+        }
+
+        return ['columns' => (int) $size['columns'], 'rows' => (int) $size['rows']];
+    }
+
+    /**
+     * Resolve a native terminal function.
+     */
+    protected function nativeFunction(string $function): ?Closure
+    {
+        return function_exists($function) ? Closure::fromCallable($function) : null;
+    }
+
+    /**
+     * Normalize native key names to the sequences Prompts already understands.
+     */
+    protected function normalizeNativeKey(string $key): string
+    {
+        return match ($key) {
+            'up' => Key::UP,
+            'down' => Key::DOWN,
+            'right' => Key::RIGHT,
+            'left' => Key::LEFT,
+            'enter' => Key::ENTER,
+            'backspace' => Key::BACKSPACE,
+            'escape' => Key::ESCAPE,
+            'delete' => Key::DELETE,
+            'tab' => Key::TAB,
+            'home' => Key::HOME[0],
+            'end' => Key::END[0],
+            'pageup' => Key::PAGE_UP,
+            'pagedown' => Key::PAGE_DOWN,
+            default => $key,
+        };
     }
 
     /**
@@ -177,6 +354,13 @@ class Terminal
      */
     protected function queryColors(): void
     {
+        if (PHP_OS_FAMILY === 'Windows') {
+            static::$foregroundColor = [204, 204, 204];
+            static::$backgroundColor = [0, 0, 0];
+
+            return;
+        }
+
         $savedStty = trim((string) shell_exec('stty -g < /dev/tty'));
 
         shell_exec('stty raw -echo min 0 time 1 < /dev/tty');

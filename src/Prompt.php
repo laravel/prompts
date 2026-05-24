@@ -108,7 +108,7 @@ abstract class Prompt
                 return $this->fallback();
             }
 
-            static::$interactive ??= stream_isatty(STDIN);
+            static::$interactive ??= static::terminal()->interactive();
 
             if (! static::$interactive) {
                 return $this->default();
@@ -431,7 +431,7 @@ abstract class Prompt
      */
     private function checkEnvironment(): void
     {
-        if (PHP_OS_FAMILY === 'Windows') {
+        if (PHP_OS_FAMILY === 'Windows' && ! static::terminal()->hasNativeTerminal()) {
             throw new RuntimeException('Prompts is not currently supported on Windows. Please use WSL or configure a fallback.');
         }
     }
