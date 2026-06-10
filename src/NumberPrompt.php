@@ -23,7 +23,10 @@ class NumberPrompt extends Prompt
         public ?int $min = null,
         public ?int $max = null,
         public ?int $step = null,
+        mixed $skipWhen = null,
     ) {
+        parent::__construct($skipWhen);
+
         $this->trackTypedValue($default);
 
         $this->step = max(1, $this->step ?? 1);
@@ -125,6 +128,18 @@ class NumberPrompt extends Prompt
         }
 
         return $this->typedValue;
+    }
+
+    /**
+     * Coerce a pre-supplied skip value into an int when numeric.
+     */
+    protected function coerceSkipped(mixed $value): mixed
+    {
+        if (is_numeric($value)) {
+            return (int) $value;
+        }
+
+        return $value;
     }
 
     /**

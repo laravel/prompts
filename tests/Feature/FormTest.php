@@ -1,5 +1,6 @@
 <?php
 
+use Laravel\Prompts\Exceptions\SkippedValueValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
@@ -227,3 +228,41 @@ it('leaves skipped conditional field empty', function () {
         true,
     ]);
 });
+
+it('skips every form step when skipWhen is provided on each', function () {
+    Prompt::fake([]);
+
+    $responses = form()
+        ->text('What is your name?', skipWhen: 'Taylor')
+        ->select('What is your language?', ['PHP', 'JS'], skipWhen: 'PHP')
+        ->confirm('Are you sure?', skipWhen: true)
+        ->submit();
+
+    expect($responses)->toBe([
+        'Taylor',
+        'PHP',
+        true,
+    ]);
+});
+
+it('only prompts the steps without skipWhen', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $responses = form()
+        ->text('What is your name?', skipWhen: 'Taylor')
+        ->confirm('Are you sure?')
+        ->submit();
+
+    expect($responses)->toBe([
+        'Taylor',
+        true,
+    ]);
+});
+
+it('throws from a form step with an invalid skipWhen value', function () {
+    Prompt::fake([]);
+
+    form()
+        ->text('What is your name?', required: true, skipWhen: '')
+        ->submit();
+})->throws(SkippedValueValidationException::class, 'Required.');

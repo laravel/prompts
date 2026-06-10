@@ -1,6 +1,7 @@
 <?php
 
 use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
+use Laravel\Prompts\Exceptions\SkippedValueValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\PasswordPrompt;
 use Laravel\Prompts\Prompt;
@@ -115,3 +116,17 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('skips the prompt when skipWhen is provided', function () {
+    Prompt::fake([]);
+
+    $result = password(label: 'What is the password?', skipWhen: 'secret');
+
+    expect($result)->toBe('secret');
+});
+
+it('throws when a skipWhen value is invalid', function () {
+    Prompt::fake([]);
+
+    password(label: 'What is the password?', required: true, skipWhen: '');
+})->throws(SkippedValueValidationException::class, 'Required.');

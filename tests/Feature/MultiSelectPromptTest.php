@@ -1,6 +1,7 @@
 <?php
 
 use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
+use Laravel\Prompts\Exceptions\SkippedValueValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Prompt;
@@ -307,3 +308,26 @@ it('deselects all when all options are already default', function () {
 
     expect($result)->toBe([]);
 });
+
+it('skips the prompt when skipWhen is provided', function () {
+    Prompt::fake([]);
+
+    $result = multiselect(
+        label: 'Pick some',
+        options: ['red' => 'Red', 'green' => 'Green', 'blue' => 'Blue'],
+        skipWhen: ['red', 'blue'],
+    );
+
+    expect($result)->toBe(['red', 'blue']);
+});
+
+it('throws when a skipWhen value fails validation', function () {
+    Prompt::fake([]);
+
+    multiselect(
+        label: 'Pick some',
+        options: ['red' => 'Red', 'green' => 'Green'],
+        required: true,
+        skipWhen: [],
+    );
+})->throws(SkippedValueValidationException::class, 'Required.');

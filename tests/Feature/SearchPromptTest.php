@@ -1,6 +1,7 @@
 <?php
 
 use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
+use Laravel\Prompts\Exceptions\SkippedValueValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SearchPrompt;
@@ -212,3 +213,26 @@ it('supports custom validation', function () {
 
     Prompt::validateUsing(fn () => null);
 });
+
+it('skips the prompt when skipWhen is provided', function () {
+    Prompt::fake([]);
+
+    $result = search(
+        label: 'Search',
+        options: fn () => ['a' => 'A'],
+        skipWhen: 'a',
+    );
+
+    expect($result)->toBe('a');
+});
+
+it('throws when a skipWhen value fails validation', function () {
+    Prompt::fake([]);
+
+    search(
+        label: 'Search',
+        options: fn () => ['a' => 'A'],
+        validate: fn ($value) => $value === 'a' ? null : 'Invalid option.',
+        skipWhen: 'nope',
+    );
+})->throws(SkippedValueValidationException::class, 'Invalid option.');
