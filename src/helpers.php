@@ -266,9 +266,9 @@ if (! function_exists('\Laravel\Prompts\callout')) {
      * Display a note box.
      * @param string|list<string|ElementContract>  $content
      */
-    function callout(string $label, string|array $content, ?string $type = null): void
+    function callout(string $label, string|array $content, ?string $type = null, string $info = ''): void
     {
-        (new Callout($label, $content, $type))->display();
+        (new Callout($label, $content, $type, $info))->display();
     }
 }
 

@@ -34,7 +34,8 @@ callout(
             'Status' => 'Connection refused',
         ]),
     ],
-    'error'
+    'error',
+    info: 'SQLSTATE[HY000] [2002]',
 );
 
 callout(
@@ -55,6 +56,12 @@ callout(
             'Confirm background jobs are processing in Horizon',
         ]),
     ],
+);
+
+callout(
+    'Deployment Summary',
+    'Your application was deployed to production at 2024-03-15 14:32 UTC.',
+    info: 'deploy-id: d4f8a2c',
 );
 
 callout(

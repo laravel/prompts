@@ -43,6 +43,7 @@ class CalloutRenderer extends Renderer
                     $this->red($this->truncate('⚠ ' . $prompt->label, $prompt->terminal()->cols() - 6)),
                     $message,
                     color: 'red',
+                    info: $prompt->info,
                 ),
 
             'warning' => $this
@@ -50,12 +51,14 @@ class CalloutRenderer extends Renderer
                     $this->yellow($this->truncate('⚠ ' . $prompt->label, $prompt->terminal()->cols() - 6)),
                     $message,
                     color: 'yellow',
+                    info: $prompt->info,
                 ),
 
             default => $this
                 ->box(
                     $this->cyan($this->truncate($prompt->label, $prompt->terminal()->cols() - 6)),
                     $message,
+                    info: $prompt->info,
                 ),
         };
     }

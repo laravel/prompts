@@ -11,6 +11,7 @@ class Callout extends Prompt
         public string $label,
         public string|array $content,
         public ?string $type = null,
+        public string $info = '',
     ) {
         //
     }
