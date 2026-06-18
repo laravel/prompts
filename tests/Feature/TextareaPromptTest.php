@@ -1,6 +1,7 @@
 <?php
 
 use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
+use Laravel\Prompts\Exceptions\SkippedValueValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\TextareaPrompt;
@@ -256,3 +257,17 @@ it('correctly handles multi-byte strings for the up arrow', function () {
         "ａyoｂ\nｃｄｅｆ\nｇｈｉjklmnnopqrs\ntuvwxyz"
     );
 });
+
+it('skips the prompt when skipWhen is provided', function () {
+    Prompt::fake([]);
+
+    $result = textarea(label: 'What is your story?', skipWhen: "Line one\nLine two");
+
+    expect($result)->toBe("Line one\nLine two");
+});
+
+it('throws when a skipWhen value is invalid', function () {
+    Prompt::fake([]);
+
+    textarea(label: 'What is your story?', required: true, skipWhen: '');
+})->throws(SkippedValueValidationException::class, 'Required.');

@@ -46,7 +46,10 @@ class MultiSearchPrompt extends Prompt
         public string $hint = '',
         public ?Closure $transform = null,
         public string|Closure $info = '',
+        mixed $skipWhen = null,
     ) {
+        parent::__construct($skipWhen);
+
         $this->trackTypedValue(submit: false, ignore: fn ($key) => Key::oneOf([Key::SPACE, Key::HOME, Key::END, Key::CTRL_A, Key::CTRL_E], $key) && $this->highlighted !== null);
 
         $this->initializeScrolling(null);

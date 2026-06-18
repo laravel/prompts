@@ -33,7 +33,10 @@ class SelectPrompt extends Prompt
         public bool|string $required = true,
         public ?Closure $transform = null,
         public string|Closure $info = '',
+        mixed $skipWhen = null,
     ) {
+        parent::__construct($skipWhen);
+
         if ($this->required === false) {
             throw new InvalidArgumentException('Argument [required] must be true or a string.');
         }

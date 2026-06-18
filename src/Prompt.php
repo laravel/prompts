@@ -4,6 +4,7 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Laravel\Prompts\Exceptions\FormRevertedException;
+use Laravel\Prompts\Exceptions\SkippedValueValidationException;
 use Laravel\Prompts\Output\ConsoleOutput;
 use Laravel\Prompts\Support\Result;
 use RuntimeException;
@@ -62,6 +63,11 @@ abstract class Prompt
     public mixed $validate;
 
     /**
+     * A pre-resolved value that short-circuits the prompt when not null.
+     */
+    public mixed $skipWhen = null;
+
+    /**
      * The cancellation callback.
      */
     protected static ?Closure $cancelUsing;
@@ -91,6 +97,11 @@ abstract class Prompt
      */
     protected static Terminal $terminal;
 
+    public function __construct(mixed $skipWhen = null)
+    {
+        $this->skipWhen = $skipWhen;
+    }
+
     /**
      * Get the value of the prompt.
      */
@@ -102,6 +113,10 @@ abstract class Prompt
     public function prompt(): mixed
     {
         try {
+            if ($this->skipWhen !== null) {
+                return $this->resolveSkipped();
+            }
+
             $this->capturePreviousNewLines();
 
             if (static::shouldFallback()) {
@@ -391,15 +406,25 @@ abstract class Prompt
     {
         $this->validated = true;
 
-        if ($this->required !== false && $this->isInvalidWhenRequired($value)) {
-            $this->state = 'error';
-            $this->error = is_string($this->required) && strlen($this->required) > 0 ? $this->required : 'Required.';
+        $error = $this->performValidation($value);
 
-            return;
+        if ($error !== null) {
+            $this->state = 'error';
+            $this->error = $error;
+        }
+    }
+
+    /**
+     * Return the validation error for the given value, if any.
+     */
+    private function performValidation(mixed $value): ?string
+    {
+        if ($this->required !== false && $this->isInvalidWhenRequired($value)) {
+            return is_string($this->required) && strlen($this->required) > 0 ? $this->required : 'Required.';
         }
 
         if (! isset($this->validate) && ! isset(static::$validateUsing)) {
-            return;
+            return null;
         }
 
         $error = match (true) {
@@ -412,10 +437,7 @@ abstract class Prompt
             throw new RuntimeException('The validator must return a string or null.');
         }
 
-        if (is_string($error) && strlen($error) > 0) {
-            $this->state = 'error';
-            $this->error = $error;
-        }
+        return is_string($error) && strlen($error) > 0 ? $error : null;
     }
 
     /**
@@ -424,6 +446,35 @@ abstract class Prompt
     protected function isInvalidWhenRequired(mixed $value): bool
     {
         return $value === '' || $value === [] || $value === false || $value === null;
+    }
+
+    /**
+     * Coerce a pre-supplied skip value.
+     */
+    protected function coerceSkipped(mixed $value): mixed
+    {
+        return $value;
+    }
+
+    /**
+     * Resolve the pre-supplied skip value.
+     */
+    protected function resolveSkipped(): mixed
+    {
+        $this->state = 'initial';
+        $this->error = '';
+
+        $value = $this->transform($this->coerceSkipped($this->skipWhen));
+
+        $error = $this->performValidation($value);
+
+        if ($error !== null) {
+            $label = property_exists($this, 'label') && $this->label !== '' ? "{$this->label}: " : '';
+
+            throw new SkippedValueValidationException("{$label}{$error}");
+        }
+
+        return $value;
     }
 
     /**

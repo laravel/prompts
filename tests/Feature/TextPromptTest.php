@@ -1,6 +1,7 @@
 <?php
 
 use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
+use Laravel\Prompts\Exceptions\SkippedValueValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\TextPrompt;
@@ -167,3 +168,17 @@ it('handles a failed terminal read gracefully', function () {
 
     expect($result)->toBe('');
 });
+
+it('skips the prompt when skipWhen is provided', function () {
+    Prompt::fake([]);
+
+    $result = text(label: 'What is your name?', skipWhen: 'Taylor');
+
+    expect($result)->toBe('Taylor');
+});
+
+it('throws when a skipWhen value is invalid', function () {
+    Prompt::fake([]);
+
+    text(label: 'What is your name?', required: true, skipWhen: '');
+})->throws(SkippedValueValidationException::class, 'Required.');
