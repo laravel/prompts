@@ -24,6 +24,20 @@ callout(
 );
 
 callout(
+    'Database Connection Failed',
+    [
+        'Could not connect to the database server.',
+        Element::keyValueList([
+            'Host' => '127.0.0.1',
+            'Port' => '3306',
+            'Database' => 'forge',
+            'Status' => 'Connection refused',
+        ]),
+    ],
+    'error'
+);
+
+callout(
     'Deployment Summary',
     [
         'Your application was deployed to production at 2024-03-15 14:32 UTC.',

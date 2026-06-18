@@ -18,4 +18,9 @@ class Element
     {
         return new NumberedList($items);
     }
+
+    public static function keyValueList(array $items): KeyValueList
+    {
+        return new KeyValueList($items);
+    }
 }

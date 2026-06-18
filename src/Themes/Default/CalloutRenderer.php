@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Laravel\Prompts\Elements\BulletedList;
 use Laravel\Prompts\Elements\Contract as ElementContract;
 use Laravel\Prompts\Elements\Heading;
+use Laravel\Prompts\Elements\KeyValueList;
 use Laravel\Prompts\Elements\NumberedList;
 use Laravel\Prompts\Callout;
 use Laravel\Prompts\Themes\Default\Concerns\InteractsWithStrings;
@@ -110,6 +111,29 @@ class CalloutRenderer extends Renderer
                 }
 
                 $finalLines[] = implode(PHP_EOL, $partLines);
+            }
+
+            return $finalLines;
+        }
+
+        if ($part instanceof KeyValueList) {
+            $items = $part->content();
+            $keys = array_keys($items);
+            $widestKey = max(array_map(fn ($key) => mb_strwidth($key), $keys));
+
+            $finalLines = [];
+
+            foreach ($items as $key => $value) {
+                $paddedKey = mb_str_pad($key, $widestKey);
+                $lines = $this->ansiWordwrap($value, $this->minWidth - $widestKey - 2);
+
+                foreach ($lines as $index => $line) {
+                    if ($index === 0) {
+                        $finalLines[] = $this->dim($paddedKey) . '  ' . $line;
+                    } else {
+                        $finalLines[] = str_repeat(' ', $widestKey + 2) . $line;
+                    }
+                }
             }
 
             return $finalLines;
