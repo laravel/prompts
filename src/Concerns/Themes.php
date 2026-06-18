@@ -11,6 +11,7 @@ use Laravel\Prompts\Grid;
 use Laravel\Prompts\MultiSearchPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Note;
+use Laravel\Prompts\Callout;
 use Laravel\Prompts\NumberPrompt;
 use Laravel\Prompts\PasswordPrompt;
 use Laravel\Prompts\PausePrompt;
@@ -32,6 +33,7 @@ use Laravel\Prompts\Themes\Default\DataTableRenderer;
 use Laravel\Prompts\Themes\Default\GridRenderer;
 use Laravel\Prompts\Themes\Default\MultiSearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\MultiSelectPromptRenderer;
+use Laravel\Prompts\Themes\Default\CalloutRenderer;
 use Laravel\Prompts\Themes\Default\NoteRenderer;
 use Laravel\Prompts\Themes\Default\NumberPromptRenderer;
 use Laravel\Prompts\Themes\Default\PasswordPromptRenderer;
@@ -85,6 +87,7 @@ trait Themes
             Stream::class => StreamRenderer::class,
             Task::class => TaskRenderer::class,
             DataTablePrompt::class => DataTableRenderer::class,
+            Callout::class => CalloutRenderer::class,
         ],
     ];
 
