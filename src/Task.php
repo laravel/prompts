@@ -160,7 +160,7 @@ class Task extends Prompt
                 return $result;
             }
         } catch (\Throwable $e) {
-            $this->resetTerminal($originalAsync);
+            $this->resetTerminal($originalAsync, success: false);
 
             throw $e;
         }
@@ -302,7 +302,7 @@ class Task extends Prompt
     /**
      * Reset the terminal.
      */
-    protected function resetTerminal(bool $originalAsync): void
+    protected function resetTerminal(bool $originalAsync, bool $success = true): void
     {
         $this->finished = true;
 
@@ -321,6 +321,10 @@ class Task extends Prompt
         }
 
         $this->eraseRenderedLines();
+
+        if ($success) {
+            $this->printCompletionLine();
+        }
     }
 
     /**
@@ -341,11 +345,24 @@ class Task extends Prompt
 
             $logger = new Logger($this->identifier);
             $result = $callback($logger);
-        } finally {
+        } catch (\Throwable $e) {
             $this->eraseRenderedLines();
+
+            throw $e;
         }
 
+        $this->eraseRenderedLines();
+        $this->printCompletionLine();
+
         return $result;
+    }
+
+    /**
+     * Print a single-line completion indicator after the task has finished.
+     */
+    protected function printCompletionLine(): void
+    {
+        static::output()->writeln(' '.$this->green('✔').' '.$this->label);
     }
 
     /**
