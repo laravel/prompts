@@ -6,6 +6,8 @@ class Callout extends Prompt
 {
     /**
      * Create a new Callout instance.
+     *
+     * @param  string|array<int, string|\Laravel\Prompts\Elements\ElementContract>  $content
      */
     public function __construct(
         public string $label,

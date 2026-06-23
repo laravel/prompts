@@ -64,6 +64,9 @@ class CalloutRenderer extends Renderer
     /**
      * Resolve a part of the callout content into a string or array of strings.
      */
+    /**
+     * @return string|array<int, string>
+     */
     protected function resolvePart(string|ElementContract $part): string|array
     {
         if (is_string($part)) {
@@ -101,7 +104,7 @@ class CalloutRenderer extends Renderer
 
             foreach ($part->content() as $i => $p) {
                 // +1 for "."
-                $widestNumber = mb_strwidth(count($part->content())) + 1;
+                $widestNumber = mb_strwidth((string) count($part->content())) + 1;
                 $partLines = [];
                 // -1 for ' ' after number
                 $p = $this->autoFormat($p);

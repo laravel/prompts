@@ -9,6 +9,9 @@ class Heading implements ElementContract
         //
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function content(): array
     {
         return [$this->text];
