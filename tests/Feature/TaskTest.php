@@ -24,6 +24,45 @@ it('renders a task while executing a callback and then returns the value', funct
     Prompt::assertOutputContains('Running...');
 });
 
+it('prints a completion line after the task finishes in static mode with keepSummary', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'My Task', keepSummary: true);
+
+    $renderStatically = new ReflectionMethod($task, 'renderStatically');
+    $renderStatically->setAccessible(true);
+    $renderStatically->invoke($task, fn (Logger $logger) => null);
+
+    Prompt::assertStrippedOutputContains('✔ My Task');
+});
+
+it('does not print a completion line without keepSummary in static mode', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'My Task');
+
+    $renderStatically = new ReflectionMethod($task, 'renderStatically');
+    $renderStatically->setAccessible(true);
+    $renderStatically->invoke($task, fn (Logger $logger) => null);
+
+    Prompt::assertStrippedOutputDoesntContain('✔ My Task');
+});
+
+it('does not print a completion line when the callback throws in static mode', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'My Task', keepSummary: true);
+
+    $renderStatically = new ReflectionMethod($task, 'renderStatically');
+    $renderStatically->setAccessible(true);
+
+    expect(fn () => $renderStatically->invoke($task, function (Logger $logger) {
+        throw new RuntimeException('boom');
+    }))->toThrow(RuntimeException::class, 'boom');
+
+    Prompt::assertStrippedOutputDoesntContain('✔ My Task');
+});
+
 it('returns null when the callback does not return a value', function () {
     Prompt::fake();
 

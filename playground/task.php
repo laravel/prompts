@@ -121,6 +121,9 @@ $mode = select('Which demo?', [
     'standard' => 'Standard (line-by-line with stable messages)',
     'stream' => 'Stream (streaming text accumulation)',
     'mixed' => 'Mixed (lines, then stream, then lines)',
+    'no_stable_with_summary' => 'No Stable (keep summary)',
+    'no_stable_no_summary' => 'No Stable (no summary)',
+    'standard_with_summary' => 'Standard (keep summary)',
 ]);
 
 match ($mode) {
@@ -188,6 +191,55 @@ match ($mode) {
 
             $logger->success('All done!');
         },
+    ),
+
+    'no_stable_with_summary' => task(
+        label: $commands[0][1],
+        callback: function (Logger $logger) use ($commands) {
+            foreach ($commands as $data) {
+                [$output, $label, $message, $type] = $data;
+                $logger->label($label);
+
+                foreach ($output as $line) {
+                    $logger->line($line);
+                    usleep(100_000);
+                }
+            }
+        },
+        keepSummary: true,
+    ),
+
+    'no_stable_no_summary' => task(
+        label: $commands[0][1],
+        callback: function (Logger $logger) use ($commands) {
+            foreach ($commands as $data) {
+                [$output, $label, $message, $type] = $data;
+                $logger->label($label);
+
+                foreach ($output as $line) {
+                    $logger->line($line);
+                    usleep(100_000);
+                }
+            }
+        },
+    ),
+
+    'standard_with_summary' => task(
+        label: $commands[0][1],
+        callback: function (Logger $logger) use ($commands) {
+            foreach ($commands as $data) {
+                [$output, $label, $message, $type] = $data;
+                $logger->label($label);
+
+                foreach ($output as $line) {
+                    $logger->line($line);
+                    usleep(100_000);
+                }
+
+                $logger->{$type}($message);
+            }
+        },
+        keepSummary: true,
     ),
 };
 
