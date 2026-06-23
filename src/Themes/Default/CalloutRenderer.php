@@ -9,7 +9,6 @@ use Laravel\Prompts\Elements\Heading;
 use Laravel\Prompts\Elements\KeyValueList;
 use Laravel\Prompts\Elements\NumberedList;
 use Laravel\Prompts\Callout;
-use Laravel\Prompts\Themes\Default\Concerns\InteractsWithStrings;
 
 class CalloutRenderer extends Renderer
 {
@@ -68,15 +67,20 @@ class CalloutRenderer extends Renderer
     protected function resolvePart(string|ElementContract $part): string|array
     {
         if (is_string($part)) {
-            return $part;
+            return $this->autoFormat($part);
         }
 
         if ($part instanceof Heading) {
-            return $this->bold(implode('', $part->content()));
+            return $this->bold(
+                $this->autoFormat(
+                    implode('', $part->content())
+                ),
+            );
         }
 
         if ($part instanceof BulletedList) {
             return array_map(function ($p) {
+                $p = $this->autoFormat($p);
                 $lines = $this->ansiWordwrap($p, $this->minWidth - 2);
                 $finalLines = [];
 
@@ -100,6 +104,7 @@ class CalloutRenderer extends Renderer
                 $widestNumber = mb_strwidth(count($part->content())) + 1;
                 $partLines = [];
                 // -1 for ' ' after number
+                $p = $this->autoFormat($p);
                 $lines = $this->ansiWordwrap($p, $this->minWidth - $widestNumber - 1);
 
                 foreach ($lines as $index => $line) {
@@ -126,6 +131,7 @@ class CalloutRenderer extends Renderer
 
             foreach ($items as $key => $value) {
                 $paddedKey = mb_str_pad($key, $widestKey);
+                $value = $this->autoFormat($value);
                 $lines = $this->ansiWordwrap($value, $this->minWidth - $widestKey - 2);
 
                 foreach ($lines as $index => $line) {
@@ -140,6 +146,15 @@ class CalloutRenderer extends Renderer
             return $finalLines;
         }
 
-        return implode(PHP_EOL, $part->content());
+        return $this->autoFormat(implode(PHP_EOL, $part->content()));
+    }
+
+    /**
+     * Auto-format the text by applying styles to specific patterns, such as inline code blocks.
+     */
+    protected function autoFormat(string $text): string
+    {
+        // Format inline code blocks wrapped in backticks with cyan color.
+        return preg_replace('/`([^`]+)`/', $this->cyan('`$1`'), $text);
     }
 }
