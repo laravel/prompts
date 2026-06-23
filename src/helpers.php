@@ -264,7 +264,8 @@ if (! function_exists('\Laravel\Prompts\note')) {
 if (! function_exists('\Laravel\Prompts\callout')) {
     /**
      * Display a callout.
-     * @param string|list<string|ElementContract>  $content
+     *
+     * @param  string|list<string|ElementContract>  $content
      */
     function callout(string $label, string|array $content, ?string $type = null, string $info = ''): void
     {

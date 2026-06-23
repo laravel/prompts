@@ -2,13 +2,12 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use InvalidArgumentException;
+use Laravel\Prompts\Callout;
 use Laravel\Prompts\Elements\BulletedList;
 use Laravel\Prompts\Elements\ElementContract;
 use Laravel\Prompts\Elements\Heading;
 use Laravel\Prompts\Elements\KeyValueList;
 use Laravel\Prompts\Elements\NumberedList;
-use Laravel\Prompts\Callout;
 
 class CalloutRenderer extends Renderer
 {
@@ -33,12 +32,12 @@ class CalloutRenderer extends Renderer
             }
         }
 
-        $message = implode(PHP_EOL . PHP_EOL, $sections);
+        $message = implode(PHP_EOL.PHP_EOL, $sections);
 
         return match ($prompt->type) {
             'error' => $this
                 ->box(
-                    $this->red($this->truncate('⚠ ' . $prompt->label, $prompt->terminal()->cols() - 6)),
+                    $this->red($this->truncate('⚠ '.$prompt->label, $prompt->terminal()->cols() - 6)),
                     $message,
                     color: 'red',
                     info: $prompt->info,
@@ -46,7 +45,7 @@ class CalloutRenderer extends Renderer
 
             'warning' => $this
                 ->box(
-                    $this->yellow($this->truncate('⚠ ' . $prompt->label, $prompt->terminal()->cols() - 6)),
+                    $this->yellow($this->truncate('⚠ '.$prompt->label, $prompt->terminal()->cols() - 6)),
                     $message,
                     color: 'yellow',
                     info: $prompt->info,
@@ -89,9 +88,9 @@ class CalloutRenderer extends Renderer
 
                 foreach ($lines as $index => $line) {
                     if ($index === 0) {
-                        $finalLines[] = $this->dim('·') . ' ' . $line;
+                        $finalLines[] = $this->dim('·').' '.$line;
                     } else {
-                        $finalLines[] = '  ' . $line;
+                        $finalLines[] = '  '.$line;
                     }
                 }
 
@@ -112,10 +111,10 @@ class CalloutRenderer extends Renderer
 
                 foreach ($lines as $index => $line) {
                     if ($index === 0) {
-                        $partLines[] = $this->dim(mb_str_pad(($i + 1) . '.', $widestNumber, pad_type: STR_PAD_LEFT)) . ' ' . $line;
+                        $partLines[] = $this->dim(mb_str_pad(($i + 1).'.', $widestNumber, pad_type: STR_PAD_LEFT)).' '.$line;
                     } else {
                         // +1 for ' ' after number
-                        $partLines[] = str_repeat(' ', $widestNumber + 1) . $line;
+                        $partLines[] = str_repeat(' ', $widestNumber + 1).$line;
                     }
                 }
 
@@ -128,7 +127,7 @@ class CalloutRenderer extends Renderer
         if ($part instanceof KeyValueList) {
             $items = $part->content();
             $keys = array_keys($items);
-            $widestKey = max(array_map(fn($key) => mb_strwidth($key), $keys));
+            $widestKey = max(array_map(fn ($key) => mb_strwidth($key), $keys));
 
             $finalLines = [];
 
@@ -139,9 +138,9 @@ class CalloutRenderer extends Renderer
 
                 foreach ($lines as $index => $line) {
                     if ($index === 0) {
-                        $finalLines[] = $this->dim($paddedKey) . '  ' . $line;
+                        $finalLines[] = $this->dim($paddedKey).'  '.$line;
                     } else {
-                        $finalLines[] = str_repeat(' ', $widestKey + 2) . $line;
+                        $finalLines[] = str_repeat(' ', $widestKey + 2).$line;
                     }
                 }
             }
