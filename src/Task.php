@@ -322,7 +322,7 @@ class Task extends Prompt
 
         $this->eraseRenderedLines();
 
-        if ($success) {
+        if ($this->keepSummary && $success && count($this->stableMessages) === 0) {
             $this->printCompletionLine();
         }
     }
