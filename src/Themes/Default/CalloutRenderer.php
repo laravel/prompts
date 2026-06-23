@@ -4,7 +4,7 @@ namespace Laravel\Prompts\Themes\Default;
 
 use InvalidArgumentException;
 use Laravel\Prompts\Elements\BulletedList;
-use Laravel\Prompts\Elements\Contract as ElementContract;
+use Laravel\Prompts\Elements\ElementContract;
 use Laravel\Prompts\Elements\Heading;
 use Laravel\Prompts\Elements\KeyValueList;
 use Laravel\Prompts\Elements\NumberedList;
@@ -14,7 +14,6 @@ use Laravel\Prompts\Themes\Default\Concerns\InteractsWithStrings;
 class CalloutRenderer extends Renderer
 {
     use Concerns\DrawsBoxes;
-    use InteractsWithStrings;
 
     /**
      * Render the text prompt.
@@ -63,14 +62,13 @@ class CalloutRenderer extends Renderer
         };
     }
 
-    protected function resolvePart(string|ElementContract $part)
+    /**
+     * Resolve a part of the callout content into a string or array of strings.
+     */
+    protected function resolvePart(string|ElementContract $part): string|array
     {
         if (is_string($part)) {
             return $part;
-        }
-
-        if (!$part instanceof ElementContract) {
-            throw new InvalidArgumentException('Unknown argument type sent to ' . self::class);
         }
 
         if ($part instanceof Heading) {
@@ -122,7 +120,7 @@ class CalloutRenderer extends Renderer
         if ($part instanceof KeyValueList) {
             $items = $part->content();
             $keys = array_keys($items);
-            $widestKey = max(array_map(fn ($key) => mb_strwidth($key), $keys));
+            $widestKey = max(array_map(fn($key) => mb_strwidth($key), $keys));
 
             $finalLines = [];
 

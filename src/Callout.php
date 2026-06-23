@@ -5,7 +5,7 @@ namespace Laravel\Prompts;
 class Callout extends Prompt
 {
     /**
-     * Create a new Note instance.
+     * Create a new Callout instance.
      */
     public function __construct(
         public string $label,
@@ -25,7 +25,7 @@ class Callout extends Prompt
     }
 
     /**
-     * Display the note.
+     * Display the callout.
      */
     public function prompt(): bool
     {

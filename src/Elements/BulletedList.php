@@ -2,7 +2,7 @@
 
 namespace Laravel\Prompts\Elements;
 
-class BulletedList implements Contract
+class BulletedList implements ElementContract
 {
     public function __construct(protected array $items)
     {

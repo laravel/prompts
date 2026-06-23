@@ -2,7 +2,7 @@
 
 namespace Laravel\Prompts\Elements;
 
-class Heading implements Contract
+class Heading implements ElementContract
 {
     public function __construct(protected string $text)
     {

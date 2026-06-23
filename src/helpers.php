@@ -4,7 +4,7 @@ namespace Laravel\Prompts;
 
 use Closure;
 use Illuminate\Support\Collection;
-use Laravel\Prompts\Elements\Contract as ElementContract;
+use Laravel\Prompts\Elements\ElementContract;
 
 if (! function_exists('\Laravel\Prompts\text')) {
     /**

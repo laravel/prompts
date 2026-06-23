@@ -2,7 +2,7 @@
 
 namespace Laravel\Prompts\Elements;
 
-interface Contract
+interface ElementContract
 {
     public function content(): array;
 }

@@ -2,7 +2,7 @@
 
 namespace Laravel\Prompts\Elements;
 
-class KeyValueList implements Contract
+class KeyValueList implements ElementContract
 {
     public function __construct(protected array $items)
     {

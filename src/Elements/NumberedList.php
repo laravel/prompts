@@ -2,7 +2,7 @@
 
 namespace Laravel\Prompts\Elements;
 
-class NumberedList implements Contract
+class NumberedList implements ElementContract
 {
     public function __construct(protected array $items)
     {
