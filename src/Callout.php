@@ -2,12 +2,14 @@
 
 namespace Laravel\Prompts;
 
+use Laravel\Prompts\Elements\ElementContract;
+
 class Callout extends Prompt
 {
     /**
      * Create a new Callout instance.
      *
-     * @param  string|array<int, string|\Laravel\Prompts\Elements\ElementContract>  $content
+     * @param  string|array<int, string|ElementContract>  $content
      */
     public function __construct(
         public string $label,
