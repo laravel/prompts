@@ -24,10 +24,10 @@ it('renders a task while executing a callback and then returns the value', funct
     Prompt::assertOutputContains('Running...');
 });
 
-it('prints a completion line after the task finishes in static mode', function () {
+it('prints a completion line after the task finishes in static mode with keepSummary', function () {
     Prompt::fake();
 
-    $task = new Task(label: 'My Task');
+    $task = new Task(label: 'My Task', keepSummary: true);
 
     $renderStatically = new ReflectionMethod($task, 'renderStatically');
     $renderStatically->setAccessible(true);
@@ -36,10 +36,22 @@ it('prints a completion line after the task finishes in static mode', function (
     Prompt::assertStrippedOutputContains('✔ My Task');
 });
 
-it('does not print a completion line when the callback throws in static mode', function () {
+it('does not print a completion line without keepSummary in static mode', function () {
     Prompt::fake();
 
     $task = new Task(label: 'My Task');
+
+    $renderStatically = new ReflectionMethod($task, 'renderStatically');
+    $renderStatically->setAccessible(true);
+    $renderStatically->invoke($task, fn (Logger $logger) => null);
+
+    Prompt::assertStrippedOutputDoesntContain('✔ My Task');
+});
+
+it('does not print a completion line when the callback throws in static mode', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'My Task', keepSummary: true);
 
     $renderStatically = new ReflectionMethod($task, 'renderStatically');
     $renderStatically->setAccessible(true);
