@@ -4,6 +4,7 @@ namespace Laravel\Prompts\Concerns;
 
 use InvalidArgumentException;
 use Laravel\Prompts\AutoCompletePrompt;
+use Laravel\Prompts\Callout;
 use Laravel\Prompts\Clear;
 use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\DataTablePrompt;
@@ -11,7 +12,6 @@ use Laravel\Prompts\Grid;
 use Laravel\Prompts\MultiSearchPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
 use Laravel\Prompts\Note;
-use Laravel\Prompts\Callout;
 use Laravel\Prompts\NumberPrompt;
 use Laravel\Prompts\PasswordPrompt;
 use Laravel\Prompts\PausePrompt;
