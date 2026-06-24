@@ -7,8 +7,10 @@ class BulletedList implements ElementContract
     /**
      * @param  array<int, string>  $items
      */
-    public function __construct(protected array $items)
-    {
+    public function __construct(
+        protected array $items,
+        public readonly bool $spaced = false,
+    ) {
         //
     }
 

@@ -20,7 +20,27 @@ callout(
 callout(
     'Database Connection Failed',
     'Could not connect to MySQL on 127.0.0.1:3306. Check that the service is running and your DB_PASSWORD is correct in .env.',
-    'error'
+    'error',
+);
+
+callout(
+    'Server Health Check',
+    [
+        'Multiple services are reporting degraded performance.',
+        Element::heading('Affected Services'),
+        Element::bulletedList([
+            'Redis cache hit rate dropped to 42%',
+            'Queue worker memory usage exceeding 256MB',
+            'Scheduled task runner missed 3 jobs in the last hour',
+        ]),
+        Element::heading('Recommended Actions'),
+        Element::numberedList([
+            'Flush the Redis cache with `php artisan cache:clear`',
+            'Restart queue workers with `php artisan queue:restart`',
+            'Review the schedule output with `php artisan schedule:list`',
+        ]),
+    ],
+    'warning',
 );
 
 callout(
@@ -110,5 +130,25 @@ callout(
             'Add an `if not exists` check to the migration',
         ]),
     ],
-    'error'
+    'error',
+);
+
+callout(
+    'Server Health Check',
+    [
+        'Multiple services are reporting degraded performance.',
+        Element::heading('Affected Services'),
+        Element::bulletedList([
+            'Redis cache hit rate dropped to 42%',
+            'Queue worker memory usage exceeding 256MB',
+            'Scheduled task runner missed 3 jobs in the last hour',
+        ], spaced: true),
+        Element::heading('Recommended Actions'),
+        Element::numberedList([
+            'Flush the Redis cache with `php artisan cache:clear`',
+            'Restart queue workers with `php artisan queue:restart`',
+            'Review the schedule output with `php artisan schedule:list`',
+        ], spaced: true),
+    ],
+    'warning',
 );
