@@ -1,6 +1,14 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.19...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.20...main)
+
+## [v0.3.20](https://github.com/laravel/prompts/compare/v0.3.19...v0.3.20) - 2026-06-24
+
+### What's Changed
+
+* Add `spaced` option to bulleted and numbered lists by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/251
+
+**Full Changelog**: https://github.com/laravel/prompts/compare/v0.3.19...v0.3.20
 
 ## [v0.3.19](https://github.com/laravel/prompts/compare/v0.3.18...v0.3.19) - 2026-06-23
 
