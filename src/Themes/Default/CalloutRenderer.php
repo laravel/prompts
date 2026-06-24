@@ -81,21 +81,29 @@ class CalloutRenderer extends Renderer
         }
 
         if ($part instanceof BulletedList) {
-            return array_map(function ($p) {
+            $finalLines = [];
+
+            foreach ($part->content() as $i => $p) {
                 $p = $this->autoFormat($p);
                 $lines = $this->ansiWordwrap($p, $this->minWidth - 2);
-                $finalLines = [];
+                $partLines = [];
+
+                if ($part->spaced && $i !== 0) {
+                    $partLines[] = '';
+                }
 
                 foreach ($lines as $index => $line) {
                     if ($index === 0) {
-                        $finalLines[] = $this->dim('·').' '.$line;
+                        $partLines[] = $this->dim('·').' '.$line;
                     } else {
-                        $finalLines[] = '  '.$line;
+                        $partLines[] = '  '.$line;
                     }
                 }
 
-                return implode(PHP_EOL, $finalLines);
-            }, $part->content());
+                $finalLines[] = implode(PHP_EOL, $partLines);
+            }
+
+            return $finalLines;
         }
 
         if ($part instanceof NumberedList) {
@@ -108,6 +116,10 @@ class CalloutRenderer extends Renderer
                 // -1 for ' ' after number
                 $p = $this->autoFormat($p);
                 $lines = $this->ansiWordwrap($p, $this->minWidth - $widestNumber - 1);
+
+                if ($part->spaced && $i !== 0) {
+                    $partLines[] = '';
+                }
 
                 foreach ($lines as $index => $line) {
                     if ($index === 0) {

@@ -12,17 +12,17 @@ class Element
     /**
      * @param  array<int, string>  $items
      */
-    public static function bulletedList(array $items): BulletedList
+    public static function bulletedList(array $items, bool $spaced = false): BulletedList
     {
-        return new BulletedList($items);
+        return new BulletedList($items, $spaced);
     }
 
     /**
      * @param  array<int, string>  $items
      */
-    public static function numberedList(array $items): NumberedList
+    public static function numberedList(array $items, bool $spaced = false): NumberedList
     {
-        return new NumberedList($items);
+        return new NumberedList($items, $spaced);
     }
 
     /**
