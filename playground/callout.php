@@ -4,7 +4,7 @@ use Laravel\Prompts\Elements\Element;
 
 use function Laravel\Prompts\callout;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 callout(
     'Environment Configured',
