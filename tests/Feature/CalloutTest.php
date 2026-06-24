@@ -128,6 +128,48 @@ it('renders a callout with mixed content', function () {
     Prompt::assertOutputContains('deploy-id: xyz');
 });
 
+it('renders a callout with a spaced bulleted list', function () {
+    Prompt::fake();
+
+    callout('Summary', [
+        Element::bulletedList([
+            'First item',
+            'Second item',
+            'Third item',
+        ], spaced: true),
+    ]);
+
+    $content = Prompt::strippedContent();
+
+    expect($content)->toContain('· First item');
+    expect($content)->toContain('· Second item');
+    expect($content)->toContain('· Third item');
+
+    preg_match('/· First item.*\n(.*)\n.*· Second item/s', $content, $matches);
+    expect($matches)->not->toBeEmpty('Expected a blank line between first and second items');
+});
+
+it('renders a callout with a spaced numbered list', function () {
+    Prompt::fake();
+
+    callout('Steps', [
+        Element::numberedList([
+            'Step one',
+            'Step two',
+            'Step three',
+        ], spaced: true),
+    ]);
+
+    $content = Prompt::strippedContent();
+
+    expect($content)->toContain('1. Step one');
+    expect($content)->toContain('2. Step two');
+    expect($content)->toContain('3. Step three');
+
+    preg_match('/1\. Step one.*\n(.*)\n.*2\. Step two/s', $content, $matches);
+    expect($matches)->not->toBeEmpty('Expected a blank line between first and second items');
+});
+
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
 
