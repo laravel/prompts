@@ -1,6 +1,27 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.18...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.19...main)
+
+## [v0.3.19](https://github.com/laravel/prompts/compare/v0.3.18...v0.3.19) - 2026-06-23
+
+### What's Changed
+
+* Bump shivammathur/setup-php from 2.37.0 to 2.37.1 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/prompts/pull/241
+* Add Dependabot cooldown of 5 days by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/prompts/pull/243
+* Enable Dependabot auto-merge by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/prompts/pull/244
+* Bump actions/checkout from 6.0.2 to 6.0.3 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/prompts/pull/245
+* Bump shivammathur/setup-php from 2.37.1 to 2.37.2 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/prompts/pull/247
+* Add callout component by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/250
+* Use static rendering for Spinner when output is not decorated by [@lazerg](https://github.com/lazerg) in https://github.com/laravel/prompts/pull/249
+* Print completion line after task finishes by [@lazerg](https://github.com/lazerg) in https://github.com/laravel/prompts/pull/248
+
+### New Contributors
+
+* [@dependabot](https://github.com/dependabot)[bot] made their first contribution in https://github.com/laravel/prompts/pull/241
+* [@nunomaduro](https://github.com/nunomaduro) made their first contribution in https://github.com/laravel/prompts/pull/243
+* [@lazerg](https://github.com/lazerg) made their first contribution in https://github.com/laravel/prompts/pull/249
+
+**Full Changelog**: https://github.com/laravel/prompts/compare/v0.3.18...v0.3.19
 
 ## [v0.3.18](https://github.com/laravel/prompts/compare/v0.3.17...v0.3.18) - 2026-05-19
 
