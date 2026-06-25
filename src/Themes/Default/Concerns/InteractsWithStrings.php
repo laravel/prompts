@@ -147,7 +147,7 @@ trait InteractsWithStrings
             $segmentChars = mb_str_split($segment['text']);
 
             foreach ($segmentChars as $char) {
-                $chars[] = ['char' => $char, 'codes' => $segment['codes'], 'link' => $segment['link'] ?? ''];
+                $chars[] = ['char' => $char, 'codes' => $segment['codes'], 'link' => $segment['link']];
             }
         }
 

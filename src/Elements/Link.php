@@ -13,7 +13,7 @@ class Link implements ElementContract
     }
 
     /**
-     * @return array<string, string>
+     * @return array<int, string>
      */
     public function content(): array
     {
