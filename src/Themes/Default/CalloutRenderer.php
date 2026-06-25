@@ -2,6 +2,7 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
+use InvalidArgumentException;
 use Laravel\Prompts\Callout;
 use Laravel\Prompts\Elements\BulletedList;
 use Laravel\Prompts\Elements\ElementContract;
@@ -74,17 +75,13 @@ class CalloutRenderer extends Renderer
         }
 
         if ($part instanceof Heading) {
-            return $this->bold(
-                $this->autoFormat(
-                    implode('', $part->content())
-                ),
-            );
+            return $this->bold($this->autoFormat($part->text));
         }
 
         if ($part instanceof BulletedList) {
             $finalLines = [];
 
-            foreach ($part->content() as $i => $p) {
+            foreach ($part->items as $i => $p) {
                 $p = $this->autoFormat($p);
                 $lines = $this->ansiWordwrap($p, $this->minWidth - 2);
                 $partLines = [];
@@ -110,9 +107,9 @@ class CalloutRenderer extends Renderer
         if ($part instanceof NumberedList) {
             $finalLines = [];
 
-            foreach ($part->content() as $i => $p) {
+            foreach ($part->items as $i => $p) {
                 // +1 for "."
-                $widestNumber = mb_strwidth((string) count($part->content())) + 1;
+                $widestNumber = mb_strwidth((string) count($part->items)) + 1;
                 $partLines = [];
                 // -1 for ' ' after number
                 $p = $this->autoFormat($p);
@@ -138,7 +135,7 @@ class CalloutRenderer extends Renderer
         }
 
         if ($part instanceof KeyValueList) {
-            $items = $part->content();
+            $items = $part->items;
             $keys = array_keys($items);
             $widestKey = max(array_map(fn ($key) => mb_strwidth($key), $keys));
 
@@ -165,7 +162,7 @@ class CalloutRenderer extends Renderer
             return (string) $part;
         }
 
-        return $this->autoFormat(implode(PHP_EOL, $part->content()));
+        throw new InvalidArgumentException('Unsupported callout content part: '.get_debug_type($part));
     }
 
     /**
