@@ -7,6 +7,7 @@ use Laravel\Prompts\Elements\BulletedList;
 use Laravel\Prompts\Elements\ElementContract;
 use Laravel\Prompts\Elements\Heading;
 use Laravel\Prompts\Elements\KeyValueList;
+use Laravel\Prompts\Elements\Link;
 use Laravel\Prompts\Elements\NumberedList;
 
 class CalloutRenderer extends Renderer
@@ -158,6 +159,10 @@ class CalloutRenderer extends Renderer
             }
 
             return $finalLines;
+        }
+
+        if ($part instanceof Link) {
+            return (string) $part;
         }
 
         return $this->autoFormat(implode(PHP_EOL, $part->content()));

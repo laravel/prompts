@@ -170,6 +170,31 @@ it('renders a callout with a spaced numbered list', function () {
     expect($matches)->not->toBeEmpty('Expected a blank line between first and second items');
 });
 
+it('renders a callout with a link element', function () {
+    Prompt::fake();
+
+    callout('Info', [
+        'Visit the dashboard:',
+        Element::link('https://example.com', 'Dashboard'),
+    ]);
+
+    Prompt::assertOutputContains('Info');
+    Prompt::assertOutputContains('Dashboard');
+    Prompt::assertOutputContains("\e]8;;https://example.com\e\\");
+});
+
+it('renders a callout with an inline link', function () {
+    Prompt::fake();
+
+    callout('Info', [
+        'Go here: '.Element::link('https://example.com', 'My Link'),
+    ]);
+
+    Prompt::assertOutputContains('Go here:');
+    Prompt::assertOutputContains('My Link');
+    Prompt::assertOutputContains("\e]8;;https://example.com\e\\");
+});
+
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
 

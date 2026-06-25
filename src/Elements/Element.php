@@ -32,4 +32,9 @@ class Element
     {
         return new KeyValueList($items);
     }
+
+    public static function link(string $url, ?string $label = null, bool $underline = true): Link
+    {
+        return new Link($url, $label, $underline);
+    }
 }
