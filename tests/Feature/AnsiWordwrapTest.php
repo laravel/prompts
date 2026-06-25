@@ -88,3 +88,35 @@ it('preserves unstyled text that does not need wrapping', function () use ($inst
 
     expect($result)->toBe(['Short']);
 });
+
+it('preserves OSC 8 hyperlink sequences', function () use ($instance) {
+    $result = $instance->wrap("Click \e]8;;https://example.com\e\\here\e]8;;\e\\", 80);
+
+    expect($result)->toHaveCount(1);
+    expect($result[0])->toContain("\e]8;;https://example.com\e\\");
+    expect($result[0])->toContain('here');
+    expect($result[0])->toContain("\e]8;;\e\\");
+});
+
+it('closes and reopens OSC 8 hyperlink when wrapping across lines', function () use ($instance) {
+    $result = $instance->wrap("\e]8;;https://example.com\e\\Hello World\e]8;;\e\\", 5);
+
+    expect($result)->toHaveCount(2);
+    // First line: link opens, text, link closes
+    expect($result[0])->toContain("\e]8;;https://example.com\e\\");
+    expect($result[0])->toContain('Hello');
+    expect($result[0])->toEndWith("\e]8;;\e\\");
+    // Second line: link reopens, text, link closes
+    expect($result[1])->toContain("\e]8;;https://example.com\e\\");
+    expect($result[1])->toContain('World');
+    expect($result[1])->toEndWith("\e]8;;\e\\");
+});
+
+it('handles OSC 8 hyperlink with ANSI codes inside', function () use ($instance) {
+    $result = $instance->wrap("\e]8;;https://example.com\e\\\e[4mLink Text\e[0m\e]8;;\e\\", 80);
+
+    expect($result)->toHaveCount(1);
+    expect($result[0])->toContain("\e]8;;https://example.com\e\\");
+    expect($result[0])->toContain("\e[4m");
+    expect($result[0])->toContain('Link Text');
+});

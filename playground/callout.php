@@ -152,3 +152,13 @@ callout(
     ],
     'warning',
 );
+
+callout(
+    'Server Health Check',
+    [
+        'Multiple services are reporting degraded performance.',
+        Element::heading('Affected Services'),
+        'Look here: '.Element::link('https://example.com/health', 'Health Dashboard'),
+        Element::link('https://example.com/health'),
+    ],
+);
