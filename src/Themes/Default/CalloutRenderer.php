@@ -159,7 +159,11 @@ class CalloutRenderer extends Renderer
         }
 
         if ($part instanceof Link) {
-            return (string) $part;
+            $text = $part->underline
+                ? "\e[4;36m{$part->label}\e[0m"
+                : $this->cyan($part->label);
+
+            return "\e]8;;{$part->url}\e\\{$text}\e]8;;\e\\";
         }
 
         throw new InvalidArgumentException('Unsupported callout content part: '.get_debug_type($part));
@@ -170,7 +174,18 @@ class CalloutRenderer extends Renderer
      */
     protected function autoFormat(string $text): string
     {
-        // Format inline code blocks wrapped in backticks with cyan color.
-        return preg_replace('/`([^`]+)`/', $this->cyan('`$1`'), $text);
+        $text = preg_replace('/`([^`]+)`/', $this->cyan('`$1`'), $text);
+
+        $text = preg_replace_callback('/\e\]8;;(.+?)\e\\\\(.*?)\e\]8;;\e\\\\/', function ($matches) {
+            $visibleText = $this->stripEscapeSequences($matches[2]);
+            $hadUnderline = str_contains($matches[2], "\e[4m");
+            $styled = $hadUnderline
+                ? "\e[4;36m{$visibleText}\e[0m"
+                : $this->cyan($visibleText);
+
+            return "\e]8;;{$matches[1]}\e\\{$styled}\e]8;;\e\\";
+        }, $text);
+
+        return $text;
     }
 }
