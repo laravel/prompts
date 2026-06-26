@@ -1,6 +1,18 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.20...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.21...main)
+
+## [v0.3.21](https://github.com/laravel/prompts/compare/v0.3.20...v0.3.21) - 2026-06-26
+
+### What's Changed
+
+* Bump actions/checkout from 6.0.3 to 7.0.0 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/prompts/pull/252
+* Add Link element with OSC 8 hyperlink support by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/253
+* Remove `content()` from elements in favor of public readonly properties by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/254
+* Highlight links in callouts by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/255
+* Clean up callout rendering logic by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/prompts/pull/256
+
+**Full Changelog**: https://github.com/laravel/prompts/compare/v0.3.20...v0.3.21
 
 ## [v0.3.20](https://github.com/laravel/prompts/compare/v0.3.19...v0.3.20) - 2026-06-24
 
