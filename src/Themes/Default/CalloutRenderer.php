@@ -70,103 +70,125 @@ class CalloutRenderer extends Renderer
      */
     protected function resolvePart(string|ElementContract $part): string|array
     {
-        if (is_string($part)) {
-            return $this->autoFormat($part);
-        }
+        return match (true) {
+            is_string($part) => $this->autoFormat($part),
+            $part instanceof Heading => $this->bold($this->autoFormat($part->text)),
+            $part instanceof BulletedList => $this->renderBulletedList($part),
+            $part instanceof NumberedList => $this->renderNumberedList($part),
+            $part instanceof KeyValueList => $this->renderKeyValueList($part),
+            $part instanceof Link => $this->renderLink($part),
+            default => throw new InvalidArgumentException('Unsupported callout content part: '.get_debug_type($part)),
+        };
+    }
 
-        if ($part instanceof Heading) {
-            return $this->bold($this->autoFormat($part->text));
-        }
+    /**
+     * Render a bulleted list element.
+     *
+     * @return array<int, string>
+     */
+    protected function renderBulletedList(BulletedList $part): array
+    {
+        $finalLines = [];
 
-        if ($part instanceof BulletedList) {
-            $finalLines = [];
+        foreach ($part->items as $i => $p) {
+            $p = $this->autoFormat($p);
+            $lines = $this->ansiWordwrap($p, $this->minWidth - 2);
+            $partLines = [];
 
-            foreach ($part->items as $i => $p) {
-                $p = $this->autoFormat($p);
-                $lines = $this->ansiWordwrap($p, $this->minWidth - 2);
-                $partLines = [];
-
-                if ($part->spaced && $i !== 0) {
-                    $partLines[] = '';
-                }
-
-                foreach ($lines as $index => $line) {
-                    if ($index === 0) {
-                        $partLines[] = $this->dim('·').' '.$line;
-                    } else {
-                        $partLines[] = '  '.$line;
-                    }
-                }
-
-                $finalLines[] = implode(PHP_EOL, $partLines);
+            if ($part->spaced && $i !== 0) {
+                $partLines[] = '';
             }
 
-            return $finalLines;
-        }
-
-        if ($part instanceof NumberedList) {
-            $finalLines = [];
-
-            foreach ($part->items as $i => $p) {
-                // +1 for "."
-                $widestNumber = mb_strwidth((string) count($part->items)) + 1;
-                $partLines = [];
-                // -1 for ' ' after number
-                $p = $this->autoFormat($p);
-                $lines = $this->ansiWordwrap($p, $this->minWidth - $widestNumber - 1);
-
-                if ($part->spaced && $i !== 0) {
-                    $partLines[] = '';
-                }
-
-                foreach ($lines as $index => $line) {
-                    if ($index === 0) {
-                        $partLines[] = $this->dim(mb_str_pad(($i + 1).'.', $widestNumber, pad_type: STR_PAD_LEFT)).' '.$line;
-                    } else {
-                        // +1 for ' ' after number
-                        $partLines[] = str_repeat(' ', $widestNumber + 1).$line;
-                    }
-                }
-
-                $finalLines[] = implode(PHP_EOL, $partLines);
-            }
-
-            return $finalLines;
-        }
-
-        if ($part instanceof KeyValueList) {
-            $items = $part->items;
-            $keys = array_keys($items);
-            $widestKey = max(array_map(fn ($key) => mb_strwidth($key), $keys));
-
-            $finalLines = [];
-
-            foreach ($items as $key => $value) {
-                $paddedKey = mb_str_pad($key, $widestKey);
-                $value = $this->autoFormat($value);
-                $lines = $this->ansiWordwrap($value, $this->minWidth - $widestKey - 2);
-
-                foreach ($lines as $index => $line) {
-                    if ($index === 0) {
-                        $finalLines[] = $this->dim($paddedKey).'  '.$line;
-                    } else {
-                        $finalLines[] = str_repeat(' ', $widestKey + 2).$line;
-                    }
+            foreach ($lines as $index => $line) {
+                if ($index === 0) {
+                    $partLines[] = $this->dim('·').' '.$line;
+                } else {
+                    $partLines[] = '  '.$line;
                 }
             }
 
-            return $finalLines;
+            $finalLines[] = implode(PHP_EOL, $partLines);
         }
 
-        if ($part instanceof Link) {
-            $text = $part->underline
-                ? "\e[4;36m{$part->label}\e[0m"
-                : $this->cyan($part->label);
+        return $finalLines;
+    }
 
-            return "\e]8;;{$part->url}\e\\{$text}\e]8;;\e\\";
+    /**
+     * Render a numbered list element.
+     *
+     * @return array<int, string>
+     */
+    protected function renderNumberedList(NumberedList $part): array
+    {
+        $finalLines = [];
+        // +1 for "."
+        $widestNumber = mb_strwidth((string) count($part->items)) + 1;
+
+        foreach ($part->items as $i => $p) {
+            $partLines = [];
+            // -1 for ' ' after number
+            $p = $this->autoFormat($p);
+            $lines = $this->ansiWordwrap($p, $this->minWidth - $widestNumber - 1);
+
+            if ($part->spaced && $i !== 0) {
+                $partLines[] = '';
+            }
+
+            foreach ($lines as $index => $line) {
+                if ($index === 0) {
+                    $partLines[] = $this->dim(mb_str_pad(($i + 1).'.', $widestNumber, pad_type: STR_PAD_LEFT)).' '.$line;
+                } else {
+                    // +1 for ' ' after number
+                    $partLines[] = str_repeat(' ', $widestNumber + 1).$line;
+                }
+            }
+
+            $finalLines[] = implode(PHP_EOL, $partLines);
         }
 
-        throw new InvalidArgumentException('Unsupported callout content part: '.get_debug_type($part));
+        return $finalLines;
+    }
+
+    /**
+     * Render a key-value list element.
+     *
+     * @return array<int, string>
+     */
+    protected function renderKeyValueList(KeyValueList $part): array
+    {
+        $items = $part->items;
+        $keys = array_keys($items);
+        $widestKey = max(array_map(fn ($key) => mb_strwidth($key), $keys));
+
+        $finalLines = [];
+
+        foreach ($items as $key => $value) {
+            $paddedKey = mb_str_pad($key, $widestKey);
+            $value = $this->autoFormat($value);
+            $lines = $this->ansiWordwrap($value, $this->minWidth - $widestKey - 2);
+
+            foreach ($lines as $index => $line) {
+                if ($index === 0) {
+                    $finalLines[] = $this->dim($paddedKey).'  '.$line;
+                } else {
+                    $finalLines[] = str_repeat(' ', $widestKey + 2).$line;
+                }
+            }
+        }
+
+        return $finalLines;
+    }
+
+    /**
+     * Render a link element.
+     */
+    protected function renderLink(Link $part): string
+    {
+        $text = $part->underline
+            ? "\e[4;36m{$part->label}\e[0m"
+            : $this->cyan($part->label);
+
+        return "\e]8;;{$part->url}\e\\{$text}\e]8;;\e\\";
     }
 
     /**
