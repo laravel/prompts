@@ -59,14 +59,18 @@ class ConfirmPrompt extends Prompt
      */
     protected function coerceSkipped(mixed $value): mixed
     {
-        if (is_bool($value) || $value === null) {
+        if (is_bool($value)) {
             return $value;
         }
 
         if (is_string($value)) {
             $parsed = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
-            return $parsed ?? $value;
+            if ($parsed === null) {
+                $this->throwSkippedValidation('Must be a boolean.');
+            }
+
+            return $parsed;
         }
 
         return (bool) $value;

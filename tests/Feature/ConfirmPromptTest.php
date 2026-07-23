@@ -190,3 +190,9 @@ it('coerces falsy string skipUsing values to bool', function (string $input) {
 
     expect($result)->toBeFalse();
 })->with(['0', 'false', 'no', 'off', 'FALSE', 'No']);
+
+it('throws when a skipUsing string is not a boolean', function (string $input) {
+    Prompt::fake([]);
+
+    confirm(label: 'Are you sure?', skipUsing: $input);
+})->with(['maybe', 'y', 'n'])->throws(SkippedValueValidationException::class, 'Must be a boolean.');
