@@ -258,16 +258,16 @@ it('correctly handles multi-byte strings for the up arrow', function () {
     );
 });
 
-it('skips the prompt when skipWhen is provided', function () {
+it('skips the prompt when skipUsing is provided', function () {
     Prompt::fake([]);
 
-    $result = textarea(label: 'What is your story?', skipWhen: "Line one\nLine two");
+    $result = textarea(label: 'What is your story?', skipUsing: "Line one\nLine two");
 
     expect($result)->toBe("Line one\nLine two");
 });
 
-it('throws when a skipWhen value is invalid', function () {
+it('throws when a skipUsing value is invalid', function () {
     Prompt::fake([]);
 
-    textarea(label: 'What is your story?', required: true, skipWhen: '');
+    textarea(label: 'What is your story?', required: true, skipUsing: '');
 })->throws(SkippedValueValidationException::class, 'Required.');

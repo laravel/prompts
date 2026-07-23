@@ -169,16 +169,16 @@ it('handles a failed terminal read gracefully', function () {
     expect($result)->toBe('');
 });
 
-it('skips the prompt when skipWhen is provided', function () {
+it('skips the prompt when skipUsing is provided', function () {
     Prompt::fake([]);
 
-    $result = text(label: 'What is your name?', skipWhen: 'Taylor');
+    $result = text(label: 'What is your name?', skipUsing: 'Taylor');
 
     expect($result)->toBe('Taylor');
 });
 
-it('throws when a skipWhen value is invalid', function () {
+it('throws when a skipUsing value is invalid', function () {
     Prompt::fake([]);
 
-    text(label: 'What is your name?', required: true, skipWhen: '');
+    text(label: 'What is your name?', required: true, skipUsing: '');
 })->throws(SkippedValueValidationException::class, 'Required.');

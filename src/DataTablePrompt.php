@@ -54,9 +54,9 @@ class DataTablePrompt extends Prompt
         public mixed $validate = null,
         public ?Closure $transform = null,
         public ?Closure $filter = null,
-        mixed $skipWhen = null,
+        mixed $skipUsing = null,
     ) {
-        parent::__construct($skipWhen);
+        parent::__construct($skipUsing);
 
         if ($rows === null) {
             $rows = $headers;

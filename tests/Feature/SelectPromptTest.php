@@ -385,25 +385,25 @@ it('handles falsy default', function () {
     expect($result)->toBe('0');
 });
 
-it('skips the prompt when skipWhen is provided', function () {
+it('skips the prompt when skipUsing is provided', function () {
     Prompt::fake([]);
 
     $result = select(
         label: 'Pick one',
         options: ['red' => 'Red', 'green' => 'Green'],
-        skipWhen: 'green',
+        skipUsing: 'green',
     );
 
     expect($result)->toBe('green');
 });
 
-it('throws when a skipWhen value is not in the options', function () {
+it('throws when a skipUsing value is not in the options', function () {
     Prompt::fake([]);
 
     select(
         label: 'Pick one',
         options: ['red' => 'Red', 'green' => 'Green'],
         validate: fn ($value) => array_key_exists($value, ['red' => 'Red', 'green' => 'Green']) ? null : 'Invalid option.',
-        skipWhen: 'purple',
+        skipUsing: 'purple',
     );
 })->throws(SkippedValueValidationException::class, 'Invalid option.');

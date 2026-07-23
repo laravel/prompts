@@ -63,9 +63,9 @@ abstract class Prompt
     public mixed $validate;
 
     /**
-     * A pre-resolved value that short-circuits the prompt when not null.
+     * A pre-resolved value, or a resolver closure, that short-circuits the prompt when it yields a non-null value.
      */
-    public mixed $skipWhen = null;
+    public mixed $skipUsing = null;
 
     /**
      * The cancellation callback.
@@ -97,9 +97,9 @@ abstract class Prompt
      */
     protected static Terminal $terminal;
 
-    public function __construct(mixed $skipWhen = null)
+    public function __construct(mixed $skipUsing = null)
     {
-        $this->skipWhen = $skipWhen;
+        $this->skipUsing = $skipUsing;
     }
 
     /**
@@ -113,8 +113,10 @@ abstract class Prompt
     public function prompt(): mixed
     {
         try {
-            if ($this->skipWhen !== null) {
-                return $this->resolveSkipped();
+            $skipped = $this->skipUsing instanceof Closure ? ($this->skipUsing)() : $this->skipUsing;
+
+            if ($skipped !== null) {
+                return $this->resolveSkipped($skipped);
             }
 
             $this->capturePreviousNewLines();
@@ -459,22 +461,27 @@ abstract class Prompt
     /**
      * Resolve the pre-supplied skip value.
      */
-    protected function resolveSkipped(): mixed
+    protected function resolveSkipped(mixed $value): mixed
     {
-        $this->state = 'initial';
-        $this->error = '';
-
-        $value = $this->transform($this->coerceSkipped($this->skipWhen));
+        $value = $this->transform($this->coerceSkipped($value));
 
         $error = $this->performValidation($value);
 
         if ($error !== null) {
-            $label = property_exists($this, 'label') && $this->label !== '' ? "{$this->label}: " : '';
-
-            throw new SkippedValueValidationException("{$label}{$error}");
+            $this->throwSkippedValidation($error);
         }
 
         return $value;
+    }
+
+    /**
+     * Throw a validation exception for an invalid skip value.
+     */
+    protected function throwSkippedValidation(string $error): never
+    {
+        $label = property_exists($this, 'label') && $this->label !== '' ? "{$this->label}: " : '';
+
+        throw new SkippedValueValidationException("{$label}{$error}");
     }
 
     /**

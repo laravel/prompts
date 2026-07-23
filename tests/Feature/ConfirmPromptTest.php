@@ -149,44 +149,44 @@ it('supports custom validation', function () {
     Prompt::validateUsing(fn () => null);
 });
 
-it('skips the prompt when skipWhen is true', function () {
+it('skips the prompt when skipUsing is true', function () {
     Prompt::fake([]);
 
-    $result = confirm(label: 'Are you sure?', skipWhen: true);
+    $result = confirm(label: 'Are you sure?', skipUsing: true);
 
     expect($result)->toBeTrue();
 });
 
-it('skips the prompt when skipWhen is false', function () {
+it('skips the prompt when skipUsing is false', function () {
     Prompt::fake([]);
 
-    $result = confirm(label: 'Are you sure?', skipWhen: false);
+    $result = confirm(label: 'Are you sure?', skipUsing: false);
 
     expect($result)->toBeFalse();
 });
 
-it('throws when a skipWhen value fails validation', function () {
+it('throws when a skipUsing value fails validation', function () {
     Prompt::fake([]);
 
     confirm(
         label: 'Are you sure?',
         validate: fn ($value) => $value === false ? 'Must agree.' : null,
-        skipWhen: false,
+        skipUsing: false,
     );
 })->throws(SkippedValueValidationException::class, 'Must agree.');
 
-it('coerces truthy string skipWhen values to bool', function (string $input) {
+it('coerces truthy string skipUsing values to bool', function (string $input) {
     Prompt::fake([]);
 
-    $result = confirm(label: 'Are you sure?', skipWhen: $input);
+    $result = confirm(label: 'Are you sure?', skipUsing: $input);
 
     expect($result)->toBeTrue();
 })->with(['1', 'true', 'yes', 'on', 'TRUE', 'Yes']);
 
-it('coerces falsy string skipWhen values to bool', function (string $input) {
+it('coerces falsy string skipUsing values to bool', function (string $input) {
     Prompt::fake([]);
 
-    $result = confirm(label: 'Are you sure?', skipWhen: $input);
+    $result = confirm(label: 'Are you sure?', skipUsing: $input);
 
     expect($result)->toBeFalse();
 })->with(['0', 'false', 'no', 'off', 'FALSE', 'No']);

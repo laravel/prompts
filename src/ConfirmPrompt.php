@@ -23,9 +23,9 @@ class ConfirmPrompt extends Prompt
         public mixed $validate = null,
         public string $hint = '',
         public ?Closure $transform = null,
-        mixed $skipWhen = null,
+        mixed $skipUsing = null,
     ) {
-        parent::__construct($skipWhen);
+        parent::__construct($skipUsing);
 
         $this->confirmed = $default;
 

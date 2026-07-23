@@ -23,9 +23,9 @@ class NumberPrompt extends Prompt
         public ?int $min = null,
         public ?int $max = null,
         public ?int $step = null,
-        mixed $skipWhen = null,
+        mixed $skipUsing = null,
     ) {
-        parent::__construct($skipWhen);
+        parent::__construct($skipUsing);
 
         $this->trackTypedValue($default);
 

@@ -229,13 +229,13 @@ it('leaves skipped conditional field empty', function () {
     ]);
 });
 
-it('skips every form step when skipWhen is provided on each', function () {
+it('skips every form step when skipUsing is provided on each', function () {
     Prompt::fake([]);
 
     $responses = form()
-        ->text('What is your name?', skipWhen: 'Taylor')
-        ->select('What is your language?', ['PHP', 'JS'], skipWhen: 'PHP')
-        ->confirm('Are you sure?', skipWhen: true)
+        ->text('What is your name?', skipUsing: 'Taylor')
+        ->select('What is your language?', ['PHP', 'JS'], skipUsing: 'PHP')
+        ->confirm('Are you sure?', skipUsing: true)
         ->submit();
 
     expect($responses)->toBe([
@@ -245,11 +245,11 @@ it('skips every form step when skipWhen is provided on each', function () {
     ]);
 });
 
-it('only prompts the steps without skipWhen', function () {
+it('only prompts the steps without skipUsing', function () {
     Prompt::fake([Key::ENTER]);
 
     $responses = form()
-        ->text('What is your name?', skipWhen: 'Taylor')
+        ->text('What is your name?', skipUsing: 'Taylor')
         ->confirm('Are you sure?')
         ->submit();
 
@@ -259,10 +259,10 @@ it('only prompts the steps without skipWhen', function () {
     ]);
 });
 
-it('throws from a form step with an invalid skipWhen value', function () {
+it('throws from a form step with an invalid skipUsing value', function () {
     Prompt::fake([]);
 
     form()
-        ->text('What is your name?', required: true, skipWhen: '')
+        ->text('What is your name?', required: true, skipUsing: '')
         ->submit();
 })->throws(SkippedValueValidationException::class, 'Required.');

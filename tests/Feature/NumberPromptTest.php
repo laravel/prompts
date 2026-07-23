@@ -294,24 +294,24 @@ it('allows customizing the cancellation', function () {
     number(label: 'How many items do you want to buy?');
 })->throws(Exception::class, 'Cancelled.');
 
-it('skips the prompt when skipWhen is provided', function () {
+it('skips the prompt when skipUsing is provided', function () {
     Prompt::fake([]);
 
-    $result = number(label: 'How many?', skipWhen: 42);
+    $result = number(label: 'How many?', skipUsing: 42);
 
     expect($result)->toBe(42);
 });
 
-it('throws when a skipWhen value is not numeric', function () {
+it('throws when a skipUsing value is not numeric', function () {
     Prompt::fake([]);
 
-    number(label: 'How many?', skipWhen: 'abc');
+    number(label: 'How many?', skipUsing: 'abc');
 })->throws(SkippedValueValidationException::class, 'Must be a number');
 
-it('coerces numeric string skipWhen values to int', function () {
+it('coerces numeric string skipUsing values to int', function () {
     Prompt::fake([]);
 
-    $result = number(label: 'How many?', skipWhen: '42');
+    $result = number(label: 'How many?', skipUsing: '42');
 
     expect($result)->toBe(42);
 });

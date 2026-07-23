@@ -541,20 +541,20 @@ it('maintains fixed visual height', function () {
     }
 });
 
-it('skips the prompt when skipWhen is provided', function () {
+it('skips the prompt when skipUsing is provided', function () {
     Prompt::fake([]);
 
     $result = datatable(
         label: 'Select a user',
         headers: ['Name'],
         rows: [['Alice'], ['Bob']],
-        skipWhen: 1,
+        skipUsing: 1,
     );
 
     expect($result)->toBe(1);
 });
 
-it('throws when a skipWhen value is invalid', function () {
+it('throws when a skipUsing value is invalid', function () {
     Prompt::fake([]);
 
     datatable(
@@ -562,6 +562,6 @@ it('throws when a skipWhen value is invalid', function () {
         headers: ['Name'],
         rows: [['Alice']],
         validate: fn ($value) => $value === 0 ? null : 'Invalid selection.',
-        skipWhen: 99,
+        skipUsing: 99,
     );
 })->throws(SkippedValueValidationException::class, 'Invalid selection.');

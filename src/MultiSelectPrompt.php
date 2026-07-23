@@ -47,9 +47,9 @@ class MultiSelectPrompt extends Prompt
         public string $hint = '',
         public ?Closure $transform = null,
         public string|Closure $info = '',
-        mixed $skipWhen = null,
+        mixed $skipUsing = null,
     ) {
-        parent::__construct($skipWhen);
+        parent::__construct($skipUsing);
 
         $this->options = $options instanceof Collection ? $options->all() : $options;
         $this->default = $default instanceof Collection ? $default->all() : $default;

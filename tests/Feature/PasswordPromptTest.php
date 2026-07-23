@@ -117,16 +117,16 @@ it('supports custom validation', function () {
     Prompt::validateUsing(fn () => null);
 });
 
-it('skips the prompt when skipWhen is provided', function () {
+it('skips the prompt when skipUsing is provided', function () {
     Prompt::fake([]);
 
-    $result = password(label: 'What is the password?', skipWhen: 'secret');
+    $result = password(label: 'What is the password?', skipUsing: 'secret');
 
     expect($result)->toBe('secret');
 });
 
-it('throws when a skipWhen value is invalid', function () {
+it('throws when a skipUsing value is invalid', function () {
     Prompt::fake([]);
 
-    password(label: 'What is the password?', required: true, skipWhen: '');
+    password(label: 'What is the password?', required: true, skipUsing: '');
 })->throws(SkippedValueValidationException::class, 'Required.');

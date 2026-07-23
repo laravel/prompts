@@ -309,25 +309,25 @@ it('deselects all when all options are already default', function () {
     expect($result)->toBe([]);
 });
 
-it('skips the prompt when skipWhen is provided', function () {
+it('skips the prompt when skipUsing is provided', function () {
     Prompt::fake([]);
 
     $result = multiselect(
         label: 'Pick some',
         options: ['red' => 'Red', 'green' => 'Green', 'blue' => 'Blue'],
-        skipWhen: ['red', 'blue'],
+        skipUsing: ['red', 'blue'],
     );
 
     expect($result)->toBe(['red', 'blue']);
 });
 
-it('throws when a skipWhen value fails validation', function () {
+it('throws when a skipUsing value fails validation', function () {
     Prompt::fake([]);
 
     multiselect(
         label: 'Pick some',
         options: ['red' => 'Red', 'green' => 'Green'],
         required: true,
-        skipWhen: [],
+        skipUsing: [],
     );
 })->throws(SkippedValueValidationException::class, 'Required.');

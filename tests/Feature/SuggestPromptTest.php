@@ -234,25 +234,25 @@ it('supports custom validation', function () {
     Prompt::validateUsing(fn () => null);
 });
 
-it('skips the prompt when skipWhen is provided', function () {
+it('skips the prompt when skipUsing is provided', function () {
     Prompt::fake([]);
 
     $result = suggest(
         label: 'Pick',
         options: ['Alpha', 'Beta'],
-        skipWhen: 'Alpha',
+        skipUsing: 'Alpha',
     );
 
     expect($result)->toBe('Alpha');
 });
 
-it('throws when a skipWhen value is invalid', function () {
+it('throws when a skipUsing value is invalid', function () {
     Prompt::fake([]);
 
     suggest(
         label: 'Pick',
         options: ['Alpha'],
         required: true,
-        skipWhen: '',
+        skipUsing: '',
     );
 })->throws(SkippedValueValidationException::class, 'Required.');

@@ -386,25 +386,25 @@ it('supports selecting all options', function () {
     expect($result)->toBe([]);
 });
 
-it('skips the prompt when skipWhen is provided', function () {
+it('skips the prompt when skipUsing is provided', function () {
     Prompt::fake([]);
 
     $result = multisearch(
         label: 'Search',
         options: fn () => ['a' => 'A', 'b' => 'B'],
-        skipWhen: ['a', 'b'],
+        skipUsing: ['a', 'b'],
     );
 
     expect($result)->toBe(['a', 'b']);
 });
 
-it('throws when a skipWhen value fails validation', function () {
+it('throws when a skipUsing value fails validation', function () {
     Prompt::fake([]);
 
     multisearch(
         label: 'Search',
         options: fn () => ['a' => 'A'],
         required: true,
-        skipWhen: [],
+        skipUsing: [],
     );
 })->throws(SkippedValueValidationException::class, 'Required.');
