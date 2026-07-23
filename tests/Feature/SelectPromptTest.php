@@ -403,7 +403,6 @@ it('throws when a skipUsing value is not in the options', function () {
     select(
         label: 'Pick one',
         options: ['red' => 'Red', 'green' => 'Green'],
-        validate: fn ($value) => array_key_exists($value, ['red' => 'Red', 'green' => 'Green']) ? null : 'Invalid option.',
         skipUsing: 'purple',
     );
 })->throws(SkippedValueValidationException::class, 'Invalid option.');

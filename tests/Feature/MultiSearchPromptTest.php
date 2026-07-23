@@ -408,3 +408,13 @@ it('throws when a skipUsing value fails validation', function () {
         skipUsing: [],
     );
 })->throws(SkippedValueValidationException::class, 'Required.');
+
+it('throws when skipUsing is not an array', function () {
+    Prompt::fake([]);
+
+    multisearch(
+        label: 'Search',
+        options: fn () => ['a' => 'A'],
+        skipUsing: 'a',
+    );
+})->throws(SkippedValueValidationException::class, 'Must be an array of options.');

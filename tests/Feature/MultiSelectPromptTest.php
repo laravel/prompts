@@ -331,3 +331,23 @@ it('throws when a skipUsing value fails validation', function () {
         skipUsing: [],
     );
 })->throws(SkippedValueValidationException::class, 'Required.');
+
+it('throws when skipUsing is not an array', function () {
+    Prompt::fake([]);
+
+    multiselect(
+        label: 'Pick some',
+        options: ['red' => 'Red', 'green' => 'Green'],
+        skipUsing: 'red',
+    );
+})->throws(SkippedValueValidationException::class, 'Must be an array of options.');
+
+it('throws when a skipUsing option is not in the options', function () {
+    Prompt::fake([]);
+
+    multiselect(
+        label: 'Pick some',
+        options: ['red' => 'Red', 'green' => 'Green'],
+        skipUsing: ['red', 'purple'],
+    );
+})->throws(SkippedValueValidationException::class, 'Invalid option.');

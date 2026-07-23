@@ -122,4 +122,20 @@ class SelectPrompt extends Prompt
     {
         return $value === null;
     }
+
+    /**
+     * Coerce a pre-supplied skip value into one of the available options.
+     */
+    protected function coerceSkipped(mixed $value): mixed
+    {
+        $values = array_is_list($this->options) ? array_values($this->options) : array_keys($this->options);
+
+        $index = array_search($value, $values);
+
+        if ($index === false) {
+            $this->throwSkippedValidation('Invalid option.');
+        }
+
+        return $values[$index];
+    }
 }

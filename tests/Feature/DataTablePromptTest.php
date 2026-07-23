@@ -554,14 +554,13 @@ it('skips the prompt when skipUsing is provided', function () {
     expect($result)->toBe(1);
 });
 
-it('throws when a skipUsing value is invalid', function () {
+it('throws when a skipUsing value is not an available row', function () {
     Prompt::fake([]);
 
     datatable(
         label: 'Select a user',
         headers: ['Name'],
         rows: [['Alice']],
-        validate: fn ($value) => $value === 0 ? null : 'Invalid selection.',
         skipUsing: 99,
     );
 })->throws(SkippedValueValidationException::class, 'Invalid selection.');

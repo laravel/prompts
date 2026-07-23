@@ -154,6 +154,32 @@ class MultiSelectPrompt extends Prompt
     }
 
     /**
+     * Coerce a pre-supplied skip value into an array of available options.
+     */
+    protected function coerceSkipped(mixed $value): mixed
+    {
+        if ($value instanceof Collection) {
+            $value = $value->all();
+        }
+
+        if (! is_array($value)) {
+            $this->throwSkippedValidation('Must be an array of options.');
+        }
+
+        $values = array_is_list($this->options) ? array_values($this->options) : array_keys($this->options);
+
+        return array_map(function ($item) use ($values) {
+            $index = array_search($item, $values);
+
+            if ($index === false) {
+                $this->throwSkippedValidation('Invalid option.');
+            }
+
+            return $values[$index];
+        }, $value);
+    }
+
+    /**
      * Toggle the highlighted entry.
      */
     protected function toggleHighlighted(): void

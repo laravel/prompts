@@ -69,6 +69,18 @@ class MultiSearchPrompt extends Prompt
     }
 
     /**
+     * Coerce a pre-supplied skip value into an array.
+     */
+    protected function coerceSkipped(mixed $value): mixed
+    {
+        if (! is_array($value)) {
+            $this->throwSkippedValidation('Must be an array of options.');
+        }
+
+        return $value;
+    }
+
+    /**
      * Get the value of the highlighted option.
      */
     public function highlightedValue(): int|string|null

@@ -238,6 +238,22 @@ class DataTablePrompt extends Prompt
     }
 
     /**
+     * Coerce a pre-supplied skip value into one of the available row keys.
+     */
+    protected function coerceSkipped(mixed $value): mixed
+    {
+        $keys = array_keys($this->rows);
+
+        $index = array_search($value, $keys);
+
+        if ($index === false) {
+            $this->throwSkippedValidation('Invalid selection.');
+        }
+
+        return $keys[$index];
+    }
+
+    /**
      * Get the selected row for display purposes.
      *
      * @return array<int, string>|null
