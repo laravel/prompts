@@ -63,7 +63,7 @@ abstract class Prompt
     public mixed $validate;
 
     /**
-     * A pre-resolved value, or a resolver closure, that short-circuits the prompt when it yields a non-null value.
+     * A pre-resolved value, or a resolver closure, that short-circuits the prompt when it yields a value other than null or false.
      */
     public mixed $skipUsing = null;
 
@@ -115,7 +115,7 @@ abstract class Prompt
         try {
             $skipped = $this->skipUsing instanceof Closure ? ($this->skipUsing)() : $this->skipUsing;
 
-            if ($skipped !== null) {
+            if ($skipped !== null && $skipped !== false) {
                 return $this->resolveSkipped($skipped);
             }
 

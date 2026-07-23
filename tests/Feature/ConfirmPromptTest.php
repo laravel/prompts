@@ -157,12 +157,12 @@ it('skips the prompt when skipUsing is true', function () {
     expect($result)->toBeTrue();
 });
 
-it('skips the prompt when skipUsing is false', function () {
-    Prompt::fake([]);
+it('treats a false skipUsing value as not provided', function () {
+    Prompt::fake([Key::ENTER]);
 
     $result = confirm(label: 'Are you sure?', skipUsing: false);
 
-    expect($result)->toBeFalse();
+    expect($result)->toBeTrue();
 });
 
 it('throws when a skipUsing value fails validation', function () {
@@ -171,7 +171,7 @@ it('throws when a skipUsing value fails validation', function () {
     confirm(
         label: 'Are you sure?',
         validate: fn ($value) => $value === false ? 'Must agree.' : null,
-        skipUsing: false,
+        skipUsing: 'no',
     );
 })->throws(SkippedValueValidationException::class, 'Must agree.');
 

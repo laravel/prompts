@@ -279,9 +279,9 @@ class FormBuilder
         // A skipped step resolves instantly, so reverting onto it would only bounce forward again.
         $skipUsing = $arguments['skipUsing'] ?? null;
 
-        if ($ignoreWhenReverting === false && $skipUsing !== null) {
+        if ($ignoreWhenReverting === false && $skipUsing !== null && $skipUsing !== false) {
             $ignoreWhenReverting = $skipUsing instanceof Closure
-                ? fn () => $skipUsing() !== null
+                ? fn () => ! in_array($skipUsing(), [null, false], true)
                 : true;
         }
 

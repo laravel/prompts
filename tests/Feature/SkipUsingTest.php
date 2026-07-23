@@ -77,6 +77,14 @@ it('prompts normally when a skipUsing closure returns null', function () {
     expect($result)->toBe('Jess');
 });
 
+it('prompts normally when a skipUsing closure returns false', function () {
+    Prompt::fake([Key::ENTER]);
+
+    $result = confirm(label: 'Are you sure?', skipUsing: fn () => false);
+
+    expect($result)->toBeTrue();
+});
+
 it('throws when a skipped value fails the required check', function () {
     Prompt::fake([]);
 
