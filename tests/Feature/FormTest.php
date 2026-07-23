@@ -266,3 +266,19 @@ it('throws from a form step with an invalid skipUsing value', function () {
         ->text('What is your name?', required: true, skipUsing: '')
         ->submit();
 })->throws(SkippedValueValidationException::class, 'Required.');
+
+it('reverts past skipped steps to the previous prompt', function () {
+    Prompt::fake(['A', Key::ENTER, Key::CTRL_U, 'B', Key::ENTER, Key::ENTER]);
+
+    $responses = form()
+        ->text('First?')
+        ->text('Second?', skipUsing: 'Skipped')
+        ->text('Third?')
+        ->submit();
+
+    expect($responses)->toBe([
+        'AB',
+        'Skipped',
+        '',
+    ]);
+});

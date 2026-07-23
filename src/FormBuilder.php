@@ -276,6 +276,11 @@ class FormBuilder
      */
     protected function runPrompt(callable $prompt, array $arguments, bool $ignoreWhenReverting = false): self
     {
+        // A statically skipped step resolves instantly, so reverting onto it would only bounce forward again.
+        $skipUsing = $arguments['skipUsing'] ?? null;
+
+        $ignoreWhenReverting = $ignoreWhenReverting || ($skipUsing !== null && ! $skipUsing instanceof Closure);
+
         return $this->add(function (array $responses, mixed $previousResponse) use ($prompt, $arguments) {
             unset($arguments['name']);
 
