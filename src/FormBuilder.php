@@ -25,7 +25,7 @@ class FormBuilder
     /**
      * Add a new step.
      */
-    public function add(Closure $step, ?string $name = null, bool $ignoreWhenReverting = false): self
+    public function add(Closure $step, ?string $name = null, bool|Closure $ignoreWhenReverting = false): self
     {
         $this->steps[] = new FormStep($step, true, $name, $ignoreWhenReverting);
 
@@ -276,10 +276,14 @@ class FormBuilder
      */
     protected function runPrompt(callable $prompt, array $arguments, bool $ignoreWhenReverting = false): self
     {
-        // A statically skipped step resolves instantly, so reverting onto it would only bounce forward again.
+        // A skipped step resolves instantly, so reverting onto it would only bounce forward again.
         $skipUsing = $arguments['skipUsing'] ?? null;
 
-        $ignoreWhenReverting = $ignoreWhenReverting || ($skipUsing !== null && ! $skipUsing instanceof Closure);
+        if ($ignoreWhenReverting === false && $skipUsing !== null) {
+            $ignoreWhenReverting = $skipUsing instanceof Closure
+                ? fn () => $skipUsing() !== null
+                : true;
+        }
 
         return $this->add(function (array $responses, mixed $previousResponse) use ($prompt, $arguments) {
             unset($arguments['name']);

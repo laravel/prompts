@@ -282,3 +282,19 @@ it('reverts past skipped steps to the previous prompt', function () {
         '',
     ]);
 });
+
+it('reverts past closure-skipped steps to the previous prompt', function () {
+    Prompt::fake(['A', Key::ENTER, Key::CTRL_U, 'B', Key::ENTER, Key::ENTER]);
+
+    $responses = form()
+        ->text('First?')
+        ->text('Second?', skipUsing: fn () => 'Skipped')
+        ->text('Third?')
+        ->submit();
+
+    expect($responses)->toBe([
+        'AB',
+        'Skipped',
+        '',
+    ]);
+});

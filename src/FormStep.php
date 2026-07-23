@@ -8,15 +8,21 @@ class FormStep
 {
     protected readonly Closure $condition;
 
+    protected readonly Closure $ignoreWhenReverting;
+
     public function __construct(
         protected readonly Closure $step,
         bool|Closure $condition,
         public readonly ?string $name,
-        protected readonly bool $ignoreWhenReverting,
+        bool|Closure $ignoreWhenReverting,
     ) {
         $this->condition = is_bool($condition)
             ? fn () => $condition
             : $condition;
+
+        $this->ignoreWhenReverting = is_bool($ignoreWhenReverting)
+            ? fn () => $ignoreWhenReverting
+            : $ignoreWhenReverting;
     }
 
     /**
@@ -54,6 +60,6 @@ class FormStep
             return true;
         }
 
-        return $this->ignoreWhenReverting;
+        return ($this->ignoreWhenReverting)();
     }
 }

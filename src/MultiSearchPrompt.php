@@ -69,7 +69,7 @@ class MultiSearchPrompt extends Prompt
     }
 
     /**
-     * Coerce a pre-supplied skip value into an array.
+     * Coerce a pre-supplied skip value into an array; closure-based options cannot be membership-checked.
      */
     protected function coerceSkipped(mixed $value): mixed
     {
