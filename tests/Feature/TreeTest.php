@@ -35,6 +35,26 @@ it('auto-formats tree labels', function () {
     Prompt::assertOutputContains("\e[36m`composer install`");
 });
 
+it('wraps long labels at the terminal width and keeps the guides aligned', function () {
+    Prompt::fake();
+
+    tree([
+        'vendor' => [
+            'This is a very long dependency description that will definitely exceed the width of the fake terminal and wrap onto a second line',
+        ],
+        'composer.json',
+    ]);
+
+    $content = Prompt::strippedContent();
+
+    expect($content)->toContain('├─ vendor');
+    expect($content)->toContain('│  └─ This is a very long dependency description');
+    expect($content)->toContain('└─ composer.json');
+
+    // The wrapped continuation keeps the vendor guide: "│" followed by five spaces.
+    expect($content)->toMatch('/│ {5}\S/u');
+});
+
 it('renders nothing for an empty tree', function () {
     Prompt::fake();
 

@@ -34,7 +34,9 @@ trait DrawsTrees
     }
 
     /**
-     * Normalize one level of items into labeled nodes with raw children.
+     * Normalize one level of items: string keys are branches (a string value
+     * becomes their single leaf child), plain strings are leaves, and unkeyed
+     * arrays flatten into the current level.
      *
      * @param  array<int|string, mixed>  $items
      * @return array<int, array{label: string, children: array<int|string, mixed>}>
