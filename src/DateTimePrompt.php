@@ -136,6 +136,10 @@ class DateTimePrompt extends DatePrompt
      */
     protected function typeIntoSegment(string $key): void
     {
+        if ($key !== '' && $key[0] === "\e") {
+            return;
+        }
+
         foreach (str_split($key) as $char) {
             if (! ctype_digit($char)) {
                 continue;

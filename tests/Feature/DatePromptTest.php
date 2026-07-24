@@ -279,6 +279,19 @@ it('ignores non-digit input', function () {
     expect($result->format('Y-m-d'))->toBe('2026-07-24');
 });
 
+it('ignores escape sequences while typing', function () {
+    Prompt::fake([
+        '2', '0', Key::DELETE, "\e[1;5C", '2', '6', '1', '2', '2', '5',
+        Key::BACKSPACE, Key::BACKSPACE, Key::BACKSPACE, Key::BACKSPACE,
+        Key::BACKSPACE, Key::BACKSPACE, Key::BACKSPACE, Key::BACKSPACE,
+        Key::ENTER,
+    ]);
+
+    $result = date(label: 'When should the deploy run?', default: '2026-07-24');
+
+    expect($result->format('Y-m-d'))->toBe('2026-12-25');
+});
+
 it('clamps navigation to the min date', function () {
     Prompt::fake([Key::LEFT, Key::LEFT, Key::ENTER]);
 

@@ -59,6 +59,17 @@ it('types into the focused time segment', function () {
     expect($result->format('H:i'))->toBe('14:45');
 });
 
+it('ignores escape sequences while a time segment is focused', function () {
+    Prompt::fake([Key::TAB, Key::PAGE_UP, Key::SHIFT_UP, Key::ENTER]);
+
+    $result = datetime(
+        label: 'When should the deploy run?',
+        default: '2026-07-24 14:30',
+    );
+
+    expect($result->format('Y-m-d H:i'))->toBe('2026-07-24 14:30');
+});
+
 it('moves between time segments with the arrow keys', function () {
     Prompt::fake([Key::TAB, Key::RIGHT, '4', '5', Key::ENTER]);
 

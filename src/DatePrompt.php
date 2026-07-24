@@ -142,6 +142,10 @@ class DatePrompt extends Prompt
      */
     protected function type(string $key): void
     {
+        if ($key !== '' && $key[0] === "\e") {
+            return;
+        }
+
         foreach (str_split($key) as $char) {
             if (ctype_digit($char) && strlen($this->buffer) < 8) {
                 $this->buffer .= $char;
