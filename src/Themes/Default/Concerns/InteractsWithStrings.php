@@ -28,6 +28,26 @@ trait InteractsWithStrings
     }
 
     /**
+     * Auto-format the text by applying styles to specific patterns, such as inline code blocks.
+     */
+    protected function autoFormat(string $text): string
+    {
+        $text = preg_replace('/`([^`]+)`/', $this->cyan('`$1`'), $text);
+
+        $text = preg_replace_callback('/\e\]8;;(.+?)\e\\\\(.*?)\e\]8;;\e\\\\/', function ($matches) {
+            $visibleText = $this->stripEscapeSequences($matches[2]);
+            $hadUnderline = str_contains($matches[2], "\e[4m");
+            $styled = $hadUnderline
+                ? "\e[4;36m{$visibleText}\e[0m"
+                : $this->cyan($visibleText);
+
+            return "\e]8;;{$matches[1]}\e\\{$styled}\e]8;;\e\\";
+        }, $text);
+
+        return $text;
+    }
+
+    /**
      * Strip ANSI escape sequences from the given text.
      */
     protected function stripEscapeSequences(string $text): string
