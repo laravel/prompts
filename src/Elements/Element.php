@@ -37,4 +37,12 @@ class Element
     {
         return new Link($url, $label, $underline);
     }
+
+    /**
+     * @param  array<int|string, string|array<int|string, mixed>>  $items
+     */
+    public static function tree(array $items): Tree
+    {
+        return new Tree($items);
+    }
 }
