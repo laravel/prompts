@@ -466,6 +466,28 @@ if (! function_exists('\Laravel\Prompts\date')) {
     }
 }
 
+if (! function_exists('\Laravel\Prompts\datetime')) {
+    /**
+     * Prompt the user for a date and time using a navigable calendar.
+     *
+     * @return ($transform is null ? DateTimeImmutable|null : mixed)
+     */
+    function datetime(
+        string $label,
+        DateTimeInterface|string|null $default = null,
+        DateTimeInterface|string|null $min = null,
+        DateTimeInterface|string|null $max = null,
+        bool|string $required = false,
+        mixed $validate = null,
+        string $hint = 'Use the arrow keys to navigate or type a date. Tab edits the time.',
+        ?Closure $transform = null,
+        int $weekStartsOn = 1,
+        bool $withSeconds = false,
+    ): mixed {
+        return (new DateTimePrompt(...get_defined_vars()))->prompt();
+    }
+}
+
 if (! function_exists('\Laravel\Prompts\datatable')) {
     /**
      * Display an interactive data table.

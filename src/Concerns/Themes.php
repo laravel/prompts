@@ -9,6 +9,7 @@ use Laravel\Prompts\Clear;
 use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\DataTablePrompt;
 use Laravel\Prompts\DatePrompt;
+use Laravel\Prompts\DateTimePrompt;
 use Laravel\Prompts\Grid;
 use Laravel\Prompts\MultiSearchPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
@@ -33,6 +34,7 @@ use Laravel\Prompts\Themes\Default\ClearRenderer;
 use Laravel\Prompts\Themes\Default\ConfirmPromptRenderer;
 use Laravel\Prompts\Themes\Default\DataTableRenderer;
 use Laravel\Prompts\Themes\Default\DatePromptRenderer;
+use Laravel\Prompts\Themes\Default\DateTimePromptRenderer;
 use Laravel\Prompts\Themes\Default\GridRenderer;
 use Laravel\Prompts\Themes\Default\MultiSearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\MultiSelectPromptRenderer;
@@ -91,6 +93,7 @@ trait Themes
             DataTablePrompt::class => DataTableRenderer::class,
             Callout::class => CalloutRenderer::class,
             DatePrompt::class => DatePromptRenderer::class,
+            DateTimePrompt::class => DateTimePromptRenderer::class,
         ],
     ];
 
