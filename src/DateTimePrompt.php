@@ -146,12 +146,22 @@ class DateTimePrompt extends DatePrompt
             }
 
             match ($this->focused) {
-                'hour' => $this->hour = min(($this->hour % 10) * 10 + (int) $char, 23),
-                'minute' => $this->minute = min(($this->minute % 10) * 10 + (int) $char, 59),
-                'second' => $this->second = min(($this->second % 10) * 10 + (int) $char, 59),
+                'hour' => $this->hour = $this->rollSegment($this->hour, (int) $char, 23),
+                'minute' => $this->minute = $this->rollSegment($this->minute, (int) $char, 59),
+                'second' => $this->second = $this->rollSegment($this->second, (int) $char, 59),
                 default => null,
             };
         }
+    }
+
+    /**
+     * Roll the typed digit into the segment, restarting from the digit on overflow.
+     */
+    protected function rollSegment(int $current, int $digit, int $max): int
+    {
+        $rolled = ($current % 10) * 10 + $digit;
+
+        return $rolled <= $max ? $rolled : $digit;
     }
 
     /**

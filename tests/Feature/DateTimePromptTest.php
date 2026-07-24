@@ -59,6 +59,26 @@ it('types into the focused time segment', function () {
     expect($result->format('H:i'))->toBe('14:45');
 });
 
+it('restarts a time segment from the typed digit when it would overflow', function () {
+    Prompt::fake([Key::TAB, '0', '9', Key::ENTER]);
+
+    $result = datetime(
+        label: 'When should the deploy run?',
+        default: '2026-07-24 14:30',
+    );
+
+    expect($result->format('H:i'))->toBe('09:30');
+
+    Prompt::fake([Key::TAB, Key::TAB, '3', '7', Key::ENTER]);
+
+    $result = datetime(
+        label: 'When should the deploy run?',
+        default: '2026-07-24 14:59',
+    );
+
+    expect($result->format('H:i'))->toBe('14:37');
+});
+
 it('ignores escape sequences while a time segment is focused', function () {
     Prompt::fake([Key::TAB, Key::PAGE_UP, Key::SHIFT_UP, Key::ENTER]);
 
