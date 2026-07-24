@@ -198,10 +198,26 @@ class DatePrompt extends Prompt
 
             return match (true) {
                 is_callable($validate) => $validate($value),
-                isset(static::$validateUsing) => (static::$validateUsing)($this),
+                isset(static::$validateUsing) => $this->delegateValidation($validate),
                 default => throw new RuntimeException('The validation logic is missing.'),
             };
         };
+    }
+
+    /**
+     * Delegate to the custom validation callback, exposing the original validation logic.
+     */
+    protected function delegateValidation(mixed $validate): mixed
+    {
+        $wrapped = $this->validate;
+
+        $this->validate = $validate;
+
+        try {
+            return (static::$validateUsing)($this);
+        } finally {
+            $this->validate = $wrapped;
+        }
     }
 
     /**

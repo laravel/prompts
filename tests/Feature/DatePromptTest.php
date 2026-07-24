@@ -378,6 +378,32 @@ it('rejects a min date after the max date', function () {
     date(label: 'When should the deploy run?', min: '2026-07-31', max: '2026-07-01');
 })->throws(InvalidArgumentException::class, 'min');
 
+it('supports custom validation', function () {
+    Prompt::validateUsing(function (Prompt $prompt) {
+        expect($prompt)
+            ->label->toBe('When should the deploy run?')
+            ->validate->toBe('weekday');
+
+        return $prompt->validate === 'weekday' && $prompt->value()->format('N') >= 6
+            ? 'The deploy cannot run on a weekend.'
+            : null;
+    });
+
+    Prompt::fake([Key::ENTER, Key::LEFT, Key::ENTER]);
+
+    $result = date(
+        label: 'When should the deploy run?',
+        default: '2026-07-25',
+        validate: 'weekday',
+    );
+
+    expect($result->format('Y-m-d'))->toBe('2026-07-24');
+
+    Prompt::assertOutputContains('The deploy cannot run on a weekend.');
+
+    Prompt::validateUsing(fn () => null);
+});
+
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
 
