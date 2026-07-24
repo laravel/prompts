@@ -84,7 +84,7 @@ it('navigates back a month with page up', function () {
 });
 
 it('navigates years with shift up and shift down, clamping leap days', function () {
-    Prompt::fake([Key::SHIFT_DOWN, Key::ENTER]);
+    Prompt::fake([Key::SHIFT_DOWN, Key::SHIFT_DOWN, Key::SHIFT_UP, Key::ENTER]);
 
     $result = date(
         label: 'When should the deploy run?',

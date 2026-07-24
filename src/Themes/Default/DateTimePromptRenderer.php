@@ -12,8 +12,7 @@ class DateTimePromptRenderer extends DatePromptRenderer
      */
     protected function renderBody(DatePrompt $prompt): string
     {
-        assert($prompt instanceof DateTimePrompt);
-
+        /** @var DateTimePrompt $prompt */
         return implode(PHP_EOL, [
             parent::renderBody($prompt),
             '',

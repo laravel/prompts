@@ -10,6 +10,16 @@ class DatePromptRenderer extends Renderer
     use Concerns\DrawsBoxes;
 
     /**
+     * The width of a calendar cell: a three-letter day name or a padded day number.
+     */
+    protected int $cellWidth = 3;
+
+    /**
+     * The width of the calendar grid: seven cells with separators.
+     */
+    protected int $gridWidth = 27;
+
+    /**
      * Render the date prompt.
      */
     public function __invoke(DatePrompt $prompt): string
@@ -51,16 +61,6 @@ class DatePromptRenderer extends Renderer
                 ),
         };
     }
-
-    /**
-     * The width of a calendar cell: a three-letter day name or a padded day number.
-     */
-    protected int $cellWidth = 3;
-
-    /**
-     * The width of the calendar grid: seven cells with separators.
-     */
-    protected int $gridWidth = 27;
 
     /**
      * Render the selected date above the calendar grid.
