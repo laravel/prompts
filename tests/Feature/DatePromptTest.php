@@ -178,6 +178,12 @@ it('fails when non-interactive and required without a default', function () {
     date(label: 'When should the deploy run?', required: true);
 })->throws(NonInteractiveValidationException::class, 'Required.');
 
+it('fails when non-interactive with a default outside of the range', function () {
+    Prompt::interactive(false);
+
+    date(label: 'When should the deploy run?', default: '2026-07-24', min: '2026-08-01');
+})->throws(NonInteractiveValidationException::class, 'Must be on or after 2026-08-01.');
+
 it('renders the calendar grid for the highlighted month', function () {
     Prompt::fake([Key::ENTER]);
 

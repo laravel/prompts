@@ -195,24 +195,6 @@ class DateTimePrompt extends DatePrompt
     }
 
     /**
-     * Wrap the validation logic to also verify the selected time against the range.
-     */
-    protected function wrapValidation(mixed $validate): callable
-    {
-        $validateDate = parent::wrapValidation($validate);
-
-        return function ($value) use ($validateDate) {
-            $selected = $this->value();
-
-            if ($this->buffer === '' && $selected !== null && ($error = $this->rangeError($selected)) !== null) {
-                return $error;
-            }
-
-            return $validateDate($value);
-        };
-    }
-
-    /**
      * Truncate the time to the prompt's precision.
      */
     protected function truncateTime(DateTimeImmutable $date): DateTimeImmutable

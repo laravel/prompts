@@ -179,7 +179,7 @@ class DatePrompt extends Prompt
     }
 
     /**
-     * Wrap the validation logic to first verify the typed buffer.
+     * Wrap the validation logic to first verify the typed buffer and the range.
      */
     protected function wrapValidation(mixed $validate): callable
     {
@@ -190,6 +190,10 @@ class DatePrompt extends Prompt
 
             if (strlen($this->buffer) === 8) {
                 return $this->bufferedDate() === null ? 'Invalid date.' : $this->rangeError($this->bufferedDate());
+            }
+
+            if (($selected = $this->value()) !== null && ($error = $this->rangeError($selected)) !== null) {
+                return $error;
             }
 
             if (! $validate && ! isset(static::$validateUsing)) {
