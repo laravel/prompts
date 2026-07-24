@@ -181,6 +181,19 @@ it('rejects times outside of the range', function () {
     Prompt::assertOutputContains('Must be on or after 2026-07-24 09:00.');
 });
 
+it('ignores microseconds in the range boundaries', function () {
+    Prompt::interactive(false);
+
+    $result = datetime(
+        label: 'When should the maintenance window start?',
+        default: '2026-07-24 09:00:00.900000',
+        min: '2026-07-24 09:00:00.500000',
+        withSeconds: true,
+    );
+
+    expect($result->format('Y-m-d H:i:s.u'))->toBe('2026-07-24 09:00:00.000000');
+});
+
 it('returns the default when non-interactive', function () {
     Prompt::interactive(false);
 

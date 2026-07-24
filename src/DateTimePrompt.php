@@ -200,7 +200,7 @@ class DateTimePrompt extends DatePrompt
     protected function truncateTime(DateTimeImmutable $date): DateTimeImmutable
     {
         return $this->withSeconds
-            ? $date
+            ? $date->setTime((int) $date->format('G'), (int) $date->format('i'), (int) $date->format('s'))
             : $date->setTime((int) $date->format('G'), (int) $date->format('i'));
     }
 
