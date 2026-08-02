@@ -34,7 +34,7 @@ class GridRenderer extends Renderer
             ->setHorizontalBorderChars('─')
             ->setVerticalBorderChars('│', '│')
             ->setCellRowFormat('<fg=default>%s</>')
-            ->setCrossingChars('┼', '', '', '', '┤', '┘', '┴', '└', '├', '┌', '┬', '┐');
+            ->setCrossingChars('┼', '┌', '┬', '┐', '┤', '┘', '┴', '└', '├', '┌', '┬', '┐');
 
         $buffered = new BufferedConsoleOutput;
 
