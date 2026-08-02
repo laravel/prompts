@@ -21,7 +21,10 @@ class TableRenderer extends Renderer
             ->setCellRowFormat('<fg=default>%s</>');
 
         if (empty($table->headers)) {
-            $tableStyle->setCrossingChars('┼', '', '', '', '┤', '┘</>', '┴', '└', '├', '<fg=gray>┌', '┬', '┐');
+            // A header-less table draws its first separator with the "top" crossings on
+            // symfony/console 8.1.2 and above, and with the "top bottom" ones before
+            // that, so the corners are given to both to render the same either way...
+            $tableStyle->setCrossingChars('┼', '<fg=gray>┌', '┬', '┐', '┤', '┘</>', '┴', '└', '├', '<fg=gray>┌', '┬', '┐');
         } else {
             $tableStyle->setCrossingChars('┼', '<fg=gray>┌', '┬', '┐', '┤', '┘</>', '┴', '└', '├');
         }

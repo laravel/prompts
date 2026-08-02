@@ -34,7 +34,10 @@ class GridRenderer extends Renderer
             ->setHorizontalBorderChars('─')
             ->setVerticalBorderChars('│', '│')
             ->setCellRowFormat('<fg=default>%s</>')
-            ->setCrossingChars('┼', '', '', '', '┤', '┘', '┴', '└', '├', '┌', '┬', '┐');
+            // A grid is always header-less. symfony/console 8.1.2 and above draws its
+            // first separator with the "top" crossings, earlier versions use the
+            // "top bottom" ones, so the corners are given to both...
+            ->setCrossingChars('┼', '┌', '┬', '┐', '┤', '┘', '┴', '└', '├', '┌', '┬', '┐');
 
         $buffered = new BufferedConsoleOutput;
 
