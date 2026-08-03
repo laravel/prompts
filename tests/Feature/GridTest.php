@@ -212,3 +212,25 @@ it('renders a complete grid with multiple rows and balanced columns', function (
     Prompt::assertStrippedOutputContains('│ using-fluxui                 │ using-folio-routing  │ using-tailwindcss │');
     Prompt::assertStrippedOutputContains('└──────────────────────────────┴──────────────────────┴───────────────────┘');
 });
+
+it('truncates items that are wider than the grid', function (): void {
+    Prompt::fake();
+
+    (new Grid([str_repeat('a', 200)], maxWidth: 80))->display();
+
+    $widest = collect(explode(PHP_EOL, Prompt::strippedContent()))
+        ->map(fn (string $line) => mb_strwidth(rtrim($line)))
+        ->max();
+
+    expect($widest)->toBeLessThanOrEqual(80);
+    Prompt::assertStrippedOutputContains('…');
+});
+
+it('leaves items that already fit untouched', function (): void {
+    Prompt::fake();
+
+    (new Grid(['item1', 'item2'], maxWidth: 80))->display();
+
+    Prompt::assertStrippedOutputContains('│ item1 │ item2 │');
+    Prompt::assertStrippedOutputDoesntContain('…');
+});

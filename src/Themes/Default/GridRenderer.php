@@ -23,12 +23,19 @@ class GridRenderer extends Renderer
             return $this;
         }
 
-        $maxWidth = $grid->maxWidth - 2;
-        $cellWidth = max(array_map(fn ($item) => mb_strwidth($this->stripEscapeSequences($item)), $grid->items)) + 4;
-        $maxColumns = max(1, (int) floor(($maxWidth - 1) / ($cellWidth + 1)));
-        $columnCount = max(1, $this->balancedColumnCount(count($grid->items), $maxColumns));
+        // An item wider than a single column would push the border past the grid's
+        // width, so items are truncated to what one column can hold...
+        $items = array_map(
+            fn ($item) => $this->truncate($item, max(1, $grid->maxWidth - 5)),
+            $grid->items
+        );
 
-        $rows = $this->buildRowsWithSeparators($grid->items, $columnCount);
+        $maxWidth = $grid->maxWidth - 2;
+        $cellWidth = max(array_map(fn ($item) => mb_strwidth($this->stripEscapeSequences($item)), $items)) + 4;
+        $maxColumns = max(1, (int) floor(($maxWidth - 1) / ($cellWidth + 1)));
+        $columnCount = max(1, $this->balancedColumnCount(count($items), $maxColumns));
+
+        $rows = $this->buildRowsWithSeparators($items, $columnCount);
 
         $tableStyle = (new TableStyle)
             ->setHorizontalBorderChars('─')
