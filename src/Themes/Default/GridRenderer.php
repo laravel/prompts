@@ -23,8 +23,6 @@ class GridRenderer extends Renderer
             return $this;
         }
 
-        // An item wider than a single column would push the border past the grid's
-        // width, so items are truncated to what one column can hold...
         $items = array_map(
             fn ($item) => $this->truncate($item, max(1, $grid->maxWidth - 5)),
             $grid->items
