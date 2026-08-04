@@ -1,6 +1,12 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.21...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.22...main)
+
+## [v0.3.22](https://github.com/laravel/prompts/compare/v0.3.21...v0.3.22) - 2026-08-04
+
+* Bump actions/checkout from 7.0.0 to 7.0.1 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/prompts/pull/257
+* Fix missing corners on header-less tables and grids by [@WaleedHU](https://github.com/WaleedHU) in https://github.com/laravel/prompts/pull/260
+* Truncate grid items that are wider than the grid by [@WaleedHU](https://github.com/WaleedHU) in https://github.com/laravel/prompts/pull/261
 
 ## [v0.3.21](https://github.com/laravel/prompts/compare/v0.3.20...v0.3.21) - 2026-06-26
 
