@@ -125,6 +125,9 @@ class Task extends Prompt
             $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
 
             if ($sockets === false) {
+                pcntl_async_signals($originalAsync);
+                pcntl_signal(SIGINT, $originalSignalHandler);
+
                 return $this->renderStatically($callback);
             }
 
