@@ -31,3 +31,19 @@ it('renders a spinner statically when output is not decorated', function () {
     expect($result)->toBe('done');
     expect($output->content())->toContain('Running...');
 });
+
+it('restores the previous signal handler', function () {
+    Prompt::fake();
+
+    $originalSignalHandler = pcntl_signal_get_handler(SIGINT);
+    $signalHandler = fn () => null;
+    pcntl_signal(SIGINT, $signalHandler);
+
+    try {
+        spin(fn () => 'done', 'Running...');
+
+        expect(pcntl_signal_get_handler(SIGINT))->toBe($signalHandler);
+    } finally {
+        pcntl_signal(SIGINT, $originalSignalHandler);
+    }
+});

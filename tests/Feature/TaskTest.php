@@ -76,6 +76,25 @@ it('returns null when the callback does not return a value', function () {
     expect($result)->toBeNull();
 });
 
+it('restores the previous signal handler', function () {
+    Prompt::fake();
+
+    $originalSignalHandler = pcntl_signal_get_handler(SIGINT);
+    $signalHandler = fn () => null;
+    pcntl_signal(SIGINT, $signalHandler);
+
+    try {
+        task(
+            label: 'Running...',
+            callback: fn (Logger $logger) => null,
+        );
+
+        expect(pcntl_signal_get_handler(SIGINT))->toBe($signalHandler);
+    } finally {
+        pcntl_signal(SIGINT, $originalSignalHandler);
+    }
+});
+
 it('receives log lines into the ring buffer', function () {
     $task = new Task(label: 'Test', limit: 3);
 

@@ -114,6 +114,8 @@ class Task extends Prompt
         }
 
         $originalAsync = pcntl_async_signals(true);
+        $originalSignalHandler = pcntl_signal_get_handler(SIGINT);
+        assert(is_int($originalSignalHandler) || is_callable($originalSignalHandler));
 
         pcntl_signal(SIGINT, fn () => exit());
 
@@ -157,10 +159,13 @@ class Task extends Prompt
                     usleep($this->interval * 2000);
                 }
 
+                pcntl_async_signals($originalAsync);
+                pcntl_signal(SIGINT, $originalSignalHandler);
+
                 return $result;
             }
         } catch (\Throwable $e) {
-            $this->resetTerminal($originalAsync, success: false);
+            $this->resetTerminal($originalAsync, success: false, originalSignalHandler: $originalSignalHandler);
 
             throw $e;
         }
@@ -302,12 +307,12 @@ class Task extends Prompt
     /**
      * Reset the terminal.
      */
-    protected function resetTerminal(bool $originalAsync, bool $success = true): void
+    protected function resetTerminal(bool $originalAsync, bool $success = true, callable|int $originalSignalHandler = SIG_DFL): void
     {
         $this->finished = true;
 
         pcntl_async_signals($originalAsync);
-        pcntl_signal(SIGINT, SIG_DFL);
+        pcntl_signal(SIGINT, $originalSignalHandler);
 
         if ($this->socket !== null) {
             fclose($this->socket);
