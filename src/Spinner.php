@@ -53,7 +53,6 @@ class Spinner extends Prompt
 
         $originalAsync = pcntl_async_signals(true);
         $originalSignalHandler = pcntl_signal_get_handler(SIGINT);
-        assert(is_int($originalSignalHandler) || is_callable($originalSignalHandler));
 
         pcntl_signal(SIGINT, fn () => exit());
 
