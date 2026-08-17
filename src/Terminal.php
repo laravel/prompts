@@ -5,6 +5,7 @@ namespace Laravel\Prompts;
 use ReflectionClass;
 use RuntimeException;
 use Symfony\Component\Console\Terminal as SymfonyTerminal;
+use Throwable;
 
 class Terminal
 {
@@ -71,7 +72,11 @@ class Terminal
     public function restoreTty(): void
     {
         if (isset($this->initialTtyMode)) {
-            $this->exec("stty {$this->initialTtyMode}");
+            try {
+                $this->exec("stty {$this->initialTtyMode}");
+            } catch (Throwable $e) {
+                fwrite(STDERR, "{$e->getMessage()}\n");
+            }
 
             $this->initialTtyMode = null;
         }
