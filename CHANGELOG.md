@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.22...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.23...main)
+
+## [v0.3.23](https://github.com/laravel/prompts/compare/v0.3.22...v0.3.23) - 2026-08-11
+
+* Preserve original signal handlers in Task and Spinner, fixes #263 by [@tminich](https://github.com/tminich) in https://github.com/laravel/prompts/pull/264
 
 ## [v0.3.22](https://github.com/laravel/prompts/compare/v0.3.21...v0.3.22) - 2026-08-04
 
