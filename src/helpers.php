@@ -374,6 +374,18 @@ if (! function_exists('\Laravel\Prompts\grid')) {
     }
 }
 
+if (! function_exists('\Laravel\Prompts\tree')) {
+    /**
+     * Display a tree of nested items.
+     *
+     * @param  array<int|string, string|array<int|string, mixed>>  $items
+     */
+    function tree(array $items): void
+    {
+        (new Tree($items))->display();
+    }
+}
+
 if (! function_exists('\Laravel\Prompts\progress')) {
     /**
      * Display a progress bar.

@@ -195,6 +195,144 @@ it('renders a callout with an inline link', function () {
     Prompt::assertOutputContains("\e]8;;https://example.com\e\\");
 });
 
+it('renders a callout with a flat tree', function () {
+    Prompt::fake();
+
+    callout('Files', [
+        Element::tree([
+            'first.php',
+            'second.php',
+            'third.php',
+        ]),
+    ]);
+
+    Prompt::assertOutputContains('Files');
+    Prompt::assertStrippedOutputContains('├─ first.php');
+    Prompt::assertStrippedOutputContains('├─ second.php');
+    Prompt::assertStrippedOutputContains('└─ third.php');
+});
+
+it('renders a callout with a nested tree', function () {
+    Prompt::fake();
+
+    callout('Structure', [
+        'Files created:',
+        Element::tree([
+            'src' => [
+                'Elements' => ['Element.php', 'Tree.php'],
+                'helpers.php',
+            ],
+            'README.md',
+        ]),
+    ]);
+
+    Prompt::assertStrippedOutputContains('├─ src');
+    Prompt::assertStrippedOutputContains('│  ├─ Elements');
+    Prompt::assertStrippedOutputContains('│  │  ├─ Element.php');
+    Prompt::assertStrippedOutputContains('│  │  └─ Tree.php');
+    Prompt::assertStrippedOutputContains('│  └─ helpers.php');
+    Prompt::assertStrippedOutputContains('└─ README.md');
+});
+
+it('renders a callout with a tree between other elements', function () {
+    Prompt::fake();
+
+    callout('Scaffolding', [
+        'The following files were created:',
+        Element::heading('Structure'),
+        Element::tree([
+            'app' => [
+                'Models' => ['User.php'],
+            ],
+        ]),
+        Element::bulletedList(['Run the migrations next']),
+    ]);
+
+    Prompt::assertOutputContains('Scaffolding');
+    Prompt::assertOutputContains('Structure');
+    Prompt::assertStrippedOutputContains('└─ app');
+    Prompt::assertStrippedOutputContains('   └─ Models');
+    Prompt::assertStrippedOutputContains('      └─ User.php');
+    Prompt::assertStrippedOutputContains('· Run the migrations next');
+});
+
+it('auto-formats tree labels in a callout', function () {
+    Prompt::fake();
+
+    callout('Steps', [
+        Element::tree([
+            'Run `composer install`',
+        ]),
+    ]);
+
+    Prompt::assertStrippedOutputContains('└─ Run `composer install`');
+    Prompt::assertOutputContains("\e[36m`composer install`");
+});
+
+it('renders a callout tree branch with a single string child', function () {
+    Prompt::fake();
+
+    callout('Docs', [
+        Element::tree([
+            'docs' => 'README.md',
+        ]),
+    ]);
+
+    Prompt::assertStrippedOutputContains('└─ docs');
+    Prompt::assertStrippedOutputContains('   └─ README.md');
+});
+
+it('renders a callout tree branch with no children', function () {
+    Prompt::fake();
+
+    callout('Empty Directory', [
+        Element::tree([
+            'src' => [],
+            'README.md',
+        ]),
+    ]);
+
+    Prompt::assertStrippedOutputContains('├─ src');
+    Prompt::assertStrippedOutputContains('└─ README.md');
+});
+
+it('renders a callout with an empty tree', function () {
+    Prompt::fake();
+
+    callout('Empty', [
+        'Nothing to show.',
+        Element::tree([]),
+    ]);
+
+    Prompt::assertOutputContains('Empty');
+    Prompt::assertOutputContains('Nothing to show.');
+
+    // The empty tree adds no blank section: the bottom border follows the text.
+    expect(Prompt::strippedContent())->toMatch('/Nothing to show\..*\n └/u');
+});
+
+it('wraps long tree labels and keeps the guides aligned', function () {
+    Prompt::fake();
+
+    callout('Dependencies', [
+        Element::tree([
+            'vendor' => [
+                'This is a very long label that will definitely exceed the callout minimum width and wrap onto a second line',
+            ],
+            'composer.json',
+        ]),
+    ]);
+
+    $content = Prompt::strippedContent();
+
+    expect($content)->toContain('├─ vendor');
+    expect($content)->toContain('│  └─ This is a very long label');
+    expect($content)->toContain('└─ composer.json');
+
+    // The wrapped continuation keeps the vendor guide: "│" followed by five spaces.
+    expect($content)->toMatch('/│ {5}\S/u');
+});
+
 it('can fall back', function () {
     Prompt::fallbackWhen(true);
 
