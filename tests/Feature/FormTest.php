@@ -227,3 +227,35 @@ it('leaves skipped conditional field empty', function () {
         true,
     ]);
 });
+
+it('supports date and datetime steps', function () {
+    Prompt::fake([
+        Key::ENTER,
+        Key::TAB, Key::UP, Key::ENTER,
+    ]);
+
+    $responses = form()
+        ->date('When should the deploy run?', default: '2026-07-24', name: 'date')
+        ->datetime('When should the maintenance window start?', default: '2026-07-24 14:30', name: 'window')
+        ->submit();
+
+    expect($responses['date']->format('Y-m-d'))->toBe('2026-07-24')
+        ->and($responses['window']->format('Y-m-d H:i'))->toBe('2026-07-24 15:30');
+});
+
+it('reuses the previous date response as the default when reverting', function () {
+    Prompt::fake([
+        Key::ENTER,
+        Key::CTRL_U,
+        Key::RIGHT, Key::ENTER,
+        Key::ENTER,
+    ]);
+
+    $responses = form()
+        ->date('When should the deploy run?', default: '2026-07-24')
+        ->datetime('When should the maintenance window start?', default: '2026-07-24 14:30')
+        ->submit();
+
+    expect($responses[0]->format('Y-m-d'))->toBe('2026-07-25')
+        ->and($responses[1]->format('Y-m-d H:i'))->toBe('2026-07-24 14:30');
+});

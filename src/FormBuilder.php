@@ -3,6 +3,7 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use DateTimeInterface;
 use Illuminate\Support\Collection;
 use Laravel\Prompts\Exceptions\FormRevertedException;
 
@@ -176,6 +177,22 @@ class FormBuilder
     public function multisearch(string $label, Closure $options, string $placeholder = '', int $scroll = 5, bool|string $required = false, mixed $validate = null, string $hint = 'Use the space bar to select options.', ?string $name = null, ?Closure $transform = null): self
     {
         return $this->runPrompt(multisearch(...), get_defined_vars());
+    }
+
+    /**
+     * Prompt the user for a date using a navigable calendar.
+     */
+    public function date(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, string $hint = 'Use the arrow keys to navigate or type a date.', ?Closure $transform = null, int $weekStartsOn = 1, ?string $name = null): self
+    {
+        return $this->runPrompt(date(...), get_defined_vars());
+    }
+
+    /**
+     * Prompt the user for a date and time using a navigable calendar.
+     */
+    public function datetime(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, string $hint = 'Use the arrow keys to navigate or type a date. Tab edits the time.', ?Closure $transform = null, int $weekStartsOn = 1, bool $withSeconds = false, ?string $name = null): self
+    {
+        return $this->runPrompt(datetime(...), get_defined_vars());
     }
 
     /**

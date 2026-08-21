@@ -3,6 +3,8 @@
 namespace Laravel\Prompts;
 
 use Closure;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Illuminate\Support\Collection;
 use Laravel\Prompts\Elements\ElementContract;
 
@@ -440,6 +442,49 @@ if (! function_exists('\Laravel\Prompts\task')) {
     function task(string $label, Closure $callback, ?int $limit = null, bool $keepSummary = false, ?string $subLabel = null): mixed
     {
         return (new Task($label, $limit ?? 10, $keepSummary, $subLabel))->run($callback);
+    }
+}
+
+if (! function_exists('\Laravel\Prompts\date')) {
+    /**
+     * Prompt the user for a date using a navigable calendar.
+     *
+     * @return ($transform is null ? DateTimeImmutable|null : mixed)
+     */
+    function date(
+        string $label,
+        DateTimeInterface|string|null $default = null,
+        DateTimeInterface|string|null $min = null,
+        DateTimeInterface|string|null $max = null,
+        bool|string $required = false,
+        mixed $validate = null,
+        string $hint = 'Use the arrow keys to navigate or type a date.',
+        ?Closure $transform = null,
+        int $weekStartsOn = 1,
+    ): mixed {
+        return (new DatePrompt(...get_defined_vars()))->prompt();
+    }
+}
+
+if (! function_exists('\Laravel\Prompts\datetime')) {
+    /**
+     * Prompt the user for a date and time using a navigable calendar.
+     *
+     * @return ($transform is null ? DateTimeImmutable|null : mixed)
+     */
+    function datetime(
+        string $label,
+        DateTimeInterface|string|null $default = null,
+        DateTimeInterface|string|null $min = null,
+        DateTimeInterface|string|null $max = null,
+        bool|string $required = false,
+        mixed $validate = null,
+        string $hint = 'Use the arrow keys to navigate or type a date. Tab edits the time.',
+        ?Closure $transform = null,
+        int $weekStartsOn = 1,
+        bool $withSeconds = false,
+    ): mixed {
+        return (new DateTimePrompt(...get_defined_vars()))->prompt();
     }
 }
 
