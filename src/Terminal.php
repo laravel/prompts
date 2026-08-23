@@ -141,6 +141,10 @@ class Terminal
      */
     public function supportsTrueColor(): bool
     {
+        if (PHP_OS_FAMILY === 'Windows') {
+            return false;
+        }
+
         return static::$trueColorSupport ??= in_array(getenv('COLORTERM'), ['truecolor', '24bit']);
     }
 
