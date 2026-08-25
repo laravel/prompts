@@ -51,6 +51,15 @@ class WindowsConsole
     private const ENABLE_ECHO_INPUT = 0x0004;
 
     /**
+     * Stripped as well: when the hosting terminal session already enabled
+     * virtual terminal input, _getwch delivers arrow keys as separate
+     * ESC/'['/'A' byte reads instead of scan-code pairs, which degenerates
+     * into literal '[A' text. Removing the flag makes the scan-code path
+     * deterministic regardless of session state.
+     */
+    private const ENABLE_VIRTUAL_TERMINAL_INPUT = 0x0200;
+
+    /**
      * Output mode flag requesting interpretation of ANSI escape sequences.
      */
     private const ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
@@ -128,7 +137,7 @@ class WindowsConsole
                 return false;
             }
 
-            $rawInputMode = $this->modeValue($inputMode) & ~(self::ENABLE_PROCESSED_INPUT | self::ENABLE_LINE_INPUT | self::ENABLE_ECHO_INPUT);
+            $rawInputMode = $this->modeValue($inputMode) & ~(self::ENABLE_PROCESSED_INPUT | self::ENABLE_LINE_INPUT | self::ENABLE_ECHO_INPUT | self::ENABLE_VIRTUAL_TERMINAL_INPUT);
 
             if ($this->setMode($kernel32, $this->stdHandle($kernel32, self::STD_INPUT_HANDLE), $rawInputMode) === 0) {
                 return false;
