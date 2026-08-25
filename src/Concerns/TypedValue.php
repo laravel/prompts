@@ -63,7 +63,7 @@ trait TypedValue
                     }
 
                     if ($allowNewLine) {
-                        $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition).PHP_EOL.mb_substr($this->typedValue, $this->cursorPosition);
+                        $this->typedValue = mb_substr($this->typedValue, 0, $this->cursorPosition)."\n".mb_substr($this->typedValue, $this->cursorPosition);
                         $this->cursorPosition++;
                     }
                 } elseif ($key === Key::BACKSPACE || $key === Key::CTRL_H) {
@@ -98,7 +98,7 @@ trait TypedValue
         $current = mb_substr($value, $cursorPosition, 1);
         $after = mb_substr($value, $cursorPosition + 1);
 
-        $cursor = mb_strlen($current) && $current !== PHP_EOL ? $current : ' ';
+        $cursor = mb_strlen($current) && $current !== "\n" ? $current : ' ';
 
         $spaceBefore = $maxWidth < 0 || $maxWidth === null ? mb_strwidth($before) : $maxWidth - mb_strwidth($cursor) - (mb_strwidth($after) > 0 ? 1 : 0);
         [$truncatedBefore, $wasTruncatedBefore] = mb_strwidth($before) > $spaceBefore
@@ -113,7 +113,7 @@ trait TypedValue
         return ($wasTruncatedBefore ? $this->dim('…') : '')
             .$truncatedBefore
             .$this->inverse($cursor)
-            .($current === PHP_EOL ? PHP_EOL : '')
+            .($current === "\n" ? "\n" : '')
             .$truncatedAfter
             .($wasTruncatedAfter ? $this->dim('…') : '');
     }

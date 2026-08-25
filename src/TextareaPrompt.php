@@ -81,7 +81,7 @@ class TextareaPrompt extends Prompt
      */
     public function wrappedValue(): string
     {
-        return $this->mbWordwrap($this->value(), $this->width, PHP_EOL, true);
+        return $this->mbWordwrap($this->value(), $this->width, "\n", true);
     }
 
     /**
@@ -91,7 +91,7 @@ class TextareaPrompt extends Prompt
      */
     public function lines(): array
     {
-        return explode(PHP_EOL, $this->wrappedValue());
+        return explode("\n", $this->wrappedValue());
     }
 
     /**
@@ -105,7 +105,7 @@ class TextareaPrompt extends Prompt
 
         $withCursor = $this->valueWithCursor();
 
-        return array_slice(explode(PHP_EOL, $withCursor), $this->firstVisible, $this->scroll, preserve_keys: true);
+        return array_slice(explode("\n", $withCursor), $this->firstVisible, $this->scroll, preserve_keys: true);
     }
 
     /**
@@ -158,7 +158,7 @@ class TextareaPrompt extends Prompt
 
         if ($currentLineIndex === count($lines) - 1) {
             // They're already at the last line, jump them to the last position
-            $this->cursorPosition = mb_strlen(implode(PHP_EOL, $lines));
+            $this->cursorPosition = mb_strlen(implode("\n", $lines));
 
             return;
         }
@@ -241,10 +241,10 @@ class TextareaPrompt extends Prompt
      */
     protected function wrappedPlaceholderWithCursor(): string
     {
-        return implode(PHP_EOL, array_map(
+        return implode("\n", array_map(
             $this->dim(...),
-            explode(PHP_EOL, $this->addCursor(
-                $this->mbWordwrap($this->placeholder, $this->width, PHP_EOL, true),
+            explode("\n", $this->addCursor(
+                $this->mbWordwrap($this->placeholder, $this->width, "\n", true),
                 cursorPosition: 0,
             ))
         ));

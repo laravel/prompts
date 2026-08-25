@@ -11,7 +11,7 @@ class NoteRenderer extends Renderer
      */
     public function __invoke(Note $note): string
     {
-        $lines = explode(PHP_EOL, $note->message);
+        $lines = explode("\n", $note->message);
 
         switch ($note->type) {
             case 'intro':

@@ -98,7 +98,7 @@ class SuggestPromptRenderer extends Renderer implements Scrolling
             return '';
         }
 
-        return implode(PHP_EOL, $this->scrollbar(
+        return implode("\n", $this->scrollbar(
             array_map(function ($label, $key) use ($prompt) {
                 $label = $this->truncate($label, $prompt->terminal()->cols() - 12);
 

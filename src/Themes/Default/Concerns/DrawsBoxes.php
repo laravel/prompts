@@ -24,8 +24,8 @@ trait DrawsBoxes
     ): self {
         $this->minWidth = min($this->minWidth, Prompt::terminal()->cols() - 6);
 
-        $bodyLines = explode(PHP_EOL, $body);
-        $footerLines = array_filter(explode(PHP_EOL, $footer));
+        $bodyLines = explode("\n", $body);
+        $footerLines = array_filter(explode("\n", $footer));
 
         $width = $this->longest(array_merge($bodyLines, $footerLines, [$title]));
 

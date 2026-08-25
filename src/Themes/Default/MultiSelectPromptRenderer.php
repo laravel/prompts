@@ -58,7 +58,7 @@ class MultiSelectPromptRenderer extends Renderer implements Scrolling
      */
     protected function renderOptions(MultiSelectPrompt $prompt): string
     {
-        return implode(PHP_EOL, $this->scrollbar(
+        return implode("\n", $this->scrollbar(
             array_values(array_map(function ($label, $key) use ($prompt) {
                 $label = $this->truncate($label, $prompt->terminal()->cols() - 12);
 

@@ -261,7 +261,7 @@ class DataTableRenderer extends Renderer implements Scrolling
 
             foreach ($widths as $i => $w) {
                 $text = $row[$i] ?? '';
-                $subLines = explode(PHP_EOL, $text);
+                $subLines = explode("\n", $text);
                 $cellLines[$i] = $subLines;
                 $maxSubRows = max($maxSubRows, count($subLines));
             }
@@ -388,7 +388,7 @@ class DataTableRenderer extends Renderer implements Scrolling
         foreach ($allRows as $row) {
             foreach ($row as $i => $cell) {
                 $cellMax = 0;
-                foreach (explode(PHP_EOL, $cell) as $line) {
+                foreach (explode("\n", $cell) as $line) {
                     $cellMax = max($cellMax, mb_strwidth($line));
                 }
                 if ($cellMax > 0) {

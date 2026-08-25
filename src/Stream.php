@@ -65,7 +65,7 @@ class Stream extends Prompt
             $toFadeIn[] = $this->fadingOutColors[$index]($message);
         }
 
-        $lines = explode(PHP_EOL, $this->message.implode('', $toFadeIn));
+        $lines = explode("\n", $this->message.implode('', $toFadeIn));
         $finalLines = [];
 
         foreach ($lines as $line) {

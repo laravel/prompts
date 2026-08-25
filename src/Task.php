@@ -157,7 +157,7 @@ class Task extends Prompt
 
                 if ($this->socket !== null) {
                     // Send a reset message to the parent process to reset the terminal.
-                    fwrite($this->socket, $this->identifier.'_'.'reset:'.($originalAsync ? 1 : 0).PHP_EOL);
+                    fwrite($this->socket, $this->identifier.'_'.'reset:'.($originalAsync ? 1 : 0)."\n");
                     usleep($this->interval * 2000);
                 }
 
@@ -184,13 +184,13 @@ class Task extends Prompt
 
         while (($data = fgets($socket)) !== false) {
             // Buffer incomplete lines from non-blocking reads.
-            if (! str_ends_with($data, PHP_EOL)) {
+            if (! str_ends_with($data, "\n")) {
                 $this->buffer .= $data;
 
                 continue;
             }
 
-            $line = rtrim($this->buffer.$data, PHP_EOL);
+            $line = rtrim($this->buffer.$data, "\n");
             $this->buffer = '';
 
             if ($line === '') {
@@ -398,7 +398,7 @@ class Task extends Prompt
      */
     protected function eraseRenderedLines(): void
     {
-        $lines = explode(PHP_EOL, $this->prevFrame);
+        $lines = explode("\n", $this->prevFrame);
         $this->moveCursor(-999, -count($lines) + 1);
         $this->eraseDown();
     }

@@ -95,9 +95,9 @@ class Logger
         }
 
         if ($type !== null) {
-            fwrite($this->socket, $this->prefix($type, $message).PHP_EOL);
+            fwrite($this->socket, $this->prefix($type, $message)."\n");
         } else {
-            fwrite($this->socket, $message.PHP_EOL);
+            fwrite($this->socket, $message."\n");
         }
     }
 
@@ -106,6 +106,6 @@ class Logger
      */
     protected function prefix(string $type, string $message): string
     {
-        return $this->identifier.'_'.$type.':'.rtrim($message, PHP_EOL);
+        return $this->identifier.'_'.$type.':'.rtrim($message, "\n");
     }
 }

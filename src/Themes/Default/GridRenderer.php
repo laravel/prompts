@@ -48,7 +48,7 @@ class GridRenderer extends Renderer
             ->setStyle($tableStyle)
             ->render();
 
-        foreach (explode(PHP_EOL, trim($buffered->content(), PHP_EOL)) as $line) {
+        foreach (explode("\n", trim($buffered->content(), "\n")) as $line) {
             $this->line(' '.$line);
         }
 

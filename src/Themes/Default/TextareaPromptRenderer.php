@@ -21,13 +21,13 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
             'submit' => $this
                 ->box(
                     $this->dim($this->truncate($prompt->label, $prompt->width)),
-                    implode(PHP_EOL, $prompt->lines()),
+                    implode("\n", $prompt->lines()),
                 ),
 
             'cancel' => $this
                 ->box(
                     $this->truncate($prompt->label, $prompt->width),
-                    implode(PHP_EOL, array_map(fn ($line) => $this->strikethrough($this->dim($line)), $prompt->lines())),
+                    implode("\n", array_map(fn ($line) => $this->strikethrough($this->dim($line)), $prompt->lines())),
                     color: 'red',
                 )
                 ->error($prompt->cancelMessage),
@@ -68,7 +68,7 @@ class TextareaPromptRenderer extends Renderer implements Scrolling
 
         $longest = $this->longest($prompt->lines()) + 2;
 
-        return implode(PHP_EOL, $this->scrollbar(
+        return implode("\n", $this->scrollbar(
             $visible,
             $prompt->firstVisible,
             $prompt->scroll,

@@ -27,7 +27,7 @@ class ConsoleOutput extends SymfonyConsoleOutput
         parent::doWrite($message, $newline);
 
         if ($newline) {
-            $message .= \PHP_EOL;
+            $message .= "\n";
         }
 
         preg_match('/(?:\r?\n)*$/', $message, $matches);

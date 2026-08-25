@@ -142,7 +142,7 @@ class Spinner extends Prompt
      */
     protected function eraseRenderedLines(): void
     {
-        $lines = explode(PHP_EOL, $this->prevFrame);
+        $lines = explode("\n", $this->prevFrame);
         $this->moveCursor(-999, -count($lines) + 1);
         $this->eraseDown();
     }

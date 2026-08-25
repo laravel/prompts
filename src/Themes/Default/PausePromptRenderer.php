@@ -13,7 +13,7 @@ class PausePromptRenderer extends Renderer
      */
     public function __invoke(PausePrompt $prompt): string
     {
-        $lines = explode(PHP_EOL, $prompt->message);
+        $lines = explode("\n", $prompt->message);
 
         $color = $prompt->state === 'submit' ? 'green' : 'gray';
 

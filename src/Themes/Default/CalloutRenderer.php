@@ -28,13 +28,13 @@ class CalloutRenderer extends Renderer
             $result = $this->resolvePart($part);
 
             if (is_array($result)) {
-                $sections[] = implode(PHP_EOL, $result);
+                $sections[] = implode("\n", $result);
             } else {
-                $sections[] = implode(PHP_EOL, $this->ansiWordwrap($result, $this->minWidth));
+                $sections[] = implode("\n", $this->ansiWordwrap($result, $this->minWidth));
             }
         }
 
-        $message = implode(PHP_EOL.PHP_EOL, $sections);
+        $message = implode("\n\n", $sections);
 
         return match ($prompt->type) {
             'error' => $this
@@ -107,7 +107,7 @@ class CalloutRenderer extends Renderer
                 }
             }
 
-            $finalLines[] = implode(PHP_EOL, $partLines);
+            $finalLines[] = implode("\n", $partLines);
         }
 
         return $finalLines;
@@ -143,7 +143,7 @@ class CalloutRenderer extends Renderer
                 }
             }
 
-            $finalLines[] = implode(PHP_EOL, $partLines);
+            $finalLines[] = implode("\n", $partLines);
         }
 
         return $finalLines;
