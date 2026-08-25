@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.23...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.24...main)
+
+## [v0.3.24](https://github.com/laravel/prompts/compare/v0.3.23...v0.3.24) - 2026-08-20
+
+* Fix incorrect rendering of nested fg-color tags in select() title (#189) by [@wakqasahmed](https://github.com/wakqasahmed) in https://github.com/laravel/prompts/pull/266
 
 ## [v0.3.23](https://github.com/laravel/prompts/compare/v0.3.22...v0.3.23) - 2026-08-11
 
