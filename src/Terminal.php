@@ -38,6 +38,11 @@ class Terminal
     protected SymfonyTerminal $terminal;
 
     /**
+     * The shared Windows console driver.
+     */
+    protected static ?WindowsConsole $windowsConsole = null;
+
+    /**
      * Create a new Terminal instance.
      */
     public function __construct()
@@ -47,9 +52,18 @@ class Terminal
 
     /**
      * Read a line from the terminal.
+     *
+     * On Windows the read is delegated to the console driver: fread(STDIN)
+     * returns an empty string immediately instead of blocking on a raw-mode
+     * Windows console, so keystrokes are read via msvcrt and translated
+     * into the sequences a Unix terminal would send.
      */
     public function read(): string
     {
+        if (PHP_OS_FAMILY === 'Windows') {
+            return static::windowsConsole()->read();
+        }
+
         $input = fread(STDIN, 1024);
 
         return $input !== false ? $input : '';
@@ -57,9 +71,21 @@ class Terminal
 
     /**
      * Set the TTY mode.
+     *
+     * On Windows there is no stty; the console driver switches the console
+     * into raw mode through kernel32 instead. A failed setup throws so the
+     * caller falls back exactly as it does when stty is unavailable.
      */
     public function setTty(string $mode): void
     {
+        if (PHP_OS_FAMILY === 'Windows') {
+            if (! static::windowsConsole()->enable()) {
+                throw new RuntimeException('Failed to enable raw input mode on the Windows console.');
+            }
+
+            return;
+        }
+
         $this->initialTtyMode ??= $this->exec('stty -g');
 
         $this->exec("stty $mode");
@@ -70,11 +96,25 @@ class Terminal
      */
     public function restoreTty(): void
     {
+        if (PHP_OS_FAMILY === 'Windows') {
+            static::windowsConsole()->restore();
+
+            return;
+        }
+
         if (isset($this->initialTtyMode)) {
             $this->exec("stty {$this->initialTtyMode}");
 
             $this->initialTtyMode = null;
         }
+    }
+
+    /**
+     * Get the shared Windows console driver instance.
+     */
+    protected static function windowsConsole(): WindowsConsole
+    {
+        return static::$windowsConsole ??= new WindowsConsole;
     }
 
     /**

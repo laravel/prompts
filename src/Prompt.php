@@ -114,8 +114,6 @@ abstract class Prompt
                 return $this->default();
             }
 
-            $this->checkEnvironment();
-
             try {
                 static::terminal()->setTty('-icanon -isig -echo');
             } catch (Throwable $e) {
@@ -424,16 +422,6 @@ abstract class Prompt
     protected function isInvalidWhenRequired(mixed $value): bool
     {
         return $value === '' || $value === [] || $value === false || $value === null;
-    }
-
-    /**
-     * Check whether the environment can support the prompt.
-     */
-    private function checkEnvironment(): void
-    {
-        if (PHP_OS_FAMILY === 'Windows') {
-            throw new RuntimeException('Prompts is not currently supported on Windows. Please use WSL or configure a fallback.');
-        }
     }
 
     /**
