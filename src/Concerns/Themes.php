@@ -49,7 +49,9 @@ use Laravel\Prompts\Themes\Default\TaskRenderer;
 use Laravel\Prompts\Themes\Default\TextareaPromptRenderer;
 use Laravel\Prompts\Themes\Default\TextPromptRenderer;
 use Laravel\Prompts\Themes\Default\TitleRenderer;
+use Laravel\Prompts\Themes\Default\TreeRenderer;
 use Laravel\Prompts\Title;
+use Laravel\Prompts\Tree;
 
 trait Themes
 {
@@ -88,6 +90,7 @@ trait Themes
             Task::class => TaskRenderer::class,
             DataTablePrompt::class => DataTableRenderer::class,
             Callout::class => CalloutRenderer::class,
+            Tree::class => TreeRenderer::class,
         ],
     ];
 

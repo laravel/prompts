@@ -10,10 +10,12 @@ use Laravel\Prompts\Elements\Heading;
 use Laravel\Prompts\Elements\KeyValueList;
 use Laravel\Prompts\Elements\Link;
 use Laravel\Prompts\Elements\NumberedList;
+use Laravel\Prompts\Elements\Tree;
 
 class CalloutRenderer extends Renderer
 {
     use Concerns\DrawsBoxes;
+    use Concerns\DrawsTrees;
 
     /**
      * Render the text prompt.
@@ -28,7 +30,9 @@ class CalloutRenderer extends Renderer
             $result = $this->resolvePart($part);
 
             if (is_array($result)) {
-                $sections[] = implode(PHP_EOL, $result);
+                if ($result !== []) {
+                    $sections[] = implode(PHP_EOL, $result);
+                }
             } else {
                 $sections[] = implode(PHP_EOL, $this->ansiWordwrap($result, $this->minWidth));
             }
@@ -77,6 +81,7 @@ class CalloutRenderer extends Renderer
             $part instanceof NumberedList => $this->renderNumberedList($part),
             $part instanceof KeyValueList => $this->renderKeyValueList($part),
             $part instanceof Link => $this->renderLink($part),
+            $part instanceof Tree => $this->treeLines($part->items, $this->minWidth),
             default => throw new InvalidArgumentException('Unsupported callout content part: '.get_debug_type($part)),
         };
     }
@@ -189,25 +194,5 @@ class CalloutRenderer extends Renderer
             : $this->cyan($part->label);
 
         return "\e]8;;{$part->url}\e\\{$text}\e]8;;\e\\";
-    }
-
-    /**
-     * Auto-format the text by applying styles to specific patterns, such as inline code blocks.
-     */
-    protected function autoFormat(string $text): string
-    {
-        $text = preg_replace('/`([^`]+)`/', $this->cyan('`$1`'), $text);
-
-        $text = preg_replace_callback('/\e\]8;;(.+?)\e\\\\(.*?)\e\]8;;\e\\\\/', function ($matches) {
-            $visibleText = $this->stripEscapeSequences($matches[2]);
-            $hadUnderline = str_contains($matches[2], "\e[4m");
-            $styled = $hadUnderline
-                ? "\e[4;36m{$visibleText}\e[0m"
-                : $this->cyan($visibleText);
-
-            return "\e]8;;{$matches[1]}\e\\{$styled}\e]8;;\e\\";
-        }, $text);
-
-        return $text;
     }
 }
