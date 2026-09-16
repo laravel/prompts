@@ -37,3 +37,9 @@ it('strips multiple sibling nested tags', function () use ($instance) {
 
     expect($result)->toBe('Hello World and Foo Bar');
 });
+
+it('strips non-m ANSI control sequences without eating subsequent text', function () use ($instance) {
+    $result = $instance->strip("Hello \e[2K world my friend");
+
+    expect($result)->toBe('Hello  world my friend');
+});

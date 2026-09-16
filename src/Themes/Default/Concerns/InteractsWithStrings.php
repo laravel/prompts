@@ -36,7 +36,7 @@ trait InteractsWithStrings
         $text = preg_replace("/\e\]8;[^\e]*\e\\\\/", '', $text);
 
         // Strip ANSI escape sequences.
-        $text = preg_replace("/\e[^m]*m/", '', $text);
+        $text = preg_replace("/\e\[[0-9;?]*[a-zA-Z]/", '', $text);
 
         // Strip Symfony named style tags.
         $text = preg_replace("/<(info|comment|question|error)>(.*?)<\/\\1>/", '$2', $text);
@@ -256,15 +256,15 @@ trait InteractsWithStrings
                     // Extract CSI escape sequence
                     $escapeSequence = '';
                     while ($i < $textLength) {
-                        $escapeSequence .= $text[$i];
+                        $char = $text[$i];
+                        $escapeSequence .= $char;
                         $i++;
 
-                        if (preg_match('/^\\e\\[[0-9;]*m$/', $escapeSequence)) {
-                            if ($escapeSequence === "\e[0m") {
-                                $currentCodes = '';
-                            } else {
-                                $currentCodes = $escapeSequence;
+                        if (ord($char) >= 0x40 && ord($char) <= 0x7E && strlen($escapeSequence) > 2) {
+                            if (preg_match('/^\e\[[0-9;]*m$/', $escapeSequence)) {
+                                $currentCodes = $escapeSequence === "\e[0m" ? '' : $escapeSequence;
                             }
+
                             break;
                         }
                     }

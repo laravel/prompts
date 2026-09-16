@@ -65,3 +65,12 @@ it('parses text with 24-bit color codes', function () use ($instance) {
         ['text' => 'Colored', 'codes' => "\e[38;2;255;100;50m", 'link' => ''],
     ]);
 });
+
+it('parses text containing non-m control sequences without dropping text', function () use ($instance) {
+    $segments = $instance->parse("Before \e[2K After");
+
+    expect($segments)->toBe([
+        ['text' => 'Before ', 'codes' => '', 'link' => ''],
+        ['text' => ' After', 'codes' => '', 'link' => ''],
+    ]);
+});
