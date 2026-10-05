@@ -249,7 +249,7 @@ abstract class Prompt
     /**
      * Set the custom validation callback.
      */
-    public static function validateUsing(?Closure $callback): void
+    public static function validateUsing(Closure $callback): void
     {
         static::$validateUsing = $callback;
     }
@@ -277,14 +277,13 @@ abstract class Prompt
     /**
      * Flush the static state that callers may have registered.
      *
-     * The various `*Using` callbacks, and the fallback implementations
-     * registered by `Concerns\Fallback`, are commonly bound to the object
-     * that configured them (for example, the console command that called
-     * `Illuminate\Console\Concerns\ConfiguresPrompts::configurePrompts()`).
+     * Prompt::$validateUsing, Prompt::$cancelUsing, Prompt::$revertUsing, and
+     * the fallback implementations registered via Concerns\Fallback are
+     * commonly bound to the object that configured them (for example, the
+     * console command that called
+     * Illuminate\Console\Concerns\ConfiguresPrompts::configurePrompts()).
      * Left in place, they keep that object - and everything it references -
-     * alive for as long as the process runs. This is especially costly in
-     * long-running processes and test suites, where the registering object
-     * may never be replaced again.
+     * alive for as long as the process runs.
      */
     public static function flushState(): void
     {
@@ -293,8 +292,6 @@ abstract class Prompt
         static::$revertUsing = null;
         static::$shouldFallback = false;
         static::forgetFallbacks();
-
-        unset(static::$interactive, static::$output, static::$terminal);
     }
 
     /**
