@@ -218,9 +218,10 @@ it('truncates items that are wider than the grid', function (): void {
 
     (new Grid([str_repeat('a', 200)], maxWidth: 80))->display();
 
-    $widest = collect(explode(PHP_EOL, Prompt::strippedContent()))
-        ->map(fn (string $line) => mb_strwidth(rtrim($line)))
-        ->max();
+    $widest = max(array_map(
+        fn (string $line) => mb_strwidth(rtrim($line)),
+        explode(PHP_EOL, Prompt::strippedContent()),
+    ));
 
     expect($widest)->toBeLessThanOrEqual(80);
     Prompt::assertStrippedOutputContains('…');
