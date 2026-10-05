@@ -455,6 +455,6 @@ abstract class Prompt
         static::$validateUsing = null;
         static::$revertUsing = null;
         static::$shouldFallback = false;
-        static::forgetFallbacks();
+        static::$fallbacks = [];
     }
 }

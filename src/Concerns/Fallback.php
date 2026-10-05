@@ -58,12 +58,4 @@ trait Fallback
 
         return $fallback($this);
     }
-
-    /**
-     * Forget all registered fallback implementations.
-     */
-    public static function forgetFallbacks(): void
-    {
-        static::$fallbacks = [];
-    }
 }
