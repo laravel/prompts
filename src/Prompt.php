@@ -275,15 +275,7 @@ abstract class Prompt
     }
 
     /**
-     * Flush the static state that callers may have registered.
-     *
-     * Prompt::$validateUsing, Prompt::$cancelUsing, Prompt::$revertUsing, and
-     * the fallback implementations registered via Concerns\Fallback are
-     * commonly bound to the object that configured them (for example, the
-     * console command that called
-     * Illuminate\Console\Concerns\ConfiguresPrompts::configurePrompts()).
-     * Left in place, they keep that object - and everything it references -
-     * alive for as long as the process runs.
+     * Flush the global state of Prompts.
      */
     public static function flushState(): void
     {
