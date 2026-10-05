@@ -46,6 +46,20 @@ trait Fallback
     }
 
     /**
+     * Forget all registered fallback implementations.
+     *
+     * Each fallback is commonly bound to whatever object configured it (for
+     * example, the console command that called
+     * Illuminate\Console\Concerns\ConfiguresPrompts::configurePrompts()).
+     * Left in place, every registered fallback keeps that object - and
+     * everything it references - alive for as long as the process runs.
+     */
+    public static function forgetFallbacks(): void
+    {
+        static::$fallbacks = [];
+    }
+
+    /**
      * Call the registered fallback implementation.
      */
     public function fallback(): mixed
