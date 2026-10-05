@@ -275,18 +275,6 @@ abstract class Prompt
     }
 
     /**
-     * Flush the global state of Prompts.
-     */
-    public static function flushState(): void
-    {
-        static::$cancelUsing = null;
-        static::$validateUsing = null;
-        static::$revertUsing = null;
-        static::$shouldFallback = false;
-        static::forgetFallbacks();
-    }
-
-    /**
      * Render the prompt.
      */
     protected function render(): void
@@ -456,5 +444,17 @@ abstract class Prompt
         $this->restoreCursor();
 
         static::terminal()->restoreTty();
+    }
+
+    /**
+     * Flush the global state of Prompts.
+     */
+    public static function flushState(): void
+    {
+        static::$cancelUsing = null;
+        static::$validateUsing = null;
+        static::$revertUsing = null;
+        static::$shouldFallback = false;
+        static::forgetFallbacks();
     }
 }

@@ -46,14 +46,6 @@ trait Fallback
     }
 
     /**
-     * Forget all registered fallback implementations.
-     */
-    public static function forgetFallbacks(): void
-    {
-        static::$fallbacks = [];
-    }
-
-    /**
      * Call the registered fallback implementation.
      */
     public function fallback(): mixed
@@ -65,5 +57,13 @@ trait Fallback
         }
 
         return $fallback($this);
+    }
+
+    /**
+     * Forget all registered fallback implementations.
+     */
+    public static function forgetFallbacks(): void
+    {
+        static::$fallbacks = [];
     }
 }
