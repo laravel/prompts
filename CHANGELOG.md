@@ -1,6 +1,12 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.24...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.25...main)
+
+## [v0.3.25](https://github.com/laravel/prompts/compare/v0.3.24...v0.3.25) - 2026-10-06
+
+* Fix memory leak in test suite by [@timacdonald](https://github.com/timacdonald) in https://github.com/laravel/prompts/pull/273
+* Fix PHPStan signal handler type errors by [@timacdonald](https://github.com/timacdonald) in https://github.com/laravel/prompts/pull/275
+* Fix undefined collect() in GridTest by [@timacdonald](https://github.com/timacdonald) in https://github.com/laravel/prompts/pull/274
 
 ## [v0.3.24](https://github.com/laravel/prompts/compare/v0.3.23...v0.3.24) - 2026-08-20
 
