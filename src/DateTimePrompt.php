@@ -140,7 +140,7 @@ class DateTimePrompt extends DatePrompt
      */
     protected function segmentDate(): ?DateTimeImmutable
     {
-        $date = parent::segmentDate();
+        $date = ($this->calendar ? $this->bufferedDate() : null) ?? parent::segmentDate();
         $hour = $this->focused === 'hour' ? (int) $this->segmentBuffer : $this->hour;
         $minute = $this->focused === 'minute' ? (int) $this->segmentBuffer : $this->minute;
         $second = $this->focused === 'second' ? (int) $this->segmentBuffer : $this->second;
@@ -162,6 +162,10 @@ class DateTimePrompt extends DatePrompt
 
         if ($editing) {
             $this->syncTime();
+
+            if ($this->calendar && $this->bufferedDate() !== null) {
+                $this->buffer = '';
+            }
         }
 
         return true;

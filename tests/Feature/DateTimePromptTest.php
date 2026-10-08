@@ -167,6 +167,43 @@ it('stops pasting at the final time segment', function ($withSeconds, $input, $e
     'seconds' => [true, '2027-12-25 09:45:12:59', '2027-12-25 09:45:12'],
 ]);
 
+it('commits the pending calendar date with its time before validation and transformation', function () {
+    Prompt::fake(['20260724', Key::ENTER, Key::TAB, '10', Key::ENTER]);
+
+    $validated = null;
+    $prompt = new DateTimePrompt(
+        'Release',
+        default: '2026-07-25 09:30',
+        min: '2026-07-24 10:00',
+        max: '2026-07-25 09:45',
+        calendar: true,
+        transform: fn (DateTimeImmutable $value) => $value->format('Y-m-d H:i'),
+        validate: function ($value) use (&$validated) {
+            $validated = $value;
+        },
+    );
+    $result = $prompt->prompt();
+
+    expect($prompt->state)->toBe('submit')
+        ->and($result)->toBe('2026-07-24 10:30')
+        ->and($validated)->toBe($result)
+        ->and($prompt->buffer)->toBe('');
+});
+
+it('preserves incomplete and invalid calendar masks while editing time', function ($input, $error) {
+    Prompt::fake([$input, Key::TAB, '10', Key::ENTER, Key::CTRL_C]);
+
+    $prompt = new DateTimePrompt('Release', default: '2026-07-25 09:30', calendar: true);
+    $prompt->prompt();
+
+    expect($prompt->state)->toBe('cancel')
+        ->and($prompt->buffer)->toBe($input);
+    Prompt::assertOutputContains($error);
+})->with([
+    'incomplete' => ['202607', 'Incomplete date.'],
+    'invalid' => ['20260732', 'Invalid date.'],
+]);
+
 it('returns the default datetime with the seconds zeroed', function () {
     Prompt::fake([Key::ENTER]);
 
