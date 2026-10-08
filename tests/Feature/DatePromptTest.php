@@ -145,6 +145,29 @@ it('allows valid bounded dates to be entered across multiple segments', function
     'paste' => [['2027-01-15']],
 ]);
 
+it('preserves the first invalid segment in a pasted date', function ($input, $error, $buffer, $display) {
+    Prompt::fake([$input, Key::ENTER, Key::CTRL_C]);
+
+    $prompt = new DatePrompt('Release date', default: '2026-07-24');
+    $prompt->prompt();
+
+    expect($prompt->state)->toBe('cancel')
+        ->and($prompt->segmentBuffer)->toBe($buffer)
+        ->and($prompt->formattedValue())->toBe($display);
+    Prompt::assertOutputContains($error);
+})->with([
+    'invalid month' => ['2027-13-01', 'Invalid date.', '13', '2027-13-24'],
+    'incomplete year' => ['20-12-25', 'Incomplete year.', '20', '20__-07-24'],
+]);
+
+it('stops pasting at the final date segment', function () {
+    Prompt::fake(['2027-12-25-01', Key::ENTER]);
+
+    $result = date(label: 'Release date', default: '2026-07-24');
+
+    expect($result->format('Y-m-d'))->toBe('2027-12-25');
+});
+
 it('returns the default date as a DateTimeImmutable at midnight', function () {
     Prompt::fake([Key::ENTER]);
 

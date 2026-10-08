@@ -179,10 +179,10 @@ class DatePrompt extends Prompt
         return ['year', 'month', 'day'];
     }
 
-    protected function moveFocus(int $direction, bool $wrap = false): void
+    protected function moveFocus(int $direction, bool $wrap = false): bool
     {
         if (! $this->commitSegment()) {
-            return;
+            return false;
         }
 
         $segments = $this->segments();
@@ -190,7 +190,13 @@ class DatePrompt extends Prompt
         $count = count($segments);
         $index = $wrap ? ($index + $count) % $count : max(0, min($count - 1, $index));
 
+        if ($this->focused === $segments[$index]) {
+            return false;
+        }
+
         $this->focused = $segments[$index];
+
+        return true;
     }
 
     protected function stepSegment(int $step): void
@@ -218,7 +224,9 @@ class DatePrompt extends Prompt
 
         foreach (str_split($key) as $char) {
             if (in_array($char, ['-', ':', ' '])) {
-                $this->moveFocus(1);
+                if (! $this->moveFocus(1)) {
+                    return;
+                }
 
                 continue;
             }

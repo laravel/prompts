@@ -143,6 +143,30 @@ it('allows valid bounded times to be entered across multiple segments', function
     'calendar' => [true, [Key::TAB, '10', Key::RIGHT, '00']],
 ]);
 
+it('preserves the invalid time segment in a pasted datetime', function () {
+    Prompt::fake(['2027-12-25 24:01', Key::ENTER, Key::CTRL_C]);
+
+    $prompt = new DateTimePrompt('Release', default: '2026-07-24 14:30');
+    $prompt->prompt();
+
+    expect($prompt->state)->toBe('cancel')
+        ->and($prompt->focused)->toBe('hour')
+        ->and($prompt->segmentBuffer)->toBe('24')
+        ->and($prompt->formattedValue())->toBe('2027-12-25 24:30');
+    Prompt::assertOutputContains('Invalid time.');
+});
+
+it('stops pasting at the final time segment', function ($withSeconds, $input, $expected) {
+    Prompt::fake([$input, Key::ENTER]);
+
+    $result = datetime(label: 'Release', default: '2026-07-24 14:30:10', withSeconds: $withSeconds);
+
+    expect($result->format('Y-m-d H:i:s'))->toBe($expected);
+})->with([
+    'minutes' => [false, '2027-12-25 09:45:12', '2027-12-25 09:45:00'],
+    'seconds' => [true, '2027-12-25 09:45:12:59', '2027-12-25 09:45:12'],
+]);
+
 it('returns the default datetime with the seconds zeroed', function () {
     Prompt::fake([Key::ENTER]);
 
