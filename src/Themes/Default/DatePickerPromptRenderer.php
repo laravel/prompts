@@ -8,6 +8,7 @@ use Laravel\Prompts\DatePickerPrompt;
 class DatePickerPromptRenderer extends Renderer
 {
     use Concerns\DrawsBoxes;
+    use Concerns\RendersSegments;
 
     /**
      * The width of a calendar cell: a three-letter day name or a padded day number.
@@ -78,20 +79,6 @@ class DatePickerPromptRenderer extends Renderer
             $this->weekdayHeader($prompt),
             ...$this->weeks($prompt),
         ]);
-    }
-
-    protected function inputRow(DatePickerPrompt $prompt): string
-    {
-        $segments = $prompt->segmentValues();
-
-        if (isset($segments[$prompt->focused])) {
-            $segments[$prompt->focused] = $this->inverse($segments[$prompt->focused]);
-        }
-
-        $date = implode('-', array_slice($segments, 0, 3));
-        $time = implode(':', array_slice($segments, 3));
-
-        return $time === '' ? $date : $date.' '.$time;
     }
 
     /**

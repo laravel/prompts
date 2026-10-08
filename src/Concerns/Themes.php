@@ -52,7 +52,9 @@ use Laravel\Prompts\Themes\Default\TableRenderer;
 use Laravel\Prompts\Themes\Default\TaskRenderer;
 use Laravel\Prompts\Themes\Default\TextareaPromptRenderer;
 use Laravel\Prompts\Themes\Default\TextPromptRenderer;
+use Laravel\Prompts\Themes\Default\TimePickerPromptRenderer;
 use Laravel\Prompts\Themes\Default\TitleRenderer;
+use Laravel\Prompts\TimePickerPrompt;
 use Laravel\Prompts\Title;
 
 trait Themes
@@ -94,6 +96,7 @@ trait Themes
             Callout::class => CalloutRenderer::class,
             DatePickerPrompt::class => DatePickerPromptRenderer::class,
             DateTimePickerPrompt::class => DateTimePickerPromptRenderer::class,
+            TimePickerPrompt::class => TimePickerPromptRenderer::class,
         ],
     ];
 

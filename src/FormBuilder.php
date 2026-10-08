@@ -190,9 +190,14 @@ class FormBuilder
     /**
      * Prompt the user for a date and time, optionally using a calendar.
      */
-    public function datetimepicker(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, ?string $hint = null, ?Closure $transform = null, int $weekStartsOn = 1, bool $withSeconds = false, ?string $name = null, bool $calendar = false): self
+    public function datetimepicker(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, ?string $hint = null, ?Closure $transform = null, int $weekStartsOn = 1, bool $withSeconds = false, ?string $name = null, bool $calendar = false, bool $use12Hours = false): self
     {
         return $this->runPrompt(datetimepicker(...), get_defined_vars());
+    }
+
+    public function timepicker(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, ?string $hint = null, ?Closure $transform = null, bool $withSeconds = false, ?string $name = null, bool $use12Hours = false): self
+    {
+        return $this->runPrompt(timepicker(...), get_defined_vars());
     }
 
     /**

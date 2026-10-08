@@ -35,6 +35,6 @@ class DateTimePickerPromptRenderer extends DatePickerPromptRenderer
             $segments[$prompt->focused] = $this->inverse($segments[$prompt->focused]);
         }
 
-        return $this->dim('Time').'  '.implode(':', $segments);
+        return $this->dim('Time').'  '.$prompt->formatTimeSegments($segments);
     }
 }

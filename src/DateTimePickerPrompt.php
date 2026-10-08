@@ -8,20 +8,7 @@ use DateTimeInterface;
 
 class DateTimePickerPrompt extends DatePickerPrompt
 {
-    /**
-     * The hour of the selected time.
-     */
-    public int $hour;
-
-    /**
-     * The minute of the selected time.
-     */
-    public int $minute;
-
-    /**
-     * The second of the selected time.
-     */
-    public int $second;
+    use Concerns\InteractsWithTime;
 
     /**
      * The last time segment focused in calendar mode.
@@ -43,6 +30,7 @@ class DateTimePickerPrompt extends DatePickerPrompt
         int $weekStartsOn = 1,
         public bool $withSeconds = false,
         bool $calendar = false,
+        public bool $use12Hours = false,
     ) {
         parent::__construct($label, $default, $min, $max, $required, $validate, $hint, $transform, $weekStartsOn, $calendar);
 
@@ -73,20 +61,16 @@ class DateTimePickerPrompt extends DatePickerPrompt
         if (! $this->calendar) {
             $segments = $this->segmentValues();
 
-            return implode('-', array_slice($segments, 0, 3)).' '.implode(':', array_slice($segments, 3));
+            return $this->formatSegments($segments);
         }
 
         return parent::formattedValue().' '.$this->formattedTime();
     }
 
-    /**
-     * Get the selected time formatted for display.
-     */
-    public function formattedTime(): string
+    /** @param array<string, string> $segments */
+    public function formatSegments(array $segments): string
     {
-        return $this->withSeconds
-            ? sprintf('%02d:%02d:%02d', $this->hour, $this->minute, $this->second)
-            : sprintf('%02d:%02d', $this->hour, $this->minute);
+        return parent::formatSegments(array_slice($segments, 0, 3)).' '.$this->formatTimeSegments(array_slice($segments, 3));
     }
 
     /**
@@ -127,12 +111,7 @@ class DateTimePickerPrompt extends DatePickerPrompt
             return;
         }
 
-        match ($this->focused) {
-            'hour' => $this->hour = ($this->hour + $step + 24) % 24,
-            'minute' => $this->minute = ($this->minute + $step + 60) % 60,
-            'second' => $this->second = ($this->second + $step + 60) % 60,
-            default => null,
-        };
+        $this->stepTimeSegment($step);
     }
 
     /**
@@ -140,16 +119,7 @@ class DateTimePickerPrompt extends DatePickerPrompt
      */
     protected function segmentDate(): ?DateTimeImmutable
     {
-        $date = ($this->calendar ? $this->bufferedDate() : null) ?? parent::segmentDate();
-        $hour = $this->focused === 'hour' ? (int) $this->segmentBuffer : $this->hour;
-        $minute = $this->focused === 'minute' ? (int) $this->segmentBuffer : $this->minute;
-        $second = $this->focused === 'second' ? (int) $this->segmentBuffer : $this->second;
-
-        if ($hour > 23 || $minute > 59 || $second > 59) {
-            return null;
-        }
-
-        return $date?->setTime($hour, $minute, $second);
+        return $this->timeCandidate(($this->calendar ? $this->bufferedDate() : null) ?? parent::segmentDate());
     }
 
     protected function commitSegment(): bool
@@ -175,7 +145,7 @@ class DateTimePickerPrompt extends DatePickerPrompt
     {
         $error = parent::segmentError();
 
-        return $error === 'Invalid date.' && in_array($this->focused, ['hour', 'minute', 'second'])
+        return $error === 'Invalid date.' && in_array($this->focused, $this->timeSegments())
             ? 'Invalid time.'
             : $error;
     }
@@ -189,37 +159,20 @@ class DateTimePickerPrompt extends DatePickerPrompt
     {
         return [
             ...($this->calendar ? [] : parent::segments()),
-            'hour', 'minute',
-            ...($this->withSeconds ? ['second'] : []),
+            ...$this->timeSegments(),
         ];
     }
 
     /** @return array<string, string> */
     public function segmentValues(): array
     {
-        $segments = parent::segmentValues() + [
-            'hour' => $this->segmentDisplay('hour', sprintf('%02d', $this->hour)),
-            'minute' => $this->segmentDisplay('minute', sprintf('%02d', $this->minute)),
-        ];
-
-        if ($this->withSeconds) {
-            $segments['second'] = $this->segmentDisplay('second', sprintf('%02d', $this->second));
-        }
-
-        return $segments;
+        return parent::segmentValues() + $this->timeSegmentValues();
     }
 
     protected function goTo(DateTimeImmutable $date): void
     {
         parent::goTo($date->setTime($this->hour, $this->minute, $this->second));
         $this->syncTime();
-    }
-
-    protected function syncTime(): void
-    {
-        $this->hour = (int) $this->date->format('G');
-        $this->minute = (int) $this->date->format('i');
-        $this->second = (int) $this->date->format('s');
     }
 
     /**
@@ -231,20 +184,10 @@ class DateTimePickerPrompt extends DatePickerPrompt
     }
 
     /**
-     * Truncate the time to the prompt's precision.
-     */
-    protected function truncateTime(DateTimeImmutable $date): DateTimeImmutable
-    {
-        return $this->withSeconds
-            ? $date->setTime((int) $date->format('G'), (int) $date->format('i'), (int) $date->format('s'))
-            : $date->setTime((int) $date->format('G'), (int) $date->format('i'));
-    }
-
-    /**
      * The format used when displaying dates in messages.
      */
     protected function dateFormat(): string
     {
-        return $this->withSeconds ? 'Y-m-d H:i:s' : 'Y-m-d H:i';
+        return 'Y-m-d '.$this->timeFormat();
     }
 }

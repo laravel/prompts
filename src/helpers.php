@@ -485,8 +485,27 @@ if (! function_exists('\Laravel\Prompts\datetimepicker')) {
         int $weekStartsOn = 1,
         bool $withSeconds = false,
         bool $calendar = false,
+        bool $use12Hours = false,
     ): mixed {
         return (new DateTimePickerPrompt(...get_defined_vars()))->prompt();
+    }
+}
+
+if (! function_exists('\Laravel\Prompts\timepicker')) {
+    /** @return ($transform is null ? DateTimeImmutable|null : mixed) */
+    function timepicker(
+        string $label,
+        DateTimeInterface|string|null $default = null,
+        DateTimeInterface|string|null $min = null,
+        DateTimeInterface|string|null $max = null,
+        bool|string $required = false,
+        mixed $validate = null,
+        ?string $hint = null,
+        ?Closure $transform = null,
+        bool $withSeconds = false,
+        bool $use12Hours = false,
+    ): mixed {
+        return (new TimePickerPrompt(...get_defined_vars()))->prompt();
     }
 }
 
