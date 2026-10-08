@@ -121,8 +121,32 @@ class TimePickerPrompt extends Prompt
         }
 
         $this->stepTimeSegment($step);
-        $this->date = $this->clamp($this->date->setTime($this->hour, $this->minute, $this->second));
+        $candidate = $this->timeAt($this->date, $this->hour, $this->minute, $this->second);
+
+        if ($candidate === null) {
+            $this->syncTime();
+            $this->state = 'error';
+            $this->error = 'Invalid time.';
+
+            return;
+        }
+
+        try {
+            $this->date = $this->clamp($candidate);
+        } catch (InvalidArgumentException $e) {
+            $this->state = 'error';
+            $this->error = $e->getMessage();
+        }
+
         $this->syncTime();
+    }
+
+    protected function timeAt(DateTimeImmutable $date, int $hour, int $minute, int $second): ?DateTimeImmutable
+    {
+        $candidate = $date->setTime($hour, $minute, $second);
+        $expected = $date->format('Y-m-d').' '.sprintf('%02d:%02d:%02d', $hour, $minute, $second);
+
+        return $candidate->format('Y-m-d H:i:s') === $expected ? $candidate : null;
     }
 
     protected function submit(): void
@@ -164,7 +188,17 @@ class TimePickerPrompt extends Prompt
             default => null,
         };
 
-        return $bound === null ? $time : $time->setTime((int) $bound->format('G'), (int) $bound->format('i'), (int) $bound->format('s'));
+        if ($bound === null) {
+            return $time;
+        }
+
+        $candidate = $this->timeAt($time, (int) $bound->format('G'), (int) $bound->format('i'), (int) $bound->format('s'));
+
+        if ($candidate === null) {
+            throw new InvalidArgumentException('Time ['.$bound->format('H:i:s').'] cannot be represented on '.$time->format('Y-m-d').' in '.$time->getTimezone()->getName().'.');
+        }
+
+        return $candidate;
     }
 
     protected function rangeError(DateTimeImmutable $time): ?string

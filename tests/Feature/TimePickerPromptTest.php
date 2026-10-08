@@ -248,3 +248,47 @@ it('preserves the period when pasting seconds at either precision', function ($p
     ['AM', true, '09:45:12'],
     ['PM', true, '21:45:12'],
 ]);
+
+it('rejects typed times in a daylight saving gap', function ($use12Hours, $default, $keys, $focused, $buffer) {
+    Prompt::fake([...$keys, Key::ENTER, Key::CTRL_C]);
+
+    $prompt = new TimePickerPrompt('Start time', default: new DateTimeImmutable($default, new DateTimeZone('America/New_York')), use12Hours: $use12Hours);
+    $prompt->prompt();
+
+    expect($prompt->state)->toBe('cancel')
+        ->and($prompt->focused)->toBe($focused)
+        ->and($prompt->segmentBuffer)->toBe($buffer)
+        ->and($prompt->date->format('H:i'))->not->toBe('03:15');
+    Prompt::assertOutputContains('Invalid time.');
+})->with([
+    '24h hour' => [false, '2026-03-08 01:30', ['02:15'], 'hour', '02'],
+    '12h period' => [true, '2026-03-08 14:15', ['02:15 AM'], 'period', 'AM'],
+]);
+
+it('does not step into a daylight saving gap', function ($use12Hours, $default, $keys, $expected) {
+    Prompt::fake([...$keys, Key::ENTER]);
+
+    $result = timepicker('Start time', default: new DateTimeImmutable($default, new DateTimeZone('America/New_York')), use12Hours: $use12Hours);
+
+    expect($result->format('H:i'))->toBe($expected);
+    Prompt::assertOutputContains('Invalid time.');
+})->with([
+    '24h hour' => [false, '2026-03-08 01:30', [Key::UP], '01:30'],
+    '12h hour' => [true, '2026-03-08 01:30', [Key::UP], '01:30'],
+    '12h period' => [true, '2026-03-08 14:15', [Key::SHIFT_TAB, Key::UP], '14:15'],
+]);
+
+it('rejects an unrepresentable daylight saving clamp target', function () {
+    Prompt::fake();
+
+    timepicker('Start time', default: new DateTimeImmutable('2026-03-08 04:30', new DateTimeZone('America/New_York')), max: '02:30');
+})->throws(InvalidArgumentException::class, 'cannot be represented');
+
+it('preserves the previous time when stepping would clamp to a daylight saving gap', function () {
+    Prompt::fake([Key::DOWN, Key::ENTER]);
+
+    $result = timepicker('Start time', default: new DateTimeImmutable('2026-03-08 00:30', new DateTimeZone('America/New_York')), max: '02:30');
+
+    expect($result->format('H:i'))->toBe('00:30');
+    Prompt::assertOutputContains('cannot be represented');
+});

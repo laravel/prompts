@@ -95,7 +95,12 @@ trait InteractsWithTime
             return null;
         }
 
-        return $date?->setTime($hour, $minute, $second);
+        return $date === null ? null : $this->timeAt($date, $hour, $minute, $second);
+    }
+
+    protected function timeAt(DateTimeImmutable $date, int $hour, int $minute, int $second): ?DateTimeImmutable
+    {
+        return $date->setTime($hour, $minute, $second);
     }
 
     protected function stepTimeSegment(int $step): void
