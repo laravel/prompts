@@ -131,6 +131,20 @@ it('does not submit an emptied inline segment', function () {
     Prompt::assertOutputContains('Incomplete day.');
 });
 
+it('allows valid bounded dates to be entered across multiple segments', function ($keys) {
+    Prompt::fake([...$keys, Key::ENTER]);
+
+    $prompt = new DatePrompt('Release date', default: '2026-12-31', min: '2026-12-01', max: '2027-01-31');
+    $result = $prompt->prompt();
+
+    expect($prompt->state)->toBe('submit')
+        ->and($result->format('Y-m-d'))->toBe('2027-01-15');
+})->with([
+    'tab' => [['2027', Key::TAB, '01', Key::TAB, '15']],
+    'arrows' => [['2027', Key::RIGHT, '01', Key::RIGHT, '15']],
+    'paste' => [['2027-01-15']],
+]);
+
 it('returns the default date as a DateTimeImmutable at midnight', function () {
     Prompt::fake([Key::ENTER]);
 

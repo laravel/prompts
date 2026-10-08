@@ -1,5 +1,6 @@
 <?php
 
+use Laravel\Prompts\DateTimePrompt;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
@@ -122,6 +123,25 @@ it('preserves datetime hints and renders mode specific defaults', function ($cal
     Prompt::assertStrippedOutputDoesntContain('Tab: calendar/time');
     Prompt::assertStrippedOutputDoesntContain('Left/Right or Tab');
 })->with([false, true]);
+
+it('allows valid bounded times to be entered across multiple segments', function ($calendar, $keys) {
+    Prompt::fake([...$keys, Key::ENTER]);
+
+    $prompt = new DateTimePrompt(
+        'Release',
+        default: '2026-07-24 09:30',
+        min: '2026-07-24 09:30',
+        max: '2026-07-24 10:15',
+        calendar: $calendar,
+    );
+    $result = $prompt->prompt();
+
+    expect($prompt->state)->toBe('submit')
+        ->and($result->format('Y-m-d H:i'))->toBe('2026-07-24 10:00');
+})->with([
+    'inline' => [false, [Key::TAB, Key::TAB, Key::TAB, '10', Key::RIGHT, '00']],
+    'calendar' => [true, [Key::TAB, '10', Key::RIGHT, '00']],
+]);
 
 it('returns the default datetime with the seconds zeroed', function () {
     Prompt::fake([Key::ENTER]);

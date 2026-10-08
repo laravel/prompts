@@ -282,9 +282,7 @@ class DatePrompt extends Prompt
             return "Incomplete {$this->focused}.";
         }
 
-        $date = $this->segmentDate();
-
-        return $date === null ? 'Invalid date.' : $this->rangeError($date);
+        return $this->segmentDate() === null ? 'Invalid date.' : null;
     }
 
     protected function commitSegment(): bool
