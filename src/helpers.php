@@ -447,7 +447,7 @@ if (! function_exists('\Laravel\Prompts\task')) {
 
 if (! function_exists('\Laravel\Prompts\date')) {
     /**
-     * Prompt the user for a date using a navigable calendar.
+     * Prompt the user for a date, optionally using a calendar.
      *
      * @return ($transform is null ? DateTimeImmutable|null : mixed)
      */
@@ -458,9 +458,10 @@ if (! function_exists('\Laravel\Prompts\date')) {
         DateTimeInterface|string|null $max = null,
         bool|string $required = false,
         mixed $validate = null,
-        string $hint = 'Use the arrow keys to navigate or type a date.',
+        ?string $hint = null,
         ?Closure $transform = null,
         int $weekStartsOn = 1,
+        bool $calendar = false,
     ): mixed {
         return (new DatePrompt(...get_defined_vars()))->prompt();
     }
@@ -468,7 +469,7 @@ if (! function_exists('\Laravel\Prompts\date')) {
 
 if (! function_exists('\Laravel\Prompts\datetime')) {
     /**
-     * Prompt the user for a date and time using a navigable calendar.
+     * Prompt the user for a date and time, optionally using a calendar.
      *
      * @return ($transform is null ? DateTimeImmutable|null : mixed)
      */
@@ -479,10 +480,11 @@ if (! function_exists('\Laravel\Prompts\datetime')) {
         DateTimeInterface|string|null $max = null,
         bool|string $required = false,
         mixed $validate = null,
-        string $hint = 'Use the arrow keys to navigate or type a date. Tab edits the time.',
+        ?string $hint = null,
         ?Closure $transform = null,
         int $weekStartsOn = 1,
         bool $withSeconds = false,
+        bool $calendar = false,
     ): mixed {
         return (new DateTimePrompt(...get_defined_vars()))->prompt();
     }

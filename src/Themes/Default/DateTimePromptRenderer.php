@@ -12,6 +12,10 @@ class DateTimePromptRenderer extends DatePromptRenderer
      */
     protected function renderBody(DatePrompt $prompt): string
     {
+        if (! $prompt->calendar) {
+            return parent::renderBody($prompt);
+        }
+
         /** @var DateTimePrompt $prompt */
         return implode(PHP_EOL, [
             parent::renderBody($prompt),
@@ -25,14 +29,7 @@ class DateTimePromptRenderer extends DatePromptRenderer
      */
     protected function timeRow(DateTimePrompt $prompt): string
     {
-        $segments = [
-            'hour' => sprintf('%02d', $prompt->hour),
-            'minute' => sprintf('%02d', $prompt->minute),
-        ];
-
-        if ($prompt->withSeconds) {
-            $segments['second'] = sprintf('%02d', $prompt->second);
-        }
+        $segments = array_slice($prompt->segmentValues(), 3);
 
         if (isset($segments[$prompt->focused])) {
             $segments[$prompt->focused] = $this->inverse($segments[$prompt->focused]);

@@ -180,17 +180,17 @@ class FormBuilder
     }
 
     /**
-     * Prompt the user for a date using a navigable calendar.
+     * Prompt the user for a date, optionally using a calendar.
      */
-    public function date(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, string $hint = 'Use the arrow keys to navigate or type a date.', ?Closure $transform = null, int $weekStartsOn = 1, ?string $name = null): self
+    public function date(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, ?string $hint = null, ?Closure $transform = null, int $weekStartsOn = 1, ?string $name = null, bool $calendar = false): self
     {
         return $this->runPrompt(date(...), get_defined_vars());
     }
 
     /**
-     * Prompt the user for a date and time using a navigable calendar.
+     * Prompt the user for a date and time, optionally using a calendar.
      */
-    public function datetime(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, string $hint = 'Use the arrow keys to navigate or type a date. Tab edits the time.', ?Closure $transform = null, int $weekStartsOn = 1, bool $withSeconds = false, ?string $name = null): self
+    public function datetime(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, ?string $hint = null, ?Closure $transform = null, int $weekStartsOn = 1, bool $withSeconds = false, ?string $name = null, bool $calendar = false): self
     {
         return $this->runPrompt(datetime(...), get_defined_vars());
     }

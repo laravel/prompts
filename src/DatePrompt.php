@@ -36,6 +36,14 @@ class DatePrompt extends Prompt
      */
     public string $buffer = '';
 
+    public string $focused;
+
+    public string $segmentBuffer = '';
+
+    protected bool $editingSegment = false;
+
+    public string $hint;
+
     /**
      * Create a new DatePrompt instance.
      */
@@ -46,9 +54,10 @@ class DatePrompt extends Prompt
         DateTimeInterface|string|null $max = null,
         public bool|string $required = false,
         public mixed $validate = null,
-        public string $hint = 'Use the arrow keys to navigate or type a date.',
+        ?string $hint = null,
         public ?Closure $transform = null,
         public int $weekStartsOn = 1,
+        public bool $calendar = false,
     ) {
         if ($this->weekStartsOn < 0 || $this->weekStartsOn > 6) {
             throw new InvalidArgumentException('Argument [weekStartsOn] must be between 0 (Sunday) and 6 (Saturday).');
@@ -64,6 +73,11 @@ class DatePrompt extends Prompt
 
         $this->date = $this->clamp($this->default ?? new DateTimeImmutable('today'));
 
+        $this->focused = $calendar ? 'calendar' : 'year';
+        $this->hint = $hint ?? ($calendar
+            ? 'Use the arrow keys to navigate or type a date.'
+            : 'Left/Right or Tab: move. Up/Down: change. Type to edit.');
+
         $this->validate = $this->wrapValidation($this->validate);
 
         $this->on('key', fn ($key) => $this->handleKey($key));
@@ -74,6 +88,10 @@ class DatePrompt extends Prompt
      */
     protected function handleKey(string $key): mixed
     {
+        if (! $this->calendar) {
+            return $this->handleSegmentKey($key);
+        }
+
         return match ($key) {
             Key::LEFT, Key::LEFT_ARROW, Key::CTRL_B => $this->goTo($this->date->modify('-1 day')),
             Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_F => $this->goTo($this->date->modify('+1 day')),
@@ -108,6 +126,10 @@ class DatePrompt extends Prompt
      */
     public function formattedValue(): string
     {
+        if (! $this->calendar) {
+            return implode('-', $this->segmentValues());
+        }
+
         if ($this->buffer !== '') {
             $digits = str_pad($this->buffer, 8, '_');
 
@@ -115,6 +137,185 @@ class DatePrompt extends Prompt
         }
 
         return $this->date->format('Y-m-d');
+    }
+
+    /** @return array<string, string> */
+    public function segmentValues(): array
+    {
+        return [
+            'year' => $this->segmentDisplay('year', $this->date->format('Y')),
+            'month' => $this->segmentDisplay('month', $this->date->format('m')),
+            'day' => $this->segmentDisplay('day', $this->date->format('d')),
+        ];
+    }
+
+    protected function segmentDisplay(string $segment, string $value): string
+    {
+        return $this->editingSegment && $this->focused === $segment
+            ? str_pad($this->segmentBuffer, $segment === 'year' ? 4 : 2, '_')
+            : $value;
+    }
+
+    protected function handleSegmentKey(string $key): mixed
+    {
+        match ($key) {
+            Key::LEFT, Key::LEFT_ARROW, Key::CTRL_B => $this->moveFocus(-1),
+            Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_F => $this->moveFocus(1),
+            Key::TAB => $this->moveFocus(1, wrap: true),
+            Key::SHIFT_TAB => $this->moveFocus(-1, wrap: true),
+            Key::UP, Key::UP_ARROW, Key::CTRL_P => $this->stepSegment(1),
+            Key::DOWN, Key::DOWN_ARROW, Key::CTRL_N => $this->stepSegment(-1),
+            Key::BACKSPACE, Key::CTRL_H => $this->backspaceSegment(),
+            Key::ENTER => $this->submit(),
+            default => $this->typeIntoSegment($key),
+        };
+
+        return null;
+    }
+
+    /** @return list<string> */
+    protected function segments(): array
+    {
+        return ['year', 'month', 'day'];
+    }
+
+    protected function moveFocus(int $direction, bool $wrap = false): void
+    {
+        if (! $this->commitSegment()) {
+            return;
+        }
+
+        $segments = $this->segments();
+        $index = array_search($this->focused, $segments) + $direction;
+        $count = count($segments);
+        $index = $wrap ? ($index + $count) % $count : max(0, min($count - 1, $index));
+
+        $this->focused = $segments[$index];
+    }
+
+    protected function stepSegment(int $step): void
+    {
+        if (! $this->commitSegment()) {
+            return;
+        }
+
+        $date = match ($this->focused) {
+            'year' => $this->addMonths($step * 12),
+            'month' => $this->addMonths($step),
+            default => $this->date->modify(sprintf('%+d days', $step)),
+        };
+
+        if ((int) $date->format('Y') >= 1 && (int) $date->format('Y') <= 9999) {
+            $this->goTo($date);
+        }
+    }
+
+    protected function typeIntoSegment(string $key): void
+    {
+        if ($key !== '' && $key[0] === "\e") {
+            return;
+        }
+
+        foreach (str_split($key) as $char) {
+            if (in_array($char, ['-', ':', ' '])) {
+                $this->moveFocus(1);
+
+                continue;
+            }
+
+            if (! ctype_digit($char)) {
+                continue;
+            }
+
+            $this->editingSegment = true;
+            $width = $this->focused === 'year' ? 4 : 2;
+
+            if (strlen($this->segmentBuffer) >= $width) {
+                $this->segmentBuffer = '';
+            }
+
+            $this->segmentBuffer .= $char;
+        }
+    }
+
+    protected function backspaceSegment(): void
+    {
+        if (! $this->editingSegment) {
+            $this->segmentBuffer = $this->segmentValues()[$this->focused];
+            $this->editingSegment = true;
+        }
+
+        $this->segmentBuffer = substr($this->segmentBuffer, 0, -1);
+    }
+
+    protected function segmentDate(): ?DateTimeImmutable
+    {
+        $year = (int) $this->date->format('Y');
+        $month = (int) $this->date->format('m');
+        $day = (int) $this->date->format('d');
+
+        match ($this->focused) {
+            'year' => $year = (int) $this->segmentBuffer,
+            'month' => $month = (int) $this->segmentBuffer,
+            'day' => $day = (int) $this->segmentBuffer,
+            default => null,
+        };
+
+        if ($year < 1 || $year > 9999 || $month < 1 || $month > 12) {
+            return null;
+        }
+
+        if ($this->focused !== 'day') {
+            $day = min($day, (int) $this->date->setDate($year, $month, 1)->format('t'));
+        }
+
+        return checkdate($month, $day, $year) ? $this->date->setDate($year, $month, $day) : null;
+    }
+
+    protected function segmentError(): ?string
+    {
+        if (! $this->editingSegment) {
+            return null;
+        }
+
+        if ($this->segmentBuffer === '' || ($this->focused === 'year' && strlen($this->segmentBuffer) < 4)) {
+            return "Incomplete {$this->focused}.";
+        }
+
+        $date = $this->segmentDate();
+
+        return $date === null ? 'Invalid date.' : $this->rangeError($date);
+    }
+
+    protected function commitSegment(): bool
+    {
+        if (! $this->editingSegment) {
+            return true;
+        }
+
+        if (($error = $this->segmentError()) !== null) {
+            $this->state = 'error';
+            $this->error = $error;
+
+            return false;
+        }
+
+        $this->date = $this->segmentDate();
+        $this->segmentBuffer = '';
+        $this->editingSegment = false;
+
+        return true;
+    }
+
+    protected function submit(): void
+    {
+        if ($this->commitSegment()) {
+            if ($this->calendar) {
+                $this->type('');
+            }
+
+            parent::submit();
+        }
     }
 
     /**
@@ -175,7 +376,7 @@ class DatePrompt extends Prompt
             return null;
         }
 
-        return (new DateTimeImmutable("{$year}-{$month}-{$day}"))->setTime(0, 0);
+        return $this->date->setDate((int) $year, (int) $month, (int) $day)->setTime(0, 0);
     }
 
     /**
@@ -184,6 +385,10 @@ class DatePrompt extends Prompt
     protected function wrapValidation(mixed $validate): callable
     {
         return function ($value) use ($validate) {
+            if (($error = $this->segmentError()) !== null) {
+                return $error;
+            }
+
             if (strlen($this->buffer) > 0 && strlen($this->buffer) < 8) {
                 return 'Incomplete date.';
             }

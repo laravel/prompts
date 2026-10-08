@@ -63,17 +63,35 @@ class DatePromptRenderer extends Renderer
     }
 
     /**
-     * Render the selected date above the calendar grid.
+     * Render the inline input or the selected date and calendar.
      */
     protected function renderBody(DatePrompt $prompt): string
     {
+        if (! $prompt->calendar) {
+            return $this->inputRow($prompt);
+        }
+
         return implode(PHP_EOL, [
-            $prompt->formattedValue(),
+            substr($prompt->formattedValue(), 0, 10),
             '',
             $this->monthTitle($prompt),
             $this->weekdayHeader($prompt),
             ...$this->weeks($prompt),
         ]);
+    }
+
+    protected function inputRow(DatePrompt $prompt): string
+    {
+        $segments = $prompt->segmentValues();
+
+        if (isset($segments[$prompt->focused])) {
+            $segments[$prompt->focused] = $this->inverse($segments[$prompt->focused]);
+        }
+
+        $date = implode('-', array_slice($segments, 0, 3));
+        $time = implode(':', array_slice($segments, 3));
+
+        return $time === '' ? $date : $date.' '.$time;
     }
 
     /**

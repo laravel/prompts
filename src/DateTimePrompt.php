@@ -24,9 +24,9 @@ class DateTimePrompt extends DatePrompt
     public int $second;
 
     /**
-     * The segment that currently has focus: "calendar", "hour", "minute", or "second".
+     * The last time segment focused in calendar mode.
      */
-    public string $focused = 'calendar';
+    protected string $timeFocus = 'hour';
 
     /**
      * Create a new DateTimePrompt instance.
@@ -38,12 +38,17 @@ class DateTimePrompt extends DatePrompt
         DateTimeInterface|string|null $max = null,
         bool|string $required = false,
         mixed $validate = null,
-        string $hint = 'Use the arrow keys to navigate or type a date. Tab edits the time.',
+        ?string $hint = null,
         ?Closure $transform = null,
         int $weekStartsOn = 1,
         public bool $withSeconds = false,
+        bool $calendar = false,
     ) {
-        parent::__construct($label, $default, $min, $max, $required, $validate, $hint, $transform, $weekStartsOn);
+        parent::__construct($label, $default, $min, $max, $required, $validate, $hint, $transform, $weekStartsOn, $calendar);
+
+        if ($calendar && $hint === null) {
+            $this->hint = 'Tab: calendar/time. Left/Right: segment. Up/Down: change. Type to edit.';
+        }
 
         $time = $this->clamp($this->default ?? $this->truncateTime(new DateTimeImmutable('now')));
 
@@ -65,6 +70,12 @@ class DateTimePrompt extends DatePrompt
      */
     public function formattedValue(): string
     {
+        if (! $this->calendar) {
+            $segments = $this->segmentValues();
+
+            return implode('-', array_slice($segments, 0, 3)).' '.implode(':', array_slice($segments, 3));
+        }
+
         return parent::formattedValue().' '.$this->formattedTime();
     }
 
@@ -83,39 +94,22 @@ class DateTimePrompt extends DatePrompt
      */
     protected function handleKey(string $key): mixed
     {
-        return match (true) {
-            $key === Key::TAB => $this->moveFocus(1),
-            $key === Key::SHIFT_TAB => $this->moveFocus(-1),
-            $this->focused === 'calendar' => parent::handleKey($key),
-            default => $this->handleTimeKey($key),
-        };
-    }
+        if ($this->calendar && in_array($key, [Key::TAB, Key::SHIFT_TAB])) {
+            if (! $this->commitSegment()) {
+                return null;
+            }
 
-    /**
-     * Handle a key press while a time segment has focus.
-     */
-    protected function handleTimeKey(string $key): mixed
-    {
-        return match ($key) {
-            Key::UP, Key::UP_ARROW, Key::CTRL_P => $this->stepSegment(1),
-            Key::DOWN, Key::DOWN_ARROW, Key::CTRL_N => $this->stepSegment(-1),
-            Key::LEFT, Key::LEFT_ARROW, Key::CTRL_B => $this->moveFocus(-1),
-            Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_F => $this->focused === $this->lastSegment() ? null : $this->moveFocus(1),
-            Key::ENTER => $this->submit(),
-            default => $this->typeIntoSegment($key),
-        };
-    }
+            if ($this->focused === 'calendar') {
+                $this->focused = $this->timeFocus;
+            } else {
+                $this->timeFocus = $this->focused;
+                $this->focused = 'calendar';
+            }
 
-    /**
-     * Move the focus by the given number of segments, wrapping around.
-     */
-    protected function moveFocus(int $direction): void
-    {
-        $segments = $this->segments();
+            return null;
+        }
 
-        $index = array_search($this->focused, $segments) + $direction;
-
-        $this->focused = $segments[($index + count($segments)) % count($segments)];
+        return $this->focused === 'calendar' ? parent::handleKey($key) : $this->handleSegmentKey($key);
     }
 
     /**
@@ -123,6 +117,16 @@ class DateTimePrompt extends DatePrompt
      */
     protected function stepSegment(int $step): void
     {
+        if (in_array($this->focused, ['year', 'month', 'day'])) {
+            parent::stepSegment($step);
+
+            return;
+        }
+
+        if (! $this->commitSegment()) {
+            return;
+        }
+
         match ($this->focused) {
             'hour' => $this->hour = ($this->hour + $step + 24) % 24,
             'minute' => $this->minute = ($this->minute + $step + 60) % 60,
@@ -132,36 +136,44 @@ class DateTimePrompt extends DatePrompt
     }
 
     /**
-     * Type digits into the focused time segment, rolling the last two digits.
+     * Build the candidate date with the edited segment.
      */
-    protected function typeIntoSegment(string $key): void
+    protected function segmentDate(): ?DateTimeImmutable
     {
-        if ($key !== '' && $key[0] === "\e") {
-            return;
+        $date = parent::segmentDate();
+        $hour = $this->focused === 'hour' ? (int) $this->segmentBuffer : $this->hour;
+        $minute = $this->focused === 'minute' ? (int) $this->segmentBuffer : $this->minute;
+        $second = $this->focused === 'second' ? (int) $this->segmentBuffer : $this->second;
+
+        if ($hour > 23 || $minute > 59 || $second > 59) {
+            return null;
         }
 
-        foreach (str_split($key) as $char) {
-            if (! ctype_digit($char)) {
-                continue;
-            }
-
-            match ($this->focused) {
-                'hour' => $this->hour = $this->rollSegment($this->hour, (int) $char, 23),
-                'minute' => $this->minute = $this->rollSegment($this->minute, (int) $char, 59),
-                'second' => $this->second = $this->rollSegment($this->second, (int) $char, 59),
-                default => null,
-            };
-        }
+        return $date?->setTime($hour, $minute, $second);
     }
 
-    /**
-     * Roll the typed digit into the segment, restarting from the digit on overflow.
-     */
-    protected function rollSegment(int $current, int $digit, int $max): int
+    protected function commitSegment(): bool
     {
-        $rolled = ($current % 10) * 10 + $digit;
+        $editing = $this->editingSegment;
 
-        return $rolled <= $max ? $rolled : $digit;
+        if (! parent::commitSegment()) {
+            return false;
+        }
+
+        if ($editing) {
+            $this->syncTime();
+        }
+
+        return true;
+    }
+
+    protected function segmentError(): ?string
+    {
+        $error = parent::segmentError();
+
+        return $error === 'Invalid date.' && in_array($this->focused, ['hour', 'minute', 'second'])
+            ? 'Invalid time.'
+            : $error;
     }
 
     /**
@@ -171,19 +183,39 @@ class DateTimePrompt extends DatePrompt
      */
     protected function segments(): array
     {
-        return $this->withSeconds
-            ? ['calendar', 'hour', 'minute', 'second']
-            : ['calendar', 'hour', 'minute'];
+        return [
+            ...($this->calendar ? [] : parent::segments()),
+            'hour', 'minute',
+            ...($this->withSeconds ? ['second'] : []),
+        ];
     }
 
-    /**
-     * The last focusable segment.
-     */
-    protected function lastSegment(): string
+    /** @return array<string, string> */
+    public function segmentValues(): array
     {
-        $segments = $this->segments();
+        $segments = parent::segmentValues() + [
+            'hour' => $this->segmentDisplay('hour', sprintf('%02d', $this->hour)),
+            'minute' => $this->segmentDisplay('minute', sprintf('%02d', $this->minute)),
+        ];
 
-        return $segments[count($segments) - 1];
+        if ($this->withSeconds) {
+            $segments['second'] = $this->segmentDisplay('second', sprintf('%02d', $this->second));
+        }
+
+        return $segments;
+    }
+
+    protected function goTo(DateTimeImmutable $date): void
+    {
+        parent::goTo($date->setTime($this->hour, $this->minute, $this->second));
+        $this->syncTime();
+    }
+
+    protected function syncTime(): void
+    {
+        $this->hour = (int) $this->date->format('G');
+        $this->minute = (int) $this->date->format('i');
+        $this->second = (int) $this->date->format('s');
     }
 
     /**
