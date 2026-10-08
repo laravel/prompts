@@ -1,10 +1,10 @@
 <?php
 
-use function Laravel\Prompts\date;
+use function Laravel\Prompts\datepicker;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$date = date(
+$date = datepicker(
     label: 'When should the deploy run?',
     default: '+3 days',
     min: 'today',

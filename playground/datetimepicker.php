@@ -1,10 +1,10 @@
 <?php
 
-use function Laravel\Prompts\datetime;
+use function Laravel\Prompts\datetimepicker;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$datetime = datetime(
+$datetime = datetimepicker(
     label: 'When should the maintenance window start?',
     default: 'tomorrow 22:00',
     min: 'today',
