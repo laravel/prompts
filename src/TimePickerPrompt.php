@@ -171,7 +171,7 @@ class TimePickerPrompt extends Prompt
             $errors = DateTimeImmutable::getLastErrors();
 
             if ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) {
-                throw new InvalidArgumentException();
+                throw new InvalidArgumentException;
             }
 
             return $this->truncateTime($date);
