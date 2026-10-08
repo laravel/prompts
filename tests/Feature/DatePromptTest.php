@@ -7,6 +7,130 @@ use Laravel\Prompts\Prompt;
 
 use function Laravel\Prompts\date;
 
+it('renders an inline date input by default', function () {
+    Prompt::fake([Key::ENTER]);
+
+    date(label: 'Release date', default: '2026-07-24');
+
+    Prompt::assertStrippedOutputContains('2026-07-24');
+    Prompt::assertStrippedOutputDoesntContain('July 2026');
+    Prompt::assertOutputContains("\e[7m2026\e[27m");
+});
+
+it('can opt into the calendar', function () {
+    Prompt::fake([Key::ENTER]);
+
+    date(label: 'Release date', default: '2026-07-24', calendar: true);
+
+    Prompt::assertStrippedOutputContains('July 2026');
+});
+
+it('moves inline focus without changing the date', function () {
+    Prompt::fake([Key::LEFT, Key::RIGHT, Key::CTRL_F, Key::RIGHT, Key::ENTER]);
+
+    $result = date(label: 'Release date', default: '2026-07-24');
+
+    expect($result->format('Y-m-d'))->toBe('2026-07-24');
+    Prompt::assertOutputContains("\e[7m07\e[27m");
+    Prompt::assertOutputContains("\e[7m24\e[27m");
+});
+
+it('steps inline date segments safely', function ($default, $keys, $expected) {
+    Prompt::fake([...$keys, Key::ENTER]);
+
+    $result = date(label: 'Release date', default: $default);
+
+    expect($result->format('Y-m-d'))->toBe($expected);
+})->with([
+    'leap year' => ['2024-02-29', [Key::UP], '2025-02-28'],
+    'short month' => ['2026-01-31', [Key::RIGHT, Key::UP], '2026-02-28'],
+    'previous month' => ['2026-03-31', [Key::TAB, Key::DOWN], '2026-02-28'],
+    'year boundary' => ['2026-12-31', [Key::SHIFT_TAB, Key::UP], '2027-01-01'],
+    'tab wrap' => ['2026-07-24', [Key::TAB, Key::TAB, Key::TAB, Key::DOWN], '2025-07-24'],
+]);
+
+it('types an inline date and corrects a segment with backspace', function () {
+    Prompt::fake(['2027-13', Key::BACKSPACE, '2-25', Key::ENTER]);
+
+    $result = date(label: 'Release date', default: '2026-07-24');
+
+    expect($result->format('Y-m-d'))->toBe('2027-12-25');
+});
+
+it('rejects invalid inline edits before moving focus or submitting', function ($keys, $correction, $error, $expected) {
+    Prompt::fake([...$keys, Key::TAB, Key::ENTER, ...$correction, Key::ENTER]);
+
+    $result = date(label: 'Release date', default: '2026-02-24');
+
+    expect($result->format('Y-m-d'))->toBe($expected);
+    Prompt::assertOutputContains($error);
+})->with([
+    'incomplete year' => [['20'], ['26'], 'Incomplete year.', '2026-02-24'],
+    'zero month' => [[Key::TAB, '00'], [Key::BACKSPACE, '2'], 'Invalid date.', '2026-02-24'],
+    'impossible day' => [[Key::TAB, Key::TAB, '30'], [Key::BACKSPACE, Key::BACKSPACE, '01'], 'Invalid date.', '2026-02-01'],
+]);
+
+it('clamps inline stepping but rejects typed dates outside the range', function () {
+    Prompt::fake([Key::SHIFT_TAB, Key::UP, '30', Key::ENTER, Key::BACKSPACE, Key::BACKSPACE, '05', Key::ENTER]);
+
+    $result = date(label: 'Release date', default: '2026-07-24', max: '2026-07-25');
+
+    expect($result->format('Y-m-d'))->toBe('2026-07-05');
+    Prompt::assertOutputContains('Must be on or before 2026-07-25.');
+});
+
+it('preserves the timezone when typing inline segments', function () {
+    Prompt::fake(['2027-12-25', Key::ENTER]);
+
+    $result = date(label: 'Release date', default: new DateTimeImmutable('2026-07-24', new DateTimeZone('America/New_York')));
+
+    expect($result->format('Y-m-d e'))->toBe('2027-12-25 America/New_York');
+});
+
+it('preserves custom and empty hints in both date views', function ($calendar) {
+    Prompt::fake([Key::ENTER]);
+    date(label: 'Release date', default: '2026-07-24', hint: 'A custom hint.', calendar: $calendar);
+    Prompt::assertStrippedOutputContains('A custom hint.');
+
+    Prompt::fake([Key::ENTER]);
+    date(label: 'Release date', default: '2026-07-24', hint: '', calendar: $calendar);
+    Prompt::assertStrippedOutputDoesntContain('Use the');
+    Prompt::assertStrippedOutputDoesntContain('Left/Right or Tab');
+})->with([false, true]);
+
+it('ignores unrelated characters and escape sequences in inline segments', function () {
+    Prompt::fake(['a!', Key::DELETE, "\e[1;5C", '2027', Key::ENTER]);
+
+    $result = date(label: 'Release date', default: '2026-07-24');
+
+    expect($result->format('Y-m-d'))->toBe('2027-07-24');
+});
+
+it('validates and transforms the committed inline date', function () {
+    Prompt::fake(['2027-12-25', Key::ENTER]);
+
+    $validated = null;
+    $result = date(
+        label: 'Release date',
+        default: '2026-07-24',
+        transform: fn (DateTimeImmutable $value) => $value->format('Y-m-d'),
+        validate: function ($value) use (&$validated) {
+            $validated = $value;
+        },
+    );
+
+    expect($result)->toBe('2027-12-25')->and($validated)->toBe($result);
+});
+
+it('does not submit an emptied inline segment', function () {
+    Prompt::fake([Key::SHIFT_TAB, Key::BACKSPACE, Key::BACKSPACE, Key::ENTER, '25', Key::ENTER]);
+
+    $result = date(label: 'Release date', default: '2026-07-24');
+
+    expect($result->format('Y-m-d'))->toBe('2026-07-25');
+    Prompt::assertOutputContains('Incomplete day.');
+});
+
 it('returns the default date as a DateTimeImmutable at midnight', function () {
     Prompt::fake([Key::ENTER]);
 
@@ -45,6 +169,7 @@ it('navigates days with the left and right arrow keys', function () {
     $result = date(
         label: 'When should the deploy run?',
         default: '2026-07-24',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2026-07-25');
@@ -56,6 +181,7 @@ it('navigates weeks with the up and down arrow keys across month boundaries', fu
     $result = date(
         label: 'When should the deploy run?',
         default: '2026-07-01',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2026-07-08');
@@ -67,6 +193,7 @@ it('navigates months with page up and page down, clamping the day', function () 
     $result = date(
         label: 'When should the deploy run?',
         default: '2026-01-31',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2026-02-28');
@@ -78,6 +205,7 @@ it('navigates back a month with page up', function () {
     $result = date(
         label: 'When should the deploy run?',
         default: '2026-01-31',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2026-01-28');
@@ -89,6 +217,7 @@ it('navigates years with shift up and shift down, clamping leap days', function 
     $result = date(
         label: 'When should the deploy run?',
         default: '2024-02-29',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2025-02-28');
@@ -100,6 +229,7 @@ it('jumps to the first and last day of the month with home and end', function ()
     $result = date(
         label: 'When should the deploy run?',
         default: '2026-07-24',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2026-07-31');
@@ -109,6 +239,7 @@ it('jumps to the first and last day of the month with home and end', function ()
     $result = date(
         label: 'When should the deploy run?',
         default: '2026-07-24',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2026-07-01');
@@ -132,6 +263,7 @@ it('validates', function () {
     $result = date(
         label: 'When should the deploy run?',
         default: '2026-07-25',
+        calendar: true,
         validate: fn (DateTimeImmutable $date) => $date->format('N') >= 6
             ? 'The deploy cannot run on a weekend.'
             : null,
@@ -187,7 +319,7 @@ it('fails when non-interactive with a default outside of the range', function ()
 it('renders the calendar grid for the highlighted month', function () {
     Prompt::fake([Key::ENTER]);
 
-    date(label: 'When should the deploy run?', default: '2026-07-24');
+    date(label: 'When should the deploy run?', default: '2026-07-24', calendar: true);
 
     Prompt::assertStrippedOutputContains('July 2026');
     Prompt::assertStrippedOutputContains('Mon Tue Wed Thu Fri Sat Sun');
@@ -200,7 +332,7 @@ it('renders the calendar grid for the highlighted month', function () {
 it('starts the week on Sunday when requested', function () {
     Prompt::fake([Key::ENTER]);
 
-    date(label: 'When should the deploy run?', default: '2026-07-24', weekStartsOn: 0);
+    date(label: 'When should the deploy run?', default: '2026-07-24', weekStartsOn: 0, calendar: true);
 
     Prompt::assertStrippedOutputContains('Sun Mon Tue Wed Thu Fri Sat');
     Prompt::assertStrippedOutputContains('5   6   7   8   9  10  11');
@@ -209,7 +341,7 @@ it('starts the week on Sunday when requested', function () {
 it('highlights the selected day', function () {
     Prompt::fake([Key::ENTER]);
 
-    date(label: 'When should the deploy run?', default: '2026-07-24');
+    date(label: 'When should the deploy run?', default: '2026-07-24', calendar: true);
 
     Prompt::assertOutputContains("\e[7m 24\e[27m");
 });
@@ -225,7 +357,7 @@ it('renders the submitted date', function () {
 it('jumps to a typed date', function () {
     Prompt::fake(['2', '0', '2', '6', '1', '2', '2', '5', Key::ENTER]);
 
-    $result = date(label: 'When should the deploy run?', default: '2026-07-24');
+    $result = date(label: 'When should the deploy run?', default: '2026-07-24', calendar: true);
 
     expect($result->format('Y-m-d'))->toBe('2026-12-25');
 });
@@ -233,7 +365,7 @@ it('jumps to a typed date', function () {
 it('renders the typed digits over the mask', function () {
     Prompt::fake(['2', '0', '2', '6', '1', '2', '2', '5', Key::ENTER]);
 
-    date(label: 'When should the deploy run?', default: '2026-07-24');
+    date(label: 'When should the deploy run?', default: '2026-07-24', calendar: true);
 
     Prompt::assertStrippedOutputContains('2026-1_-__');
 });
@@ -241,7 +373,7 @@ it('renders the typed digits over the mask', function () {
 it('removes typed digits with backspace', function () {
     Prompt::fake(['2', '0', '2', '6', '1', '3', Key::BACKSPACE, '2', '2', '5', Key::ENTER]);
 
-    $result = date(label: 'When should the deploy run?', default: '2026-07-24');
+    $result = date(label: 'When should the deploy run?', default: '2026-07-24', calendar: true);
 
     expect($result->format('Y-m-d'))->toBe('2026-12-25');
 });
@@ -249,7 +381,7 @@ it('removes typed digits with backspace', function () {
 it('discards the typed buffer when navigating', function () {
     Prompt::fake(['2', '0', '2', '7', Key::RIGHT, Key::ENTER]);
 
-    $result = date(label: 'When should the deploy run?', default: '2026-07-24');
+    $result = date(label: 'When should the deploy run?', default: '2026-07-24', calendar: true);
 
     expect($result->format('Y-m-d'))->toBe('2026-07-25');
 });
@@ -257,7 +389,7 @@ it('discards the typed buffer when navigating', function () {
 it('requires a complete typed date', function () {
     Prompt::fake(['2', '0', '2', '6', Key::ENTER, '1', '2', '2', '5', Key::ENTER]);
 
-    $result = date(label: 'When should the deploy run?', default: '2026-07-24');
+    $result = date(label: 'When should the deploy run?', default: '2026-07-24', calendar: true);
 
     expect($result->format('Y-m-d'))->toBe('2026-12-25');
 
@@ -270,7 +402,7 @@ it('rejects an impossible typed date', function () {
         Key::BACKSPACE, Key::BACKSPACE, '2', '8', Key::ENTER,
     ]);
 
-    $result = date(label: 'When should the deploy run?', default: '2026-07-24');
+    $result = date(label: 'When should the deploy run?', default: '2026-07-24', calendar: true);
 
     expect($result->format('Y-m-d'))->toBe('2026-02-28');
 
@@ -293,7 +425,7 @@ it('ignores escape sequences while typing', function () {
         Key::ENTER,
     ]);
 
-    $result = date(label: 'When should the deploy run?', default: '2026-07-24');
+    $result = date(label: 'When should the deploy run?', default: '2026-07-24', calendar: true);
 
     expect($result->format('Y-m-d'))->toBe('2026-12-25');
 });
@@ -305,6 +437,7 @@ it('clamps navigation to the min date', function () {
         label: 'When should the deploy run?',
         default: '2026-07-02',
         min: '2026-07-01',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2026-07-01');
@@ -317,6 +450,7 @@ it('clamps month navigation to the max date', function () {
         label: 'When should the deploy run?',
         default: '2026-07-24',
         max: '2026-08-05',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2026-08-05');
@@ -342,6 +476,7 @@ it('dims days outside of the range', function () {
         default: '2026-07-24',
         min: '2026-07-20',
         max: '2026-07-28',
+        calendar: true,
     );
 
     Prompt::assertOutputContains("\e[2m 19\e[22m");
@@ -359,6 +494,7 @@ it('rejects typed dates before the min date', function () {
         default: '2026-07-24',
         min: '2026-07-01',
         max: '2026-07-31',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2026-07-05');
@@ -373,6 +509,7 @@ it('rejects typed dates after the max date', function () {
         label: 'When should the deploy run?',
         default: '2026-07-24',
         max: '2026-12-31',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2026-07-23');
@@ -401,6 +538,7 @@ it('supports custom validation', function () {
         label: 'When should the deploy run?',
         default: '2026-07-25',
         validate: 'weekday',
+        calendar: true,
     );
 
     expect($result->format('Y-m-d'))->toBe('2026-07-24');

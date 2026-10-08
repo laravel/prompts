@@ -231,7 +231,7 @@ it('leaves skipped conditional field empty', function () {
 it('supports date and datetime steps', function () {
     Prompt::fake([
         Key::ENTER,
-        Key::TAB, Key::UP, Key::ENTER,
+        Key::TAB, Key::TAB, Key::TAB, Key::UP, Key::ENTER,
     ]);
 
     $responses = form()
@@ -243,11 +243,24 @@ it('supports date and datetime steps', function () {
         ->and($responses['window']->format('Y-m-d H:i'))->toBe('2026-07-24 15:30');
 });
 
+it('forwards calendar options to named date and datetime steps', function () {
+    Prompt::fake([Key::RIGHT, Key::ENTER, Key::TAB, Key::UP, Key::ENTER]);
+
+    $responses = form()
+        ->date('Release date', default: '2026-07-24', name: 'date', calendar: true)
+        ->datetime('Release time', default: '2026-07-24 14:30', name: 'time', calendar: true)
+        ->submit();
+
+    expect($responses['date']->format('Y-m-d'))->toBe('2026-07-25')
+        ->and($responses['time']->format('Y-m-d H:i'))->toBe('2026-07-24 15:30');
+    Prompt::assertStrippedOutputContains('July 2026');
+});
+
 it('reuses the previous date response as the default when reverting', function () {
     Prompt::fake([
         Key::ENTER,
         Key::CTRL_U,
-        Key::RIGHT, Key::ENTER,
+        Key::SHIFT_TAB, Key::UP, Key::ENTER,
         Key::ENTER,
     ]);
 
