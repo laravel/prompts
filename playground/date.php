@@ -13,6 +13,7 @@ $date = date(
         ? 'The deploy cannot run on a weekend.'
         : null,
     hint: 'The deploy will run at midnight UTC.',
+    calendar: in_array('--calendar', $argv),
 );
 
 var_dump($date);

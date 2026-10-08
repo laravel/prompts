@@ -9,6 +9,8 @@ $datetime = datetime(
     default: 'tomorrow 22:00',
     min: 'today',
     weekStartsOn: 0,
+    withSeconds: in_array('--seconds', $argv),
+    calendar: in_array('--calendar', $argv),
 );
 
 var_dump($datetime);
