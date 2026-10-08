@@ -55,6 +55,19 @@ it('remembers period focus when switching between calendar and time', function (
     Prompt::assertOutputContains("\e[7mAM\e[27m");
 });
 
+it('preserves the period when pasting datetime seconds at either precision', function ($period, $withSeconds, $expected) {
+    Prompt::fake(["2026-07-24 09:45:12 {$period}", Key::ENTER]);
+
+    $result = datetimepicker('Release', default: $period === 'PM' ? '2026-07-24 02:30' : '2026-07-24 14:30', use12Hours: true, withSeconds: $withSeconds);
+
+    expect($result->format('Y-m-d H:i:s'))->toBe('2026-07-24 '.$expected);
+})->with([
+    ['AM', false, '09:45:00'],
+    ['PM', false, '21:45:00'],
+    ['AM', true, '09:45:12'],
+    ['PM', true, '21:45:12'],
+]);
+
 it('renders a single inline datetime input by default', function () {
     Prompt::fake([Key::ENTER]);
 

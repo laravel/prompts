@@ -63,6 +63,10 @@ trait InteractsWithSegments
         }
 
         foreach (str_split($key) as $char) {
+            if ($char === ' ' && $this->focused === 'period' && ! $this->editingSegment) {
+                continue;
+            }
+
             if (in_array($char, ['-', ':', ' '])) {
                 if (! $this->moveFocus(1)) {
                     return;

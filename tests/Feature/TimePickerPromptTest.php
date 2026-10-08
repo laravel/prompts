@@ -235,3 +235,16 @@ it('stops input after the final time segment', function () {
 
     expect(timepicker('Start time', default: '14:30')->format('H:i:s'))->toBe('09:45:00');
 });
+
+it('preserves the period when pasting seconds at either precision', function ($period, $withSeconds, $expected) {
+    Prompt::fake(["09:45:12 {$period}", Key::ENTER]);
+
+    $result = timepicker('Start time', default: $period === 'PM' ? '02:30' : '14:30', use12Hours: true, withSeconds: $withSeconds);
+
+    expect($result->format('H:i:s'))->toBe($expected);
+})->with([
+    ['AM', false, '09:45:00'],
+    ['PM', false, '21:45:00'],
+    ['AM', true, '09:45:12'],
+    ['PM', true, '21:45:12'],
+]);
