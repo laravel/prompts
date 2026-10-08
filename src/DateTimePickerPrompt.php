@@ -6,7 +6,7 @@ use Closure;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-class DateTimePrompt extends DatePrompt
+class DateTimePickerPrompt extends DatePickerPrompt
 {
     /**
      * The hour of the selected time.
@@ -29,7 +29,7 @@ class DateTimePrompt extends DatePrompt
     protected string $timeFocus = 'hour';
 
     /**
-     * Create a new DateTimePrompt instance.
+     * Create a new DateTimePickerPrompt instance.
      */
     public function __construct(
         string $label,

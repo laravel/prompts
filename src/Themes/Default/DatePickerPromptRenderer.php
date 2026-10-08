@@ -3,9 +3,9 @@
 namespace Laravel\Prompts\Themes\Default;
 
 use DateTimeImmutable;
-use Laravel\Prompts\DatePrompt;
+use Laravel\Prompts\DatePickerPrompt;
 
-class DatePromptRenderer extends Renderer
+class DatePickerPromptRenderer extends Renderer
 {
     use Concerns\DrawsBoxes;
 
@@ -22,7 +22,7 @@ class DatePromptRenderer extends Renderer
     /**
      * Render the date prompt.
      */
-    public function __invoke(DatePrompt $prompt): string
+    public function __invoke(DatePickerPrompt $prompt): string
     {
         $maxWidth = $prompt->terminal()->cols() - 6;
 
@@ -65,7 +65,7 @@ class DatePromptRenderer extends Renderer
     /**
      * Render the inline input or the selected date and calendar.
      */
-    protected function renderBody(DatePrompt $prompt): string
+    protected function renderBody(DatePickerPrompt $prompt): string
     {
         if (! $prompt->calendar) {
             return $this->inputRow($prompt);
@@ -80,7 +80,7 @@ class DatePromptRenderer extends Renderer
         ]);
     }
 
-    protected function inputRow(DatePrompt $prompt): string
+    protected function inputRow(DatePickerPrompt $prompt): string
     {
         $segments = $prompt->segmentValues();
 
@@ -97,7 +97,7 @@ class DatePromptRenderer extends Renderer
     /**
      * Render the month title, centered over the grid.
      */
-    protected function monthTitle(DatePrompt $prompt): string
+    protected function monthTitle(DatePickerPrompt $prompt): string
     {
         $title = $prompt->date->format('F Y');
 
@@ -107,7 +107,7 @@ class DatePromptRenderer extends Renderer
     /**
      * Render the weekday header, starting the week on the prompt's first day.
      */
-    protected function weekdayHeader(DatePrompt $prompt): string
+    protected function weekdayHeader(DatePickerPrompt $prompt): string
     {
         $labels = array_map(
             fn ($day) => (new DateTimeImmutable("Sunday +{$day} days"))->format('D'),
@@ -122,7 +122,7 @@ class DatePromptRenderer extends Renderer
      *
      * @return list<string>
      */
-    protected function weeks(DatePrompt $prompt): array
+    protected function weeks(DatePickerPrompt $prompt): array
     {
         $month = $prompt->date->modify('first day of this month');
 
@@ -143,7 +143,7 @@ class DatePromptRenderer extends Renderer
     /**
      * Render a single day cell.
      */
-    protected function dayCell(DatePrompt $prompt, int $day): string
+    protected function dayCell(DatePickerPrompt $prompt, int $day): string
     {
         $cell = str_pad((string) $day, $this->cellWidth, ' ', STR_PAD_LEFT);
 

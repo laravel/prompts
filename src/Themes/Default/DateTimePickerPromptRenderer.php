@@ -2,21 +2,21 @@
 
 namespace Laravel\Prompts\Themes\Default;
 
-use Laravel\Prompts\DatePrompt;
-use Laravel\Prompts\DateTimePrompt;
+use Laravel\Prompts\DatePickerPrompt;
+use Laravel\Prompts\DateTimePickerPrompt;
 
-class DateTimePromptRenderer extends DatePromptRenderer
+class DateTimePickerPromptRenderer extends DatePickerPromptRenderer
 {
     /**
      * Render the selected date, the calendar grid, and the time row.
      */
-    protected function renderBody(DatePrompt $prompt): string
+    protected function renderBody(DatePickerPrompt $prompt): string
     {
         if (! $prompt->calendar) {
             return parent::renderBody($prompt);
         }
 
-        /** @var DateTimePrompt $prompt */
+        /** @var DateTimePickerPrompt $prompt */
         return implode(PHP_EOL, [
             parent::renderBody($prompt),
             '',
@@ -27,7 +27,7 @@ class DateTimePromptRenderer extends DatePromptRenderer
     /**
      * Render the time segments, highlighting the focused one.
      */
-    protected function timeRow(DateTimePrompt $prompt): string
+    protected function timeRow(DateTimePickerPrompt $prompt): string
     {
         $segments = array_slice($prompt->segmentValues(), 3);
 

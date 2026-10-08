@@ -1,15 +1,15 @@
 <?php
 
-use Laravel\Prompts\DateTimePrompt;
+use Laravel\Prompts\DateTimePickerPrompt;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
-use function Laravel\Prompts\datetime;
+use function Laravel\Prompts\datetimepicker;
 
 it('renders a single inline datetime input by default', function () {
     Prompt::fake([Key::ENTER]);
 
-    datetime(label: 'Release', default: '2026-07-24 14:30');
+    datetimepicker(label: 'Release', default: '2026-07-24 14:30');
 
     Prompt::assertStrippedOutputContains('2026-07-24 14:30');
     Prompt::assertStrippedOutputDoesntContain('Time  ');
@@ -19,7 +19,7 @@ it('renders a single inline datetime input by default', function () {
 it('edits every inline datetime segment', function () {
     Prompt::fake(['2027-12-25 09:45:12', Key::ENTER]);
 
-    $result = datetime(label: 'Release', default: '2026-07-24 14:30:10', withSeconds: true);
+    $result = datetimepicker(label: 'Release', default: '2026-07-24 14:30:10', withSeconds: true);
 
     expect($result->format('Y-m-d H:i:s'))->toBe('2027-12-25 09:45:12');
 });
@@ -27,7 +27,7 @@ it('edits every inline datetime segment', function () {
 it('steps and wraps inline time segments without changing the day', function () {
     Prompt::fake([Key::TAB, Key::TAB, Key::TAB, Key::UP, Key::RIGHT, Key::DOWN, Key::ENTER]);
 
-    $result = datetime(label: 'Release', default: '2026-07-24 23:00');
+    $result = datetimepicker(label: 'Release', default: '2026-07-24 23:00');
 
     expect($result->format('Y-m-d H:i'))->toBe('2026-07-24 00:59');
     Prompt::assertOutputContains("\e[7m59\e[27m");
@@ -36,7 +36,7 @@ it('steps and wraps inline time segments without changing the day', function () 
 it('switches directly between calendar and time and remembers the time focus', function () {
     Prompt::fake([Key::TAB, Key::RIGHT, Key::TAB, Key::RIGHT, Key::SHIFT_TAB, Key::UP, Key::ENTER]);
 
-    $result = datetime(label: 'Release', default: '2026-07-24 14:30', calendar: true);
+    $result = datetimepicker(label: 'Release', default: '2026-07-24 14:30', calendar: true);
 
     expect($result->format('Y-m-d H:i'))->toBe('2026-07-25 14:31');
 });
@@ -44,7 +44,7 @@ it('switches directly between calendar and time and remembers the time focus', f
 it('keeps calendar time arrow focus inside the time row', function () {
     Prompt::fake([Key::TAB, Key::LEFT, Key::UP, Key::RIGHT, Key::RIGHT, Key::DOWN, Key::ENTER]);
 
-    $result = datetime(label: 'Release', default: '2026-07-24 14:30', calendar: true);
+    $result = datetimepicker(label: 'Release', default: '2026-07-24 14:30', calendar: true);
 
     expect($result->format('Y-m-d H:i'))->toBe('2026-07-24 15:29');
 });
@@ -52,7 +52,7 @@ it('keeps calendar time arrow focus inside the time row', function () {
 it('validates inline time edits against the full instant', function () {
     Prompt::fake([Key::SHIFT_TAB, '15', Key::ENTER, Key::BACKSPACE, Key::BACKSPACE, '25', Key::ENTER]);
 
-    $result = datetime(label: 'Release', default: '2026-07-24 09:30', min: '2026-07-24 09:20');
+    $result = datetimepicker(label: 'Release', default: '2026-07-24 09:30', min: '2026-07-24 09:20');
 
     expect($result->format('Y-m-d H:i'))->toBe('2026-07-24 09:25');
     Prompt::assertOutputContains('Must be on or after 2026-07-24 09:20.');
@@ -61,7 +61,7 @@ it('validates inline time edits against the full instant', function () {
 it('rejects invalid time segments without normalizing them', function ($calendar, $withSeconds, $keys, $typed, $correction) {
     Prompt::fake([...$keys, $typed, Key::ENTER, Key::BACKSPACE, Key::BACKSPACE, $correction, Key::ENTER]);
 
-    $result = datetime(label: 'Release', default: '2026-07-24 14:30:10', calendar: $calendar, withSeconds: $withSeconds);
+    $result = datetimepicker(label: 'Release', default: '2026-07-24 14:30:10', calendar: $calendar, withSeconds: $withSeconds);
 
     expect($result->format('Y-m-d'))->toBe('2026-07-24');
     Prompt::assertOutputContains('Invalid time.');
@@ -75,7 +75,7 @@ it('commits a buffered calendar date once its time is corrected', function () {
     Prompt::fake(['20260724', Key::ENTER, Key::TAB, '10', Key::ENTER]);
 
     $validated = null;
-    $result = datetime(
+    $result = datetimepicker(
         label: 'Release',
         default: '2026-07-25 09:30',
         min: '2026-07-24 10:00',
@@ -93,7 +93,7 @@ it('commits a buffered calendar date once its time is corrected', function () {
 it('clamps datetime date navigation to the full instant boundaries', function ($calendar, $keys) {
     Prompt::fake([...$keys, Key::ENTER]);
 
-    $result = datetime(label: 'Release', default: '2026-07-25 09:30', min: '2026-07-24 10:00', calendar: $calendar);
+    $result = datetimepicker(label: 'Release', default: '2026-07-25 09:30', min: '2026-07-24 10:00', calendar: $calendar);
 
     expect($result->format('Y-m-d H:i'))->toBe('2026-07-24 10:00');
 })->with([
@@ -104,22 +104,22 @@ it('clamps datetime date navigation to the full instant boundaries', function ($
 it('wraps inline seconds and tabs back to the year', function () {
     Prompt::fake([Key::SHIFT_TAB, Key::DOWN, Key::TAB, Key::UP, Key::ENTER]);
 
-    $result = datetime(label: 'Release', default: '2026-07-24 14:30:00', withSeconds: true);
+    $result = datetimepicker(label: 'Release', default: '2026-07-24 14:30:00', withSeconds: true);
 
     expect($result->format('Y-m-d H:i:s'))->toBe('2027-07-24 14:30:59');
 });
 
 it('preserves datetime hints and renders mode specific defaults', function ($calendar) {
     Prompt::fake([Key::ENTER]);
-    datetime(label: 'Release', default: '2026-07-24 14:30', calendar: $calendar);
+    datetimepicker(label: 'Release', default: '2026-07-24 14:30', calendar: $calendar);
     Prompt::assertStrippedOutputContains($calendar ? 'Tab: calendar/time.' : 'Left/Right or Tab: move.');
 
     Prompt::fake([Key::ENTER]);
-    datetime(label: 'Release', default: '2026-07-24 14:30', hint: 'Custom hint.', calendar: $calendar);
+    datetimepicker(label: 'Release', default: '2026-07-24 14:30', hint: 'Custom hint.', calendar: $calendar);
     Prompt::assertStrippedOutputContains('Custom hint.');
 
     Prompt::fake([Key::ENTER]);
-    datetime(label: 'Release', default: '2026-07-24 14:30', hint: '', calendar: $calendar);
+    datetimepicker(label: 'Release', default: '2026-07-24 14:30', hint: '', calendar: $calendar);
     Prompt::assertStrippedOutputDoesntContain('Tab: calendar/time');
     Prompt::assertStrippedOutputDoesntContain('Left/Right or Tab');
 })->with([false, true]);
@@ -127,7 +127,7 @@ it('preserves datetime hints and renders mode specific defaults', function ($cal
 it('allows valid bounded times to be entered across multiple segments', function ($calendar, $keys) {
     Prompt::fake([...$keys, Key::ENTER]);
 
-    $prompt = new DateTimePrompt(
+    $prompt = new DateTimePickerPrompt(
         'Release',
         default: '2026-07-24 09:30',
         min: '2026-07-24 09:30',
@@ -146,7 +146,7 @@ it('allows valid bounded times to be entered across multiple segments', function
 it('preserves the invalid time segment in a pasted datetime', function () {
     Prompt::fake(['2027-12-25 24:01', Key::ENTER, Key::CTRL_C]);
 
-    $prompt = new DateTimePrompt('Release', default: '2026-07-24 14:30');
+    $prompt = new DateTimePickerPrompt('Release', default: '2026-07-24 14:30');
     $prompt->prompt();
 
     expect($prompt->state)->toBe('cancel')
@@ -159,7 +159,7 @@ it('preserves the invalid time segment in a pasted datetime', function () {
 it('stops pasting at the final time segment', function ($withSeconds, $input, $expected) {
     Prompt::fake([$input, Key::ENTER]);
 
-    $result = datetime(label: 'Release', default: '2026-07-24 14:30:10', withSeconds: $withSeconds);
+    $result = datetimepicker(label: 'Release', default: '2026-07-24 14:30:10', withSeconds: $withSeconds);
 
     expect($result->format('Y-m-d H:i:s'))->toBe($expected);
 })->with([
@@ -171,7 +171,7 @@ it('commits the pending calendar date with its time before validation and transf
     Prompt::fake(['20260724', Key::ENTER, Key::TAB, '10', Key::ENTER]);
 
     $validated = null;
-    $prompt = new DateTimePrompt(
+    $prompt = new DateTimePickerPrompt(
         'Release',
         default: '2026-07-25 09:30',
         min: '2026-07-24 10:00',
@@ -193,7 +193,7 @@ it('commits the pending calendar date with its time before validation and transf
 it('preserves incomplete and invalid calendar masks while editing time', function ($input, $error) {
     Prompt::fake([$input, Key::TAB, '10', Key::ENTER, Key::CTRL_C]);
 
-    $prompt = new DateTimePrompt('Release', default: '2026-07-25 09:30', calendar: true);
+    $prompt = new DateTimePickerPrompt('Release', default: '2026-07-25 09:30', calendar: true);
     $prompt->prompt();
 
     expect($prompt->state)->toBe('cancel')
@@ -207,7 +207,7 @@ it('preserves incomplete and invalid calendar masks while editing time', functio
 it('returns the default datetime with the seconds zeroed', function () {
     Prompt::fake([Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:30:45',
     );
@@ -219,7 +219,7 @@ it('returns the default datetime with the seconds zeroed', function () {
 it('edits the hour with the arrow keys after tabbing', function () {
     Prompt::fake([Key::TAB, Key::UP, Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:30',
         calendar: true,
@@ -231,7 +231,7 @@ it('edits the hour with the arrow keys after tabbing', function () {
 it('wraps the hour around midnight', function () {
     Prompt::fake([Key::TAB, Key::UP, Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 23:30',
         calendar: true,
@@ -241,7 +241,7 @@ it('wraps the hour around midnight', function () {
 
     Prompt::fake([Key::TAB, Key::DOWN, Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 00:15',
         calendar: true,
@@ -253,7 +253,7 @@ it('wraps the hour around midnight', function () {
 it('types into the focused time segment', function () {
     Prompt::fake([Key::TAB, Key::RIGHT, '4', '5', Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:30',
         calendar: true,
@@ -265,7 +265,7 @@ it('types into the focused time segment', function () {
 it('replaces the selected time segment with typed digits', function () {
     Prompt::fake([Key::TAB, '0', '9', Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:30',
         calendar: true,
@@ -275,7 +275,7 @@ it('replaces the selected time segment with typed digits', function () {
 
     Prompt::fake([Key::TAB, Key::RIGHT, '3', '7', Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:59',
         calendar: true,
@@ -287,7 +287,7 @@ it('replaces the selected time segment with typed digits', function () {
 it('ignores escape sequences while a time segment is focused', function () {
     Prompt::fake([Key::TAB, Key::PAGE_UP, Key::SHIFT_UP, Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:30',
         calendar: true,
@@ -299,7 +299,7 @@ it('ignores escape sequences while a time segment is focused', function () {
 it('moves between time segments with the arrow keys', function () {
     Prompt::fake([Key::TAB, Key::RIGHT, '4', '5', Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:30',
         calendar: true,
@@ -311,7 +311,7 @@ it('moves between time segments with the arrow keys', function () {
 it('cycles the focus back to the calendar with tab', function () {
     Prompt::fake([Key::TAB, Key::TAB, Key::RIGHT, Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:30',
         calendar: true,
@@ -323,7 +323,7 @@ it('cycles the focus back to the calendar with tab', function () {
 it('switches to time editing with shift tab', function () {
     Prompt::fake([Key::SHIFT_TAB, Key::RIGHT, '4', '5', Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:30',
         calendar: true,
@@ -335,7 +335,7 @@ it('switches to time editing with shift tab', function () {
 it('returns to the calendar with shift tab from the hour', function () {
     Prompt::fake([Key::TAB, Key::SHIFT_TAB, Key::DOWN, Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:30',
         calendar: true,
@@ -347,7 +347,7 @@ it('returns to the calendar with shift tab from the hour', function () {
 it('supports a seconds segment', function () {
     Prompt::fake([Key::TAB, Key::RIGHT, Key::RIGHT, Key::UP, Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:30:10',
         withSeconds: true,
@@ -360,7 +360,7 @@ it('supports a seconds segment', function () {
 it('still accepts typed dates while the calendar is focused', function () {
     Prompt::fake(['2', '0', '2', '6', '1', '2', '2', '5', Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 14:30',
         calendar: true,
@@ -372,7 +372,7 @@ it('still accepts typed dates while the calendar is focused', function () {
 it('renders the time row and highlights the focused segment', function () {
     Prompt::fake([Key::TAB, Key::ENTER]);
 
-    datetime(label: 'When should the deploy run?', default: '2026-07-24 14:30', calendar: true);
+    datetimepicker(label: 'When should the deploy run?', default: '2026-07-24 14:30', calendar: true);
 
     Prompt::assertStrippedOutputContains('Time  14:30');
     Prompt::assertStrippedOutputContains('2026-07-24 14:30');
@@ -382,7 +382,7 @@ it('renders the time row and highlights the focused segment', function () {
 it('rejects times outside of the range', function () {
     Prompt::fake([Key::TAB, Key::DOWN, Key::ENTER, Key::UP, Key::ENTER]);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the deploy run?',
         default: '2026-07-24 09:30',
         min: '2026-07-24 09:00',
@@ -397,7 +397,7 @@ it('rejects times outside of the range', function () {
 it('ignores microseconds in the range boundaries', function () {
     Prompt::interactive(false);
 
-    $result = datetime(
+    $result = datetimepicker(
         label: 'When should the maintenance window start?',
         default: '2026-07-24 09:00:00.900000',
         min: '2026-07-24 09:00:00.500000',
@@ -410,7 +410,7 @@ it('ignores microseconds in the range boundaries', function () {
 it('returns the default when non-interactive', function () {
     Prompt::interactive(false);
 
-    $result = datetime(label: 'When should the deploy run?', default: '2026-07-24 14:30');
+    $result = datetimepicker(label: 'When should the deploy run?', default: '2026-07-24 14:30');
 
     expect($result->format('Y-m-d H:i'))->toBe('2026-07-24 14:30');
 });
@@ -418,5 +418,5 @@ it('returns the default when non-interactive', function () {
 it('returns null when non-interactive without a default', function () {
     Prompt::interactive(false);
 
-    expect(datetime(label: 'When should the deploy run?'))->toBeNull();
+    expect(datetimepicker(label: 'When should the deploy run?'))->toBeNull();
 });

@@ -445,13 +445,13 @@ if (! function_exists('\Laravel\Prompts\task')) {
     }
 }
 
-if (! function_exists('\Laravel\Prompts\date')) {
+if (! function_exists('\Laravel\Prompts\datepicker')) {
     /**
      * Prompt the user for a date, optionally using a calendar.
      *
      * @return ($transform is null ? DateTimeImmutable|null : mixed)
      */
-    function date(
+    function datepicker(
         string $label,
         DateTimeInterface|string|null $default = null,
         DateTimeInterface|string|null $min = null,
@@ -463,17 +463,17 @@ if (! function_exists('\Laravel\Prompts\date')) {
         int $weekStartsOn = 1,
         bool $calendar = false,
     ): mixed {
-        return (new DatePrompt(...get_defined_vars()))->prompt();
+        return (new DatePickerPrompt(...get_defined_vars()))->prompt();
     }
 }
 
-if (! function_exists('\Laravel\Prompts\datetime')) {
+if (! function_exists('\Laravel\Prompts\datetimepicker')) {
     /**
      * Prompt the user for a date and time, optionally using a calendar.
      *
      * @return ($transform is null ? DateTimeImmutable|null : mixed)
      */
-    function datetime(
+    function datetimepicker(
         string $label,
         DateTimeInterface|string|null $default = null,
         DateTimeInterface|string|null $min = null,
@@ -486,7 +486,7 @@ if (! function_exists('\Laravel\Prompts\datetime')) {
         bool $withSeconds = false,
         bool $calendar = false,
     ): mixed {
-        return (new DateTimePrompt(...get_defined_vars()))->prompt();
+        return (new DateTimePickerPrompt(...get_defined_vars()))->prompt();
     }
 }
 

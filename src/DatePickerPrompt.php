@@ -9,7 +9,7 @@ use Exception;
 use InvalidArgumentException;
 use RuntimeException;
 
-class DatePrompt extends Prompt
+class DatePickerPrompt extends Prompt
 {
     /**
      * The date currently highlighted on the calendar.
@@ -45,7 +45,7 @@ class DatePrompt extends Prompt
     public string $hint;
 
     /**
-     * Create a new DatePrompt instance.
+     * Create a new DatePickerPrompt instance.
      */
     public function __construct(
         public string $label,
