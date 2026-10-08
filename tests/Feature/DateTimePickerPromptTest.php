@@ -6,6 +6,55 @@ use Laravel\Prompts\Prompt;
 
 use function Laravel\Prompts\datetimepicker;
 
+it('edits 12 hour times in both datetime views', function ($calendar, $keys) {
+    Prompt::fake([...$keys, Key::ENTER]);
+
+    $result = datetimepicker('Release', default: '2026-07-24 14:30', calendar: $calendar, use12Hours: true);
+
+    expect($result->format('Y-m-d H:i'))->toBe('2026-07-24 00:05');
+    Prompt::assertStrippedOutputContains('12:05 AM');
+})->with([
+    'inline' => [false, [Key::TAB, Key::TAB, Key::TAB, '12:05 AM']],
+    'calendar' => [true, [Key::TAB, '12:05 AM']],
+]);
+
+it('validates 12 hour datetime edits against full instant bounds', function ($calendar, $keys) {
+    Prompt::fake([...$keys, '09:30 AM', Key::ENTER, 'p', Key::ENTER]);
+
+    $result = datetimepicker(
+        'Release',
+        default: '2026-07-24 14:30',
+        min: '2026-07-24 12:00',
+        max: '2026-07-24 22:00',
+        use12Hours: true,
+        calendar: $calendar,
+    );
+
+    expect($result->format('Y-m-d H:i'))->toBe('2026-07-24 21:30');
+    Prompt::assertOutputContains('Must be on or after 2026-07-24 12:00 PM.');
+})->with([
+    'inline' => [false, [Key::TAB, Key::TAB, Key::TAB]],
+    'calendar' => [true, [Key::TAB]],
+]);
+
+it('pastes a full 12 hour datetime including seconds', function () {
+    Prompt::fake(['2027-12-25 12:05:45 AM', Key::ENTER]);
+
+    $result = datetimepicker('Release', default: '2026-07-24 14:30:10', withSeconds: true, use12Hours: true);
+
+    expect($result->format('Y-m-d H:i:s'))->toBe('2027-12-25 00:05:45');
+    Prompt::assertStrippedOutputContains('2027-12-25 12:05:45 AM');
+});
+
+it('remembers period focus when switching between calendar and time', function () {
+    Prompt::fake([Key::TAB, Key::RIGHT, Key::RIGHT, Key::TAB, Key::RIGHT, Key::SHIFT_TAB, Key::UP, Key::ENTER]);
+
+    $result = datetimepicker('Release', default: '2026-07-24 14:30', calendar: true, use12Hours: true);
+
+    expect($result->format('Y-m-d H:i'))->toBe('2026-07-25 02:30');
+    Prompt::assertOutputContains("\e[7mAM\e[27m");
+});
+
 it('renders a single inline datetime input by default', function () {
     Prompt::fake([Key::ENTER]);
 

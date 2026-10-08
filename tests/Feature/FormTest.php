@@ -228,6 +228,29 @@ it('leaves skipped conditional field empty', function () {
     ]);
 });
 
+it('supports timepicker and 12 hour datetime steps', function () {
+    Prompt::fake(['09:45:12 PM', Key::ENTER, Key::TAB, Key::RIGHT, Key::RIGHT, 'a', Key::ENTER]);
+
+    $responses = form()
+        ->timepicker('Start time', default: '14:30', withSeconds: true, use12Hours: true, name: 'start')
+        ->datetimepicker('Release', default: '2026-07-24 14:30', calendar: true, use12Hours: true, name: 'release')
+        ->submit();
+
+    expect($responses['start']->format('H:i:s'))->toBe('21:45:12')
+        ->and($responses['release']->format('Y-m-d H:i'))->toBe('2026-07-24 02:30');
+});
+
+it('reuses the previous time response when reverting', function () {
+    Prompt::fake(['09:45', Key::ENTER, Key::CTRL_U, Key::ENTER, Key::ENTER]);
+
+    $responses = form()
+        ->timepicker('Start time', default: '14:30')
+        ->confirm('Continue?')
+        ->submit();
+
+    expect($responses[0]->format('H:i'))->toBe('09:45');
+});
+
 it('supports datepicker and datetimepicker steps', function () {
     Prompt::fake([
         Key::ENTER,
