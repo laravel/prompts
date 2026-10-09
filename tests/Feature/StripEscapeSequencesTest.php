@@ -37,3 +37,21 @@ it('strips multiple sibling nested tags', function () use ($instance) {
 
     expect($result)->toBe('Hello World and Foo Bar');
 });
+
+it('strips Symfony inline style tags with hyphenated color names', function () use ($instance) {
+    $result = $instance->strip('<fg=bright-white;options=bold>Hello</> <fg=bright-magenta;bg=bright-black>World</>');
+
+    expect($result)->toBe('Hello World');
+});
+
+it('strips Symfony inline style tags with hex colors', function () use ($instance) {
+    $result = $instance->strip('<fg=#ff0000>Hello</> <bg=#00FF00;fg=#fff>World</>');
+
+    expect($result)->toBe('Hello World');
+});
+
+it('strips nested Symfony inline style tags with hyphenated color names', function () use ($instance) {
+    $result = $instance->strip('<fg=bright-white>A <fg=bright-magenta>B</> C</>');
+
+    expect($result)->toBe('A B C');
+});
