@@ -8,6 +8,8 @@ use Laravel\Prompts\Callout;
 use Laravel\Prompts\Clear;
 use Laravel\Prompts\ConfirmPrompt;
 use Laravel\Prompts\DataTablePrompt;
+use Laravel\Prompts\DatePickerPrompt;
+use Laravel\Prompts\DateTimePickerPrompt;
 use Laravel\Prompts\Grid;
 use Laravel\Prompts\MultiSearchPrompt;
 use Laravel\Prompts\MultiSelectPrompt;
@@ -31,6 +33,8 @@ use Laravel\Prompts\Themes\Default\CalloutRenderer;
 use Laravel\Prompts\Themes\Default\ClearRenderer;
 use Laravel\Prompts\Themes\Default\ConfirmPromptRenderer;
 use Laravel\Prompts\Themes\Default\DataTableRenderer;
+use Laravel\Prompts\Themes\Default\DatePickerPromptRenderer;
+use Laravel\Prompts\Themes\Default\DateTimePickerPromptRenderer;
 use Laravel\Prompts\Themes\Default\GridRenderer;
 use Laravel\Prompts\Themes\Default\MultiSearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\MultiSelectPromptRenderer;
@@ -48,7 +52,9 @@ use Laravel\Prompts\Themes\Default\TableRenderer;
 use Laravel\Prompts\Themes\Default\TaskRenderer;
 use Laravel\Prompts\Themes\Default\TextareaPromptRenderer;
 use Laravel\Prompts\Themes\Default\TextPromptRenderer;
+use Laravel\Prompts\Themes\Default\TimePickerPromptRenderer;
 use Laravel\Prompts\Themes\Default\TitleRenderer;
+use Laravel\Prompts\TimePickerPrompt;
 use Laravel\Prompts\Title;
 
 trait Themes
@@ -88,6 +94,9 @@ trait Themes
             Task::class => TaskRenderer::class,
             DataTablePrompt::class => DataTableRenderer::class,
             Callout::class => CalloutRenderer::class,
+            DatePickerPrompt::class => DatePickerPromptRenderer::class,
+            DateTimePickerPrompt::class => DateTimePickerPromptRenderer::class,
+            TimePickerPrompt::class => TimePickerPromptRenderer::class,
         ],
     ];
 
