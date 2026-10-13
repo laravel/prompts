@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.25...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.26...main)
+
+## [v0.3.26](https://github.com/laravel/prompts/compare/v0.3.25...v0.3.26) - 2026-10-09
+
+* Strip inline style tags with hyphenated or hex colors when measuring width by [@PetrKaterinak](https://github.com/PetrKaterinak) in https://github.com/laravel/prompts/pull/276
 
 ## [v0.3.25](https://github.com/laravel/prompts/compare/v0.3.24...v0.3.25) - 2026-10-06
 
