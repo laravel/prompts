@@ -24,6 +24,45 @@ it('renders a task while executing a callback and then returns the value', funct
     Prompt::assertOutputContains('Running...');
 });
 
+it('prints a completion line after the task finishes in static mode with keepSummary', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'My Task', keepSummary: true);
+
+    $renderStatically = new ReflectionMethod($task, 'renderStatically');
+    $renderStatically->setAccessible(true);
+    $renderStatically->invoke($task, fn (Logger $logger) => null);
+
+    Prompt::assertStrippedOutputContains('✔ My Task');
+});
+
+it('does not print a completion line without keepSummary in static mode', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'My Task');
+
+    $renderStatically = new ReflectionMethod($task, 'renderStatically');
+    $renderStatically->setAccessible(true);
+    $renderStatically->invoke($task, fn (Logger $logger) => null);
+
+    Prompt::assertStrippedOutputDoesntContain('✔ My Task');
+});
+
+it('does not print a completion line when the callback throws in static mode', function () {
+    Prompt::fake();
+
+    $task = new Task(label: 'My Task', keepSummary: true);
+
+    $renderStatically = new ReflectionMethod($task, 'renderStatically');
+    $renderStatically->setAccessible(true);
+
+    expect(fn () => $renderStatically->invoke($task, function (Logger $logger) {
+        throw new RuntimeException('boom');
+    }))->toThrow(RuntimeException::class, 'boom');
+
+    Prompt::assertStrippedOutputDoesntContain('✔ My Task');
+});
+
 it('returns null when the callback does not return a value', function () {
     Prompt::fake();
 
@@ -35,6 +74,25 @@ it('returns null when the callback does not return a value', function () {
     );
 
     expect($result)->toBeNull();
+});
+
+it('restores the previous signal handler', function () {
+    Prompt::fake();
+
+    $originalSignalHandler = pcntl_signal_get_handler(SIGINT);
+    $signalHandler = fn () => null;
+    pcntl_signal(SIGINT, $signalHandler);
+
+    try {
+        task(
+            label: 'Running...',
+            callback: fn (Logger $logger) => null,
+        );
+
+        expect(pcntl_signal_get_handler(SIGINT))->toBe($signalHandler);
+    } finally {
+        pcntl_signal(SIGINT, $originalSignalHandler);
+    }
 });
 
 it('receives log lines into the ring buffer', function () {

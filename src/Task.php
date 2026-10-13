@@ -109,11 +109,13 @@ class Task extends Prompt
 
         $this->capturePreviousNewLines();
 
-        if (! function_exists('pcntl_fork')) {
+        if (! static::output()->isDecorated() || ! (function_exists('pcntl_fork') && function_exists('posix_kill'))) {
             return $this->renderStatically($callback);
         }
 
         $originalAsync = pcntl_async_signals(true);
+        /** @var callable|int $originalSignalHandler */
+        $originalSignalHandler = pcntl_signal_get_handler(SIGINT);
 
         pcntl_signal(SIGINT, fn () => exit());
 
@@ -124,6 +126,9 @@ class Task extends Prompt
             $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
 
             if ($sockets === false) {
+                pcntl_async_signals($originalAsync);
+                pcntl_signal(SIGINT, $originalSignalHandler);
+
                 return $this->renderStatically($callback);
             }
 
@@ -157,10 +162,13 @@ class Task extends Prompt
                     usleep($this->interval * 2000);
                 }
 
+                pcntl_async_signals($originalAsync);
+                pcntl_signal(SIGINT, $originalSignalHandler);
+
                 return $result;
             }
         } catch (\Throwable $e) {
-            $this->resetTerminal($originalAsync);
+            $this->resetTerminal($originalAsync, success: false, originalSignalHandler: $originalSignalHandler);
 
             throw $e;
         }
@@ -302,12 +310,12 @@ class Task extends Prompt
     /**
      * Reset the terminal.
      */
-    protected function resetTerminal(bool $originalAsync): void
+    protected function resetTerminal(bool $originalAsync, bool $success = true, callable|int $originalSignalHandler = SIG_DFL): void
     {
         $this->finished = true;
 
         pcntl_async_signals($originalAsync);
-        pcntl_signal(SIGINT, SIG_DFL);
+        pcntl_signal(SIGINT, $originalSignalHandler);
 
         if ($this->socket !== null) {
             fclose($this->socket);
@@ -321,6 +329,10 @@ class Task extends Prompt
         }
 
         $this->eraseRenderedLines();
+
+        if ($this->keepSummary && $success && count($this->stableMessages) === 0) {
+            $this->printCompletionLine();
+        }
     }
 
     /**
@@ -341,11 +353,27 @@ class Task extends Prompt
 
             $logger = new Logger($this->identifier);
             $result = $callback($logger);
-        } finally {
+        } catch (\Throwable $e) {
             $this->eraseRenderedLines();
+
+            throw $e;
+        }
+
+        $this->eraseRenderedLines();
+
+        if ($this->keepSummary && count($this->stableMessages) === 0) {
+            $this->printCompletionLine();
         }
 
         return $result;
+    }
+
+    /**
+     * Print a single-line completion indicator after the task has finished.
+     */
+    protected function printCompletionLine(): void
+    {
+        static::output()->writeln(' '.$this->green('✔').' '.$this->label);
     }
 
     /**

@@ -90,6 +90,10 @@ class Logger
      */
     protected function write(string $message, ?string $type = null): void
     {
+        if ($this->socket === null) {
+            return;
+        }
+
         if ($type !== null) {
             fwrite($this->socket, $this->prefix($type, $message).PHP_EOL);
         } else {
