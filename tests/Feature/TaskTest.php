@@ -1,5 +1,6 @@
 <?php
 
+use Laravel\Prompts\Output\BufferedConsoleOutput;
 use Laravel\Prompts\Prompt;
 use Laravel\Prompts\Support\Logger;
 use Laravel\Prompts\Task;
@@ -22,6 +23,23 @@ it('renders a task while executing a callback and then returns the value', funct
     expect($result)->toBe('done');
 
     Prompt::assertOutputContains('Running...');
+});
+
+it('renders a task statically when output is not a terminal even if it is decorated', function () {
+    Prompt::fake();
+    Prompt::terminal()->shouldReceive('isOutputTty')->andReturn(false);
+
+    $output = new BufferedConsoleOutput;
+    $output->setDecorated(true);
+    Prompt::setOutput($output);
+
+    $task = new Task(label: 'Running...');
+
+    $result = $task->run(fn (Logger $logger) => 'done');
+
+    expect($result)->toBe('done');
+    expect($task->static)->toBeTrue();
+    expect($output->content())->toContain('Running...');
 });
 
 it('prints a completion line after the task finishes in static mode with keepSummary', function () {
