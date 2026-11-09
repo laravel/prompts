@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.26...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.27...main)
+
+## [v0.3.27](https://github.com/laravel/prompts/compare/v0.3.26...v0.3.27) - 2026-11-09
+
+* fix: do not spin on cloud by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/prompts/pull/280
 
 ## [v0.3.26](https://github.com/laravel/prompts/compare/v0.3.25...v0.3.26) - 2026-10-09
 
