@@ -4,6 +4,8 @@ namespace Laravel\Prompts;
 
 use ReflectionClass;
 use RuntimeException;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Terminal as SymfonyTerminal;
 
 class Terminal
@@ -139,9 +141,17 @@ class Terminal
     /**
      * Determine if the output is written to a terminal.
      */
-    public function isOutputTty(): bool
+    public function isOutputTty(?OutputInterface $output = null): bool
     {
-        if (! defined('STDOUT') || ! function_exists('stream_isatty')) {
+        if (! function_exists('stream_isatty')) {
+            return true;
+        }
+
+        if ($output instanceof StreamOutput) {
+            return stream_isatty($output->getStream());
+        }
+
+        if (! defined('STDOUT')) {
             return true;
         }
 
