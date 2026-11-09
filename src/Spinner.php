@@ -47,7 +47,7 @@ class Spinner extends Prompt
     {
         $this->capturePreviousNewLines();
 
-        if (! static::output()->isDecorated() || ! (function_exists('pcntl_fork') && function_exists('posix_kill'))) {
+        if ($this->shouldRenderStatically()) {
             return $this->renderStatically($callback);
         }
 
@@ -83,6 +83,22 @@ class Spinner extends Prompt
 
             throw $e;
         }
+    }
+
+    /**
+     * Determine whether the spinner should be rendered statically.
+     *
+     * Animating redraws the spinner with cursor movements, which only make
+     * sense on a terminal. Decorated output alone is not enough, because
+     * `--ansi` forces it in CI and build logs where each frame would be
+     * written on its own line.
+     */
+    protected function shouldRenderStatically(): bool
+    {
+        return ! static::output()->isDecorated()
+            || ! static::terminal()->isOutputTty()
+            || ! function_exists('pcntl_fork')
+            || ! function_exists('posix_kill');
     }
 
     /**

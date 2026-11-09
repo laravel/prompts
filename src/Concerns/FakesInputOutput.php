@@ -29,6 +29,7 @@ trait FakesInputOutput
         $mock->shouldReceive('lines')->byDefault()->andReturn(24);
         $mock->shouldReceive('initDimensions')->byDefault();
         $mock->shouldReceive('supportsTrueColor')->byDefault()->andReturn(false);
+        $mock->shouldReceive('isOutputTty')->byDefault()->andReturn(true);
 
         static::fakeKeyPresses($keys, function (string $key) use ($mock): void {
             $mock->shouldReceive('read')->once()->andReturn($key);

@@ -137,6 +137,18 @@ class Terminal
     }
 
     /**
+     * Determine if the output is written to a terminal.
+     */
+    public function isOutputTty(): bool
+    {
+        if (! defined('STDOUT') || ! function_exists('stream_isatty')) {
+            return true;
+        }
+
+        return stream_isatty(STDOUT);
+    }
+
+    /**
      * Determine if the terminal supports true color (24-bit).
      */
     public function supportsTrueColor(): bool
