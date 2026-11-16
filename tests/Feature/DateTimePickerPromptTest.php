@@ -284,8 +284,8 @@ it('highlights the focused time segment', function () {
     Prompt::assertOutputContains("\e[7m14\e[27m");
 });
 
-it('rejects times outside of the range', function () {
-    Prompt::fake([Key::TAB, Key::TAB, Key::TAB, Key::DOWN, Key::ENTER, Key::UP, Key::ENTER]);
+it('clamps stepped times to the range', function () {
+    Prompt::fake([Key::TAB, Key::TAB, Key::TAB, Key::DOWN, Key::ENTER]);
 
     $result = datetimepicker(
         label: 'When should the deploy run?',
@@ -293,9 +293,7 @@ it('rejects times outside of the range', function () {
         min: '2026-07-24 09:00',
     );
 
-    expect($result->format('Y-m-d H:i'))->toBe('2026-07-24 09:30');
-
-    Prompt::assertOutputContains('Must be on or after 2026-07-24 09:00.');
+    expect($result->format('Y-m-d H:i'))->toBe('2026-07-24 09:00');
 });
 
 it('ignores microseconds in the range boundaries', function () {
@@ -362,3 +360,16 @@ it('shows the shifted time when stepping the date onto a daylight saving gap', f
     expect($result->format('Y-m-d H:i'))->toBe('2026-03-08 03:30');
     Prompt::assertStrippedOutputContains('2026-03-08 03:30');
 });
+
+it('clamps datetime time stepping to the full instant boundaries', function ($keys, $expected) {
+    Prompt::fake([...$keys, Key::CTRL_C]);
+
+    $prompt = new DateTimePickerPrompt('Release', default: '2026-07-24 12:30', min: '2026-07-24 12:30', max: '2026-07-24 13:00');
+    $prompt->prompt();
+
+    expect($prompt->value()->format('Y-m-d H:i'))->toBe($expected);
+})->with([
+    'hour below min' => [[Key::TAB, Key::TAB, Key::TAB, Key::DOWN], '2026-07-24 12:30'],
+    'minute below min' => [[Key::TAB, Key::TAB, Key::TAB, Key::TAB, Key::DOWN], '2026-07-24 12:30'],
+    'hour above max' => [[Key::TAB, Key::TAB, Key::TAB, Key::UP], '2026-07-24 13:00'],
+]);

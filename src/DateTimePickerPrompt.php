@@ -77,7 +77,7 @@ class DateTimePickerPrompt extends DatePickerPrompt
             return;
         }
 
-        $this->date = $candidate;
+        $this->goTo($candidate);
     }
 
     /**
