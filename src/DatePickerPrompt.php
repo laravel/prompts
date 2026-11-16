@@ -14,7 +14,7 @@ class DatePickerPrompt extends Prompt
     use Concerns\InteractsWithSegments;
 
     /**
-     * The date currently highlighted on the calendar.
+     * The selected date.
      */
     public DateTimeImmutable $date;
 
@@ -33,11 +33,6 @@ class DatePickerPrompt extends Prompt
      */
     public ?DateTimeImmutable $max;
 
-    /**
-     * The digits typed into the date mask.
-     */
-    public string $buffer = '';
-
     public string $hint;
 
     /**
@@ -52,13 +47,7 @@ class DatePickerPrompt extends Prompt
         public mixed $validate = null,
         ?string $hint = null,
         public ?Closure $transform = null,
-        public int $weekStartsOn = 1,
-        public bool $calendar = false,
     ) {
-        if ($this->weekStartsOn < 0 || $this->weekStartsOn > 6) {
-            throw new InvalidArgumentException('Argument [weekStartsOn] must be between 0 (Sunday) and 6 (Saturday).');
-        }
-
         $this->default = $this->normalizeDate($default);
         $this->min = $this->normalizeDate($min);
         $this->max = $this->normalizeDate($max);
@@ -69,40 +58,12 @@ class DatePickerPrompt extends Prompt
 
         $this->date = $this->clamp($this->default ?? new DateTimeImmutable('today'));
 
-        $this->focused = $calendar ? 'calendar' : 'year';
-        $this->hint = $hint ?? ($calendar
-            ? 'Use the arrow keys to navigate or type a date.'
-            : 'Left/Right or Tab: move. Up/Down: change. Type to edit.');
+        $this->focused = 'year';
+        $this->hint = $hint ?? 'Left/Right or Tab: move. Up/Down: change. Type to edit.';
 
         $this->validate = $this->wrapValidation($this->validate);
 
-        $this->on('key', fn ($key) => $this->handleKey($key));
-    }
-
-    /**
-     * Handle a key press.
-     */
-    protected function handleKey(string $key): mixed
-    {
-        if (! $this->calendar) {
-            return $this->handleSegmentKey($key);
-        }
-
-        return match ($key) {
-            Key::LEFT, Key::LEFT_ARROW, Key::CTRL_B => $this->goTo($this->date->modify('-1 day')),
-            Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_F => $this->goTo($this->date->modify('+1 day')),
-            Key::UP, Key::UP_ARROW, Key::CTRL_P => $this->goTo($this->date->modify('-7 days')),
-            Key::DOWN, Key::DOWN_ARROW, Key::CTRL_N => $this->goTo($this->date->modify('+7 days')),
-            Key::PAGE_UP => $this->goTo($this->addMonths(-1)),
-            Key::PAGE_DOWN => $this->goTo($this->addMonths(1)),
-            Key::SHIFT_UP => $this->goTo($this->addMonths(-12)),
-            Key::SHIFT_DOWN => $this->goTo($this->addMonths(12)),
-            Key::oneOf([Key::HOME, Key::CTRL_A], $key) => $this->goTo($this->date->modify('first day of this month')),
-            Key::oneOf([Key::END, Key::CTRL_E], $key) => $this->goTo($this->date->modify('last day of this month')),
-            Key::BACKSPACE, Key::CTRL_H => $this->buffer = substr($this->buffer, 0, -1),
-            Key::ENTER => $this->submit(),
-            default => $this->type($key),
-        };
+        $this->on('key', fn ($key) => $this->handleSegmentKey($key));
     }
 
     /**
@@ -118,21 +79,23 @@ class DatePickerPrompt extends Prompt
     }
 
     /**
-     * Get the selected date, or the typed digits over the mask, formatted for display.
+     * Get the selected date formatted for display.
      */
     public function formattedValue(): string
     {
-        if (! $this->calendar) {
-            return implode('-', $this->segmentValues());
+        return $this->formatSegments($this->segmentValues());
+    }
+
+    /**
+     * Get the date being edited, including a valid segment that hasn't been committed yet.
+     */
+    public function previewDate(): DateTimeImmutable
+    {
+        if ($this->editingSegment && $this->segmentError() === null) {
+            return $this->segmentDate() ?? $this->date;
         }
 
-        if ($this->buffer !== '') {
-            $digits = str_pad($this->buffer, 8, '_');
-
-            return sprintf('%s-%s-%s', substr($digits, 0, 4), substr($digits, 4, 2), substr($digits, 6, 2));
-        }
-
-        return $this->date->format('Y-m-d');
+        return $this->date;
     }
 
     /** @return array<string, string> */
@@ -214,23 +177,8 @@ class DatePickerPrompt extends Prompt
     protected function submit(): void
     {
         if ($this->commitSegment()) {
-            if ($this->calendar) {
-                $this->type('');
-            }
-
             parent::submit();
         }
-    }
-
-    /**
-     * Determine whether any moment of the given day of the highlighted month is selectable.
-     */
-    public function selectableDay(int $day): bool
-    {
-        $date = $this->date->setDate((int) $this->date->format('Y'), (int) $this->date->format('n'), $day);
-
-        return ($this->min === null || $date->setTime(23, 59, 59) >= $this->min)
-            && ($this->max === null || $date->setTime(0, 0) <= $this->max);
     }
 
     /**
@@ -238,67 +186,17 @@ class DatePickerPrompt extends Prompt
      */
     protected function goTo(DateTimeImmutable $date): void
     {
-        $this->buffer = '';
         $this->date = $this->clamp($date);
     }
 
     /**
-     * Append the typed digits to the buffer and commit it once complete and valid.
-     */
-    protected function type(string $key): void
-    {
-        if ($key !== '' && $key[0] === "\e") {
-            return;
-        }
-
-        foreach (str_split($key) as $char) {
-            if (ctype_digit($char) && strlen($this->buffer) < 8) {
-                $this->buffer .= $char;
-            }
-        }
-
-        $date = $this->bufferedDate();
-
-        if ($date !== null && $date == $this->clamp($date)) {
-            $this->date = $date;
-            $this->buffer = '';
-        }
-    }
-
-    /**
-     * Get the date represented by a completely typed buffer.
-     */
-    protected function bufferedDate(): ?DateTimeImmutable
-    {
-        if (strlen($this->buffer) !== 8) {
-            return null;
-        }
-
-        [$year, $month, $day] = [substr($this->buffer, 0, 4), substr($this->buffer, 4, 2), substr($this->buffer, 6, 2)];
-
-        if (! checkdate((int) $month, (int) $day, (int) $year)) {
-            return null;
-        }
-
-        return $this->date->setDate((int) $year, (int) $month, (int) $day)->setTime(0, 0);
-    }
-
-    /**
-     * Wrap the validation logic to first verify the typed buffer and the range.
+     * Wrap the validation logic to first verify the edited segment and the range.
      */
     protected function wrapValidation(mixed $validate): callable
     {
         return function ($value) use ($validate) {
             if (($error = $this->segmentError()) !== null) {
                 return $error;
-            }
-
-            if (strlen($this->buffer) > 0 && strlen($this->buffer) < 8) {
-                return 'Incomplete date.';
-            }
-
-            if (strlen($this->buffer) === 8) {
-                return $this->bufferedDate() === null ? 'Invalid date.' : $this->rangeError($this->bufferedDate());
             }
 
             if (($selected = $this->value()) !== null && ($error = $this->rangeError($selected)) !== null) {

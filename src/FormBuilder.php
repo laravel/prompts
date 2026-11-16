@@ -180,17 +180,17 @@ class FormBuilder
     }
 
     /**
-     * Prompt the user for a date, optionally using a calendar.
+     * Prompt the user for a date.
      */
-    public function datepicker(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, ?string $hint = null, ?Closure $transform = null, int $weekStartsOn = 1, ?string $name = null, bool $calendar = false): self
+    public function datepicker(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, ?string $hint = null, ?Closure $transform = null, ?string $name = null): self
     {
         return $this->runPrompt(datepicker(...), get_defined_vars());
     }
 
     /**
-     * Prompt the user for a date and time, optionally using a calendar.
+     * Prompt the user for a date and time.
      */
-    public function datetimepicker(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, ?string $hint = null, ?Closure $transform = null, int $weekStartsOn = 1, bool $withSeconds = false, ?string $name = null, bool $calendar = false, bool $use12Hours = false): self
+    public function datetimepicker(string $label, DateTimeInterface|string|null $default = null, DateTimeInterface|string|null $min = null, DateTimeInterface|string|null $max = null, bool|string $required = false, mixed $validate = null, ?string $hint = null, ?Closure $transform = null, bool $withSeconds = false, ?string $name = null, bool $use12Hours = false): self
     {
         return $this->runPrompt(datetimepicker(...), get_defined_vars());
     }

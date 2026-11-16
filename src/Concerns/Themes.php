@@ -34,7 +34,6 @@ use Laravel\Prompts\Themes\Default\ClearRenderer;
 use Laravel\Prompts\Themes\Default\ConfirmPromptRenderer;
 use Laravel\Prompts\Themes\Default\DataTableRenderer;
 use Laravel\Prompts\Themes\Default\DatePickerPromptRenderer;
-use Laravel\Prompts\Themes\Default\DateTimePickerPromptRenderer;
 use Laravel\Prompts\Themes\Default\GridRenderer;
 use Laravel\Prompts\Themes\Default\MultiSearchPromptRenderer;
 use Laravel\Prompts\Themes\Default\MultiSelectPromptRenderer;
@@ -95,7 +94,7 @@ trait Themes
             DataTablePrompt::class => DataTableRenderer::class,
             Callout::class => CalloutRenderer::class,
             DatePickerPrompt::class => DatePickerPromptRenderer::class,
-            DateTimePickerPrompt::class => DateTimePickerPromptRenderer::class,
+            DateTimePickerPrompt::class => DatePickerPromptRenderer::class,
             TimePickerPrompt::class => TimePickerPromptRenderer::class,
         ],
     ];

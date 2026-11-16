@@ -8,9 +8,7 @@ $datetime = datetimepicker(
     label: 'When should the maintenance window start?',
     default: 'tomorrow 22:00',
     min: 'today',
-    weekStartsOn: 0,
     withSeconds: in_array('--seconds', $argv),
-    calendar: in_array('--calendar', $argv),
     use12Hours: in_array('--12h', $argv),
 );
 

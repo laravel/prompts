@@ -11,11 +11,6 @@ class DateTimePickerPrompt extends DatePickerPrompt
     use Concerns\InteractsWithTime;
 
     /**
-     * The last time segment focused in calendar mode.
-     */
-    protected string $timeFocus = 'hour';
-
-    /**
      * Create a new DateTimePickerPrompt instance.
      */
     public function __construct(
@@ -27,16 +22,10 @@ class DateTimePickerPrompt extends DatePickerPrompt
         mixed $validate = null,
         ?string $hint = null,
         ?Closure $transform = null,
-        int $weekStartsOn = 1,
         public bool $withSeconds = false,
-        bool $calendar = false,
         public bool $use12Hours = false,
     ) {
-        parent::__construct($label, $default, $min, $max, $required, $validate, $hint, $transform, $weekStartsOn, $calendar);
-
-        if ($calendar && $hint === null) {
-            $this->hint = 'Tab: calendar/time. Left/Right: segment. Up/Down: change. Type to edit.';
-        }
+        parent::__construct($label, $default, $min, $max, $required, $validate, $hint, $transform);
 
         $time = $this->clamp($this->default ?? $this->truncateTime(new DateTimeImmutable('now')));
 
@@ -53,20 +42,6 @@ class DateTimePickerPrompt extends DatePickerPrompt
         return parent::value()?->setTime($this->hour, $this->minute, $this->second);
     }
 
-    /**
-     * Get the selected date and time formatted for display.
-     */
-    public function formattedValue(): string
-    {
-        if (! $this->calendar) {
-            $segments = $this->segmentValues();
-
-            return $this->formatSegments($segments);
-        }
-
-        return parent::formattedValue().' '.$this->formattedTime();
-    }
-
     /** @param array<string, string> $segments */
     public function formatSegments(array $segments): string
     {
@@ -74,30 +49,7 @@ class DateTimePickerPrompt extends DatePickerPrompt
     }
 
     /**
-     * Handle a key press, routing it to the focused segment.
-     */
-    protected function handleKey(string $key): mixed
-    {
-        if ($this->calendar && in_array($key, [Key::TAB, Key::SHIFT_TAB])) {
-            if (! $this->commitSegment()) {
-                return null;
-            }
-
-            if ($this->focused === 'calendar') {
-                $this->focused = $this->timeFocus;
-            } else {
-                $this->timeFocus = $this->focused;
-                $this->focused = 'calendar';
-            }
-
-            return null;
-        }
-
-        return $this->focused === 'calendar' ? parent::handleKey($key) : $this->handleSegmentKey($key);
-    }
-
-    /**
-     * Step the focused time segment, wrapping around.
+     * Step the focused segment, wrapping time segments around.
      */
     protected function stepSegment(int $step): void
     {
@@ -119,7 +71,7 @@ class DateTimePickerPrompt extends DatePickerPrompt
      */
     protected function segmentDate(): ?DateTimeImmutable
     {
-        return $this->timeCandidate(($this->calendar ? $this->bufferedDate() : null) ?? parent::segmentDate());
+        return $this->timeCandidate(parent::segmentDate());
     }
 
     protected function commitSegment(): bool
@@ -132,10 +84,6 @@ class DateTimePickerPrompt extends DatePickerPrompt
 
         if ($editing) {
             $this->syncTime();
-
-            if ($this->calendar && $this->bufferedDate() !== null) {
-                $this->buffer = '';
-            }
         }
 
         return true;
@@ -157,10 +105,7 @@ class DateTimePickerPrompt extends DatePickerPrompt
      */
     protected function segments(): array
     {
-        return [
-            ...($this->calendar ? [] : parent::segments()),
-            ...$this->timeSegments(),
-        ];
+        return [...parent::segments(), ...$this->timeSegments()];
     }
 
     /** @return array<string, string> */
@@ -173,14 +118,6 @@ class DateTimePickerPrompt extends DatePickerPrompt
     {
         parent::goTo($date->setTime($this->hour, $this->minute, $this->second));
         $this->syncTime();
-    }
-
-    /**
-     * Get the date represented by a completely typed buffer, at the selected time.
-     */
-    protected function bufferedDate(): ?DateTimeImmutable
-    {
-        return parent::bufferedDate()?->setTime($this->hour, $this->minute, $this->second);
     }
 
     /**
