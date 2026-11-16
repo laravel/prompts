@@ -63,7 +63,21 @@ class DateTimePickerPrompt extends DatePickerPrompt
             return;
         }
 
+        [$hour, $minute, $second] = [$this->hour, $this->minute, $this->second];
+
         $this->stepTimeSegment($step);
+
+        $candidate = $this->timeAt($this->date, $this->hour, $this->minute, $this->second);
+
+        if ($candidate === null) {
+            [$this->hour, $this->minute, $this->second] = [$hour, $minute, $second];
+            $this->state = 'error';
+            $this->error = 'Invalid time.';
+
+            return;
+        }
+
+        $this->date = $candidate;
     }
 
     /**

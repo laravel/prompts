@@ -98,9 +98,15 @@ trait InteractsWithTime
         return $date === null ? null : $this->timeAt($date, $hour, $minute, $second);
     }
 
+    /**
+     * Set the time on the given date, or null when it falls in a daylight saving gap.
+     */
     protected function timeAt(DateTimeImmutable $date, int $hour, int $minute, int $second): ?DateTimeImmutable
     {
-        return $date->setTime($hour, $minute, $second);
+        $candidate = $date->setTime($hour, $minute, $second);
+        $expected = $date->format('Y-m-d').' '.sprintf('%02d:%02d:%02d', $hour, $minute, $second);
+
+        return $candidate->format('Y-m-d H:i:s') === $expected ? $candidate : null;
     }
 
     protected function stepTimeSegment(int $step): void

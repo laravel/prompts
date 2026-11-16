@@ -242,6 +242,10 @@ it('rejects an invalid default string', function () {
     datepicker(label: 'When should the deploy run?', default: 'not-a-date');
 })->throws(InvalidArgumentException::class, 'not-a-date');
 
+it('rejects date strings that overflow into another day', function ($argument) {
+    datepicker('When should the deploy run?', ...[$argument => '2026-02-30']);
+})->with(['default', 'min', 'max'])->throws(InvalidArgumentException::class, 'Date [2026-02-30] is not valid.');
+
 it('can be cancelled', function () {
     Prompt::fake([Key::CTRL_C]);
 

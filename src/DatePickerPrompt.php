@@ -289,7 +289,15 @@ class DatePickerPrompt extends Prompt
         }
 
         try {
-            return $this->truncateTime(new DateTimeImmutable($date));
+            $parsed = new DateTimeImmutable($date);
+            $errors = DateTimeImmutable::getLastErrors();
+
+            // PHP rolls impossible dates like Feb 30 forward with only a warning.
+            if ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) {
+                throw new InvalidArgumentException;
+            }
+
+            return $this->truncateTime($parsed);
         } catch (Exception) {
             throw new InvalidArgumentException("Date [{$date}] is not valid.");
         }

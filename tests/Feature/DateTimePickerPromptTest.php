@@ -324,3 +324,41 @@ it('returns null when non-interactive without a default', function () {
 
     expect(datetimepicker(label: 'When should the deploy run?'))->toBeNull();
 });
+
+it('rejects typed times in a daylight saving gap', function ($use12Hours, $default, $keys, $focused, $buffer) {
+    Prompt::fake([...$keys, Key::ENTER, Key::CTRL_C]);
+
+    $prompt = new DateTimePickerPrompt('Release', default: new DateTimeImmutable($default, new DateTimeZone('America/New_York')), use12Hours: $use12Hours);
+    $prompt->prompt();
+
+    expect($prompt->state)->toBe('cancel')
+        ->and($prompt->focused)->toBe($focused)
+        ->and($prompt->segmentBuffer)->toBe($buffer)
+        ->and($prompt->value()->format('H:i'))->not->toBe('03:15');
+    Prompt::assertOutputContains('Invalid time.');
+})->with([
+    '24h hour' => [false, '2026-03-08 01:30', [Key::TAB, Key::TAB, Key::TAB, '02:15'], 'hour', '02'],
+    '12h period' => [true, '2026-03-08 14:15', [Key::SHIFT_TAB, 'a'], 'period', 'AM'],
+]);
+
+it('does not step into a daylight saving gap', function ($use12Hours, $default, $keys) {
+    Prompt::fake([...$keys, Key::ENTER]);
+
+    $result = datetimepicker('Release', default: new DateTimeImmutable($default, new DateTimeZone('America/New_York')), use12Hours: $use12Hours);
+
+    expect($result->format('Y-m-d H:i'))->toBe($default);
+    Prompt::assertOutputContains('Invalid time.');
+})->with([
+    '24h hour' => [false, '2026-03-08 01:30', [Key::TAB, Key::TAB, Key::TAB, Key::UP]],
+    '12h hour' => [true, '2026-03-08 01:30', [Key::TAB, Key::TAB, Key::TAB, Key::UP]],
+    '12h period' => [true, '2026-03-08 14:15', [Key::SHIFT_TAB, Key::UP]],
+]);
+
+it('shows the shifted time when stepping the date onto a daylight saving gap', function () {
+    Prompt::fake([Key::TAB, Key::TAB, Key::UP, Key::ENTER]);
+
+    $result = datetimepicker('Release', default: new DateTimeImmutable('2026-03-07 02:30', new DateTimeZone('America/New_York')));
+
+    expect($result->format('Y-m-d H:i'))->toBe('2026-03-08 03:30');
+    Prompt::assertStrippedOutputContains('2026-03-08 03:30');
+});
