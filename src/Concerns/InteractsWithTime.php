@@ -3,6 +3,7 @@
 namespace Laravel\Prompts\Concerns;
 
 use DateTimeImmutable;
+use InvalidArgumentException;
 
 trait InteractsWithTime
 {
@@ -11,11 +12,6 @@ trait InteractsWithTime
     public int $minute;
 
     public int $second;
-
-    public function formattedTime(): string
-    {
-        return $this->date->setTime($this->hour, $this->minute, $this->second)->format($this->timeFormat());
-    }
 
     /** @return list<string> */
     protected function timeSegments(): array
@@ -107,6 +103,59 @@ trait InteractsWithTime
         $expected = $date->format('Y-m-d').' '.sprintf('%02d:%02d:%02d', $hour, $minute, $second);
 
         return $candidate->format('Y-m-d H:i:s') === $expected ? $candidate : null;
+    }
+
+    /**
+     * Step the focused time segment, keeping the result within range.
+     */
+    protected function stepTime(int $step): void
+    {
+        if (! $this->commitSegment()) {
+            return;
+        }
+
+        $this->stepTimeSegment($step);
+
+        $candidate = $this->timeAt($this->date, $this->hour, $this->minute, $this->second);
+
+        if ($candidate === null) {
+            $this->syncTime();
+            $this->state = 'error';
+            $this->error = 'Invalid time.';
+
+            return;
+        }
+
+        try {
+            $this->goTo($candidate);
+        } catch (InvalidArgumentException $e) {
+            $this->syncTime();
+            $this->state = 'error';
+            $this->error = $e->getMessage();
+        }
+    }
+
+    protected function goTo(DateTimeImmutable $date): void
+    {
+        parent::goTo($date);
+
+        $this->syncTime();
+    }
+
+    protected function commitSegment(): bool
+    {
+        if (! parent::commitSegment()) {
+            return false;
+        }
+
+        $this->syncTime();
+
+        return true;
+    }
+
+    protected function initialDate(): DateTimeImmutable
+    {
+        return $this->truncateTime(new DateTimeImmutable('now'));
     }
 
     protected function stepTimeSegment(int $step): void

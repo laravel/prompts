@@ -1,6 +1,7 @@
 <?php
 
 use Laravel\Prompts\DateTimePickerPrompt;
+use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Laravel\Prompts\Key;
 use Laravel\Prompts\Prompt;
 
@@ -373,3 +374,9 @@ it('clamps datetime time stepping to the full instant boundaries', function ($ke
     'minute below min' => [[Key::TAB, Key::TAB, Key::TAB, Key::TAB, Key::DOWN], '2026-07-24 12:30'],
     'hour above max' => [[Key::TAB, Key::TAB, Key::TAB, Key::UP], '2026-07-24 13:00'],
 ]);
+
+it('fails when non-interactive with a default time outside of the range', function () {
+    Prompt::interactive(false);
+
+    datetimepicker(label: 'Release', default: '2026-07-24 08:00', min: '2026-07-24 09:00');
+})->throws(NonInteractiveValidationException::class, 'Must be on or after 2026-07-24 09:00.');

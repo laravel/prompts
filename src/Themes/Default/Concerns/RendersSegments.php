@@ -2,12 +2,11 @@
 
 namespace Laravel\Prompts\Themes\Default\Concerns;
 
-use Laravel\Prompts\DatePickerPrompt;
-use Laravel\Prompts\TimePickerPrompt;
+use Laravel\Prompts\TimeBasedPrompt;
 
 trait RendersSegments
 {
-    protected function inputRow(DatePickerPrompt|TimePickerPrompt $prompt): string
+    protected function inputRow(TimeBasedPrompt $prompt): string
     {
         $segments = $prompt->segmentValues();
 

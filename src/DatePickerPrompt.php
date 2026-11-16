@@ -2,90 +2,10 @@
 
 namespace Laravel\Prompts;
 
-use Closure;
 use DateTimeImmutable;
-use DateTimeInterface;
-use Exception;
-use InvalidArgumentException;
-use RuntimeException;
 
-class DatePickerPrompt extends Prompt
+class DatePickerPrompt extends TimeBasedPrompt
 {
-    use Concerns\InteractsWithSegments;
-
-    /**
-     * The selected date.
-     */
-    public DateTimeImmutable $date;
-
-    /**
-     * The default date.
-     */
-    public ?DateTimeImmutable $default;
-
-    /**
-     * The earliest selectable date.
-     */
-    public ?DateTimeImmutable $min;
-
-    /**
-     * The latest selectable date.
-     */
-    public ?DateTimeImmutable $max;
-
-    public string $hint;
-
-    /**
-     * Create a new DatePickerPrompt instance.
-     */
-    public function __construct(
-        public string $label,
-        DateTimeInterface|string|null $default = null,
-        DateTimeInterface|string|null $min = null,
-        DateTimeInterface|string|null $max = null,
-        public bool|string $required = false,
-        public mixed $validate = null,
-        ?string $hint = null,
-        public ?Closure $transform = null,
-    ) {
-        $this->default = $this->normalizeDate($default);
-        $this->min = $this->normalizeDate($min);
-        $this->max = $this->normalizeDate($max);
-
-        if ($this->min !== null && $this->max !== null && $this->min > $this->max) {
-            throw new InvalidArgumentException('Argument [min] must be on or before [max].');
-        }
-
-        $this->date = $this->clamp($this->default ?? new DateTimeImmutable('today'));
-
-        $this->focused = 'year';
-        $this->hint = $hint ?? 'Left/Right or Tab: move. Up/Down: change. Type to edit.';
-
-        $this->validate = $this->wrapValidation($this->validate);
-
-        $this->on('key', fn ($key) => $this->handleSegmentKey($key));
-    }
-
-    /**
-     * Get the selected date.
-     */
-    public function value(): ?DateTimeImmutable
-    {
-        if (static::$interactive === false) {
-            return $this->default;
-        }
-
-        return $this->date;
-    }
-
-    /**
-     * Get the selected date formatted for display.
-     */
-    public function formattedValue(): string
-    {
-        return $this->formatSegments($this->segmentValues());
-    }
-
     /**
      * Get the date being edited, including a valid segment that hasn't been committed yet.
      */
@@ -161,96 +81,6 @@ class DatePickerPrompt extends Prompt
         return checkdate($month, $day, $year) ? $this->date->setDate($year, $month, $day) : null;
     }
 
-    protected function segmentError(): ?string
-    {
-        if (! $this->editingSegment) {
-            return null;
-        }
-
-        if ($this->segmentBuffer === '' || ($this->focused === 'year' && strlen($this->segmentBuffer) < 4)) {
-            return "Incomplete {$this->focused}.";
-        }
-
-        return $this->segmentDate() === null ? 'Invalid date.' : null;
-    }
-
-    protected function submit(): void
-    {
-        if ($this->commitSegment()) {
-            parent::submit();
-        }
-    }
-
-    /**
-     * Highlight the given date, keeping it within the min/max range.
-     */
-    protected function goTo(DateTimeImmutable $date): void
-    {
-        $this->date = $this->clamp($date);
-    }
-
-    /**
-     * Wrap the validation logic to first verify the edited segment and the range.
-     */
-    protected function wrapValidation(mixed $validate): callable
-    {
-        return function ($value) use ($validate) {
-            if (($error = $this->segmentError()) !== null) {
-                return $error;
-            }
-
-            if (($selected = $this->value()) !== null && ($error = $this->rangeError($selected)) !== null) {
-                return $error;
-            }
-
-            if (! $validate && ! isset(static::$validateUsing)) {
-                return null;
-            }
-
-            return match (true) {
-                is_callable($validate) => $validate($value),
-                isset(static::$validateUsing) => $this->delegateValidation($validate),
-                default => throw new RuntimeException('The validation logic is missing.'),
-            };
-        };
-    }
-
-    /**
-     * Delegate to the custom validation callback, exposing the original validation logic.
-     */
-    protected function delegateValidation(mixed $validate): mixed
-    {
-        $wrapped = $this->validate;
-
-        $this->validate = $validate;
-
-        try {
-            return (static::$validateUsing)($this);
-        } finally {
-            $this->validate = $wrapped;
-        }
-    }
-
-    /**
-     * Get the validation error for a date outside of the min/max range.
-     */
-    protected function rangeError(DateTimeImmutable $date): ?string
-    {
-        return match (true) {
-            $this->min !== null && $date < $this->min => 'Must be on or after '.$this->min->format($this->dateFormat()).'.',
-            $this->max !== null && $date > $this->max => 'Must be on or before '.$this->max->format($this->dateFormat()).'.',
-            default => null,
-        };
-    }
-
-    /**
-     * The format used when displaying dates in messages.
-     */
-    protected function dateFormat(): string
-    {
-        return 'Y-m-d';
-    }
-
     /**
      * Add the given number of months, clamping the day to the target month.
      */
@@ -263,59 +93,18 @@ class DatePickerPrompt extends Prompt
         return $month->setDate((int) $month->format('Y'), (int) $month->format('n'), $day);
     }
 
-    /**
-     * Constrain the given date to the min/max range.
-     */
-    protected function clamp(DateTimeImmutable $date): DateTimeImmutable
+    protected function initialDate(): DateTimeImmutable
     {
-        return match (true) {
-            $this->min !== null && $date < $this->min => $this->min,
-            $this->max !== null && $date > $this->max => $this->max,
-            default => $date,
-        };
+        return new DateTimeImmutable('today');
     }
 
-    /**
-     * Normalize the given date to a DateTimeImmutable at the prompt's precision.
-     */
-    protected function normalizeDate(DateTimeInterface|string|null $date): ?DateTimeImmutable
-    {
-        if ($date === null) {
-            return null;
-        }
-
-        if ($date instanceof DateTimeInterface) {
-            return $this->truncateTime(DateTimeImmutable::createFromInterface($date));
-        }
-
-        try {
-            $parsed = new DateTimeImmutable($date);
-            $errors = DateTimeImmutable::getLastErrors();
-
-            // PHP rolls impossible dates like Feb 30 forward with only a warning.
-            if ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) {
-                throw new InvalidArgumentException;
-            }
-
-            return $this->truncateTime($parsed);
-        } catch (Exception) {
-            throw new InvalidArgumentException("Date [{$date}] is not valid.");
-        }
-    }
-
-    /**
-     * Truncate the time to the prompt's precision.
-     */
     protected function truncateTime(DateTimeImmutable $date): DateTimeImmutable
     {
         return $date->setTime(0, 0);
     }
 
-    /**
-     * Determine whether the given value is invalid when the prompt is required.
-     */
-    protected function isInvalidWhenRequired(mixed $value): bool
+    protected function displayFormat(): string
     {
-        return $value === null;
+        return 'Y-m-d';
     }
 }

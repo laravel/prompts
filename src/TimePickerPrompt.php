@@ -5,66 +5,30 @@ namespace Laravel\Prompts;
 use Closure;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Exception;
 use InvalidArgumentException;
-use RuntimeException;
 
-class TimePickerPrompt extends Prompt
+class TimePickerPrompt extends TimeBasedPrompt
 {
-    use Concerns\InteractsWithSegments {
-        commitSegment as protected commitTimeSegment;
-    }
-    use Concerns\InteractsWithTime {
-        Concerns\InteractsWithTime::segmentInput insteadof Concerns\InteractsWithSegments;
-    }
+    use Concerns\InteractsWithTime;
 
-    public DateTimeImmutable $date;
+    protected string $noun = 'Time';
 
-    public ?DateTimeImmutable $default;
-
-    public ?DateTimeImmutable $min;
-
-    public ?DateTimeImmutable $max;
-
-    public string $hint;
-
+    /**
+     * Create a new TimePickerPrompt instance.
+     */
     public function __construct(
-        public string $label,
+        string $label,
         DateTimeInterface|string|null $default = null,
         DateTimeInterface|string|null $min = null,
         DateTimeInterface|string|null $max = null,
-        public bool|string $required = false,
-        public mixed $validate = null,
+        bool|string $required = false,
+        mixed $validate = null,
         ?string $hint = null,
-        public ?Closure $transform = null,
+        ?Closure $transform = null,
         public bool $withSeconds = false,
         public bool $use12Hours = false,
     ) {
-        $this->default = $this->normalizeTime($default);
-        $this->min = $this->normalizeTime($min);
-        $this->max = $this->normalizeTime($max);
-
-        if ($this->min !== null && $this->max !== null && $this->min->format('H:i:s') > $this->max->format('H:i:s')) {
-            throw new InvalidArgumentException('Argument [min] must be on or before [max].');
-        }
-
-        $this->date = $this->clamp($this->default ?? $this->truncateTime(new DateTimeImmutable('now')));
-        $this->syncTime();
-        $this->focused = 'hour';
-        $this->hint = $hint ?? 'Left/Right or Tab: move. Up/Down: change. Type to edit.';
-        $this->validate = $this->wrapValidation($this->validate);
-
-        $this->on('key', fn ($key) => $this->handleSegmentKey($key));
-    }
-
-    public function value(): ?DateTimeImmutable
-    {
-        return static::$interactive === false ? $this->default : $this->date->setTime($this->hour, $this->minute, $this->second);
-    }
-
-    public function formattedValue(): string
-    {
-        return $this->formatSegments($this->segmentValues());
+        parent::__construct($label, $default, $min, $max, $required, $validate, $hint, $transform);
     }
 
     /** @return array<string, string> */
@@ -85,102 +49,32 @@ class TimePickerPrompt extends Prompt
         return $this->timeSegments();
     }
 
+    protected function stepSegment(int $step): void
+    {
+        $this->stepTime($step);
+    }
+
     protected function segmentDate(): ?DateTimeImmutable
     {
         return $this->timeCandidate($this->date);
     }
 
-    protected function segmentError(): ?string
+    /**
+     * Compare clock times only, so the bounds apply on any date.
+     */
+    protected function compare(DateTimeImmutable $a, DateTimeImmutable $b): int
     {
-        if (! $this->editingSegment) {
-            return null;
-        }
-
-        if ($this->segmentBuffer === '') {
-            return "Incomplete {$this->focused}.";
-        }
-
-        return $this->segmentDate() === null ? 'Invalid time.' : null;
+        return $a->format('H:i:s') <=> $b->format('H:i:s');
     }
 
-    protected function commitSegment(): bool
-    {
-        if (! $this->commitTimeSegment()) {
-            return false;
-        }
-
-        $this->syncTime();
-
-        return true;
-    }
-
-    protected function stepSegment(int $step): void
-    {
-        if (! $this->commitSegment()) {
-            return;
-        }
-
-        $this->stepTimeSegment($step);
-        $candidate = $this->timeAt($this->date, $this->hour, $this->minute, $this->second);
-
-        if ($candidate === null) {
-            $this->syncTime();
-            $this->state = 'error';
-            $this->error = 'Invalid time.';
-
-            return;
-        }
-
-        try {
-            $this->date = $this->clamp($candidate);
-        } catch (InvalidArgumentException $e) {
-            $this->state = 'error';
-            $this->error = $e->getMessage();
-        }
-
-        $this->syncTime();
-    }
-
-    protected function submit(): void
-    {
-        if ($this->commitSegment()) {
-            parent::submit();
-        }
-    }
-
-    protected function normalizeTime(DateTimeInterface|string|null $time): ?DateTimeImmutable
-    {
-        if ($time === null) {
-            return null;
-        }
-
-        if ($time instanceof DateTimeInterface) {
-            return $this->truncateTime(DateTimeImmutable::createFromInterface($time));
-        }
-
-        try {
-            $date = new DateTimeImmutable($time);
-            $errors = DateTimeImmutable::getLastErrors();
-
-            if ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) {
-                throw new InvalidArgumentException;
-            }
-
-            return $this->truncateTime($date);
-        } catch (Exception) {
-            throw new InvalidArgumentException("Time [{$time}] is not valid.");
-        }
-    }
-
+    /**
+     * Move the time onto the bound's clock time while keeping its own date.
+     */
     protected function clamp(DateTimeImmutable $time): DateTimeImmutable
     {
-        $bound = match (true) {
-            $this->min !== null && $time->format('H:i:s') < $this->min->format('H:i:s') => $this->min,
-            $this->max !== null && $time->format('H:i:s') > $this->max->format('H:i:s') => $this->max,
-            default => null,
-        };
+        $bound = parent::clamp($time);
 
-        if ($bound === null) {
+        if ($bound === $time) {
             return $time;
         }
 
@@ -193,51 +87,8 @@ class TimePickerPrompt extends Prompt
         return $candidate;
     }
 
-    protected function rangeError(DateTimeImmutable $time): ?string
+    protected function displayFormat(): string
     {
-        return match (true) {
-            $this->min !== null && $time->format('H:i:s') < $this->min->format('H:i:s') => 'Must be on or after '.$this->min->format($this->timeFormat()).'.',
-            $this->max !== null && $time->format('H:i:s') > $this->max->format('H:i:s') => 'Must be on or before '.$this->max->format($this->timeFormat()).'.',
-            default => null,
-        };
-    }
-
-    protected function wrapValidation(mixed $validate): callable
-    {
-        return function ($value) use ($validate) {
-            if (($error = $this->segmentError()) !== null) {
-                return $error;
-            }
-
-            if (($selected = $this->value()) !== null && ($error = $this->rangeError($selected)) !== null) {
-                return $error;
-            }
-
-            if (! $validate && ! isset(static::$validateUsing)) {
-                return null;
-            }
-
-            if (is_callable($validate)) {
-                return $validate($value);
-            }
-
-            if (! isset(static::$validateUsing)) {
-                throw new RuntimeException('The validation logic is missing.');
-            }
-
-            $wrapped = $this->validate;
-            $this->validate = $validate;
-
-            try {
-                return (static::$validateUsing)($this);
-            } finally {
-                $this->validate = $wrapped;
-            }
-        };
-    }
-
-    protected function isInvalidWhenRequired(mixed $value): bool
-    {
-        return $value === null;
+        return $this->timeFormat();
     }
 }
