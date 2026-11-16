@@ -170,7 +170,7 @@ it('stops pasting at the final time segment', function ($withSeconds, $input, $e
 ]);
 
 it('validates and transforms a date corrected through its time', function () {
-    Prompt::fake([Key::TAB, Key::TAB, '24', Key::ENTER, Key::TAB, '10', Key::ENTER]);
+    Prompt::fake([Key::TAB, Key::TAB, '24', Key::ENTER, '10', Key::ENTER]);
 
     $validated = null;
     $prompt = new DateTimePickerPrompt(

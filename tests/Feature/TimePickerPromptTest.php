@@ -56,7 +56,7 @@ it('edits 12 hour times and their period', function ($keys, $expected) {
     'type period' => [[Key::SHIFT_TAB, 'a'], '02:30'],
     'correct period' => [[Key::SHIFT_TAB, Key::BACKSPACE, 'm'], '14:30'],
     'replace incomplete period' => [[Key::SHIFT_TAB, Key::BACKSPACE, 'a'], '02:30'],
-    'hour wraps within period' => [['12', Key::UP], '13:30'],
+    'hour wraps within period' => [['12', Key::LEFT, Key::UP], '13:30'],
 ]);
 
 it('rejects invalid typed hours before advancing', function ($use12Hours, $input, $correction) {
@@ -292,3 +292,14 @@ it('preserves the previous time when stepping would clamp to a daylight saving g
     expect($result->format('H:i'))->toBe('00:30');
     Prompt::assertOutputContains('cannot be represented');
 });
+
+it('advances to the next segment once the typed segment is full', function ($use12Hours, $keys, $expected) {
+    Prompt::fake([...$keys, Key::ENTER]);
+
+    $result = timepicker(label: 'Start', default: '09:00', withSeconds: true, use12Hours: $use12Hours);
+
+    expect($result->format('H:i:s'))->toBe($expected);
+})->with([
+    '24 hour digits only' => [false, ['143005'], '14:30:05'],
+    '12 hour digits and period' => [true, ['023005p'], '14:30:05'],
+]);

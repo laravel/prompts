@@ -12,6 +12,11 @@ trait InteractsWithSegments
 
     protected bool $editingSegment = false;
 
+    /**
+     * Whether the last key filled a segment and moved focus on its own.
+     */
+    protected bool $autoAdvanced = false;
+
     protected function segmentDisplay(string $segment, string $value): string
     {
         return $this->editingSegment && $this->focused === $segment
@@ -21,6 +26,14 @@ trait InteractsWithSegments
 
     protected function handleSegmentKey(string $key): mixed
     {
+        $autoAdvanced = $this->autoAdvanced;
+        $this->autoAdvanced = false;
+
+        // Focus already moved when the segment filled, so a habitual Tab or Right shouldn't skip the next one.
+        if ($autoAdvanced && in_array($key, [Key::TAB, Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_F])) {
+            return null;
+        }
+
         match ($key) {
             Key::LEFT, Key::LEFT_ARROW, Key::CTRL_B => $this->moveFocus(-1),
             Key::RIGHT, Key::RIGHT_ARROW, Key::CTRL_F => $this->moveFocus(1),
@@ -30,7 +43,7 @@ trait InteractsWithSegments
             Key::DOWN, Key::DOWN_ARROW, Key::CTRL_N => $this->stepSegment(-1),
             Key::BACKSPACE, Key::CTRL_H => $this->backspaceSegment(),
             Key::ENTER => $this->submit(),
-            default => $this->typeIntoSegment($key),
+            default => $this->typeIntoSegment($key, $autoAdvanced),
         };
 
         return null;
@@ -56,18 +69,25 @@ trait InteractsWithSegments
         return true;
     }
 
-    protected function typeIntoSegment(string $key): void
+    protected function typeIntoSegment(string $key, bool $autoAdvanced = false): void
     {
         if ($key !== '' && $key[0] === "\e") {
             return;
         }
 
         foreach (str_split($key) as $char) {
+            $skipSeparator = $autoAdvanced;
+            $autoAdvanced = false;
+
             if ($char === ' ' && $this->focused === 'period' && ! $this->editingSegment) {
                 continue;
             }
 
             if (in_array($char, ['-', ':', ' '])) {
+                if ($skipSeparator) {
+                    continue;
+                }
+
                 if (! $this->moveFocus(1)) {
                     return;
                 }
@@ -87,7 +107,17 @@ trait InteractsWithSegments
             }
 
             $this->segmentBuffer .= $input;
+
+            if (strlen($this->segmentBuffer) === $width) {
+                if (! $this->moveFocus(1)) {
+                    return;
+                }
+
+                $autoAdvanced = true;
+            }
         }
+
+        $this->autoAdvanced = $autoAdvanced;
     }
 
     protected function segmentInput(string $char): ?string

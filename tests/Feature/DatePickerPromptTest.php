@@ -26,14 +26,14 @@ it('renders an inline date input by default', function () {
 });
 
 it('shows the weekday of the date being edited', function () {
-    Prompt::fake([Key::TAB, Key::TAB, '2', '5', Key::CTRL_C]);
+    Prompt::fake([Key::TAB, Key::TAB, '2', Key::CTRL_C]);
 
     $prompt = new DatePickerPrompt(label: 'Release date', default: '2026-07-24');
     $prompt->prompt();
 
     expect($prompt->date->format('Y-m-d'))->toBe('2026-07-24');
     Prompt::assertStrippedOutputContains('Friday');
-    Prompt::assertStrippedOutputContains('Saturday');
+    Prompt::assertStrippedOutputContains('Thursday');
 });
 
 it('moves inline focus without changing the date', function () {
@@ -375,3 +375,16 @@ it('can fall back', function () {
 
     expect($result->format('Y-m-d'))->toBe('2026-01-01');
 });
+
+it('advances to the next segment once the typed segment is full', function ($keys, $expected) {
+    Prompt::fake([...$keys, Key::ENTER]);
+
+    $result = datepicker(label: 'Release date', default: '2026-07-24');
+
+    expect($result->format('Y-m-d'))->toBe($expected);
+})->with([
+    'digits only' => [['20301225'], '2030-12-25'],
+    'one key at a time' => [['2', '0', '3', '0', '1', '2', '2', '5'], '2030-12-25'],
+    'separators after advancing' => [['2', '0', '3', '0', '-', '1', '2', '-', '2', '5'], '2030-12-25'],
+    'tab after advancing' => [['2030', Key::TAB, '12', Key::TAB, '25'], '2030-12-25'],
+]);
