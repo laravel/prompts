@@ -412,6 +412,10 @@ class Task extends Prompt
     {
         if (! empty($this->pid)) {
             posix_kill($this->pid, SIGHUP);
+            pcntl_waitpid($this->pid, $status);
+
+            // The render loop may have been killed mid-frame, so end any open synchronized update...
+            static::writeDirectly("\e[?2026l");
         }
 
         parent::__destruct();
