@@ -1,6 +1,22 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.27...main)
+## [Unreleased](https://github.com/laravel/prompts/compare/v0.3.28...main)
+
+## [v0.3.28](https://github.com/laravel/prompts/compare/v0.3.27...v0.3.28) - 2026-11-23
+
+### What's Changed
+
+* Add `datepicker`, `datetimepicker`, and `timepicker` prompts by [@WendellAdriel](https://github.com/WendellAdriel) in https://github.com/laravel/prompts/pull/258
+* Wrap redraws in synchronized output to prevent flickering by [@bee-interactive](https://github.com/bee-interactive) in https://github.com/laravel/prompts/pull/281
+* Add PHP 8.6 support by [@MrPunyapal](https://github.com/MrPunyapal) in https://github.com/laravel/prompts/pull/282
+
+### New Contributors
+
+* [@WendellAdriel](https://github.com/WendellAdriel) made their first contribution in https://github.com/laravel/prompts/pull/258
+* [@bee-interactive](https://github.com/bee-interactive) made their first contribution in https://github.com/laravel/prompts/pull/281
+* [@MrPunyapal](https://github.com/MrPunyapal) made their first contribution in https://github.com/laravel/prompts/pull/282
+
+**Full Changelog**: https://github.com/laravel/prompts/compare/v0.3.27...v0.3.28
 
 ## [v0.3.27](https://github.com/laravel/prompts/compare/v0.3.26...v0.3.27) - 2026-11-09
 
