@@ -100,9 +100,10 @@ class Terminal
      */
     public function initDimensions(): void
     {
+        // Symfony's initDimensions() is static; PHP 8.6 deprecates passing it an object.
         (new ReflectionClass($this->terminal))
             ->getMethod('initDimensions')
-            ->invoke($this->terminal);
+            ->invoke(null);
     }
 
     /**
