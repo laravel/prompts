@@ -8,3 +8,21 @@ it('detects that a stream output that is not a terminal is not a tty', function 
 
     expect((new Terminal)->isOutputTty($output))->toBeFalse();
 });
+
+it('initializes the terminal dimensions without deprecation notices', function () {
+    $deprecations = [];
+
+    set_error_handler(function (int $level, string $message) use (&$deprecations) {
+        $deprecations[] = $message;
+
+        return true;
+    }, E_DEPRECATED);
+
+    try {
+        (new Terminal)->initDimensions();
+    } finally {
+        restore_error_handler();
+    }
+
+    expect($deprecations)->toBeEmpty();
+});
